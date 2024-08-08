@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Test Page</title>
+    <script>
+        // JavaScript函数，用于向Flutter发送消息
+        function sendMessageToFlutter() {
+            // var message = "Hello from JavaScript!";
+            var para = {
+                callbackFunc: "saientLinkCallback",
+                data: {
+                },
+                functionName: "getUserToken",
+            };
+            // 使用JSON.stringify将对象转换为JSON字符串
+            var message = JSON.stringify(para);
+            
+            // if (saientlinkInterface) {
+            //     saientlinkInterface.postMessage(message);
+            // }
+            // webkit.messageHandlers.saientLinkCallback.postMessage(message);
+            if (typeof Mobile != 'undefined' && typeof Mobile.send_userid == "function") {
+                Mobile.saientlinkInterface(message);
+            } else if (typeof webkit != 'undefined' && typeof webkit.messageHandlers.saientlinkInterface != 'undefined') {
+                webkit.messageHandlers.saientlinkInterface.postMessage(message);
+            } else if (typeof saientlinkInterface == 'object') {
+                saientlinkInterface.postMessage(message)
+            }
+        }
+
+        // JavaScript函数，用于接收Flutter发送的消息
+        function saientLinkCallback(message) {
+            alert("Received message from Flutter: " + message);
+        }
+    </script>
+</head>
+
+<body>
+    <h1>JavaScript Test Page</h1>
+    <p>This is a test page for JavaScript and Flutter interaction.</p>
+
+    <button onclick="sendMessageToFlutter()">Send Message to Flutter</button>
+
+    <!--
+        这个脚本用于检查是否在Flutter中，并将接收到的消息传递给receiveMessageFromFlutter函数
+    -->
+    <script>
+        if (window.flutter_inappwebview) {
+            window.flutter_inappwebview.callHandler('receiveMessageFromFlutter', "", receiveMessageFromFlutter);
+        }
+    </script>
+</body>
+
+</html>

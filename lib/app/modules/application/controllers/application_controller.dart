@@ -132,8 +132,7 @@ class ApplicationController extends GetxController {
       switch (resourceModel.farmerType) {
         case 1: // 1 [规模场]
           productionManagementList.value = productionManagementList4FarmerType1;
-          reproductiveManagementList.value =
-              reproductiveManagementList4FarmerType1;
+          reproductiveManagementList.value = reproductiveManagementList4FarmerType1;
           breedingManagementList.value = [];
           healthManagementList.value = healthManagementList4FarmerType1;
           materialManagementList.value = [];
@@ -142,8 +141,7 @@ class ApplicationController extends GetxController {
           break;
         case 3: //  3 是[农户]角色
           productionManagementList.value = productionManagementList4FarmerType3;
-          reproductiveManagementList.value =
-              reproductiveManagementList4FarmerType3;
+          reproductiveManagementList.value = reproductiveManagementList4FarmerType3;
           breedingManagementList.value = [];
           healthManagementList.value = healthManagementList4FarmerType3;
           materialManagementList.value = [];
@@ -213,7 +211,7 @@ class ApplicationController extends GetxController {
           benefitAssessmentList.value = [
             CommonData(id: 0, name: "采购", image: AssetsImages.icon37),
             CommonData(id: 1, name: "人工", image: AssetsImages.icon38),
-            CommonData(id: 2, name: "出栏", image: AssetsImages.icon7),
+            CommonData(id: 2, name: "销售", image: AssetsImages.icon7),
             // CommonData(id: 3, name: "效益分析", image: AssetsImages.icon39),
             // CommonData(id: 4, name: "收支设置", image: AssetsImages.icon40),
           ];
@@ -234,58 +232,29 @@ class ApplicationController extends GetxController {
       Map<String, dynamic> productionTask = response['productionTask'];
       Map<String, dynamic> earlyWarning = response['earlyWarning'];
       //牛只存栏统计
-      LiveStockStatistics liveStockModel =
-          LiveStockStatistics.fromJson(liveStock);
+      LiveStockStatistics liveStockModel = LiveStockStatistics.fromJson(liveStock);
       cattleInventoryStatisticsList.value = [
-        CommonData(
-            id: 0, name: "母牛存栏", value: liveStockModel.female.toString()),
+        CommonData(id: 0, name: "母牛存栏", value: liveStockModel.female.toString()),
         CommonData(id: 1, name: "公牛存栏", value: liveStockModel.male.toString()),
         CommonData(id: 2, name: "犊牛存栏", value: liveStockModel.calf.toString()),
-        CommonData(
-            id: 3, name: "育肥牛存栏", value: liveStockModel.adult.toString()),
-        CommonData(
-            id: 4,
-            name: "哺乳母牛\n存栏",
-            value: liveStockModel.lactation.toString()),
-        CommonData(
-            id: 5, name: "后备母牛\n存栏", value: liveStockModel.reserve.toString()),
-        CommonData(
-            id: 6,
-            name: "妊娠母牛\n存栏",
-            value: liveStockModel.gestation.toString()),
-        CommonData(
-            id: 7,
-            name: "空怀母牛\n存栏",
-            value: liveStockModel.nonpregnant.toString()),
+        CommonData(id: 3, name: "育肥牛存栏", value: liveStockModel.adult.toString()),
+        CommonData(id: 4, name: "哺乳母牛\n存栏", value: liveStockModel.lactation.toString()),
+        CommonData(id: 5, name: "后备母牛\n存栏", value: liveStockModel.reserve.toString()),
+        CommonData(id: 6, name: "妊娠母牛\n存栏", value: liveStockModel.gestation.toString()),
+        CommonData(id: 7, name: "空怀母牛\n存栏", value: liveStockModel.nonpregnant.toString()),
       ];
       //任务统计
-      ProductionTaskStatistics productionTaskModel =
-          ProductionTaskStatistics.fromJson(productionTask);
+      ProductionTaskStatistics productionTaskModel = ProductionTaskStatistics.fromJson(productionTask);
       taskStatisticsList.value = [
-        CommonData(
-            id: 0,
-            name: "待查情数",
-            value: productionTaskModel.checkLove.toString()),
-        CommonData(
-            id: 1, name: "待配种数", value: productionTaskModel.mating.toString()),
-        CommonData(
-            id: 2, name: "待孕检数", value: productionTaskModel.pregcy.toString()),
-        CommonData(
-            id: 3, name: "待产犊数", value: productionTaskModel.calv.toString()),
-        CommonData(
-            id: 4, name: "待断奶数", value: productionTaskModel.wean.toString()),
-        CommonData(
-            id: 5, name: "待淘汰数", value: productionTaskModel.weedOut.toString()),
-        CommonData(
-            id: 6, name: "待出栏数", value: productionTaskModel.market.toString()),
-        CommonData(
-            id: 8,
-            name: "待保健数",
-            value: productionTaskModel.healthCare.toString()),
-        CommonData(
-            id: 7,
-            name: "待防疫数",
-            value: productionTaskModel.antidemic.toString()),
+        CommonData(id: 0, name: "待查情数", value: productionTaskModel.checkLove.toString()),
+        CommonData(id: 1, name: "待配种数", value: productionTaskModel.mating.toString()),
+        CommonData(id: 2, name: "待孕检数", value: productionTaskModel.pregcy.toString()),
+        CommonData(id: 3, name: "待产犊数", value: productionTaskModel.calv.toString()),
+        CommonData(id: 4, name: "待断奶数", value: productionTaskModel.wean.toString()),
+        CommonData(id: 5, name: "待淘汰数", value: productionTaskModel.weedOut.toString()),
+        CommonData(id: 6, name: "待出栏数", value: productionTaskModel.market.toString()),
+        CommonData(id: 8, name: "待保健数", value: productionTaskModel.healthCare.toString()),
+        CommonData(id: 7, name: "待防疫数", value: productionTaskModel.antidemic.toString()),
       ];
 
       update();

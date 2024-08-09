@@ -24,53 +24,38 @@ class ApplicationView extends GetView<ApplicationController> {
   Widget _titleText(String text) {
     return Text(text,
         textAlign: TextAlign.start,
-        style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: SaienteColors.blackE5,
-            fontSize: ScreenAdapter.fontSize(18)));
+        style: TextStyle(fontWeight: FontWeight.w500, color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(18)));
   }
 
   // 统计列表item 任务统计 + 牛只存栏统计
-  Widget _statisticsItem(CommonData data, int index,
-      {bool show78Border = false}) {
+  Widget _statisticsItem(CommonData data, int index, {bool show78Border = false}) {
     return InkWell(
         onTap: () {
           String name = data.name.replaceAll("\n", "");
           switch (name) {
             case '待查情数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments: EventsCattleListArgument(1, '待查情', Routes.RUT));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(1, '待查情', Routes.RUT));
               break;
             case '待配种数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments: EventsCattleListArgument(2, '待配种', Routes.MATING));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(2, '待配种', Routes.MATING));
               break;
             case '待孕检数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments: EventsCattleListArgument(3, '待孕检', Routes.PREGCY));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(3, '待孕检', Routes.PREGCY));
               break;
             case '待产犊数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments: EventsCattleListArgument(4, '待产犊', Routes.CALV));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(4, '待产犊', Routes.CALV));
               break;
             case '待断奶数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments: EventsCattleListArgument(5, '待断奶', Routes.WEAN));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(5, '待断奶', Routes.WEAN));
               break;
             case '待淘汰数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments:
-                      EventsCattleListArgument(6, '待淘汰', Routes.KNOCK_OUT));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(6, '待淘汰', Routes.KNOCK_OUT));
               break;
             case '待出栏数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments:
-                      EventsCattleListArgument(7, '待出栏', Routes.SELL_CATTLE));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(7, '待出栏', Routes.SELL_CATTLE));
               break;
             case '待防疫数':
-              Get.toNamed(Routes.EVENT_CATTLE_LIST,
-                  arguments:
-                      EventsCattleListArgument(9, '待防疫', Routes.PREVENTION));
+              Get.toNamed(Routes.EVENT_CATTLE_LIST, arguments: EventsCattleListArgument(9, '待防疫', Routes.PREVENTION));
               break;
             default:
           }
@@ -82,17 +67,14 @@ class ApplicationView extends GetView<ApplicationController> {
             0 || 1 || 2 => const Border(
                 right: BorderSide(color: SaienteColors.black40, width: 0.5),
                 bottom: BorderSide(color: SaienteColors.black40, width: 0.5)),
-            3 => const Border(
-                bottom: BorderSide(color: SaienteColors.black40, width: 0.5)),
+            3 => const Border(bottom: BorderSide(color: SaienteColors.black40, width: 0.5)),
             4 || 5 => Border(
                 bottom: show78Border
                     ? const BorderSide(color: SaienteColors.black40, width: 0.5)
                     : const BorderSide(color: Colors.transparent, width: 0.5),
-                right:
-                    const BorderSide(color: SaienteColors.black40, width: 0.5)),
+                right: const BorderSide(color: SaienteColors.black40, width: 0.5)),
             6 => Border(
-                right:
-                    const BorderSide(color: SaienteColors.black40, width: 0.5),
+                right: const BorderSide(color: SaienteColors.black40, width: 0.5),
                 bottom: show78Border
                     ? const BorderSide(color: SaienteColors.black40, width: 0.5)
                     : const BorderSide(color: Colors.transparent, width: 0.5)),
@@ -100,27 +82,21 @@ class ApplicationView extends GetView<ApplicationController> {
                 bottom: show78Border
                     ? const BorderSide(color: SaienteColors.black40, width: 0.5)
                     : const BorderSide(color: Colors.transparent, width: 0.5)),
-            8 || 9 => const Border(
-                right: BorderSide(color: SaienteColors.black40, width: 0.5)),
+            8 || 9 => const Border(right: BorderSide(color: SaienteColors.black40, width: 0.5)),
             _ => null
           }),
           child: Center(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Text(
                 data.value ?? '',
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(20),
-                    fontWeight: FontWeight.bold,
-                    color: SaienteColors.blue275CF3),
+                style:
+                    TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.bold, color: SaienteColors.blue275CF3),
               ),
               SizedBox(height: ScreenAdapter.height(4)),
               Text(
                 data.name,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(13),
-                    fontWeight: FontWeight.w400,
-                    color: SaienteColors.blackB2),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400, color: SaienteColors.blackB2),
               )
             ]),
           ),
@@ -128,8 +104,7 @@ class ApplicationView extends GetView<ApplicationController> {
   }
 
   // 统计列表
-  Widget _statisticsView(
-      String title, List<CommonData> managementList, bool show78Border) {
+  Widget _statisticsView(String title, List<CommonData> managementList, bool show78Border) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -145,12 +120,10 @@ class ApplicationView extends GetView<ApplicationController> {
             child: GridView.builder(
               shrinkWrap: true, // 根据内容自动调整高度
               physics: const NeverScrollableScrollPhysics(), // 禁止GridView滚动
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4, childAspectRatio: 1 / 1),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1 / 1),
               itemCount: managementList.length,
               itemBuilder: (BuildContext context, int index) {
-                return _statisticsItem(managementList[index], index,
-                    show78Border: show78Border);
+                return _statisticsItem(managementList[index], index, show78Border: show78Border);
               },
             ),
           ),
@@ -188,10 +161,7 @@ class ApplicationView extends GetView<ApplicationController> {
             onTap: () {
               // Get.snackbar("提示", "--> 牛只管理");
               Get.toNamed(Routes.CATTLELIST,
-                  arguments: CattleListArgument(
-                      goBack: false,
-                      single: false,
-                      szjdList: controller.szjdListFiltered));
+                  arguments: CattleListArgument(goBack: false, single: false, szjdList: controller.szjdListFiltered));
             },
             child: const LoadAssetImage(
               AssetsImages.cattleList,
@@ -233,10 +203,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   )),
               child: Text(
                 "档案新增",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(16),
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(16), fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           )),
@@ -245,10 +212,7 @@ class ApplicationView extends GetView<ApplicationController> {
               child: Bounceable(
             onTap: () {
               Get.toNamed(Routes.CATTLELIST,
-                  arguments: CattleListArgument(
-                      goBack: false,
-                      single: false,
-                      szjdList: controller.szjdListFiltered));
+                  arguments: CattleListArgument(goBack: false, single: false, szjdList: controller.szjdListFiltered));
             },
             child: Container(
               height: ScreenAdapter.height(60),
@@ -263,10 +227,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   )),
               child: Text(
                 "牛只列表",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(16),
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(16), fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           )),
@@ -292,10 +253,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   )),
               child: Text(
                 "批次列表",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(16),
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(16), fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           )),
@@ -314,17 +272,14 @@ class ApplicationView extends GetView<ApplicationController> {
           switch (data.name) {
             case '引种':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/restock', '引种事件', Routes.BUY_IN,
-                          detailRouterStr: Routes.BUY_IN_DETAIL))
+                      arguments: EventsArgument('/api/restock', '引种事件', Routes.BUY_IN, detailRouterStr: Routes.BUY_IN_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '选种':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/selstock', '选种事件', Routes.SELECT_CATTLE,
+                      arguments: EventsArgument('/api/selstock', '选种事件', Routes.SELECT_CATTLE,
                           detailRouterStr: Routes.SELECT_CATTLE_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
@@ -332,17 +287,15 @@ class ApplicationView extends GetView<ApplicationController> {
               break;
             case '调拨':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Allot', '调拨事件', Routes.ALLOT_CATTLE,
-                          detailRouterStr: Routes.ALLOT_CATTLE_DETAIL))
+                      arguments:
+                          EventsArgument('/api/Allot', '调拨事件', Routes.ALLOT_CATTLE, detailRouterStr: Routes.ALLOT_CATTLE_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '转群':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/TurnGroup', '转群事件', Routes.CHANGE_GROUP,
+                      arguments: EventsArgument('/api/TurnGroup', '转群事件', Routes.CHANGE_GROUP,
                           detailRouterStr: Routes.CHANGE_GROUP_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
@@ -350,34 +303,30 @@ class ApplicationView extends GetView<ApplicationController> {
               break;
             case '淘汰':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/WeedOut', '淘汰事件', Routes.KNOCK_OUT,
-                          detailRouterStr: Routes.KNOCK_OUT_DETAIL))
+                      arguments:
+                          EventsArgument('/api/WeedOut', '淘汰事件', Routes.KNOCK_OUT, detailRouterStr: Routes.KNOCK_OUT_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '死亡':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Death', '死亡事件', Routes.DIE_CATTLE,
-                          detailRouterStr: Routes.DIE_CATTLE_DETAIL))
+                      arguments:
+                          EventsArgument('/api/Death', '死亡事件', Routes.DIE_CATTLE, detailRouterStr: Routes.DIE_CATTLE_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
-            case '出栏':
-              if(data.id == 2){
+            case '销售':
+              if (data.id == 2) {
                 //效益评估出栏
                 Get.toNamed(Routes.EVENT_LIST,
-                    arguments: EventsArgument(
-                        '/api/sales', '出栏', Routes.SALES_ASSESS,
-                        detailRouterStr: Routes.SALES_ASSESS_DETAIL));
-              }else{
+                    arguments:
+                        EventsArgument('/api/sales', '销售', Routes.SALES_ASSESS, detailRouterStr: Routes.SALES_ASSESS_DETAIL));
+              } else {
                 Get.toNamed(Routes.EVENT_LIST,
-                    arguments: EventsArgument(
-                        '/api/Market', '出栏事件', Routes.SELL_CATTLE,
-                        detailRouterStr: Routes.SELL_CATTLE_DETAIL))
+                        arguments:
+                            EventsArgument('/api/Market', '出栏事件', Routes.SELL_CATTLE, detailRouterStr: Routes.SELL_CATTLE_DETAIL))
                     ?.then((value) {
                   controller.requestBasicStatistics();
                 });
@@ -385,8 +334,7 @@ class ApplicationView extends GetView<ApplicationController> {
               break;
             case '盘点':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/CowCheck', '盘点事件', Routes.CHECK_CATTLE,
+                      arguments: EventsArgument('/api/CowCheck', '盘点事件', Routes.CHECK_CATTLE,
                           detailRouterStr: Routes.CHECK_CATTLE_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
@@ -394,34 +342,29 @@ class ApplicationView extends GetView<ApplicationController> {
               break;
             case '饲喂':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Feed', '饲喂事件', Routes.FEED_CATTLE,
-                          detailRouterStr: Routes.FEED_CATTLE_DETAIL))
+                      arguments:
+                          EventsArgument('/api/Feed', '饲喂事件', Routes.FEED_CATTLE, detailRouterStr: Routes.FEED_CATTLE_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '采精':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Semen', '采精事件', Routes.SEMEN,
-                          detailRouterStr: Routes.SEMEN_DETAIL))
+                      arguments: EventsArgument('/api/Semen', '采精事件', Routes.SEMEN, detailRouterStr: Routes.SEMEN_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '发情':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument('/api/Rut', '发情事件', Routes.RUT,
-                          detailRouterStr: Routes.RUT_DETAIL))
+                      arguments: EventsArgument('/api/Rut', '发情事件', Routes.RUT, detailRouterStr: Routes.RUT_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '禁配':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument('/api/Ban', '禁配事件', Routes.BAN,
-                          detailRouterStr: Routes.BAN_DETAIL))
+                      arguments: EventsArgument('/api/Ban', '禁配事件', Routes.BAN, detailRouterStr: Routes.BAN_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
@@ -439,136 +382,111 @@ class ApplicationView extends GetView<ApplicationController> {
               break;
             case '配种':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Mating', '配种事件', Routes.MATING,
-                          detailRouterStr: Routes.MATING_DETAIL))
+                      arguments: EventsArgument('/api/Mating', '配种事件', Routes.MATING, detailRouterStr: Routes.MATING_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '孕检':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Pregcy', '孕检事件', Routes.PREGCY,
-                          detailRouterStr: Routes.PREGCY_DETAIL))
+                      arguments: EventsArgument('/api/Pregcy', '孕检事件', Routes.PREGCY, detailRouterStr: Routes.PREGCY_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '产犊':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/calv', '产犊事件', Routes.CALV,
-                          detailRouterStr: Routes.CALV_DETAIL))
+                      arguments: EventsArgument('/api/calv', '产犊事件', Routes.CALV, detailRouterStr: Routes.CALV_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '断奶':
               Get.toNamed(Routes.EVENT_LIST,
-                      arguments: EventsArgument(
-                          '/api/Wean', '断奶事件', Routes.WEAN,
-                          detailRouterStr: Routes.WEAN_DETAIL))
+                      arguments: EventsArgument('/api/Wean', '断奶事件', Routes.WEAN, detailRouterStr: Routes.WEAN_DETAIL))
                   ?.then((value) {
                 controller.requestBasicStatistics();
               });
               break;
             case '防疫':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/Antidemic', '防疫事件', Routes.PREVENTION,
-                      detailRouterStr: Routes.PREVENTION_DETAIL));
+                  arguments:
+                      EventsArgument('/api/Antidemic', '防疫事件', Routes.PREVENTION, detailRouterStr: Routes.PREVENTION_DETAIL));
               break;
             case '诊疗':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/Treatment', '诊疗事件', Routes.TREATMENT,
-                      detailRouterStr: Routes.TREATMENT_DETAIL));
+                  arguments:
+                      EventsArgument('/api/Treatment', '诊疗事件', Routes.TREATMENT, detailRouterStr: Routes.TREATMENT_DETAIL));
               break;
             case '保健':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/HealthCare', '保健事件', Routes.HEALTH_CARE,
-                      detailRouterStr: Routes.HEALTH_CARE_DETAIL));
+                  arguments:
+                      EventsArgument('/api/HealthCare', '保健事件', Routes.HEALTH_CARE, detailRouterStr: Routes.HEALTH_CARE_DETAIL));
               break;
             //育种管理
             case '后裔登记':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/progeny', '后裔登记事件', Routes.DESCENDANTS,
-                      detailRouterStr: Routes.DESCENDANTS_DETAIL));
+                  arguments:
+                      EventsArgument('/api/progeny', '后裔登记事件', Routes.DESCENDANTS, detailRouterStr: Routes.DESCENDANTS_DETAIL));
               break;
             case '选育测定':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/breedmeasure', '选育测定事件', Routes.ASSAY,
-                      detailRouterStr: Routes.ASSAY_DETAIL));
+                  arguments: EventsArgument('/api/breedmeasure', '选育测定事件', Routes.ASSAY, detailRouterStr: Routes.ASSAY_DETAIL));
               break;
             case '近交测定':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/inbreedmeasure', '近交测定事件', Routes.INBREEDING,
+                  arguments: EventsArgument('/api/inbreedmeasure', '近交测定事件', Routes.INBREEDING,
                       detailRouterStr: Routes.INBREEDING_DETAILS));
               break;
             case '体尺测定':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/bodymeasure', '体尺测定事件', Routes.MEASUREMENT,
+                  arguments: EventsArgument('/api/bodymeasure', '体尺测定事件', Routes.MEASUREMENT,
                       detailRouterStr: Routes.MEASUREMENT_DETAIL));
               break;
             case '品相评估':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/surfacemeasure', '品相评估事件', Routes.ASSESSMENT,
+                  arguments: EventsArgument('/api/surfacemeasure', '品相评估事件', Routes.ASSESSMENT,
                       detailRouterStr: Routes.ASSESSMENT_DETAIL));
               break;
             case '性状统计':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/characterstats', '性状统计事件', Routes.CHARACTERS,
+                  arguments: EventsArgument('/api/characterstats', '性状统计事件', Routes.CHARACTERS,
                       detailRouterStr: Routes.CHARACTERS_DETAIL));
               break;
             case '育种值统计':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/breedvaluestats', '育种值统计事件', Routes.BREED_VALUE,
+                  arguments: EventsArgument('/api/breedvaluestats', '育种值统计事件', Routes.BREED_VALUE,
                       detailRouterStr: Routes.BREED_VALUE_DETAIL));
               break;
 
             case '体况评估':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/bodyAssess', '体况评估', Routes.BODY_ASSESS,
-                      detailRouterStr: Routes.BODY_ASSESS_DETAIL));
+                  arguments:
+                      EventsArgument('/api/bodyAssess', '体况评估', Routes.BODY_ASSESS, detailRouterStr: Routes.BODY_ASSESS_DETAIL));
               break;
             case '健康评估':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/healthAssess', '健康评估', Routes.HEALTH_ASSESS,
+                  arguments: EventsArgument('/api/healthAssess', '健康评估', Routes.HEALTH_ASSESS,
                       detailRouterStr: Routes.HEALTH_ASSESS_DETAIL));
               break;
             case '环境评估':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/environmentAssess', '环境评估', Routes.ENVIRONMENT_ASSESS,
+                  arguments: EventsArgument('/api/environmentAssess', '环境评估', Routes.ENVIRONMENT_ASSESS,
                       detailRouterStr: Routes.ENVIRONMENT_ASSESS_DETAIL));
               break;
             case '繁殖效率评估':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/breedAssess', '繁殖效率评估', Routes.BREED_ASSESS,
+                  arguments: EventsArgument('/api/breedAssess', '繁殖效率评估', Routes.BREED_ASSESS,
                       detailRouterStr: Routes.BREED_ASSESS_DETAIL));
               break;
             case '采购':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/purchase', '采购', Routes.PURCHASE_ASSESS,
+                  arguments: EventsArgument('/api/purchase', '采购', Routes.PURCHASE_ASSESS,
                       detailRouterStr: Routes.PURCHASE_ASSESS_DETAIL));
               break;
             case '人工':
               Get.toNamed(Routes.EVENT_LIST,
-                  arguments: EventsArgument(
-                      '/api/manualWork', '人工', Routes.MANUAL_ASSESS,
+                  arguments: EventsArgument('/api/manualWork', '人工', Routes.MANUAL_ASSESS,
                       detailRouterStr: Routes.MANUAL_ASSESS_DETAIL));
               break;
             default:
@@ -583,10 +501,7 @@ class ApplicationView extends GetView<ApplicationController> {
             Text(
               data.name,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(13),
-                  fontWeight: FontWeight.w500,
-                  color: SaienteColors.blackB2),
+              style: TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w500, color: SaienteColors.blackB2),
             )
           ]),
         ));
@@ -609,8 +524,7 @@ class ApplicationView extends GetView<ApplicationController> {
             child: GridView.builder(
               shrinkWrap: true, // 根据内容自动调整高度
               physics: const NeverScrollableScrollPhysics(), // 禁止GridView滚动
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4, childAspectRatio: 1 / 1),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1 / 1),
               itemCount: managementList.length,
               itemBuilder: (BuildContext context, int index) {
                 return _managementItem(managementList[index]);
@@ -629,58 +543,47 @@ class ApplicationView extends GetView<ApplicationController> {
     return Container(
       color: SaienteColors.whiteF8F9FD,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-            ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
-        child: Obx(() => ListView(
-                physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics()),
-                children: [
-                  SizedBox(height: ScreenAdapter.height(16)),
-                  // 牛只存栏统计
-                  _statisticsView('牛只存栏统计',
-                      controller.cattleInventoryStatisticsList, false),
-                  SizedBox(height: ScreenAdapter.height(16)),
-                  // 任务统计
-                  _statisticsView('任务统计', controller.taskStatisticsList, true),
-                  SizedBox(height: ScreenAdapter.height(16)),
-                  // 个体管理
-                  _individualManagement(),
-                  SizedBox(height: ScreenAdapter.height(16)),
-                  // 生产管理
-                  controller.productionManagementList.isNotEmpty
-                      ? _managementView(
-                          "生产管理", controller.productionManagementList)
-                      : const SizedBox(),
-                  // 繁殖管理
-                  controller.reproductiveManagementList.isNotEmpty
-                      ? _managementView(
-                          "繁殖管理", controller.reproductiveManagementList)
-                      : const SizedBox(),
-                  // 育种管理
-                  controller.breedingManagementList.isNotEmpty
-                      ? _managementView(
-                          "育种管理", controller.breedingManagementList)
-                      : const SizedBox(),
-                  // 健康管理
-                  controller.healthManagementList.isNotEmpty
-                      ? _managementView("健康管理", controller.healthManagementList)
-                      : const SizedBox(),
-                  // 物资管理
-                  controller.materialManagementList.isNotEmpty
-                      ? _managementView(
-                          "物资管理", controller.materialManagementList)
-                      : const SizedBox(),
-                  // 养殖评估
-                  controller.breedingAssessmentList.isNotEmpty
-                      ? _managementView(
-                          "养殖评估", controller.breedingAssessmentList)
-                      : const SizedBox(),
-                  // 效益评估
-                  controller.benefitAssessmentList.isNotEmpty
-                      ? _managementView(
-                          "效益评估", controller.benefitAssessmentList)
-                      : const SizedBox(),
-                ])),
+        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+        child: Obx(() => ListView(physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()), children: [
+              SizedBox(height: ScreenAdapter.height(16)),
+              // 牛只存栏统计
+              _statisticsView('牛只存栏统计', controller.cattleInventoryStatisticsList, false),
+              SizedBox(height: ScreenAdapter.height(16)),
+              // 任务统计
+              _statisticsView('任务统计', controller.taskStatisticsList, true),
+              SizedBox(height: ScreenAdapter.height(16)),
+              // 个体管理
+              _individualManagement(),
+              SizedBox(height: ScreenAdapter.height(16)),
+              // 生产管理
+              controller.productionManagementList.isNotEmpty
+                  ? _managementView("生产管理", controller.productionManagementList)
+                  : const SizedBox(),
+              // 繁殖管理
+              controller.reproductiveManagementList.isNotEmpty
+                  ? _managementView("繁殖管理", controller.reproductiveManagementList)
+                  : const SizedBox(),
+              // 育种管理
+              controller.breedingManagementList.isNotEmpty
+                  ? _managementView("育种管理", controller.breedingManagementList)
+                  : const SizedBox(),
+              // 健康管理
+              controller.healthManagementList.isNotEmpty
+                  ? _managementView("健康管理", controller.healthManagementList)
+                  : const SizedBox(),
+              // 物资管理
+              controller.materialManagementList.isNotEmpty
+                  ? _managementView("物资管理", controller.materialManagementList)
+                  : const SizedBox(),
+              // 养殖评估
+              controller.breedingAssessmentList.isNotEmpty
+                  ? _managementView("养殖评估", controller.breedingAssessmentList)
+                  : const SizedBox(),
+              // 效益评估
+              controller.benefitAssessmentList.isNotEmpty
+                  ? _managementView("效益评估", controller.benefitAssessmentList)
+                  : const SizedBox(),
+            ])),
       ),
     );
   }
@@ -692,8 +595,7 @@ class ApplicationView extends GetView<ApplicationController> {
         backgroundColor: Colors.white,
         title: const Text(
           '服务',
-          style: TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,

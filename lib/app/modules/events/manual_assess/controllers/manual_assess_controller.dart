@@ -59,16 +59,13 @@ class ManualAssessController extends GetxController {
   int manualAssessId = -1;
   RxString manualAssess = ''.obs;
 
-
-
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
 
     manualAssessList = AppDictList.searchItems('rglx') ?? [];
-    manualAssessNameList =
-    List<String>.from(manualAssessList.map((item) => item['label']).toList());
+    manualAssessNameList = List<String>.from(manualAssessList.map((item) => item['label']).toList());
 
     //首先处理传入参数
     handleArgument();
@@ -78,7 +75,7 @@ class ManualAssessController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -89,13 +86,11 @@ class ManualAssessController extends GetxController {
       //编辑
       event = ManualWorkEvent.fromJson(argument.data);
 
-
       // 评估时间
       assessTime.value = event?.date ?? '';
       // 人工
       manualAssessId = event?.type ?? -1;
-      manualAssess.value = manualAssessList.firstWhere(
-              (item) => int.parse(item['value']) == manualAssessId)['label'];
+      manualAssess.value = manualAssessList.firstWhere((item) => int.parse(item['value']) == manualAssessId)['label'];
 
       //填充备注
       amountController.text = event?.amount.toString() ?? '';
@@ -132,20 +127,19 @@ class ManualAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-
     String? str;
     if (manualAssessId == -1) {
       str = "请选择人工类型";
-    }else if(amountController.text.isEmpty){
+    } else if (amountController.text.isEmpty) {
       str = "请输入费用";
-    }else if (assessTime.value.isBlankEx()) {
+    } else if (assessTime.value.isBlankEx()) {
       str = '请选择录入时间';
-    }else if(employeeController.text.isEmpty){
+    } /*else if(employeeController.text.isEmpty){
       str = "请输入人员姓名";
     }else if(postController.text.isEmpty){
       str = "请输入所在岗位";
-    }
-    if(str != null && str.isNotEmpty){
+    }*/
+    if (str != null && str.isNotEmpty) {
       Toast.show(str);
       return;
     }
@@ -159,10 +153,10 @@ class ManualAssessController extends GetxController {
         //* 新增
         mapParam = {
           "date": assessTime.value,
-          "type":manualAssessId,
-          "amount":double.parse(amountController.text),
-          "employee":employeeController.text,
-          "post":postController.text,
+          "type": manualAssessId,
+          "amount": double.parse(amountController.text),
+          "employee": employeeController.text,
+          "post": postController.text,
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
@@ -174,14 +168,13 @@ class ManualAssessController extends GetxController {
           'rowVersion': isEdit.value ? event?.rowVersion : '', //事件行版本
 
           "date": assessTime.value,
-          "type":manualAssessId,
-          "amount":double.parse(amountController.text),
-          "employee":employeeController.text,
-          "post":postController.text,
+          "type": manualAssessId,
+          "amount": double.parse(amountController.text),
+          "employee": employeeController.text,
+          "post": postController.text,
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
-
       }
 
       debugPrint('-----> $mapParam');

@@ -25,72 +25,63 @@ class ManualAssessView extends GetView<ManualAssessController> {
   // 操作信息
   Widget _operationInfo(context) {
     return Obx(() => MyCard(children: [
-
-      controller.isEdit.value ?
-      CellButton(
-        isRequired: true,
-        title: '人工单号',
-        hint: '',
-        content: controller.event?.no ?? "",
-        showArrow: false,
-      ):Container(),
+          controller.isEdit.value
+              ? CellButton(
+                  isRequired: true,
+                  title: '人工单号',
+                  hint: '',
+                  content: controller.event?.no ?? "",
+                  showArrow: false,
+                )
+              : Container(),
           CellButton(
-        isRequired: true,
-        title: '人工类型',
-        hint: '请选择',
-        content: controller.manualAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.manualAssessNameList,
-              selectData: controller.manualAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.manualAssessId =
-                    int.parse(controller.manualAssessList[position]['value']);
+            isRequired: true,
+            title: '人工类型',
+            hint: '请选择',
+            content: controller.manualAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.manualAssessNameList,
+                  selectData: controller.manualAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.manualAssessId = int.parse(controller.manualAssessList[position]['value']);
                 controller.manualAssess.value = controller.manualAssessNameList[position];
               });
-        },
-      ),
-      CellTextField(
-        isRequired: true,
-        title: '费用',
-        hint: '请输入',
-        keyboardType: TextInputType.number,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.amountController,
-        focusNode: controller.amountNode,
-        onComplete: (){
-          controller.amountController.text = int.parse(controller.amountController.text.trim()).toString();
-        },
-      ),
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '费用',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.amountController,
+            focusNode: controller.amountNode,
+            onComplete: () {
+              controller.amountController.text = int.parse(controller.amountController.text.trim()).toString();
+            },
+          ),
           CellButton(
               isRequired: true,
               title: '录入日期',
               hint: '请选择',
               content: controller.assessTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.assessTime.value,
-                    onConfirm: (date) {
-                  controller.assessTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
-
-      CellTextField(
-        isRequired: true,
-        title: '人员姓名',
-        hint: '请输入',
-          controller: controller.employeeController,
-        focusNode: controller.employeeNode
-      ),
-
-      CellTextField(
-        isRequired: true,
-        title: '所在岗位',
-        hint: '请输入',
-        keyboardType: TextInputType.text,
-        controller: controller.postController,
-        focusNode: controller.postCountNode
-      ),
+          CellTextField(
+              isRequired: false,
+              title: '人员姓名',
+              hint: '请输入',
+              controller: controller.employeeController,
+              focusNode: controller.employeeNode),
+          CellTextField(
+              isRequired: false,
+              title: '所在岗位',
+              hint: '请输入',
+              keyboardType: TextInputType.text,
+              controller: controller.postController,
+              focusNode: controller.postCountNode),
           CellTextArea(
               isRequired: false,
               title: "备注信息",

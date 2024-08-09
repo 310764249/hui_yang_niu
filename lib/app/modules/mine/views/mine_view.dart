@@ -107,9 +107,7 @@ class MineView extends GetView<MineController> {
               children: [
                 Text(
                   controller.nickName.value,
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(20),
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700),
                 ),
                 SizedBox(height: ScreenAdapter.height(6)),
                 Row(
@@ -145,14 +143,11 @@ class MineView extends GetView<MineController> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0,
-                            ScreenAdapter.width(8), 0),
+                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
                         child: Text(
                           controller.phoneNum.value,
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(13),
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white),
+                          style:
+                              TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400, color: Colors.white),
                         ),
                       ),
                     ),
@@ -166,14 +161,11 @@ class MineView extends GetView<MineController> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0,
-                            ScreenAdapter.width(8), 0),
+                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
                         child: Text(
                           controller.deptName.value,
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(13),
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white),
+                          style:
+                              TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400, color: Colors.white),
                         ),
                       ),
                     ),
@@ -217,19 +209,13 @@ class MineView extends GetView<MineController> {
         },
         child: Center(
           child: Text.rich(TextSpan(children: [
-            TextSpan(
-                text: "点赞",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(18),
-                    fontWeight: FontWeight.w500)),
+            TextSpan(text: "点赞", style: TextStyle(fontSize: ScreenAdapter.fontSize(18), fontWeight: FontWeight.w500)),
             const TextSpan(
               text: " ",
             ),
             TextSpan(
                 text: controller.dianZhanNum.value.toString(),
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(20),
-                    fontWeight: FontWeight.w700))
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700))
           ])),
         ),
       )),
@@ -240,27 +226,20 @@ class MineView extends GetView<MineController> {
         },
         child: Center(
           child: Text.rich(TextSpan(children: [
-            TextSpan(
-                text: "收藏",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(18),
-                    fontWeight: FontWeight.w500)),
+            TextSpan(text: "收藏", style: TextStyle(fontSize: ScreenAdapter.fontSize(18), fontWeight: FontWeight.w500)),
             const TextSpan(
               text: " ",
             ),
             TextSpan(
                 text: controller.favoritesNum.value.toString(),
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(20),
-                    fontWeight: FontWeight.w700))
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700))
           ])),
         ),
       )),
     ]);
   }
 
-  Widget _cardItem(String name, String value,
-      {bool smallValue = false, VoidCallback? onPressed}) {
+  Widget _cardItem(String name, String value, {bool smallValue = false, VoidCallback? onPressed}) {
     return Expanded(
       child: InkWell(
         onTap: onPressed,
@@ -272,11 +251,7 @@ class MineView extends GetView<MineController> {
                   color: Colors.white,
                   fontSize: ScreenAdapter.fontSize(smallValue ? 19 : 21),
                   fontWeight: FontWeight.bold)),
-          Text(name,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: ScreenAdapter.fontSize(12),
-                  fontWeight: FontWeight.w500)),
+          Text(name, style: TextStyle(color: Colors.white, fontSize: ScreenAdapter.fontSize(12), fontWeight: FontWeight.w500)),
         ]),
       ),
     );
@@ -287,8 +262,7 @@ class MineView extends GetView<MineController> {
     return Container(
       decoration: const BoxDecoration(
         // backgroundBlendMode: BlendMode.darken,
-        image: DecorationImage(
-            image: AssetImage(AssetsImages.mineCardBg), fit: BoxFit.cover),
+        image: DecorationImage(image: AssetImage(AssetsImages.mineCardBg), fit: BoxFit.cover),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Column(
@@ -327,10 +301,7 @@ class MineView extends GetView<MineController> {
                 },
                 child: Container(
                   padding: EdgeInsets.fromLTRB(
-                      ScreenAdapter.width(10),
-                      ScreenAdapter.height(5),
-                      ScreenAdapter.width(8),
-                      ScreenAdapter.height(5)),
+                      ScreenAdapter.width(10), ScreenAdapter.height(5), ScreenAdapter.width(8), ScreenAdapter.height(5)),
                   decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -343,9 +314,7 @@ class MineView extends GetView<MineController> {
                       )),
                   child: Text(
                     '切换养殖场',
-                    style: TextStyle(
-                        color: const Color(0xFF9E4C00),
-                        fontSize: ScreenAdapter.fontSize(12)),
+                    style: TextStyle(color: const Color(0xFF9E4C00), fontSize: ScreenAdapter.fontSize(12)),
                   ),
                 ),
               )
@@ -400,9 +369,7 @@ class MineView extends GetView<MineController> {
             SizedBox(width: ScreenAdapter.width(6)),
             Text(
               title,
-              style: TextStyle(
-                  color: SaienteColors.blackE5,
-                  fontSize: ScreenAdapter.fontSize(14)),
+              style: TextStyle(color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(14)),
             ),
             const Spacer(),
             const LoadAssetImage(AssetsImages.rightArrow),
@@ -448,7 +415,7 @@ class MineView extends GetView<MineController> {
         }),
         _line(),
         _actionItem(AssetsImages.about, '关于软件', () {
-          Get.toNamed(Routes.ABOUT_US);
+          Get.toNamed(Routes.Production_Guide);
         }),
       ]),
     );
@@ -472,10 +439,7 @@ class MineView extends GetView<MineController> {
         alignment: Alignment.center,
         child: Text(
           '退出登录',
-          style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(14),
-              fontWeight: FontWeight.w500,
-              color: SaienteColors.blackE5),
+          style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5),
         ),
       ),
     );
@@ -504,8 +468,7 @@ class MineView extends GetView<MineController> {
       right: 0,
       bottom: 0,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-            ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
         child: GetBuilder<MineController>(
             //obx的第三种写法,为了initState方法
             init: controller,
@@ -515,30 +478,27 @@ class MineView extends GetView<MineController> {
               controller.refreshPage();
             },
             builder: (controller) {
-              return ListView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics()),
-                  children: [
-                    //这里留出导航栏高度
-                    SizedBox(height: ScreenAdapter.getNavBarHeight()),
-                    // 个人信息
-                    _userInfo(),
-                    SizedBox(height: ScreenAdapter.height(40)),
-                    // 点赞, 收藏
-                    _supportAndCollection(),
-                    SizedBox(height: ScreenAdapter.height(22)),
-                    // 农场Card
-                    _farmCard(context),
-                    SizedBox(height: ScreenAdapter.height(11)),
-                    // 联系我们, 问题反馈, 隐私政策, 关于我们
-                    _actionLayout(),
-                    SizedBox(height: ScreenAdapter.height(11)),
-                    // 退出登录
-                    _logoutButton(),
-                    SizedBox(height: ScreenAdapter.height(16)),
-                    // 版本号 & 技术支持
-                    //_versionAndTechSupport(),
-                  ]);
+              return ListView(physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()), children: [
+                //这里留出导航栏高度
+                SizedBox(height: ScreenAdapter.getNavBarHeight()),
+                // 个人信息
+                _userInfo(),
+                SizedBox(height: ScreenAdapter.height(40)),
+                // 点赞, 收藏
+                _supportAndCollection(),
+                SizedBox(height: ScreenAdapter.height(22)),
+                // 农场Card
+                _farmCard(context),
+                SizedBox(height: ScreenAdapter.height(11)),
+                // 联系我们, 问题反馈, 隐私政策, 关于我们
+                _actionLayout(),
+                SizedBox(height: ScreenAdapter.height(11)),
+                // 退出登录
+                _logoutButton(),
+                SizedBox(height: ScreenAdapter.height(16)),
+                // 版本号 & 技术支持
+                //_versionAndTechSupport(),
+              ]);
             }),
       ),
     );

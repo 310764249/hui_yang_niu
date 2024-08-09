@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
+import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
 
 import '../modules/about_us/bindings/about_us_binding.dart';
 import '../modules/about_us/views/about_us_view.dart';
@@ -178,6 +179,7 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/map_location/bindings/map_location_binding.dart';
 import '../modules/map_location/views/map_location_view.dart';
+import '../modules/message/Production_Guide/views/production_guide_view.dart';
 import '../modules/message/action_message_list/bindings/action_message_list_binding.dart';
 import '../modules/message/action_message_list/views/action_message_list_view.dart';
 import '../modules/message/message_detail/bindings/message_detail_binding.dart';
@@ -420,6 +422,11 @@ class AppPages {
       name: _Paths.ACTION_MESSAGE_LIST,
       page: () => const ActionMessageListView(),
       binding: ActionMessageListBinding(),
+    ),
+    GetPage(
+      name: _Paths.Production_Guide,
+      page: () => const ProductionGuideView(),
+      binding: ProductionGuideBinding(),
     ),
     GetPage(
       name: _Paths.ABOUT_US,

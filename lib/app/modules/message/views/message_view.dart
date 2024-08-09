@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../../../models/notice.dart';
 import '../../../routes/app_pages.dart';
@@ -46,7 +47,8 @@ class MessageView extends GetView<MessageController> {
           Expanded(
               child: InkWell(
             onTap: () {
-              Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: 200);
+              // Get.toNamed(Routes.Production_Guide, arguments: 200);
+              Get.toNamed(Routes.Production_Guide, arguments: 200);
             },
             child: const LoadAssetImage(
               AssetsImages.alertTask,
@@ -59,8 +61,7 @@ class MessageView extends GetView<MessageController> {
   }
 
   // 消息展示的item
-  Widget _messageItem(dynamic iconUrl, String title, String content,
-      String time, Function() onTapEvent) {
+  Widget _messageItem(dynamic iconUrl, String title, String content, String time, Function() onTapEvent) {
     return InkWell(
       onTap: onTapEvent,
       child: Column(
@@ -83,17 +84,13 @@ class MessageView extends GetView<MessageController> {
                       Text(
                         title,
                         style: TextStyle(
-                            color: SaienteColors.blackE5,
-                            fontSize: ScreenAdapter.fontSize(16),
-                            fontWeight: FontWeight.w700),
+                            color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(16), fontWeight: FontWeight.w700),
                       ),
                       const Spacer(),
                       Text(
                         time.replaceFirst('T', ' '),
                         style: TextStyle(
-                            color: SaienteColors.black80,
-                            fontSize: ScreenAdapter.fontSize(13),
-                            fontWeight: FontWeight.w400),
+                            color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400),
                       ),
                       SizedBox(width: ScreenAdapter.width(10)),
                     ]),
@@ -103,9 +100,7 @@ class MessageView extends GetView<MessageController> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          color: SaienteColors.black80,
-                          fontSize: ScreenAdapter.fontSize(13),
-                          fontWeight: FontWeight.w400),
+                          color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -131,32 +126,17 @@ class MessageView extends GetView<MessageController> {
             Notice.getEventNameByCode(notice.type ?? -1),
             '牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())}); 栋舍: ${notice.cowHouseName}; 事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
             notice.created.orEmpty(), () {
-          controller.getCattleDataAndGoToEventDetail(
-              notice.type ?? -1, notice.cowId);
+          controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
         });
       case 300 || 500:
-        return _messageItem(
-            AssetsImages.alert,
-            '提醒消息',
-            notice.content ?? Constant.placeholder,
-            notice.created.orEmpty(), () {
-          Get.toNamed(Routes.MESSAGE_DETAIL, arguments: {
-            'title': '提醒消息',
-            'content': notice.content ?? Constant.placeholder,
-            'time': notice.created.orEmpty()
-          });
+        return _messageItem(AssetsImages.alert, '提醒消息', notice.content ?? Constant.placeholder, notice.created.orEmpty(), () {
+          Get.toNamed(Routes.MESSAGE_DETAIL,
+              arguments: {'title': '提醒消息', 'content': notice.content ?? Constant.placeholder, 'time': notice.created.orEmpty()});
         });
       default:
-        return _messageItem(
-            AssetsImages.notify,
-            '系统通知',
-            notice.content ?? Constant.placeholder,
-            notice.created.orEmpty(), () {
-          Get.toNamed(Routes.MESSAGE_DETAIL, arguments: {
-            'title': '业务通知',
-            'content': notice.content ?? Constant.placeholder,
-            'time': notice.created.orEmpty()
-          });
+        return _messageItem(AssetsImages.notify, '系统通知', notice.content ?? Constant.placeholder, notice.created.orEmpty(), () {
+          Get.toNamed(Routes.MESSAGE_DETAIL,
+              arguments: {'title': '业务通知', 'content': notice.content ?? Constant.placeholder, 'time': notice.created.orEmpty()});
         });
     }
   }
@@ -165,8 +145,7 @@ class MessageView extends GetView<MessageController> {
   Widget _messageList() {
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: EasyRefresh(
           controller: controller.refreshController,
           // 指定刷新时的头部组件
@@ -188,9 +167,7 @@ class MessageView extends GetView<MessageController> {
             // 上拉加载更多数据请求
             await controller.getMessageList(isRefresh: false);
             // 设置状态
-            controller.refreshController.finishLoad(controller.hasMore
-                ? IndicatorResult.success
-                : IndicatorResult.noMore);
+            controller.refreshController.finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
           },
           child: controller.items.isEmpty
               ? const EmptyView()
@@ -198,8 +175,7 @@ class MessageView extends GetView<MessageController> {
                   itemCount: controller.items.length,
                   itemBuilder: (BuildContext context, int index) {
                     // 更加不同的分类显示不同的item样式
-                    return displayNoticeItemsByCategory(
-                        controller.items[index]);
+                    return displayNoticeItemsByCategory(controller.items[index]);
                   },
                 ),
         ),
@@ -214,8 +190,7 @@ class MessageView extends GetView<MessageController> {
         backgroundColor: Colors.white,
         title: const Text(
           '消息',
-          style: TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,
@@ -232,10 +207,7 @@ class MessageView extends GetView<MessageController> {
           builder: (controller) {
             return Padding(
               padding: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10),
-                  ScreenAdapter.height(10),
-                  ScreenAdapter.width(10),
-                  ScreenAdapter.height(0)),
+                  ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
               child: Column(
                   // physics: const AlwaysScrollableScrollPhysics(
                   //     parent: BouncingScrollPhysics()),

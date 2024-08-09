@@ -11,15 +11,20 @@ import '../../../widgets/dict_list.dart';
 
 class RecipeController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
+
   //
   int pageIndex = 1;
   int pageSize = 8;
+
   //
   bool hasMore = false;
+
   // 是否加载中, 在[页面初始化]和[条件搜索]时触发
   var isLoading = true.obs;
+
   //刷新控件
   late EasyRefreshController refreshController;
+
   //当前列表
   RxList<FormulaModel> items = <FormulaModel>[].obs;
 
@@ -73,8 +78,7 @@ class RecipeController extends GetxController {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
-      var response =
-          await httpsClient.get("/api/formula", queryParameters: para);
+      var response = await httpsClient.get("/api/formula", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -91,6 +95,8 @@ class RecipeController extends GetxController {
         pageIndex++; //上拉加载请求成功后,真实的页码+1
         items.addAll(modelList); //上拉加载
       }
+      //按时间倒排序
+      items.sort((a, b) => DateTime.parse(a.created!).isBefore(DateTime.parse(b.created!)) ? 1 : -1);
       //是否可以加载更多
       hasMore = items.length < model.itemsCount;
       isLoading.value = false;

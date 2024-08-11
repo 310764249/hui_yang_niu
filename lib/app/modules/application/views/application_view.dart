@@ -18,6 +18,7 @@ class ApplicationView extends GetView<ApplicationController> {
   //手动绑定 MineController 注意移除 binding 中的懒加载
   @override
   final ApplicationController controller = Get.put(ApplicationController());
+
   ApplicationView({Key? key}) : super(key: key);
 
   // 模块标题文字
@@ -118,8 +119,10 @@ class ApplicationView extends GetView<ApplicationController> {
           child: Padding(
             padding: EdgeInsets.all(ScreenAdapter.width(15)),
             child: GridView.builder(
-              shrinkWrap: true, // 根据内容自动调整高度
-              physics: const NeverScrollableScrollPhysics(), // 禁止GridView滚动
+              shrinkWrap: true,
+              // 根据内容自动调整高度
+              physics: const NeverScrollableScrollPhysics(),
+              // 禁止GridView滚动
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1 / 1),
               itemCount: managementList.length,
               itemBuilder: (BuildContext context, int index) {
@@ -323,15 +326,17 @@ class ApplicationView extends GetView<ApplicationController> {
                 Get.toNamed(Routes.EVENT_LIST,
                     arguments:
                         EventsArgument('/api/sales', '销售', Routes.SALES_ASSESS, detailRouterStr: Routes.SALES_ASSESS_DETAIL));
-              } else {
-                Get.toNamed(Routes.EVENT_LIST,
-                        arguments:
-                            EventsArgument('/api/Market', '出栏事件', Routes.SELL_CATTLE, detailRouterStr: Routes.SELL_CATTLE_DETAIL))
-                    ?.then((value) {
-                  controller.requestBasicStatistics();
-                });
               }
               break;
+            case '出栏':
+              //生产管理的出栏
+              Get.toNamed(Routes.EVENT_LIST,
+                      arguments:
+                          EventsArgument('/api/Market', '出栏', Routes.SELL_CATTLE, detailRouterStr: Routes.SELL_CATTLE_DETAIL))
+                  ?.then((value) {
+                controller.requestBasicStatistics();
+              });
+
             case '盘点':
               Get.toNamed(Routes.EVENT_LIST,
                       arguments: EventsArgument('/api/CowCheck', '盘点事件', Routes.CHECK_CATTLE,
@@ -522,8 +527,10 @@ class ApplicationView extends GetView<ApplicationController> {
           child: Padding(
             padding: EdgeInsets.all(ScreenAdapter.width(6)),
             child: GridView.builder(
-              shrinkWrap: true, // 根据内容自动调整高度
-              physics: const NeverScrollableScrollPhysics(), // 禁止GridView滚动
+              shrinkWrap: true,
+              // 根据内容自动调整高度
+              physics: const NeverScrollableScrollPhysics(),
+              // 禁止GridView滚动
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1 / 1),
               itemCount: managementList.length,
               itemBuilder: (BuildContext context, int index) {

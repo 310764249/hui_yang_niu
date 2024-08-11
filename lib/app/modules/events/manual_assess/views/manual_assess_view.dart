@@ -36,7 +36,7 @@ class ManualAssessView extends GetView<ManualAssessController> {
               : Container(),
           CellButton(
             isRequired: true,
-            title: '人工类型',
+            title: '费用类型',
             hint: '请选择',
             content: controller.manualAssess.value,
             onPressed: () {
@@ -70,7 +70,7 @@ class ManualAssessView extends GetView<ManualAssessController> {
                 });
               }),
           CellTextField(
-              isRequired: false,
+              isRequired: true,
               title: '人员姓名',
               hint: '请输入',
               controller: controller.employeeController,

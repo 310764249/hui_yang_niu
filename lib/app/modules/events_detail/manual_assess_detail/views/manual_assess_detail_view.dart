@@ -22,7 +22,7 @@ class ManualAssessDetailView extends GetView<ManualAssessDetailController> {
 
   //操作信息
   Widget _operationInfo(context) {
-    if(controller.event == null){
+    if (controller.event == null) {
       return Container();
     }
     return MyCard(children: [
@@ -39,8 +39,7 @@ class ManualAssessDetailView extends GetView<ManualAssessDetailController> {
       CellButtonDetail(
         isRequired: true,
         title: '人工类型',
-        hint: AppDictList.findLabelByCode(
-            controller.manualAssessList, controller.event!.type.toString()),
+        hint: AppDictList.findLabelByCode(controller.manualAssessList, controller.event!.type.toString()),
       ),
       CellButtonDetail(
         isRequired: true,
@@ -83,11 +82,10 @@ class ManualAssessDetailView extends GetView<ManualAssessDetailController> {
               child: controller.isLoading.value
                   ? const EmptyView()
                   : ListView(children: [
-                const SizedBox(),
-                //操作信息
-                _operationInfo(context),
-              ]),
+                      const SizedBox(),
+                      //操作信息
+                      _operationInfo(context),
+                    ]),
             )));
   }
-
 }

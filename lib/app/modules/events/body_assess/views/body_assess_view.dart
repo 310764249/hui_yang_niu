@@ -29,84 +29,75 @@ class BodyAssessView extends GetView<BodyAssessController> {
   Widget _operationInfo(context) {
     return Obx(() => MyCard(children: [
           const CardTitle(title: "操作信息"),
-         CellButton(
-                  isRequired: true,
-                  title: '牛只',
-                  hint: controller.isEdit.value ? '' : "请选择",
-                  content: controller.codeString.value,
-                  showArrow: true,
-                  onPressed: () { //取出公母数组
-                    var gmList = List.from(AppDictList.searchItems('gm') ?? []);
-                    //保留母牛
-                    gmList.removeWhere((item) => item['label'] != '母');
-                    var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
-                    var lst = [];
-                    szjdList.forEach((element) {
-                      String label = element['label'];
-                      if(label.contains("公牛") || label.contains("死亡") || label.contains("销售")|| label.contains("淘汰")){
-
-                      }else{
-                        lst.add(element);
-                      }
-                    });
-                    Get.toNamed(Routes.CATTLELIST,
-                        arguments: CattleListArgument(
-                            goBack: true,
-                            single: true,
-                            gmList:gmList,
-                            szjdList:lst
-                        ))?.then((value) {
-                      if (ObjectUtil.isEmpty(value)) {
-                        return;
-                      }
-                      // 拿到牛只数组，默认 single: true, 单选
-                      List<Cattle> list = value as List<Cattle>;
-                      // 保存选中的牛只模型
-                      controller.setSelectedCow(list.first);
-                      // 更新耳号显示
-                      controller.updateCodeString(list.first.code ?? '');
-                    });
-                  },
-                ),
-
-        CellTextField(
-          isRequired: true,
-          title: '肋骨数量',
-          hint: '请输入',
-          keyboardType: TextInputType.number,
-          //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-          controller: controller.ribCountController,
-          focusNode: controller.ribCountNode,
-          onComplete: (){
-            controller.ribCount.value = int.parse(controller.ribCountController.text);
-          },
-        ),
           CellButton(
-        isRequired: true,
-        title: '体况评估',
-        hint: '请选择',
-        content: controller.bodyAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.bodyAssessNameList,
-              selectData: controller.bodyAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.bodyAssessId =
-                    int.parse(controller.bodyAssessList[position]['value']);
+            isRequired: true,
+            title: '牛只',
+            hint: controller.isEdit.value ? '' : "请选择",
+            content: controller.codeString.value,
+            showArrow: true,
+            onPressed: () {
+              //取出公母数组
+              var gmList = List.from(AppDictList.searchItems('gm') ?? []);
+              //保留母牛
+              gmList.removeWhere((item) => item['label'] != '母');
+              var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
+              var lst = [];
+              szjdList.forEach((element) {
+                String label = element['label'];
+                if (label.contains("公牛") || label.contains("死亡") || label.contains("销售") || label.contains("淘汰")) {
+                } else {
+                  lst.add(element);
+                }
+              });
+              Get.toNamed(Routes.CATTLELIST,
+                      arguments: CattleListArgument(goBack: true, single: true, gmList: gmList, szjdList: lst))
+                  ?.then((value) {
+                if (ObjectUtil.isEmpty(value)) {
+                  return;
+                }
+                // 拿到牛只数组，默认 single: true, 单选
+                List<Cattle> list = value as List<Cattle>;
+                // 保存选中的牛只模型
+                controller.setSelectedCow(list.first);
+                // 更新耳号显示
+                controller.updateCodeString(list.first.code ?? '');
+              });
+            },
+          ),
+
+          CellTextField(
+            isRequired: true,
+            title: '肋骨数量',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.ribCountController,
+            focusNode: controller.ribCountNode,
+            onComplete: () {
+              controller.ribCount.value = int.parse(controller.ribCountController.text);
+            },
+          ),
+          CellButton(
+            isRequired: true,
+            title: '体况评估',
+            hint: '请选择',
+            content: controller.bodyAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.bodyAssessNameList,
+                  selectData: controller.bodyAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.bodyAssessId = int.parse(controller.bodyAssessList[position]['value']);
                 controller.bodyAssess.value = controller.bodyAssessNameList[position];
               });
-        },
-      ),
+            },
+          ),
           CellButton(
               isRequired: true,
               title: '评估日期',
               hint: '请选择',
               content: controller.assessTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.assessTime.value,
-                    onConfirm: (date) {
-                  controller.assessTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellTextArea(
@@ -115,9 +106,8 @@ class BodyAssessView extends GetView<BodyAssessController> {
               hint: "请输入",
               showBottomLine: false,
               controller: controller.remarkController,
-              focusNode: controller.remarkNode
-              ),
-            AssessEditCowView(controller.selectedCow),
+              focusNode: controller.remarkNode),
+          //AssessEditCowView(controller.selectedCow),
         ]));
   }
 
@@ -152,7 +142,7 @@ class BodyAssessView extends GetView<BodyAssessController> {
               },
             ),
           ),
-          title: const Text('体况'),
+          title: const Text('体况评估'),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.white,

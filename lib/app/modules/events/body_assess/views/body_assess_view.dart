@@ -31,7 +31,7 @@ class BodyAssessView extends GetView<BodyAssessController> {
           const CardTitle(title: "操作信息"),
           CellButton(
             isRequired: true,
-            title: '牛只',
+            title: '耳号',
             hint: controller.isEdit.value ? '' : "请选择",
             content: controller.codeString.value,
             showArrow: true,

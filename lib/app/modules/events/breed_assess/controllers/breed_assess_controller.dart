@@ -25,6 +25,7 @@ class BreedAssessController extends GetxController {
 
   //输入框
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode remarkNode = FocusNode();
 
@@ -41,14 +42,15 @@ class BreedAssessController extends GetxController {
   // 是否是编辑页面
   RxBool isEdit = false.obs;
 
-
   // 当前选中的牛
   Cattle? selectedCow;
+
   // 耳号
   final codeString = ''.obs;
 
   // 个体栋舍Id
   late String? cowHouseId = '';
+
   // 个体栋舍
   late RxString? cowHouse = RxString('');
 
@@ -61,10 +63,22 @@ class BreedAssessController extends GetxController {
   int breedAssessId = -1;
   RxString breedAssess = ''.obs;
 
-  void setSelectedCow(Cattle? cow){
+  //日龄
+  RxString ageByDay = ''.obs;
+  //胎次
+  RxString calvNum = ''.obs;
+
+  //这个里面，耳号下面，
+  // 依次日龄，胎次，产犊数，断奶犊牛数，平均产犊间隔（这些都是根据耳号自动带出）
+  // 繁殖评估（用户根据以上内容填写评估结果）
+  //
+  // 下面的个体档案删除
+  void setSelectedCow(Cattle? cow) {
     selectedCow = cow;
     // healthAssess.value = cow?.bodyStatus;
     breedAssessId = cow?.breedStatus ?? -1;
+    ageByDay = '${cow?.ageOfDay ?? ''}'.obs;
+    calvNum = '${cow?.calvNum ?? ''}'.obs;
   }
 
   // 更新 耳号
@@ -73,16 +87,13 @@ class BreedAssessController extends GetxController {
     update();
   }
 
-
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
 
     breedAssessList = AppDictList.searchItems('fzpg') ?? [];
-    breedAssessNameList =
-        List<String>.from(breedAssessList.map((item) => item['label']).toList());
-
+    breedAssessNameList = List<String>.from(breedAssessList.map((item) => item['label']).toList());
 
     //首先处理传入参数
     handleArgument();
@@ -92,7 +103,7 @@ class BreedAssessController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -106,7 +117,6 @@ class BreedAssessController extends GetxController {
       //编辑
       event = PreventionEvent.fromJson(argument.data);
 
-
       // 耳号
       codeString.value = event?.cowCode ?? '';
       selectedCow = await getCattleMoreData(event!.cowId!);
@@ -114,8 +124,7 @@ class BreedAssessController extends GetxController {
       assessTime.value = event?.date ?? '';
       // 繁殖
       breedAssessId = event?.status ?? -1;
-      breedAssess.value = breedAssessList.firstWhere(
-          (item) => int.parse(item['value']) == event?.status)['label'];
+      breedAssess.value = breedAssessList.firstWhere((item) => int.parse(item['value']) == event?.status)['label'];
 
       //填充备注
       remarkController.text = event?.remark ?? '';
@@ -149,19 +158,18 @@ class BreedAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-
-      if (selectedCow == null) {
-        Toast.show('请选择牛只');
-        return;
-      }
-      if (breedAssessId == -1) {
-        Toast.show('请选择繁殖评估');
-        return;
-      }
-      if (assessTime.value.isBlankEx()) {
-        Toast.show('请选择评估时间');
-        return;
-      }
+    if (selectedCow == null) {
+      Toast.show('请选择牛只');
+      return;
+    }
+    if (breedAssessId == -1) {
+      Toast.show('请选择繁殖评估');
+      return;
+    }
+    if (assessTime.value.isBlankEx()) {
+      Toast.show('请选择评估时间');
+      return;
+    }
 
     try {
       Toast.showLoading(msg: "提交中...");
@@ -183,7 +191,7 @@ class BreedAssessController extends GetxController {
           //* 编辑用的参数
           'id': isEdit.value ? event?.id : '',
           'rowVersion': isEdit.value ? event?.rowVersion : '',
-          "cowId":  selectedCow?.id ?? "",
+          "cowId": selectedCow?.id ?? "",
           "date": assessTime.value,
           "state": breedAssessId,
           'executor': UserInfoTool.nickName(),

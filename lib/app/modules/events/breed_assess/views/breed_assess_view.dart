@@ -28,71 +28,93 @@ class BreedAssessView extends GetView<BreedAssessController> {
   Widget _operationInfo(context) {
     return Obx(() => MyCard(children: [
           const CardTitle(title: "操作信息"),
-         CellButton(
-                  isRequired: true,
-                  title: '牛只',
-                  hint: controller.isEdit.value ? '' : "请选择",
-                  content: controller.codeString.value,
-                  showArrow: true,
-                  onPressed: () { //取出公母数组
-                    var gmList = List.from(AppDictList.searchItems('gm') ?? []);
-                    //保留母牛
-                    gmList.removeWhere((item) => item['label'] != '母');
-                    var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
-                    var lst = [];
-                    szjdList.forEach((element) {
-                      String label = element['label'];
-                      if(label.contains("公牛") || label.contains("死亡") || label.contains("销售")|| label.contains("淘汰")){
-
-                      }else{
-                        lst.add(element);
-                      }
-                    });
-                    Get.toNamed(Routes.CATTLELIST,
-                        arguments: CattleListArgument(
-                            goBack: true,
-                            single: true,
-                            gmList:gmList,
-                            szjdList:lst
-                        ))?.then((value) {
-                      if (ObjectUtil.isEmpty(value)) {
-                        return;
-                      }
-                      // 拿到牛只数组，默认 single: true, 单选
-                      List<Cattle> list = value as List<Cattle>;
-                      // 保存选中的牛只模型
-                      controller.setSelectedCow(list.first);
-                      // 更新耳号显示
-                      controller.updateCodeString(list.first.code ?? '');
-                    });
-                  },
-                ),
           CellButton(
-        isRequired: true,
-        title: '繁殖评估',
-        hint: '请选择',
-        content: controller.breedAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.breedAssessNameList,
-              selectData: controller.breedAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.breedAssessId =
-                    int.parse(controller.breedAssessList[position]['value']);
+            isRequired: true,
+            title: '耳号',
+            hint: controller.isEdit.value ? '' : "请选择",
+            content: controller.codeString.value,
+            showArrow: true,
+            onPressed: () {
+              //取出公母数组
+              var gmList = List.from(AppDictList.searchItems('gm') ?? []);
+              //保留母牛
+              gmList.removeWhere((item) => item['label'] != '母');
+              var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
+              var lst = [];
+              szjdList.forEach((element) {
+                String label = element['label'];
+                if (label.contains("公牛") || label.contains("死亡") || label.contains("销售") || label.contains("淘汰")) {
+                } else {
+                  lst.add(element);
+                }
+              });
+              Get.toNamed(Routes.CATTLELIST,
+                      arguments: CattleListArgument(goBack: true, single: true, gmList: gmList, szjdList: lst))
+                  ?.then((value) {
+                if (ObjectUtil.isEmpty(value)) {
+                  return;
+                }
+                // 拿到牛只数组，默认 single: true, 单选
+                List<Cattle> list = value as List<Cattle>;
+                // 保存选中的牛只模型
+                controller.setSelectedCow(list.first);
+                // 更新耳号显示
+                controller.updateCodeString(list.first.code ?? '');
+              });
+            },
+          ),
+          CellButton(
+            isRequired: true,
+            title: '日龄',
+            hint: '请选择',
+            content: controller.ageByDay.value,
+          ),
+          CellButton(
+            isRequired: true,
+            title: '胎次',
+            hint: '请选择',
+            content: controller.calvNum.value,
+          ),
+          //TODO 目前没有字段
+          CellButton(
+            isRequired: true,
+            title: '产犊数',
+            hint: '请选择',
+            content: controller.calvNum.value,
+          ),
+          CellButton(
+            isRequired: true,
+            title: '断奶犊牛数',
+            hint: '请选择',
+            content: controller.calvNum.value,
+          ),
+          CellButton(
+            isRequired: true,
+            title: '平均产犊间隔',
+            hint: '请选择',
+            content: controller.calvNum.value,
+          ),
+          CellButton(
+            isRequired: true,
+            title: '繁殖评估',
+            hint: '请选择',
+            content: controller.breedAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.breedAssessNameList,
+                  selectData: controller.breedAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.breedAssessId = int.parse(controller.breedAssessList[position]['value']);
                 controller.breedAssess.value = controller.breedAssessNameList[position];
               });
-        },
-      ),
+            },
+          ),
           CellButton(
               isRequired: true,
               title: '评估日期',
               hint: '请选择',
               content: controller.assessTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.assessTime.value,
-                    onConfirm: (date) {
-                  controller.assessTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellTextArea(
@@ -102,8 +124,8 @@ class BreedAssessView extends GetView<BreedAssessController> {
               showBottomLine: false,
               controller: controller.remarkController,
               focusNode: controller.remarkNode),
-
-      AssessEditCowView(controller.selectedCow),
+          // 繁殖评估里的个体档案删除
+          //AssessEditCowView(controller.selectedCow),
         ]));
   }
 
@@ -138,7 +160,7 @@ class BreedAssessView extends GetView<BreedAssessController> {
               },
             ),
           ),
-          title: const Text('繁殖'),
+          title: const Text('繁殖效率评估'),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.white,

@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/cow_assess.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cattle.dart';
@@ -30,6 +31,7 @@ class HealthAssessController extends GetxController {
   TextEditingController treatCountController = TextEditingController();
   TextEditingController illnessController = TextEditingController();
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode ageNode = FocusNode();
   final FocusNode calvCountNode = FocusNode();
@@ -54,14 +56,15 @@ class HealthAssessController extends GetxController {
   // 是否是编辑页面
   RxBool isEdit = false.obs;
 
-
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
+
   // 当前选中的牛
   Cattle? selectedCow;
+
   // 耳号
   final codeString = ''.obs;
-  
+
   // 防疫时间
   final assessTime = ''.obs;
 
@@ -71,18 +74,25 @@ class HealthAssessController extends GetxController {
   int healthAssessId = -1;
   RxString healthAssess = ''.obs;
 
-  void setSelectedCow(Cattle? cow){
+  void setSelectedCow(Cattle? cow) {
     selectedCow = cow;
     // healthAssess.value = cow?.bodyStatus;
     ageController.text = "${cow?.ageOfDay ?? 0}";
     calvCountController.text = "${cow?.calvNum ?? 0}";
+    if (cow?.id == null) return;
+    CowAssess.get(id: cow!.id /*'c8e799ac-22de-4894-a55b-19fb01c0e4e2'*/).then((value) {
+      if (value != null) {
+        illnessController.text = value.illness ?? '';
+        treatCountController.text = value.treatCount.toString() ?? '';
+      }
+    });
   }
+
   // 更新 耳号
   void updateCodeString(String value) {
     codeString.value = value;
     update();
   }
-
 
   @override
   void onInit() async {
@@ -90,8 +100,7 @@ class HealthAssessController extends GetxController {
     Toast.showLoading();
 
     healthAssessList = AppDictList.searchItems('jkpg') ?? [];
-    healthAssessNameList =
-        List<String>.from(healthAssessList.map((item) => item['label']).toList());
+    healthAssessNameList = List<String>.from(healthAssessList.map((item) => item['label']).toList());
 
     //首先处理传入参数
     handleArgument();
@@ -101,7 +110,7 @@ class HealthAssessController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -115,7 +124,6 @@ class HealthAssessController extends GetxController {
       //编辑
       event = HealthAssessEvent.fromJson(argument.data);
 
-
       // 耳号
       codeString.value = event?.cowCode ?? '';
       selectedCow = await getCattleMoreData(event!.cowId!);
@@ -123,8 +131,7 @@ class HealthAssessController extends GetxController {
       assessTime.value = event?.date ?? '';
       // 健康
       healthAssessId = event?.state ?? -1;
-      healthAssess.value = healthAssessList.firstWhere(
-          (item) => int.parse(item['value']) == healthAssessId)['label'];
+      healthAssess.value = healthAssessList.firstWhere((item) => int.parse(item['value']) == healthAssessId)['label'];
 
       ageController.text = event?.ageOfDay.toString() ?? '';
       calvCountController.text = event?.calvNum.toString() ?? '';
@@ -163,27 +170,26 @@ class HealthAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-
-     String? str;
-      if (selectedCow == null) {
-        str = '请选择牛只';
-      }else if (ageController.text.isEmpty) {
-        str = '请输入日龄';
-      }else if (calvCountController.text.isEmpty) {
-        str = '请输入胎次';
-      }else if (illnessController.text.isEmpty) {
-        str = '请输入历次疾病名称';
-      }else if (treatCountController.text.isEmpty) {
-        str = '请输入诊疗次数';
-      }else if (healthAssessId == -1) {
-        Toast.show('请选择健康评估');
-      }else if (assessTime.value.isBlankEx()) {
-        str = '请选择评估日期';
-      }
-      if(str != null && str.isNotEmpty){
-        Toast.show(str);
-        return;
-      }
+    String? str;
+    if (selectedCow == null) {
+      str = '请选择牛只';
+    } else if (ageController.text.isEmpty) {
+      str = '请输入日龄';
+    } else if (calvCountController.text.isEmpty) {
+      str = '请输入胎次';
+    } else if (illnessController.text.isEmpty) {
+      str = '请输入历次疾病名称';
+    } else if (treatCountController.text.isEmpty) {
+      str = '请输入诊疗次数';
+    } else if (healthAssessId == -1) {
+      Toast.show('请选择健康评估');
+    } else if (assessTime.value.isBlankEx()) {
+      str = '请选择评估日期';
+    }
+    if (str != null && str.isNotEmpty) {
+      Toast.show(str);
+      return;
+    }
 
     try {
       Toast.showLoading(msg: "提交中...");
@@ -193,13 +199,13 @@ class HealthAssessController extends GetxController {
       if (!isEdit.value) {
         //* 新增
         mapParam = {
-          "cowId":  selectedCow?.id, // 个体
+          "cowId": selectedCow?.id, // 个体
           "date": assessTime.value,
           "state": healthAssessId,
-          "ageOfDay":int.parse(ageController.text),
-          "calvNum":int.parse(calvCountController.text),
-          "illness":illnessController.text,
-          "treatCount":int.parse(treatCountController.text),
+          "ageOfDay": int.parse(ageController.text),
+          "calvNum": int.parse(calvCountController.text),
+          "illness": illnessController.text,
+          "treatCount": int.parse(treatCountController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
@@ -209,13 +215,13 @@ class HealthAssessController extends GetxController {
           //* 编辑用的参数
           'id': isEdit.value ? event?.id : '', //事件 ID
           'rowVersion': isEdit.value ? event?.rowVersion : '', //事件行版本
-          "cowId":  selectedCow?.id, // 个体
+          "cowId": selectedCow?.id, // 个体
           "date": assessTime.value,
           "state": healthAssessId,
-          "ageOfDay":int.parse(ageController.text),
-          "calvNum":int.parse(calvCountController.text),
-          "illness":illnessController.text,
-          "treatCount":int.parse(treatCountController.text),
+          "ageOfDay": int.parse(ageController.text),
+          "calvNum": int.parse(calvCountController.text),
+          "illness": illnessController.text,
+          "treatCount": int.parse(treatCountController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };

@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/cow_assess.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cattle.dart';
@@ -67,6 +68,12 @@ class BreedAssessController extends GetxController {
   RxString ageByDay = ''.obs;
   //胎次
   RxString calvNum = ''.obs;
+  //产犊数
+  RxString calfNum = ''.obs;
+  //断奶犊牛数
+  RxString weanCalfNum = ''.obs;
+  //平均产犊间隔
+  RxString calfAvgDays = ''.obs;
 
   //这个里面，耳号下面，
   // 依次日龄，胎次，产犊数，断奶犊牛数，平均产犊间隔（这些都是根据耳号自动带出）
@@ -79,6 +86,14 @@ class BreedAssessController extends GetxController {
     breedAssessId = cow?.breedStatus ?? -1;
     ageByDay = '${cow?.ageOfDay ?? ''}'.obs;
     calvNum = '${cow?.calvNum ?? ''}'.obs;
+    CowAssess.get(id: /*cow!.id*/ 'c8e799ac-22de-4894-a55b-19fb01c0e4e2').then((value) {
+      if (value != null) {
+        calfNum.value = '${value.calfNum ?? '0'}';
+        weanCalfNum.value = '${value.weanCalfNum ?? '0'}';
+        calfAvgDays.value = '${value.calfAvgDays ?? '0'}';
+        update();
+      }
+    });
   }
 
   // 更新 耳号

@@ -4,7 +4,7 @@ class ArticleGuideModel {
   late final String title;
   late final String desc;
   late final String coverImg;
-  late final String content;
+  late final String created;
 
   ArticleGuideModel({
     required this.id,
@@ -12,7 +12,7 @@ class ArticleGuideModel {
     required this.title,
     required this.desc,
     required this.coverImg,
-    required this.content,
+    required this.created,
   });
 
   ArticleGuideModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +21,7 @@ class ArticleGuideModel {
     title = json['title'];
     desc = json['desc'];
     coverImg = json['coverImg'];
-    content = json['content'];
+    created = json['created'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +31,7 @@ class ArticleGuideModel {
     data['title'] = title;
     data['desc'] = desc;
     data['coverImg'] = coverImg;
-    data['content'] = content;
+    data['created'] = created;
     return data;
   }
 }

@@ -77,12 +77,28 @@ class ProductionGuideView extends GetView<ProductionGuideController> {
                             child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              item.title,
-                              style: TextStyle(
-                                  color: SaienteColors.blackE5,
-                                  fontSize: ScreenAdapter.fontSize(16),
-                                  fontWeight: FontWeight.w700),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: TextStyle(
+                                      color: SaienteColors.blackE5,
+                                      fontSize: ScreenAdapter.fontSize(16),
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: Text(
+                                    item.created.replaceFirst('T', ' ').substring(0, 10),
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                        color: SaienteColors.black80,
+                                        fontSize: ScreenAdapter.fontSize(13),
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                )
+                              ],
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -94,11 +110,6 @@ class ProductionGuideView extends GetView<ProductionGuideController> {
                             ),
                           ],
                         )),
-                        const Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          size: 16,
-                          color: SaienteColors.black333333,
-                        )
                       ],
                     ),
                   );

@@ -80,19 +80,19 @@ class BreedAssessView extends GetView<BreedAssessController> {
             isRequired: true,
             title: '产犊数',
             hint: '请选择',
-            content: controller.calvNum.value,
+            content: controller.calfNum.value,
           ),
           CellButton(
             isRequired: true,
             title: '断奶犊牛数',
             hint: '请选择',
-            content: controller.calvNum.value,
+            content: controller.weanCalfNum.value,
           ),
           CellButton(
             isRequired: true,
             title: '平均产犊间隔',
             hint: '请选择',
-            content: controller.calvNum.value,
+            content: controller.calfAvgDays.value,
           ),
           CellButton(
             isRequired: true,

@@ -21,8 +21,7 @@ class Cattle {
   late final String? column; //栏位
   late final int ageOfDay; //日龄
   late final int gender; //性别1：公；2：母；
-  late final int
-      growthStage; //生长阶段1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int growthStage; //生长阶段1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final int kind; //品种1：安格斯；2：西门塔尔；3：利木赞；4：皮埃蒙特；5：夏洛莱牛；6：澳洲和牛；7：秦川牛；8：黄牛；
   late final double? weight; //体重
   late final double? tempture; //体温

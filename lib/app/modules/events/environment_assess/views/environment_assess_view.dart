@@ -27,31 +27,26 @@ class EnvironmentAssessView extends GetView<EnvironmentAssessController> {
     return Obx(() => MyCard(children: [
           const CardTitle(title: "操作信息"),
           CellButton(
-        isRequired: true,
-        title: '环境评估',
-        hint: '请选择',
-        content: controller.environmentAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.environmentAssessNameList,
-              selectData: controller.environmentAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.environmentAssessId =
-                    int.parse(controller.environmentAssessList[position]['value']);
+            isRequired: true,
+            title: '环境评估',
+            hint: '请选择',
+            content: controller.environmentAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.environmentAssessNameList,
+                  selectData: controller.environmentAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.environmentAssessId = int.parse(controller.environmentAssessList[position]['value']);
                 controller.environmentAssess.value = controller.environmentAssessNameList[position];
               });
-        },
-      ),
+            },
+          ),
           CellButton(
               isRequired: true,
               title: '评估日期',
               hint: '请选择',
               content: controller.assessTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.assessTime.value,
-                    onConfirm: (date) {
-                  controller.assessTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellTextArea(
@@ -95,7 +90,7 @@ class EnvironmentAssessView extends GetView<EnvironmentAssessController> {
               },
             ),
           ),
-          title: const Text('环境'),
+          title: const Text('环境评估'),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.white,

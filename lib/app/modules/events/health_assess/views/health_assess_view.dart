@@ -28,117 +28,105 @@ class HealthAssessView extends GetView<HealthAssessController> {
   Widget _operationInfo(context) {
     return Obx(() => MyCard(children: [
           const CardTitle(title: "操作信息"),
-         CellButton(
-                  isRequired: true,
-                  title: '牛只',
-                  hint: controller.isEdit.value ? '' : "请选择",
-                  content: controller.codeString.value,
-                  showArrow: true,
-                  onPressed: () {
-                    //取出公母数组
-                    var gmList = List.from(AppDictList.searchItems('gm') ?? []);
-                    //保留母牛
-                    gmList.removeWhere((item) => item['label'] != '母');
-                    var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
-                    var lst = [];
-                    szjdList.forEach((element) {
-                      String label = element['label'];
-                      if(label.contains("公牛") || label.contains("死亡") || label.contains("销售")|| label.contains("淘汰")){
-
-                      }else{
-                        lst.add(element);
-                      }
-                    });
-                    Get.toNamed(Routes.CATTLELIST,
-                        arguments: CattleListArgument(
-                            goBack: true,
-                            single: true,
-                            gmList:gmList,
-                            szjdList:lst
-                        ))?.then((value) {
-                      if (ObjectUtil.isEmpty(value)) {
-                        return;
-                      }
-                      // 拿到牛只数组，默认 single: true, 单选
-                      List<Cattle> list = value as List<Cattle>;
-                      // 保存选中的牛只模型
-                      controller.setSelectedCow(list.first);
-                      // 更新耳号显示
-                      controller.updateCodeString(list.first.code ?? '');
-                    });
-                  },
-                ),
-
-        CellTextField(
-          isRequired: true,
-          title: '日龄',
-          hint: '请输入',
-          keyboardType: TextInputType.number,
-          //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-          controller: controller.ageController,
-          focusNode: controller.ageNode,
-          onComplete: (){
-            controller.ageController.text = int.parse(controller.ageController.text.trim()).toString();
-          },
-        ),
-      CellTextField(
-        isRequired: true,
-        title: '胎次',
-        hint: '请输入',
-        keyboardType: TextInputType.number,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.calvCountController,
-        focusNode: controller.calvCountNode,
-        onComplete: (){
-          controller.calvCountController.text = int.parse(controller.calvCountController.text.trim()).toString();
-        },
-      ),
-      CellTextField(
-        isRequired: true,
-        title: '历次疾病名称',
-        hint: '请输入',
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.illnessController,
-        focusNode: controller.illnessNode
-      ),
-      CellTextField(
-        isRequired: true,
-        title: '诊疗次数',
-        hint: '请输入',
-        keyboardType: TextInputType.number,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.treatCountController,
-        focusNode: controller.treatCountNode,
-        onComplete: (){
-          controller.treatCountController.text = int.parse(controller.treatCountController.text.trim()).toString();
-        },
-      ),
           CellButton(
-        isRequired: true,
-        title: '健康评估',
-        hint: '请选择',
-        content: controller.healthAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.healthAssessNameList,
-              selectData: controller.healthAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.healthAssessId =
-                    int.parse(controller.healthAssessList[position]['value']);
+            isRequired: true,
+            title: '耳号',
+            hint: controller.isEdit.value ? '' : "请选择",
+            content: controller.codeString.value,
+            showArrow: true,
+            onPressed: () {
+              //取出公母数组
+              var gmList = List.from(AppDictList.searchItems('gm') ?? []);
+              //保留母牛
+              gmList.removeWhere((item) => item['label'] != '母');
+              var szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
+              var lst = [];
+              szjdList.forEach((element) {
+                String label = element['label'];
+                if (label.contains("公牛") || label.contains("死亡") || label.contains("销售") || label.contains("淘汰")) {
+                } else {
+                  lst.add(element);
+                }
+              });
+              Get.toNamed(Routes.CATTLELIST,
+                      arguments: CattleListArgument(goBack: true, single: true, gmList: gmList, szjdList: lst))
+                  ?.then((value) {
+                if (ObjectUtil.isEmpty(value)) {
+                  return;
+                }
+                // 拿到牛只数组，默认 single: true, 单选
+                List<Cattle> list = value as List<Cattle>;
+                // 保存选中的牛只模型
+                controller.setSelectedCow(list.first);
+                // 更新耳号显示
+                controller.updateCodeString(list.first.code ?? '');
+              });
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '日龄',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.ageController,
+            focusNode: controller.ageNode,
+            onComplete: () {
+              controller.ageController.text = int.parse(controller.ageController.text.trim()).toString();
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '胎次',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.calvCountController,
+            focusNode: controller.calvCountNode,
+            onComplete: () {
+              controller.calvCountController.text = int.parse(controller.calvCountController.text.trim()).toString();
+            },
+          ),
+          CellTextField(
+              isRequired: true,
+              title: '历次疾病名称',
+              hint: '请输入',
+              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              controller: controller.illnessController,
+              focusNode: controller.illnessNode),
+          CellTextField(
+            isRequired: true,
+            title: '诊疗次数',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.treatCountController,
+            focusNode: controller.treatCountNode,
+            onComplete: () {
+              controller.treatCountController.text = int.parse(controller.treatCountController.text.trim()).toString();
+            },
+          ),
+          CellButton(
+            isRequired: true,
+            title: '健康评估',
+            hint: '请选择',
+            content: controller.healthAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.healthAssessNameList,
+                  selectData: controller.healthAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.healthAssessId = int.parse(controller.healthAssessList[position]['value']);
                 controller.healthAssess.value = controller.healthAssessNameList[position];
               });
-        },
-      ),
+            },
+          ),
           CellButton(
               isRequired: true,
               title: '评估日期',
               hint: '请选择',
               content: controller.assessTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.assessTime.value,
-                    onConfirm: (date) {
-                  controller.assessTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellTextArea(
@@ -148,8 +136,7 @@ class HealthAssessView extends GetView<HealthAssessController> {
               showBottomLine: false,
               controller: controller.remarkController,
               focusNode: controller.remarkNode),
-
-      AssessEditCowView(controller.selectedCow),
+          AssessEditCowView(controller.selectedCow),
         ]));
   }
 
@@ -184,7 +171,7 @@ class HealthAssessView extends GetView<HealthAssessController> {
               },
             ),
           ),
-          title: const Text('健康'),
+          title: const Text('健康评估'),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.white,

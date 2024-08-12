@@ -588,7 +588,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   : const SizedBox(),
               // 效益评估
               controller.benefitAssessmentList.isNotEmpty
-                  ? _managementView("效益评估", controller.benefitAssessmentList)
+                  ? _managementView("收支管理", controller.benefitAssessmentList)
                   : const SizedBox(),
             ])),
       ),

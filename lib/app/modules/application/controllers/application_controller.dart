@@ -197,7 +197,7 @@ class ApplicationController extends GetxController {
             CommonData(id: 1, name: "领用", image: AssetsImages.icon28),
             CommonData(id: 2, name: "报废", image: AssetsImages.icon29),
             CommonData(id: 3, name: "盘存", image: AssetsImages.icon30),
-            CommonData(id: 4, name: "物资耗用明细", image: AssetsImages.icon31),
+            // CommonData(id: 4, name: "物资耗用明细", image: AssetsImages.icon31),
           ];
           // 养殖评估
           breedingAssessmentList.value = [

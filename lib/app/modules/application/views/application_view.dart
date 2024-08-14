@@ -497,6 +497,15 @@ class ApplicationView extends GetView<ApplicationController> {
             case '入库':
               Get.toNamed(Routes.Warehouse_Entry);
               break;
+            case '领用':
+              Get.toNamed(Routes.Collect);
+              break;
+            case '报废':
+              Get.toNamed(Routes.MaterialScrap);
+              break;
+            case '盘存':
+              Get.toNamed(Routes.TakeInventory);
+              break;
             default:
           }
         },

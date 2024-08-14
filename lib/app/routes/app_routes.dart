@@ -106,6 +106,10 @@ abstract class Routes {
   static const MANUAL_ASSESS_DETAIL = _Paths.MANUAL_ASSESS_DETAIL;
   static const SALES_ASSESS = _Paths.SALES_ASSESS;
   static const SALES_ASSESS_DETAIL = _Paths.SALES_ASSESS_DETAIL;
+  static const Collect = _Paths.Collect;
+  static const AddInventory = _Paths.AddInventory;
+  static const MaterialScrap = _Paths.MaterialScrap;
+  static const TakeInventory = _Paths.TakeInventory;
 }
 
 abstract class _Paths {
@@ -214,4 +218,8 @@ abstract class _Paths {
   static const MANUAL_ASSESS_DETAIL = '/manual-assess-detail';
   static const SALES_ASSESS = '/sales-assess';
   static const SALES_ASSESS_DETAIL = '/sales-assess-detail';
+  static const Collect = '/collect';
+  static const AddInventory = '/add-inventory';
+  static const MaterialScrap = '/material-scrap';
+  static const TakeInventory = '/take-inventory';
 }

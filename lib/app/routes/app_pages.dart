@@ -2,7 +2,14 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/collect/bindings/collect_bindings.dart';
+import 'package:intellectual_breed/app/modules/material_management/collect/view/collect_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_scrap/bindings/material_scrap_bindings.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_scrap/view/material_scrap_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/take_inventory/bindings/take_inventory_bindings.dart';
+import 'package:intellectual_breed/app/modules/material_management/take_inventory/view/take_inventory_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/bindings/warehouse_entry_binding.dart';
+import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/warehouse_entry_view.dart';
 import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
 
@@ -247,7 +254,8 @@ class AppPages {
       name: _Paths.CATTLELIST,
       page: () => const CattleListView(),
       binding: CattleListBinding(),
-      fullscreenDialog: true, //移除黑边问题
+      fullscreenDialog: true,
+      //移除黑边问题
       transition: Transition.downToUp,
       middlewares: [LoginMiddleware()],
     ),
@@ -261,7 +269,8 @@ class AppPages {
       name: _Paths.LOGIN,
       page: () => const LoginView(),
       binding: LoginBinding(),
-      fullscreenDialog: true, //移除黑边问题
+      fullscreenDialog: true,
+      //移除黑边问题
       transition: Transition.downToUp,
     ),
     GetPage(
@@ -334,7 +343,8 @@ class AppPages {
       name: _Paths.BATCH_LIST,
       page: () => const BatchListView(),
       binding: BatchListBinding(),
-      fullscreenDialog: true, //移除黑边问题
+      fullscreenDialog: true,
+      //移除黑边问题
       transition: Transition.downToUp,
       middlewares: [LoginMiddleware()],
     ),
@@ -771,6 +781,25 @@ class AppPages {
       name: _Paths.Warehouse_Entry,
       page: () => const WarehouseEntryView(),
       binding: WarehouseEntryBinding(),
+    ),
+    GetPage(
+      name: _Paths.Collect,
+      page: () => const CollectView(),
+      binding: CollectBindings(),
+    ),
+    GetPage(
+      name: _Paths.AddInventory,
+      page: () => const AddInventoryView(),
+    ),
+    GetPage(
+      name: _Paths.MaterialScrap,
+      page: () => const MaterialScrapView(),
+      binding: MaterialScrapBindings(),
+    ),
+    GetPage(
+      name: _Paths.TakeInventory,
+      page: () => const TakeInventoryView(),
+      binding: TakeInventoryBindings(),
     ),
   ];
 }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/controllers/collect_controller.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_item.dart';
 import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_view.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
@@ -24,7 +25,9 @@ class CollectView extends GetView<CollectController> {
         backgroundColor: Colors.white,
         actions: [
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                MaterialRecordsView.push(MaterialRecordsViewEnum.materialRecords);
+              },
               child: Text(
                 "记录",
                 style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(16)),

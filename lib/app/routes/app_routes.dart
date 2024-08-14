@@ -110,6 +110,8 @@ abstract class Routes {
   static const AddInventory = _Paths.AddInventory;
   static const MaterialScrap = _Paths.MaterialScrap;
   static const TakeInventory = _Paths.TakeInventory;
+  static const MaterialRecords = _Paths.MaterialRecords;
+  static const MaterialRecordsDetails = _Paths.MaterialRecordsDetails;
 }
 
 abstract class _Paths {
@@ -222,4 +224,6 @@ abstract class _Paths {
   static const AddInventory = '/add-inventory';
   static const MaterialScrap = '/material-scrap';
   static const TakeInventory = '/take-inventory';
+  static const MaterialRecords = '/material-records';
+  static const MaterialRecordsDetails = '/material-records-details';
 }

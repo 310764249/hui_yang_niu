@@ -3,37 +3,68 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_item.dart';
-import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_view.dart';
-import 'package:intellectual_breed/app/modules/material_management/material_scrap/controllers/material_scrap_controller.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/controllers/material_records_controllers.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_details.dart';
+import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
 import 'package:intellectual_breed/app/widgets/refresh_header_footer.dart';
 import 'package:shimmer/shimmer.dart';
 
-class MaterialScrapView extends GetView<MaterialScrapController> {
-  const MaterialScrapView({super.key});
+enum MaterialRecordsViewEnum {
+  // 领用记录
+  materialRecords,
+  //报废记录
+  scrapRecords,
+}
+
+extension MaterialRecordsViewEnumExtension on MaterialRecordsViewEnum {
+  getType() {
+    switch (this) {
+      case MaterialRecordsViewEnum.materialRecords:
+        return 2;
+      case MaterialRecordsViewEnum.scrapRecords:
+        return 3;
+    }
+  }
+
+  getTitle() {
+    switch (this) {
+      case MaterialRecordsViewEnum.materialRecords:
+        return "领用记录";
+      case MaterialRecordsViewEnum.scrapRecords:
+        return "报废记录";
+    }
+  }
+
+  getSubTitle() {
+    switch (this) {
+      case MaterialRecordsViewEnum.materialRecords:
+        return "领用详情";
+      case MaterialRecordsViewEnum.scrapRecords:
+        return "报废详情";
+    }
+  }
+}
+
+class MaterialRecordsView extends GetView<MaterialRecordsController> {
+  const MaterialRecordsView({super.key});
+
+  static Future? push(MaterialRecordsViewEnum materialRecordsViewEnum) {
+    return Get.toNamed(Routes.MaterialRecords, arguments: materialRecordsViewEnum);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('报废'),
+        title: Text(controller.materialRecordsViewEnum.getTitle()),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
-        actions: [
-          TextButton(
-              onPressed: () {
-                MaterialRecordsView.push(MaterialRecordsViewEnum.scrapRecords);
-              },
-              child: Text(
-                "记录",
-                style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(16)),
-              )),
-        ],
       ),
-      body: GetBuilder<MaterialScrapController>(
+      body: GetBuilder<MaterialRecordsController>(
         //obx的第三种写法,为了initState方法
         init: controller,
         initState: (state) {
@@ -41,7 +72,7 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
           //实时获取数据
           controller.getMessageList();
         },
-        builder: (MaterialScrapController controller) {
+        builder: (MaterialRecordsController controller) {
           if (controller.isLoading.value) {
             return _loadingView();
           }
@@ -97,12 +128,10 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
                                     onTap: () {
-                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.scrap).then(
-                                        (value) {
-                                          if (value ?? false) {
-                                            controller.refreshController.callRefresh();
-                                          }
-                                        },
+                                      MaterialRecordsDetails.push(
+                                        context,
+                                        materialRecordsViewEnum: controller.materialRecordsViewEnum,
+                                        id: item.id ?? '',
                                       );
                                     },
                                   );

@@ -4,6 +4,9 @@ import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_a
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/bindings/collect_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/view/collect_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/bindings/material_records_bindings.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_details.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_scrap/bindings/material_scrap_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_scrap/view/material_scrap_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/take_inventory/bindings/take_inventory_bindings.dart';
@@ -800,6 +803,15 @@ class AppPages {
       name: _Paths.TakeInventory,
       page: () => const TakeInventoryView(),
       binding: TakeInventoryBindings(),
+    ),
+    GetPage(
+      name: _Paths.MaterialRecords,
+      page: () => const MaterialRecordsView(),
+      binding: MaterialRecordsBindings(),
+    ),
+    GetPage(
+      name: _Paths.MaterialRecordsDetails,
+      page: () => const MaterialRecordsDetails(),
     ),
   ];
 }

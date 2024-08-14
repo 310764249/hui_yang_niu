@@ -342,7 +342,6 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       body: ListView(children: [
         MyCard(
           children: [
-            const CardTitle(title: '新增入库'),
             ValueListenableBuilder(
                 valueListenable: nikeNameNotifier,
                 builder: (context, String value, Widget? child) {

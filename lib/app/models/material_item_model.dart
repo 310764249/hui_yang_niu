@@ -22,33 +22,33 @@ class MaterialItemModel {
     required this.category,
   });
 
-  String date;
-  String no;
-  String reason;
-  DateTime rowVersion;
-  DateTime created;
-  int count;
-  String remark;
-  int preCount;
-  String materialId;
-  int type;
-  bool confirm;
-  String materialName;
-  String createdBy;
-  String executor;
-  int currentCount;
-  String tenantId;
-  DateTime modified;
-  String modifiedBy;
-  String id;
-  int category;
+  String? date;
+  String? no;
+  String? reason;
+  String? rowVersion;
+  String? created;
+  num? count;
+  String? remark;
+  num? preCount;
+  String? materialId;
+  num? type;
+  bool? confirm;
+  String? materialName;
+  String? createdBy;
+  String? executor;
+  num? currentCount;
+  String? tenantId;
+  String? modified;
+  String? modifiedBy;
+  String? id;
+  num? category;
 
   factory MaterialItemModel.fromJson(Map<dynamic, dynamic> json) => MaterialItemModel(
         date: json["date"],
         no: json["no"],
         reason: json["reason"],
-        rowVersion: DateTime.parse(json["rowVersion"]),
-        created: DateTime.parse(json["created"]),
+        rowVersion: json["rowVersion"],
+        created: json["created"],
         count: json["count"],
         remark: json["remark"],
         preCount: json["preCount"],
@@ -60,7 +60,7 @@ class MaterialItemModel {
         executor: json["executor"],
         currentCount: json["currentCount"],
         tenantId: json["tenantId"],
-        modified: DateTime.parse(json["modified"]),
+        modified: json["modified"],
         modifiedBy: json["modifiedBy"],
         id: json["id"],
         category: json["category"],
@@ -70,8 +70,8 @@ class MaterialItemModel {
         "date": date,
         "no": no,
         "reason": reason,
-        "rowVersion": rowVersion.toIso8601String(),
-        "created": created.toIso8601String(),
+        "rowVersion": rowVersion,
+        "created": created,
         "count": count,
         "remark": remark,
         "preCount": preCount,
@@ -83,7 +83,7 @@ class MaterialItemModel {
         "executor": executor,
         "currentCount": currentCount,
         "tenantId": tenantId,
-        "modified": modified.toIso8601String(),
+        "modified": modified,
         "modifiedBy": modifiedBy,
         "id": id,
         "category": category,

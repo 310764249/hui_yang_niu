@@ -92,10 +92,10 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                   final item = controller.items[index];
                                   // 更加不同的分类显示不同的item样式
                                   return MaterialItem(
-                                    title: item.id,
-                                    content1: item.materialName,
-                                    content2: item.date.replaceFirst('T', ' '),
-                                    content3: item.executor,
+                                    title: item.id ?? '',
+                                    content1: item.materialName ?? '',
+                                    content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
+                                    content3: item.executor ?? '',
                                     onTap: () {},
                                     deleteOnTap: () {},
                                     editOnTap: () {},

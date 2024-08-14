@@ -23,9 +23,13 @@ class MaterialService {
     Function(String msg)? errorCallback,
   }) async {
     HttpsClient httpsClient = HttpsClient();
+    debugPrint({
+      'rowVersion': rowVersion,
+      'id': id,
+    }.toString());
     try {
       await httpsClient.delete(
-        '/api/stockrecord/$id',
+        '/api/stockrecord',
         data: {
           'rowVersion': rowVersion,
           'id': id,

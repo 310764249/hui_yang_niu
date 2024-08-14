@@ -14,6 +14,7 @@ class MaterialItemModel {
     required this.materialName,
     required this.createdBy,
     required this.executor,
+    required this.unit,
     required this.currentCount,
     required this.tenantId,
     required this.modified,
@@ -40,6 +41,7 @@ class MaterialItemModel {
   String? tenantId;
   String? modified;
   String? modifiedBy;
+  num? unit;
   String? id;
   num? category;
 
@@ -57,6 +59,7 @@ class MaterialItemModel {
         confirm: json["confirm"],
         materialName: json["materialName"],
         createdBy: json["createdBy"],
+        unit: json["unit"],
         executor: json["executor"],
         currentCount: json["currentCount"],
         tenantId: json["tenantId"],
@@ -80,6 +83,7 @@ class MaterialItemModel {
         "confirm": confirm,
         "materialName": materialName,
         "createdBy": createdBy,
+        "unit": unit,
         "executor": executor,
         "currentCount": currentCount,
         "tenantId": tenantId,

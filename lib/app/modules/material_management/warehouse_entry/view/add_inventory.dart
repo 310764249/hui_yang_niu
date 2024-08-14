@@ -1,18 +1,58 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/models/material_item_model.dart';
+import 'package:intellectual_breed/app/models/user_resource.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_service.dart';
+import 'package:intellectual_breed/app/network/apiException.dart';
+import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
-import 'package:intellectual_breed/app/services/keyboard_actions_helper.dart';
+import 'package:intellectual_breed/app/services/constant.dart';
+import 'package:intellectual_breed/app/services/ex_int.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:keyboard_actions/keyboard_actions_config.dart';
+import 'package:intellectual_breed/app/services/storage.dart';
+import 'package:intellectual_breed/app/widgets/cell_button.dart';
+import 'package:intellectual_breed/app/widgets/cell_text_area.dart';
+import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
+import 'package:intellectual_breed/app/widgets/main_button.dart';
+import 'package:intellectual_breed/app/widgets/my_card.dart';
+import 'package:intellectual_breed/app/widgets/toast.dart';
+
+//枚举
+enum AddInventoryEnum {
+  //添加
+  add,
+  //编辑
+  edit,
+  //查看
+  viewer,
+  //删除
+  delete,
+  //领用
+  use,
+  //报废
+  scrap,
+}
 
 class AddInventoryView extends StatefulWidget {
   const AddInventoryView({super.key});
 
-  static Future push(BuildContext context) async {
-    return await Get.toNamed(Routes.AddInventory);
+  static Future push(
+    BuildContext context, {
+    AddInventoryEnum addInventoryEnum = AddInventoryEnum.add,
+    String? id,
+  }) async {
+    return await Get.toNamed(
+      Routes.AddInventory,
+      arguments: {
+        'addInventoryEnum': addInventoryEnum,
+        'id': id,
+      },
+    );
   }
 
   @override
@@ -20,6 +60,170 @@ class AddInventoryView extends StatefulWidget {
 }
 
 class _AddInventoryViewState extends State<AddInventoryView> {
+  final HttpsClient httpsClient = HttpsClient();
+
+  //物资名称
+  final TextEditingController materialNameController = TextEditingController();
+  final FocusNode materialNameFocus = FocusNode();
+
+  //数量
+  final TextEditingController counterController = TextEditingController();
+  final FocusNode counterNameFocus = FocusNode();
+
+  //备注
+  final TextEditingController remakeController = TextEditingController();
+  final FocusNode remakeNameFocus = FocusNode();
+
+  //物资分离
+  List? wzflList;
+  ValueNotifier<Map?> wzflSelectNotif = ValueNotifier<Map?>(null);
+
+  //物资单位
+  List? wzdwList;
+  ValueNotifier<Map?> wzdwSelectNotif = ValueNotifier(null);
+
+  //操作人当前登录用户
+  ValueNotifier<String> nikeNameNotifier = ValueNotifier(Constant.placeholder);
+
+  //物资id
+  String? id;
+
+  //是否编辑
+  late AddInventoryEnum addInventoryEnum;
+
+  //物资信息
+  MaterialItemModel? materialItemModel;
+
+  @override
+  void initState() {
+    super.initState();
+    initData();
+  }
+
+  Future<void> initData() async {
+    Map argument = Get.arguments;
+    id = argument['id'];
+    addInventoryEnum = argument['addInventoryEnum'];
+    if (addInventoryEnum == AddInventoryEnum.add) {
+      Storage.getData(Constant.userResData).then((res) {
+        if (res != null) {
+          UserResource resourceModel = UserResource.fromJson(res);
+
+          nikeNameNotifier.value = resourceModel.nickName ?? Constant.placeholder;
+        }
+      });
+    }
+
+    await MaterialService.getDic('wzfl').then((value) {
+      //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+      wzflList = value;
+    });
+    await MaterialService.getDic('wzdw').then((value) {
+      //{key: 其他, value: 8, sort: 8, isDeleted: false, dataType: null}
+      wzdwList = value;
+    });
+    if (id != null) {
+      getDetails();
+    }
+  }
+
+  //获取详细信息
+  void getDetails() async {
+    try {
+      var resp = await httpsClient.get('/api/stockrecord/$id');
+
+      materialItemModel = MaterialItemModel.fromJson(resp);
+      materialNameController.text = materialItemModel?.materialName ?? '';
+      wzflSelectNotif.value = wzflList?.firstWhereOrNull(
+        (e) => num.parse(e['value']).toString() == materialItemModel?.category.toString(),
+      );
+      wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
+        (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
+      );
+      counterController.text = materialItemModel?.count.toString() ?? '';
+      remakeController.text = materialItemModel?.remark ?? '';
+      nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        debugPrint('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        debugPrint('Other Exception: $error');
+      }
+    }
+  }
+
+  //提交数据
+  void submitData() async {
+    if (materialNameController.text.isEmpty) {
+      Toast.show('请输入物资名称');
+      return;
+    }
+    if (wzflSelectNotif.value == null) {
+      Toast.show('请先选择物资分类');
+      return;
+    }
+    if (wzdwSelectNotif.value == null) {
+      Toast.show('请先选择物资单位');
+      return;
+    }
+    if (counterController.text.isEmpty) {
+      Toast.show('请输入物资数量');
+      return;
+    }
+    var date = DateTime.now();
+    Toast.showLoading(msg: "提交中...");
+    try {
+      Map data = {
+        "name": materialNameController.text,
+        "category": wzflSelectNotif.value!['value'],
+        "unit": wzdwSelectNotif.value!['value'],
+        "count": counterController.text,
+        "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
+        "executor": nikeNameNotifier.value,
+        "remark": remakeController.text,
+      };
+      if (id != null) {
+        data['id'] = id;
+        data['rowVersion'] = materialItemModel?.rowVersion;
+      }
+      await httpsClient.post(
+        '/api/stockrecord/putin',
+        data: data,
+      );
+      Toast.dismiss();
+      Toast.success(msg: '提交成功');
+      await Future.delayed(const Duration(seconds: 1));
+      Get.back(result: true);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        debugPrint('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        debugPrint('Other Exception: $error');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    materialNameFocus.dispose();
+    materialNameController.dispose();
+    counterNameFocus.dispose();
+    counterController.dispose();
+    wzflSelectNotif.dispose();
+    wzdwSelectNotif.dispose();
+    remakeController.dispose();
+    remakeNameFocus.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +233,170 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
+      body: ListView(children: [
+        MyCard(
+          children: [
+            const CardTitle(title: '新增入库'),
+            ValueListenableBuilder(
+                valueListenable: nikeNameNotifier,
+                builder: (context, String value, Widget? child) {
+                  return CellTextField(
+                    isRequired: true,
+                    title: '操作人',
+                    hint: '请输入',
+                    //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+                    controller: TextEditingController(text: value),
+                    editable: true,
+                  );
+                }),
+            CellTextField(
+              isRequired: true,
+              title: '物资名称',
+              hint: '请输入',
+              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              controller: materialNameController,
+              focusNode: materialNameFocus,
+              editable: addInventoryEnum == AddInventoryEnum.add,
+            ),
+            ValueListenableBuilder(
+              valueListenable: wzflSelectNotif,
+              builder: (BuildContext context, Map? value, Widget? child) {
+                return CellButton(
+                  isRequired: true,
+                  title: '物资分类',
+                  hint: value?['key'] ?? "请选择",
+                  showArrow: true,
+                  onPressed: addInventoryEnum != AddInventoryEnum.add
+                      ? null
+                      : () async {
+                          int? selectIndex;
+                          if (wzflList != null) {
+                            selectIndex = await showSelectDialog(wzflList!.map((e) => e['key'].toString()).toList());
+                          } else {
+                            MaterialService.getDic('wzfl').then((value) async {
+                              //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                              wzflList = value;
+                              selectIndex = await showSelectDialog(wzflList!.map((e) => e['key'].toString()).toList());
+                            });
+                          }
+                          if (selectIndex != null) {
+                            wzflSelectNotif.value = wzflList?[selectIndex!];
+                          }
+                        },
+                );
+              },
+            ),
+            ValueListenableBuilder(
+                valueListenable: wzdwSelectNotif,
+                builder: (context, Map? value, Widget? child) {
+                  return CellButton(
+                    isRequired: true,
+                    title: '物资单位',
+                    hint: value?['key'] ?? "请选择",
+                    showArrow: true,
+                    onPressed: addInventoryEnum != AddInventoryEnum.add
+                        ? null
+                        : () async {
+                            int? selectIndex;
+                            if (wzdwList != null) {
+                              selectIndex = await showSelectDialog(wzdwList!.map((e) => e['key'].toString()).toList());
+                            } else {
+                              MaterialService.getDic('wzdw').then((value) async {
+                                //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                                wzdwList = value;
+                                selectIndex = await showSelectDialog(wzdwList!.map((e) => e['key'].toString()).toList());
+                              });
+                            }
+                            if (selectIndex != null) {
+                              wzdwSelectNotif.value = wzdwList?[selectIndex!];
+                            }
+                          },
+                  );
+                }),
+            CellTextField(
+              isRequired: true,
+              title: '数量',
+              hint: '请输入',
+              keyboardType: TextInputType.number,
+              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              controller: counterController,
+              focusNode: counterNameFocus,
+              inputFormatters: [
+                //仅数字
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+            ),
+            CellTextArea(
+              isRequired: false,
+              title: "备注信息",
+              hint: "请输入",
+              showBottomLine: false,
+              controller: remakeController,
+              focusNode: remakeNameFocus,
+            ),
+          ],
+        ),
+        Builder(builder: (context) {
+          String text = "";
+          switch (addInventoryEnum) {
+            case AddInventoryEnum.add:
+            case AddInventoryEnum.edit:
+            case AddInventoryEnum.use:
+            case AddInventoryEnum.scrap:
+              text = '提交';
+            case AddInventoryEnum.viewer:
+              return const SizedBox.shrink();
+            case AddInventoryEnum.delete:
+              text = '删除';
+          }
+          return Padding(
+            padding: EdgeInsets.all(ScreenAdapter.width(20)),
+            child: MainButton(
+              text: text,
+              onPressed: () {
+                submitData();
+              },
+            ),
+          );
+        }),
+      ]),
+    );
+  }
+
+  Future<int?> showSelectDialog(List<String> titleList) async {
+    return await showModalBottomSheet<int?>(
+      context: context,
+      // constraints: BoxConstraints.loose(Size.fromHeight(MediaQuery.of(context).size.height * 0.5)),
+      isScrollControlled: false,
+      builder: (context) {
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            final item = titleList[index];
+            return TextButton(
+              onPressed: () {
+                Navigator.pop(context, index);
+              },
+              style: TextButton.styleFrom(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: const EdgeInsets.symmetric(vertical: 16).r,
+                shape: const RoundedRectangleBorder(),
+              ),
+              child: Text(
+                item,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: SaienteColors.black333333,
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemCount: titleList.length,
+        );
+      },
     );
   }
 }

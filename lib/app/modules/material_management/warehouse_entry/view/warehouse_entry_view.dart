@@ -24,8 +24,12 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
         actions: [
           TextButton(
               onPressed: () {
-                AddInventoryView.push(context).then(
-                  (_) {},
+                AddInventoryView.push(context, addInventoryEnum: AddInventoryEnum.add).then(
+                  (value) {
+                    if (value ?? false) {
+                      controller.refreshController.callRefresh();
+                    }
+                  },
                 );
               },
               child: Text(
@@ -96,9 +100,19 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                     content1: item.materialName ?? '',
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
-                                    onTap: () {},
+                                    onTap: () {
+                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.viewer);
+                                    },
                                     deleteOnTap: () {},
-                                    editOnTap: () {},
+                                    editOnTap: () {
+                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.edit).then(
+                                        (value) {
+                                          if (value ?? false) {
+                                            controller.refreshController.callRefresh();
+                                          }
+                                        },
+                                      );
+                                    },
                                   );
                                 },
                               ),

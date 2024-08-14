@@ -164,7 +164,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
         (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
       );
-      if (addInventoryEnum != AddInventoryEnum.use) {
+      if (addInventoryEnum != AddInventoryEnum.use && addInventoryEnum != AddInventoryEnum.scrap) {
         counterController.text = materialItemModel?.count.toString() ?? '';
       } else {
         canUseCount.value = materialItemModel?.count.toString() ?? '';
@@ -256,6 +256,42 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       var date = DateTime.now();
       await httpsClient.post(
         '/api/stockrecord/receive',
+        data: {
+          "materialId": materialItemModel?.materialId ?? '',
+          "count": counterController.text,
+          "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
+          "executor": nikeNameNotifier.value,
+          "remark": remakeController.text,
+        },
+      );
+      Toast.dismiss();
+      Toast.success(msg: '提交成功');
+      await Future.delayed(const Duration(seconds: 1));
+      Get.back(result: true);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        debugPrint('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        debugPrint('Other Exception: $error');
+      }
+    }
+  }
+
+  //物资报废
+  void scrapMaterial() async {
+    if (counterController.text.isEmpty) {
+      Toast.show('请输入报废物资数量');
+      return;
+    }
+    Toast.showLoading(msg: "提交中...");
+    try {
+      var date = DateTime.now();
+      await httpsClient.post(
+        '/api/stockrecord/scrap',
         data: {
           "materialId": materialItemModel?.materialId ?? '',
           "count": counterController.text,
@@ -416,10 +452,11 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           switch (addInventoryEnum) {
             case AddInventoryEnum.add:
             case AddInventoryEnum.edit:
-            case AddInventoryEnum.scrap:
               text = '提交';
             case AddInventoryEnum.use:
               text = '领用';
+            case AddInventoryEnum.scrap:
+              text = '报废';
             case AddInventoryEnum.viewer:
               return const SizedBox.shrink();
             case AddInventoryEnum.delete:
@@ -435,7 +472,14 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   useMaterial();
                   return;
                 }
-                submitData();
+                if (addInventoryEnum == AddInventoryEnum.scrap) {
+                  //物资报废
+                  scrapMaterial();
+                  return;
+                }
+                if (addInventoryEnum == AddInventoryEnum.edit || addInventoryEnum == AddInventoryEnum.add) {
+                  submitData();
+                }
               },
             ),
           );

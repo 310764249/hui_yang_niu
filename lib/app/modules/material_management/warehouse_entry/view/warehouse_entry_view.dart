@@ -2,12 +2,14 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_item.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_service.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/controllers/warehouse_entry_controller.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/add_inventory.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
 import 'package:intellectual_breed/app/widgets/refresh_header_footer.dart';
+import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WarehouseEntryView extends GetView<WarehouseEntryController> {
@@ -103,7 +105,22 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                     onTap: () {
                                       AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.viewer);
                                     },
-                                    deleteOnTap: () {},
+                                    deleteOnTap: () async {
+                                      return;
+                                      Toast.showLoading();
+                                      await MaterialService.deleteMaterial(
+                                        id: item.id ?? '',
+                                        rowVersion: item.rowVersion ?? '',
+                                        successCallback: () {
+                                          Toast.dismiss();
+                                          controller.refreshController.callRefresh();
+                                        },
+                                        errorCallback: (msg) {
+                                          Toast.dismiss();
+                                          Toast.failure(msg: msg);
+                                        },
+                                      );
+                                    },
                                     editOnTap: () {
                                       AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.edit).then(
                                         (value) {

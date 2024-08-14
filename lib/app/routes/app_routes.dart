@@ -102,6 +102,7 @@ abstract class Routes {
   static const PURCHASE_ASSESS = _Paths.PURCHASE_ASSESS;
   static const PURCHASE_ASSESS_DETAIL = _Paths.PURCHASE_ASSESS_DETAIL;
   static const MANUAL_ASSESS = _Paths.MANUAL_ASSESS;
+  static const Warehouse_Entry = _Paths.Warehouse_Entry;
   static const MANUAL_ASSESS_DETAIL = _Paths.MANUAL_ASSESS_DETAIL;
   static const SALES_ASSESS = _Paths.SALES_ASSESS;
   static const SALES_ASSESS_DETAIL = _Paths.SALES_ASSESS_DETAIL;
@@ -209,6 +210,7 @@ abstract class _Paths {
   static const PURCHASE_ASSESS = '/purchase-assess';
   static const PURCHASE_ASSESS_DETAIL = '/purchase-assess-detail';
   static const MANUAL_ASSESS = '/manual-assess';
+  static const Warehouse_Entry = '/warehouse-entry';
   static const MANUAL_ASSESS_DETAIL = '/manual-assess-detail';
   static const SALES_ASSESS = '/sales-assess';
   static const SALES_ASSESS_DETAIL = '/sales-assess-detail';

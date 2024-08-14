@@ -494,6 +494,9 @@ class ApplicationView extends GetView<ApplicationController> {
                   arguments: EventsArgument('/api/manualWork', '人工', Routes.MANUAL_ASSESS,
                       detailRouterStr: Routes.MANUAL_ASSESS_DETAIL));
               break;
+            case '入库':
+              Get.toNamed(Routes.Warehouse_Entry);
+              break;
             default:
           }
         },

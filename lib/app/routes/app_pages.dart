@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/bindings/warehouse_entry_binding.dart';
+import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/warehouse_entry_view.dart';
 import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
 
 import '../modules/about_us/bindings/about_us_binding.dart';
@@ -764,6 +766,11 @@ class AppPages {
       name: _Paths.SALES_ASSESS_DETAIL,
       page: () => const SalesAssessDetailView(),
       binding: SalesAssessDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.Warehouse_Entry,
+      page: () => const WarehouseEntryView(),
+      binding: WarehouseEntryBinding(),
     ),
   ];
 }

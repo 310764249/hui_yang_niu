@@ -70,7 +70,7 @@ class ProductionGuideView extends GetView<ProductionGuideController> {
                     child: Row(
                       children: [
                         const LoadAssetImage(
-                          AssetsImages.task,
+                          AssetsImages.alert,
                           fit: BoxFit.cover,
                         ),
                         Expanded(

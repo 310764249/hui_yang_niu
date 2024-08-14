@@ -23,6 +23,8 @@ class CellTextArea extends StatelessWidget {
   final TextEditingController? controller;
   // 编辑事件
   final ValueChanged<String>? onChanged;
+  //是否可编辑
+  final bool editable;
   const CellTextArea({
     super.key,
     required this.isRequired,
@@ -34,6 +36,7 @@ class CellTextArea extends StatelessWidget {
     this.controller,
     this.onChanged,
     this.showBottomLine = false,
+    this.editable = true,
   });
 
   @override
@@ -53,34 +56,24 @@ class CellTextArea extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color: isRequired ? Colors.red : Colors.transparent)),
           Text(title,
-              style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(14),
-                  fontWeight: FontWeight.w500,
-                  color: SaienteColors.blackE5)),
+              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
         ],
       ),
       // 输入框
       Container(
-        padding: EdgeInsets.only(
-            left: ScreenAdapter.width(10), right: ScreenAdapter.width(2)),
+        padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(2)),
         margin: EdgeInsets.fromLTRB(
-            ScreenAdapter.width(12),
-            ScreenAdapter.height(10),
-            ScreenAdapter.width(12),
-            ScreenAdapter.height(10)),
-        decoration: const BoxDecoration(
-            color: SaienteColors.grayFB,
-            borderRadius: BorderRadius.all(Radius.circular(8))),
+            ScreenAdapter.width(12), ScreenAdapter.height(10), ScreenAdapter.width(12), ScreenAdapter.height(10)),
+        decoration: const BoxDecoration(color: SaienteColors.grayFB, borderRadius: BorderRadius.all(Radius.circular(8))),
         child: TextField(
             controller: controller,
             focusNode: focusNode,
             keyboardType: keyboardType,
             onChanged: onChanged,
             maxLines: 3,
+            enabled: editable,
             // maxLength: 100,
-            style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(14),
-                color: SaienteColors.blackB2),
+            style: TextStyle(fontSize: ScreenAdapter.fontSize(14), color: SaienteColors.blackB2),
             decoration: InputDecoration(
               hintText: hint,
               // counterText: '', // 禁用默认的计数器文本

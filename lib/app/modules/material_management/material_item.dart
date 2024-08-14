@@ -11,6 +11,7 @@ class MaterialItem extends StatelessWidget {
     required this.content1,
     required this.content2,
     required this.content3,
+    this.showButton = true,
     this.deleteOnTap,
     this.editOnTap,
     this.onTap,
@@ -21,6 +22,9 @@ class MaterialItem extends StatelessWidget {
   final String content1;
   final String content2;
   final String content3;
+
+  //是否显示按钮
+  final bool showButton;
 
   final VoidCallback? onTap;
   final VoidCallback? editOnTap;
@@ -121,58 +125,60 @@ class MaterialItem extends StatelessWidget {
               ],
             ),
             SizedBox(height: ScreenAdapter.height(5)),
-            SizedBox(
-                width: ScreenAdapter.getScreenWidth(),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            // 阴影颜色
-                            shadowColor: MaterialStateProperty.all(Colors.transparent),
-                            backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                            foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
-                        onPressed: () {
-                          debugPrint('编辑');
-                          editOnTap?.call();
-                        },
-                        child: Text(
-                          '编辑',
-                          style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: ScreenAdapter.width(10),
-                    ),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            // 阴影颜色
-                            shadowColor: MaterialStateProperty.all(Colors.transparent),
-                            backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                            foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
-                        onPressed: () {
-                          Alert.showConfirm(
-                            '确定删除该事件?',
-                            onConfirm: () {
-                              //debugPrint('删除');
-                              deleteOnTap?.call();
+            showButton
+                ? SizedBox(
+                    width: ScreenAdapter.getScreenWidth(),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                // 阴影颜色
+                                shadowColor: MaterialStateProperty.all(Colors.transparent),
+                                backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
+                                foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
+                            onPressed: () {
+                              debugPrint('编辑');
+                              editOnTap?.call();
                             },
-                          );
-                        },
-                        child: Text(
-                          '删除',
-                          style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
+                            child: Text(
+                              '编辑',
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                )),
+                        SizedBox(
+                          width: ScreenAdapter.width(10),
+                        ),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                // 阴影颜色
+                                shadowColor: MaterialStateProperty.all(Colors.transparent),
+                                backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
+                                foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
+                            onPressed: () {
+                              Alert.showConfirm(
+                                '确定删除该事件?',
+                                onConfirm: () {
+                                  //debugPrint('删除');
+                                  deleteOnTap?.call();
+                                },
+                              );
+                            },
+                            child: Text(
+                              '删除',
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ))
+                : const Divider(),
           ],
         ),
       ),

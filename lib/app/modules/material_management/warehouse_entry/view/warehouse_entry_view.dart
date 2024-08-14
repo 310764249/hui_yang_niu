@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_item.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_service.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/controllers/warehouse_entry_controller.dart';
-import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/add_inventory.dart';
+import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
@@ -106,7 +106,7 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                       AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.viewer);
                                     },
                                     deleteOnTap: () async {
-                                      return;
+                                      // return;
                                       Toast.showLoading();
                                       await MaterialService.deleteMaterial(
                                         id: item.id ?? '',

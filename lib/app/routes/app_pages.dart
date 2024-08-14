@@ -9,7 +9,7 @@ import 'package:intellectual_breed/app/modules/material_management/material_scra
 import 'package:intellectual_breed/app/modules/material_management/take_inventory/bindings/take_inventory_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/take_inventory/view/take_inventory_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/bindings/warehouse_entry_binding.dart';
-import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/add_inventory.dart';
+import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/warehouse_entry_view.dart';
 import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
 

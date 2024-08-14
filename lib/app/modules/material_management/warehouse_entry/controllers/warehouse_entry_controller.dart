@@ -51,6 +51,7 @@ class WarehouseEntryController extends GetxController {
       Map<String, dynamic> para = {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
+        'Type': 1,
       };
       var response = await httpsClient.get("/api/stockrecord", queryParameters: para);
       Log.d(response.toString());

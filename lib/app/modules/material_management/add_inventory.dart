@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,6 +37,25 @@ enum AddInventoryEnum {
   use,
   //报废
   scrap,
+}
+
+extension AddInventoryEnumX on AddInventoryEnum {
+  getName() {
+    switch (this) {
+      case AddInventoryEnum.add:
+        return '入库';
+      case AddInventoryEnum.edit:
+        return '编辑';
+      case AddInventoryEnum.viewer:
+        return '物资';
+      case AddInventoryEnum.delete:
+        return '删除';
+      case AddInventoryEnum.use:
+        return '领用';
+      case AddInventoryEnum.scrap:
+        return '报废';
+    }
+  }
 }
 
 class AddInventoryView extends StatefulWidget {
@@ -85,6 +105,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //操作人当前登录用户
   ValueNotifier<String> nikeNameNotifier = ValueNotifier(Constant.placeholder);
 
+  //可领用的总量
+  ValueNotifier<String?> canUseCount = ValueNotifier(null);
+
   //物资id
   String? id;
 
@@ -104,7 +127,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     Map argument = Get.arguments;
     id = argument['id'];
     addInventoryEnum = argument['addInventoryEnum'];
-    if (addInventoryEnum == AddInventoryEnum.add) {
+    if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
       Storage.getData(Constant.userResData).then((res) {
         if (res != null) {
           UserResource resourceModel = UserResource.fromJson(res);
@@ -130,8 +153,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //获取详细信息
   void getDetails() async {
     try {
+      Toast.showLoading(msg: "加载中...");
       var resp = await httpsClient.get('/api/stockrecord/$id');
-
+      Toast.dismiss();
       materialItemModel = MaterialItemModel.fromJson(resp);
       materialNameController.text = materialItemModel?.materialName ?? '';
       wzflSelectNotif.value = wzflList?.firstWhereOrNull(
@@ -140,9 +164,19 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
         (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
       );
-      counterController.text = materialItemModel?.count.toString() ?? '';
-      remakeController.text = materialItemModel?.remark ?? '';
-      nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
+      if (addInventoryEnum != AddInventoryEnum.use) {
+        counterController.text = materialItemModel?.count.toString() ?? '';
+      } else {
+        canUseCount.value = materialItemModel?.count.toString() ?? '';
+      }
+
+      if (addInventoryEnum == AddInventoryEnum.edit || addInventoryEnum == AddInventoryEnum.viewer) {
+        remakeController.text = materialItemModel?.remark ?? '';
+      }
+
+      if (addInventoryEnum != AddInventoryEnum.use || addInventoryEnum != AddInventoryEnum.edit) {
+        nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
+      }
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {
@@ -211,6 +245,42 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     }
   }
 
+  //领用物资
+  void useMaterial() async {
+    if (counterController.text.isEmpty) {
+      Toast.show('请输入领用物资数量');
+      return;
+    }
+    Toast.showLoading(msg: "提交中...");
+    try {
+      var date = DateTime.now();
+      await httpsClient.post(
+        '/api/stockrecord/receive',
+        data: {
+          "materialId": materialItemModel?.materialId ?? '',
+          "count": counterController.text,
+          "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
+          "executor": nikeNameNotifier.value,
+          "remark": remakeController.text,
+        },
+      );
+      Toast.dismiss();
+      Toast.success(msg: '提交成功');
+      await Future.delayed(const Duration(seconds: 1));
+      Get.back(result: true);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        debugPrint('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        debugPrint('Other Exception: $error');
+      }
+    }
+  }
+
   @override
   void dispose() {
     materialNameFocus.dispose();
@@ -228,7 +298,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('入库'),
+        title: Text(addInventoryEnum.getName()),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -313,19 +383,23 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                           },
                   );
                 }),
-            CellTextField(
-              isRequired: true,
-              title: '数量',
-              hint: '请输入',
-              keyboardType: TextInputType.number,
-              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-              controller: counterController,
-              focusNode: counterNameFocus,
-              inputFormatters: [
-                //仅数字
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-            ),
+            ValueListenableBuilder(
+                valueListenable: canUseCount,
+                builder: (context, String? value, Widget? child) {
+                  return CellTextField(
+                    isRequired: true,
+                    title: '数量' + (value == null ? '' : ' （剩余${value}）'),
+                    hint: '请输入',
+                    keyboardType: TextInputType.number,
+                    //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+                    controller: counterController,
+                    focusNode: counterNameFocus,
+                    inputFormatters: [
+                      //仅数字
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  );
+                }),
             CellTextArea(
               isRequired: false,
               title: "备注信息",
@@ -333,6 +407,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
               showBottomLine: false,
               controller: remakeController,
               focusNode: remakeNameFocus,
+              editable: addInventoryEnum != AddInventoryEnum.viewer,
             ),
           ],
         ),
@@ -341,9 +416,10 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           switch (addInventoryEnum) {
             case AddInventoryEnum.add:
             case AddInventoryEnum.edit:
-            case AddInventoryEnum.use:
             case AddInventoryEnum.scrap:
               text = '提交';
+            case AddInventoryEnum.use:
+              text = '领用';
             case AddInventoryEnum.viewer:
               return const SizedBox.shrink();
             case AddInventoryEnum.delete:
@@ -354,6 +430,11 @@ class _AddInventoryViewState extends State<AddInventoryView> {
             child: MainButton(
               text: text,
               onPressed: () {
+                if (addInventoryEnum == AddInventoryEnum.use) {
+                  //领用物资
+                  useMaterial();
+                  return;
+                }
                 submitData();
               },
             ),

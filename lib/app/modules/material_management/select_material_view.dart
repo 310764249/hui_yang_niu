@@ -126,7 +126,8 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
                       // 更加不同的分类显示不同的item样式
                       return MaterialItem(
                         showButton: false,
-                        title: '单号：${item.no ?? ''}',
+                        showTitle: false,
+                        title: '',
                         content1: item.name ?? '',
                         content2: (item.created?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                         content3: item.checker ?? '',
@@ -206,7 +207,7 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
 
   void init() async {
     ////[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-    await MaterialService.getDic('wzdw').then(
+    await MaterialService.getDic('wzfl').then(
       (value) {
         setState(() {
           wzflList = value;

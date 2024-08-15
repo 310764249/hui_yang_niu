@@ -12,6 +12,7 @@ class MaterialItem extends StatelessWidget {
     required this.content2,
     required this.content3,
     this.showButton = true,
+    this.showTitle = true,
     this.deleteOnTap,
     this.editOnTap,
     this.onTap,
@@ -29,6 +30,9 @@ class MaterialItem extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? editOnTap;
   final VoidCallback? deleteOnTap;
+
+  //是否显示title
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -51,23 +55,24 @@ class MaterialItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: ScreenAdapter.height(10)),
-            Row(
-              children: [
-                Container(
-                  width: ScreenAdapter.width(3),
-                  height: ScreenAdapter.height(13.5),
-                  decoration: BoxDecoration(
-                    color: SaienteColors.blue275CF3,
-                    borderRadius: BorderRadius.circular(ScreenAdapter.width(1.5)),
+            if (showTitle)
+              Row(
+                children: [
+                  Container(
+                    width: ScreenAdapter.width(3),
+                    height: ScreenAdapter.height(13.5),
+                    decoration: BoxDecoration(
+                      color: SaienteColors.blue275CF3,
+                      borderRadius: BorderRadius.circular(ScreenAdapter.width(1.5)),
+                    ),
                   ),
-                ),
-                SizedBox(width: ScreenAdapter.width(5)),
-                Text(
-                  title,
-                  style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400, color: Colors.black),
-                ),
-              ],
-            ),
+                  SizedBox(width: ScreenAdapter.width(5)),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400, color: Colors.black),
+                  ),
+                ],
+              ),
             SizedBox(height: ScreenAdapter.height(14)),
             Row(
               children: [

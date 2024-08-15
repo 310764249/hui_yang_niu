@@ -133,10 +133,15 @@ class CollectView extends GetView<CollectController> {
                                       AddInventoryView.push(
                                         context,
                                         id: item.id,
+                                        rowVersion: item.rowVersion,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.useEdit,
                                         makeCount: item.count.toString(),
-                                      );
+                                      ).then((value) {
+                                        if (value == true) {
+                                          controller.refreshController.callRefresh();
+                                        }
+                                      });
                                     },
                                   );
                                 },

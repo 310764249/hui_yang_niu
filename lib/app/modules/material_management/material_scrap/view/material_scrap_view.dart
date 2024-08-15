@@ -130,11 +130,16 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                       AddInventoryView.push(
                                         context,
                                         id: item.id,
+                                        rowVersion: item.rowVersion,
                                         materialId: item.materialId,
                                         makeCount: item.count.toString(),
                                         addInventoryEnum: AddInventoryEnum.scrapEdit,
                                         reason: item.reason,
-                                      );
+                                      ).then((value) {
+                                        if (value == true) {
+                                          controller.refreshController.callRefresh();
+                                        }
+                                      });
                                     },
                                   );
                                 },

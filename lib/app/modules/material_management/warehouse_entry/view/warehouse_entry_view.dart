@@ -130,6 +130,7 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                       AddInventoryView.push(
                                         context,
                                         id: item.id,
+                                        rowVersion: item.rowVersion,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.addEdit,
                                       ).then(

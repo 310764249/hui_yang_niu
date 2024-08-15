@@ -75,6 +75,7 @@ class AddInventoryView extends StatefulWidget {
 
   static Future push(
     BuildContext context, {
+    String? rowVersion,
     AddInventoryEnum addInventoryEnum = AddInventoryEnum.add,
     String? id,
     String? materialId,
@@ -89,6 +90,7 @@ class AddInventoryView extends StatefulWidget {
         'materialId': materialId,
         'makeCount': makeCount,
         'reason': reason,
+        'rowVersion': rowVersion,
       },
     );
   }
@@ -145,6 +147,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
 
   //是否编辑
   late AddInventoryEnum addInventoryEnum;
+
+  //列表的rowVersion
+  String? rowVersion;
 
   //物资信息
   MaterialItemModel? materialItemModel;
@@ -519,7 +524,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
       "executor": materialItemModel?.executor,
       "remark": remakeController.text,
-      "rowVersion": materialItemModel?.rowVersion,
+      "rowVersion": rowVersion,
     };
     Log.d(body.toString());
     try {
@@ -550,6 +555,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     addInventoryEnum = argument['addInventoryEnum'];
     makeCount = argument['makeCount'];
     reasonId = argument['reason'];
+    rowVersion = argument['rowVersion'];
     // if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
     //   Storage.getData(Constant.userResData).then((res) {
     //     if (res != null) {
@@ -669,6 +675,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
         };
+        Log.d('data: $data');
         await httpsClient.post(
           '/api/stockrecord/putin',
           data: data,
@@ -681,7 +688,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "count": counterController.text,
           "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
-          "rowVersion": materialItemModel?.rowVersion
+          "rowVersion": rowVersion
         };
 
         Log.d('data: $data');
@@ -797,7 +804,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       "executor": materialItemModel?.executor ?? '',
       "reason": bfyySelectNotif.value!['value'],
       "remark": remakeController.text,
-      "rowVersion": materialItemModel?.rowVersion ?? '',
+      "rowVersion": rowVersion,
     };
 
     Toast.showLoading(msg: "提交中...");

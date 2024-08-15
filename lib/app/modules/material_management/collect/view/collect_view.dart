@@ -111,6 +111,7 @@ class CollectView extends GetView<CollectController> {
                                         id: item.id,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.viewer,
+                                        remark: item.remark,
                                       );
                                     },
                                     deleteOnTap: () async {
@@ -137,6 +138,7 @@ class CollectView extends GetView<CollectController> {
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.useEdit,
                                         makeCount: item.count.toString(),
+                                        remark: item.remark,
                                       ).then((value) {
                                         if (value == true) {
                                           controller.refreshController.callRefresh();

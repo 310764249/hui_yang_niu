@@ -108,6 +108,7 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                         id: item.id,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.viewer,
+                                        remark: item.remark,
                                       );
                                     },
                                     deleteOnTap: () async {
@@ -133,6 +134,7 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                         rowVersion: item.rowVersion,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.addEdit,
+                                        remark: item.remark,
                                       ).then(
                                         (value) {
                                           if (value ?? false) {

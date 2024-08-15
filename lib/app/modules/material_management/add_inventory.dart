@@ -81,6 +81,7 @@ class AddInventoryView extends StatefulWidget {
     String? materialId,
     String? makeCount,
     String? reason,
+    String? remark,
   }) async {
     return await Get.toNamed(
       Routes.AddInventory,
@@ -91,6 +92,7 @@ class AddInventoryView extends StatefulWidget {
         'makeCount': makeCount,
         'reason': reason,
         'rowVersion': rowVersion,
+        'remark': remark,
       },
     );
   }
@@ -144,6 +146,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
 
   //报废原因id
   String? reasonId;
+
+  //备注
+  String? remark;
 
   //是否编辑
   late AddInventoryEnum addInventoryEnum;
@@ -556,6 +561,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     makeCount = argument['makeCount'];
     reasonId = argument['reason'];
     rowVersion = argument['rowVersion'];
+    remark = argument['remark'];
     // if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
     //   Storage.getData(Constant.userResData).then((res) {
     //     if (res != null) {
@@ -614,8 +620,11 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         canUseCount.value = materialItemModel?.count.toString() ?? '';
       }
 
-      if (addInventoryEnum == AddInventoryEnum.addEdit || addInventoryEnum == AddInventoryEnum.viewer) {
-        remakeController.text = materialItemModel?.remark ?? '';
+      if (addInventoryEnum == AddInventoryEnum.addEdit ||
+          addInventoryEnum == AddInventoryEnum.viewer ||
+          addInventoryEnum == AddInventoryEnum.useEdit ||
+          addInventoryEnum == AddInventoryEnum.scrapEdit) {
+        remakeController.text = remark ?? '';
       }
 
       if (materialItemModel?.modified != null) {

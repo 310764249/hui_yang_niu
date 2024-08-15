@@ -109,6 +109,7 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                         id: item.id,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.viewer,
+                                        remark: item.remark,
                                       );
                                     },
                                     deleteOnTap: () async {
@@ -135,6 +136,7 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                         makeCount: item.count.toString(),
                                         addInventoryEnum: AddInventoryEnum.scrapEdit,
                                         reason: item.reason,
+                                        remark: item.remark,
                                       ).then((value) {
                                         if (value == true) {
                                           controller.refreshController.callRefresh();

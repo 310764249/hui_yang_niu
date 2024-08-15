@@ -79,6 +79,7 @@ class AddInventoryView extends StatefulWidget {
     String? id,
     String? materialId,
     String? makeCount,
+    String? reason,
   }) async {
     return await Get.toNamed(
       Routes.AddInventory,
@@ -87,6 +88,7 @@ class AddInventoryView extends StatefulWidget {
         'id': id,
         'materialId': materialId,
         'makeCount': makeCount,
+        'reason': reason,
       },
     );
   }
@@ -118,6 +120,10 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   List? wzdwList;
   ValueNotifier<Map?> wzdwSelectNotif = ValueNotifier(null);
 
+  //报废原因
+  List? bfyyList;
+  ValueNotifier<Map?> bfyySelectNotif = ValueNotifier(null);
+
   //操作人当前登录用户
   // ValueNotifier<String> nikeNameNotifier = ValueNotifier(Constant.placeholder);
 
@@ -133,6 +139,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
 
   //报废或者领用数量
   String? makeCount;
+
+  //报废原因id
+  String? reasonId;
 
   //是否编辑
   late AddInventoryEnum addInventoryEnum;
@@ -352,6 +361,33 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     ],
                   );
                 }),
+            //新增报废和修改报废显示报废原因
+            if (addInventoryEnum == AddInventoryEnum.scrapEdit || addInventoryEnum == AddInventoryEnum.scrap)
+              ValueListenableBuilder(
+                  valueListenable: bfyySelectNotif,
+                  builder: (context, Map? value, Widget? child) {
+                    return CellButton(
+                      isRequired: true,
+                      title: '报废原因',
+                      hint: value?['key'] ?? "请选择",
+                      onPressed: () async {
+                        int? selectIndex;
+                        if (bfyyList != null) {
+                          selectIndex = await showSelectDialog(bfyyList!.map((e) => e['key'].toString()).toList());
+                        } else {
+                          MaterialService.getDic('bfyy').then((value) async {
+                            //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                            bfyyList = value;
+                            selectIndex = await showSelectDialog(bfyyList!.map((e) => e['key'].toString()).toList());
+                          });
+                        }
+
+                        if (selectIndex != null) {
+                          bfyySelectNotif.value = bfyyList?[selectIndex!];
+                        }
+                      },
+                    );
+                  }),
             ValueListenableBuilder(
                 valueListenable: selectDateTime,
                 builder: (context, PDuration value, Widget? child) {
@@ -416,6 +452,12 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   editUseMaterial();
                   return;
                 }
+                if (addInventoryEnum == AddInventoryEnum.scrapEdit) {
+                  //编辑报废
+                  editScrapMaterial();
+                  return;
+                }
+
                 if (addInventoryEnum == AddInventoryEnum.addEdit || addInventoryEnum == AddInventoryEnum.add) {
                   submitData();
                 }
@@ -474,15 +516,15 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       "category": materialItemModel?.category,
       "unit": materialItemModel?.unit,
       "count": counterController.text,
-      "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ${date.hour}:${date.minute}",
+      "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
       "executor": materialItemModel?.executor,
       "remark": remakeController.text,
       "rowVersion": materialItemModel?.rowVersion,
     };
-
+    Log.d(body.toString());
     try {
       Toast.showLoading(msg: "提交中...");
-      var resp = await httpsClient.put(api, data: body);
+      await httpsClient.put(api, data: body);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
       await Future.delayed(const Duration(seconds: 1));
@@ -507,6 +549,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     materialId = argument['materialId'];
     addInventoryEnum = argument['addInventoryEnum'];
     makeCount = argument['makeCount'];
+    reasonId = argument['reason'];
     // if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
     //   Storage.getData(Constant.userResData).then((res) {
     //     if (res != null) {
@@ -525,6 +568,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       //{key: 其他, value: 8, sort: 8, isDeleted: false, dataType: null}
       wzdwList = value;
     });
+
+    if (addInventoryEnum == AddInventoryEnum.scrapEdit || addInventoryEnum == AddInventoryEnum.scrap) {
+      //请求报废原因
+      await MaterialService.getDic('bfyy').then((value) {
+        bfyyList = value;
+      });
+    }
     // 领用编辑和报废编辑回显当时的操作数量
     if (addInventoryEnum == AddInventoryEnum.useEdit || addInventoryEnum == AddInventoryEnum.scrapEdit) {
       counterController.text = makeCount ?? '';
@@ -551,7 +601,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       );
       if (addInventoryEnum != AddInventoryEnum.use &&
           addInventoryEnum != AddInventoryEnum.scrap &&
-          addInventoryEnum != AddInventoryEnum.useEdit) {
+          addInventoryEnum != AddInventoryEnum.useEdit &&
+          addInventoryEnum != AddInventoryEnum.scrapEdit) {
         counterController.text = materialItemModel?.count.toString() ?? '';
       } else {
         canUseCount.value = materialItemModel?.count.toString() ?? '';
@@ -561,7 +612,15 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         remakeController.text = materialItemModel?.remark ?? '';
       }
 
-      selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
+      if (materialItemModel?.modified != null) {
+        selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
+      }
+
+      if (addInventoryEnum == AddInventoryEnum.scrapEdit) {
+        bfyySelectNotif.value = bfyyList?.firstWhereOrNull(
+          (e) => num.parse(e['value']).toString() == reasonId.toString(),
+        );
+      }
 
       // if (addInventoryEnum != AddInventoryEnum.use || addInventoryEnum != AddInventoryEnum.edit) {
       //   nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
@@ -601,22 +660,38 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     var date = selectDateTime.value;
     Toast.showLoading(msg: "提交中...");
     try {
-      Map data = {
-        "name": materialNameController.text,
-        "category": wzflSelectNotif.value!['value'],
-        "unit": wzdwSelectNotif.value!['value'],
-        "count": counterController.text,
-        "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
-        "remark": remakeController.text,
-      };
-      if (id != null) {
-        data['id'] = materialId;
-        data['rowVersion'] = materialItemModel?.rowVersion;
+      if (addInventoryEnum == AddInventoryEnum.add) {
+        Map data = {
+          "name": materialNameController.text,
+          "category": wzflSelectNotif.value!['value'],
+          "unit": wzdwSelectNotif.value!['value'],
+          "count": counterController.text,
+          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "remark": remakeController.text,
+        };
+        await httpsClient.post(
+          '/api/stockrecord/putin',
+          data: data,
+        );
       }
-      await httpsClient.post(
-        '/api/stockrecord/putin',
-        data: data,
-      );
+      if (addInventoryEnum == AddInventoryEnum.addEdit) {
+        Map data = {
+          "id": id,
+          "materialId": materialId,
+          "count": counterController.text,
+          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "remark": remakeController.text,
+          "rowVersion": materialItemModel?.rowVersion
+        };
+
+        Log.d('data: $data');
+
+        await httpsClient.put(
+          '/api/stockrecord/putin',
+          data: data,
+        );
+      }
+
       Toast.dismiss();
       Toast.success(msg: '提交成功');
       await Future.delayed(const Duration(seconds: 1));
@@ -675,18 +750,59 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       Toast.show('请输入报废物资数量');
       return;
     }
+    if (bfyySelectNotif.value == null) {
+      Toast.show('请先选择报废原因');
+      return;
+    }
     Toast.showLoading(msg: "提交中...");
     try {
       var date = selectDateTime.value;
       await httpsClient.post(
         '/api/stockrecord/scrap',
         data: {
-          "materialId": materialItemModel?.materialId ?? '',
+          "materialId": materialItemModel?.materialId ?? materialId ?? '',
           "count": counterController.text,
           "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
+          "reason": bfyySelectNotif.value!['value'],
         },
       );
+      Toast.dismiss();
+      Toast.success(msg: '提交成功');
+      await Future.delayed(const Duration(seconds: 1));
+      Get.back(result: true);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        debugPrint('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        debugPrint('Other Exception: $error');
+      }
+    }
+  }
+
+  //编辑报废
+  void editScrapMaterial() async {
+    var date = selectDateTime.value;
+    Map data = {
+      "id": id,
+      "materialId": materialItemModel?.materialId ?? materialId ?? '',
+      "category": materialItemModel?.category ?? '',
+      "unit": materialItemModel?.unit ?? '',
+      "count": counterController.text,
+      "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+      "executor": materialItemModel?.executor ?? '',
+      "reason": bfyySelectNotif.value!['value'],
+      "remark": remakeController.text,
+      "rowVersion": materialItemModel?.rowVersion ?? '',
+    };
+
+    Toast.showLoading(msg: "提交中...");
+    try {
+      await httpsClient.put('/api/stockrecord/scrap', data: data);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
       await Future.delayed(const Duration(seconds: 1));

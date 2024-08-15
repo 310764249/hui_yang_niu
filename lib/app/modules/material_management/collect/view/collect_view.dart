@@ -5,9 +5,11 @@ import 'package:intellectual_breed/app/modules/material_management/collect/contr
 import 'package:intellectual_breed/app/modules/material_management/material_item.dart';
 import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_service.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
+import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../widgets/refresh_header_footer.dart';
@@ -109,6 +111,21 @@ class CollectView extends GetView<CollectController> {
                                         id: item.id,
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.viewer,
+                                      );
+                                    },
+                                    deleteOnTap: () async {
+                                      Toast.showLoading();
+                                      await MaterialService.deleteMaterial(
+                                        id: item.id ?? '',
+                                        rowVersion: item.rowVersion ?? '',
+                                        successCallback: () {
+                                          Toast.dismiss();
+                                          controller.refreshController.callRefresh();
+                                        },
+                                        errorCallback: (msg) {
+                                          Toast.dismiss();
+                                          Toast.failure(msg: msg);
+                                        },
                                       );
                                     },
                                     editOnTap: () {

@@ -97,7 +97,12 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
                                     onTap: () {
-                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.scrap).then(
+                                      AddInventoryView.push(
+                                        context,
+                                        id: item.id,
+                                        materialId: item.materialId,
+                                        addInventoryEnum: AddInventoryEnum.scrap,
+                                      ).then(
                                         (value) {
                                           if (value ?? false) {
                                             controller.refreshController.callRefresh();

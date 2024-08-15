@@ -54,11 +54,11 @@ class MaterialService {
 
   //根据物资类型获取物资列表
   static Future<List<MaterialItemModel>?> getMaterialListWithType(
-    String type, {
+    String? type, {
     Function(String msg)? errorCallback,
   }) async {
     HttpsClient httpsClient = HttpsClient();
-    String url = '/api/material/getbycategory?category=$type';
+    String url = '/api/material/getbycategory${type == null ? '' : '?category=$type'}';
     try {
       var response = await httpsClient.get(url);
       Log.d('resp: $response');

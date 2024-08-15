@@ -51,7 +51,7 @@ class CollectController extends GetxController {
       Map<String, dynamic> para = {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
-        'Type': 1,
+        'Type': 2,
       };
       var response = await httpsClient.get("/api/stockrecord", queryParameters: para);
       Log.d(response.toString());

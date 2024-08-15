@@ -103,8 +103,12 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
                                     onTap: () {
-                                      AddInventoryView.push(context,
-                                          id: item.materialId, addInventoryEnum: AddInventoryEnum.viewer);
+                                      AddInventoryView.push(
+                                        context,
+                                        id: item.id,
+                                        materialId: item.materialId,
+                                        addInventoryEnum: AddInventoryEnum.viewer,
+                                      );
                                     },
                                     deleteOnTap: () async {
                                       // return;
@@ -123,8 +127,12 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                       );
                                     },
                                     editOnTap: () {
-                                      AddInventoryView.push(context, id: item.materialId, addInventoryEnum: AddInventoryEnum.edit)
-                                          .then(
+                                      AddInventoryView.push(
+                                        context,
+                                        id: item.id,
+                                        materialId: item.materialId,
+                                        addInventoryEnum: AddInventoryEnum.addEdit,
+                                      ).then(
                                         (value) {
                                           if (value ?? false) {
                                             controller.refreshController.callRefresh();

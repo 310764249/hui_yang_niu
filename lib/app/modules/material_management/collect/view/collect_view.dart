@@ -26,10 +26,16 @@ class CollectView extends GetView<CollectController> {
         actions: [
           TextButton(
               onPressed: () {
-                MaterialRecordsView.push(MaterialRecordsViewEnum.materialRecords);
+                AddInventoryView.push(context, addInventoryEnum: AddInventoryEnum.use).then(
+                  (value) {
+                    if (value == true) {
+                      controller.refreshController.callRefresh();
+                    }
+                  },
+                );
               },
               child: Text(
-                "记录",
+                "新增",
                 style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(16)),
               )),
         ],
@@ -92,18 +98,27 @@ class CollectView extends GetView<CollectController> {
                                   final item = controller.items[index];
                                   // 更加不同的分类显示不同的item样式
                                   return MaterialItem(
-                                    showButton: false,
-                                    title: item.id ?? '',
+                                    // showButton: false,
+                                    title: '单号：${item.no ?? ''}',
                                     content1: item.materialName ?? '',
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
                                     onTap: () {
-                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.use).then(
-                                        (value) {
-                                          if (value ?? false) {
-                                            controller.refreshController.callRefresh();
-                                          }
-                                        },
+                                      AddInventoryView.push(
+                                        context,
+                                        id: item.id,
+                                        materialId: item.materialId,
+                                        addInventoryEnum: AddInventoryEnum.viewer,
+                                      );
+                                    },
+                                    editOnTap: () {
+                                      //编辑领用
+                                      AddInventoryView.push(
+                                        context,
+                                        id: item.id,
+                                        materialId: item.materialId,
+                                        addInventoryEnum: AddInventoryEnum.useEdit,
+                                        makeCount: item.count.toString(),
                                       );
                                     },
                                   );

@@ -98,12 +98,13 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                   final item = controller.items[index];
                                   // 更加不同的分类显示不同的item样式
                                   return MaterialItem(
-                                    title: item.id ?? '',
+                                    title: '单号：${item.no ?? ''}',
                                     content1: item.materialName ?? '',
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
                                     content3: item.executor ?? '',
                                     onTap: () {
-                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.viewer);
+                                      AddInventoryView.push(context,
+                                          id: item.materialId, addInventoryEnum: AddInventoryEnum.viewer);
                                     },
                                     deleteOnTap: () async {
                                       // return;
@@ -122,7 +123,8 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                                       );
                                     },
                                     editOnTap: () {
-                                      AddInventoryView.push(context, id: item.id, addInventoryEnum: AddInventoryEnum.edit).then(
+                                      AddInventoryView.push(context, id: item.materialId, addInventoryEnum: AddInventoryEnum.edit)
+                                          .then(
                                         (value) {
                                           if (value ?? false) {
                                             controller.refreshController.callRefresh();

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/material_item_model.dart';
@@ -10,17 +11,21 @@ import 'package:intellectual_breed/app/modules/material_management/material_serv
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
+import 'package:intellectual_breed/app/services/AssetsImages.dart';
 import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:intellectual_breed/app/services/ex_int.dart';
+import 'package:intellectual_breed/app/services/load_image.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/services/storage.dart';
 import 'package:intellectual_breed/app/widgets/cell_button.dart';
 import 'package:intellectual_breed/app/widgets/cell_text_area.dart';
 import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
+import 'package:intellectual_breed/app/widgets/divider_line.dart';
 import 'package:intellectual_breed/app/widgets/main_button.dart';
 import 'package:intellectual_breed/app/widgets/my_card.dart';
+import 'package:intellectual_breed/app/widgets/picker.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
 //枚举
@@ -103,10 +108,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   ValueNotifier<Map?> wzdwSelectNotif = ValueNotifier(null);
 
   //操作人当前登录用户
-  ValueNotifier<String> nikeNameNotifier = ValueNotifier(Constant.placeholder);
+  // ValueNotifier<String> nikeNameNotifier = ValueNotifier(Constant.placeholder);
 
   //可领用的总量
   ValueNotifier<String?> canUseCount = ValueNotifier(null);
+
+  //选择的日期
+  ValueNotifier<PDuration> selectDateTime = ValueNotifier(PDuration.now());
 
   //物资id
   String? id;
@@ -127,15 +135,15 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     Map argument = Get.arguments;
     id = argument['id'];
     addInventoryEnum = argument['addInventoryEnum'];
-    if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
-      Storage.getData(Constant.userResData).then((res) {
-        if (res != null) {
-          UserResource resourceModel = UserResource.fromJson(res);
-
-          nikeNameNotifier.value = resourceModel.nickName ?? Constant.placeholder;
-        }
-      });
-    }
+    // if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
+    //   Storage.getData(Constant.userResData).then((res) {
+    //     if (res != null) {
+    //       UserResource resourceModel = UserResource.fromJson(res);
+    //
+    //       nikeNameNotifier.value = resourceModel.nickName ?? Constant.placeholder;
+    //     }
+    //   });
+    // }
 
     await MaterialService.getDic('wzfl').then((value) {
       //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
@@ -154,10 +162,11 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   void getDetails() async {
     try {
       Toast.showLoading(msg: "加载中...");
-      var resp = await httpsClient.get('/api/stockrecord/$id');
+      var resp = await httpsClient.get('/api/material/$id');
+      Log.d('resp: $resp');
       Toast.dismiss();
       materialItemModel = MaterialItemModel.fromJson(resp);
-      materialNameController.text = materialItemModel?.materialName ?? '';
+      materialNameController.text = materialItemModel?.name ?? '';
       wzflSelectNotif.value = wzflList?.firstWhereOrNull(
         (e) => num.parse(e['value']).toString() == materialItemModel?.category.toString(),
       );
@@ -174,9 +183,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         remakeController.text = materialItemModel?.remark ?? '';
       }
 
-      if (addInventoryEnum != AddInventoryEnum.use || addInventoryEnum != AddInventoryEnum.edit) {
-        nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
-      }
+      // if (addInventoryEnum != AddInventoryEnum.use || addInventoryEnum != AddInventoryEnum.edit) {
+      //   nikeNameNotifier.value = materialItemModel?.createdBy ?? Constant.placeholder;
+      // }
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {
@@ -192,14 +201,15 @@ class _AddInventoryViewState extends State<AddInventoryView> {
 
   //提交数据
   void submitData() async {
-    if (materialNameController.text.isEmpty) {
-      Toast.show('请输入物资名称');
-      return;
-    }
     if (wzflSelectNotif.value == null) {
       Toast.show('请先选择物资分类');
       return;
     }
+    if (materialNameController.text.isEmpty) {
+      Toast.show('请输入物资名称');
+      return;
+    }
+
     if (wzdwSelectNotif.value == null) {
       Toast.show('请先选择物资单位');
       return;
@@ -208,7 +218,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       Toast.show('请输入物资数量');
       return;
     }
-    var date = DateTime.now();
+    var date = selectDateTime.value;
     Toast.showLoading(msg: "提交中...");
     try {
       Map data = {
@@ -216,8 +226,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         "category": wzflSelectNotif.value!['value'],
         "unit": wzdwSelectNotif.value!['value'],
         "count": counterController.text,
-        "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
-        "executor": nikeNameNotifier.value,
+        "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
         "remark": remakeController.text,
       };
       if (id != null) {
@@ -253,14 +262,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     }
     Toast.showLoading(msg: "提交中...");
     try {
-      var date = DateTime.now();
+      var date = selectDateTime.value;
       await httpsClient.post(
         '/api/stockrecord/receive',
         data: {
           "materialId": materialItemModel?.materialId ?? '',
           "count": counterController.text,
-          "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
-          "executor": nikeNameNotifier.value,
+          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
         },
       );
@@ -289,14 +297,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     }
     Toast.showLoading(msg: "提交中...");
     try {
-      var date = DateTime.now();
+      var date = selectDateTime.value;
       await httpsClient.post(
         '/api/stockrecord/scrap',
         data: {
           "materialId": materialItemModel?.materialId ?? '',
           "count": counterController.text,
-          "date": "${date.year}-${date.month.addZero()}-${date.day.addZero()}",
-          "executor": nikeNameNotifier.value,
+          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
         },
       );
@@ -342,27 +349,18 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       body: ListView(children: [
         MyCard(
           children: [
-            ValueListenableBuilder(
-                valueListenable: nikeNameNotifier,
-                builder: (context, String value, Widget? child) {
-                  return CellTextField(
-                    isRequired: true,
-                    title: '操作人',
-                    hint: '请输入',
-                    //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-                    controller: TextEditingController(text: value),
-                    editable: true,
-                  );
-                }),
-            CellTextField(
-              isRequired: true,
-              title: '物资名称',
-              hint: '请输入',
-              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-              controller: materialNameController,
-              focusNode: materialNameFocus,
-              editable: addInventoryEnum == AddInventoryEnum.add,
-            ),
+            // ValueListenableBuilder(
+            //     valueListenable: nikeNameNotifier,
+            //     builder: (context, String value, Widget? child) {
+            //       return CellTextField(
+            //         isRequired: true,
+            //         title: '操作人',
+            //         hint: '请输入',
+            //         //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            //         controller: TextEditingController(text: value),
+            //         editable: true,
+            //       );
+            //     }),
             ValueListenableBuilder(
               valueListenable: wzflSelectNotif,
               builder: (BuildContext context, Map? value, Widget? child) {
@@ -391,6 +389,76 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 );
               },
             ),
+            Row(
+              children: [
+                Expanded(
+                  child: CellTextField(
+                    isRequired: true,
+                    showDivider: false,
+                    title: '物资名称',
+                    hint: '请输入',
+                    //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+                    controller: materialNameController,
+                    focusNode: materialNameFocus,
+                    editable: addInventoryEnum != AddInventoryEnum.add,
+                  ),
+                ),
+                addInventoryEnum != AddInventoryEnum.add
+                    ? const SizedBox.shrink()
+                    : TextButton(
+                        onPressed: addInventoryEnum != AddInventoryEnum.add
+                            ? null
+                            : () {
+                                if (wzflSelectNotif.value == null) {
+                                  Toast.show('请选择物资分类');
+                                  return;
+                                }
+                                Toast.showLoading();
+                                MaterialService.getMaterialListWithType(
+                                  wzflSelectNotif.value!['value'].toString(),
+                                  errorCallback: (error) {
+                                    Toast.dismiss();
+                                    Toast.failure(msg: error);
+                                  },
+                                ).then(
+                                  (value) {
+                                    Toast.dismiss();
+                                    List<String> list = value?.map((e) => e.name ?? '').toList() ?? [];
+                                    if (list.isNotEmpty) {
+                                      showSelectDialog(list).then((value) {
+                                        materialNameController.text = list[value!];
+                                      });
+                                    }
+                                  },
+                                );
+                              },
+                        child: Row(
+                          children: [
+                            Text(
+                              '请选择',
+                              style: TextStyle(
+                                color: SaienteColors.black4D,
+                                fontSize: ScreenAdapter.fontSize(13),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Container(
+                                width: ScreenAdapter.width(12),
+                                height: ScreenAdapter.height(12),
+                                margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(4),
+                                  right: ScreenAdapter.width(3),
+                                ),
+                                child: const LoadAssetImage(
+                                  AssetsImages.rightArrow,
+                                  fit: BoxFit.fitHeight,
+                                )),
+                          ],
+                        ),
+                      ),
+              ],
+            ),
+            const DividerLine(),
             ValueListenableBuilder(
                 valueListenable: wzdwSelectNotif,
                 builder: (context, Map? value, Widget? child) {
@@ -423,7 +491,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 builder: (context, String? value, Widget? child) {
                   return CellTextField(
                     isRequired: true,
-                    title: '数量' + (value == null ? '' : ' （剩余${value}）'),
+                    title: '数量${value == null ? '' : ' （剩余${value}）'}',
                     hint: '请输入',
                     keyboardType: TextInputType.number,
                     //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
@@ -434,6 +502,22 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                   );
+                }),
+            ValueListenableBuilder(
+                valueListenable: selectDateTime,
+                builder: (context, PDuration value, Widget? child) {
+                  return CellButton(
+                      isRequired: true,
+                      title: '日期',
+                      hint: '请选择',
+                      content: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
+                      onPressed: () {
+                        Picker.showDatePicker(context,
+                            title: '请选择时间',
+                            selectDate: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}", onConfirm: (date) {
+                          selectDateTime.value = date;
+                        });
+                      });
                 }),
             CellTextArea(
               isRequired: false,

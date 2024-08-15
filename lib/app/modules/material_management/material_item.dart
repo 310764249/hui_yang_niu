@@ -80,7 +80,7 @@ class MaterialItem extends StatelessWidget {
                   ),
                   SizedBox(height: ScreenAdapter.height(3)),
                   Text(
-                    '类型',
+                    '物资名称',
                     style: TextStyle(color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(14)),
                   )
                 ])),

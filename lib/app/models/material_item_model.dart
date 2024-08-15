@@ -21,6 +21,7 @@ class MaterialItemModel {
     required this.modifiedBy,
     required this.id,
     required this.category,
+    required this.name,
   });
 
   String? date;
@@ -43,6 +44,7 @@ class MaterialItemModel {
   String? modifiedBy;
   num? unit;
   String? id;
+  String? name;
   num? category;
 
   factory MaterialItemModel.fromJson(Map<dynamic, dynamic> json) => MaterialItemModel(
@@ -67,6 +69,7 @@ class MaterialItemModel {
         modifiedBy: json["modifiedBy"],
         id: json["id"],
         category: json["category"],
+        name: json["name"],
       );
 
   Map<dynamic, dynamic> toJson() => {
@@ -91,5 +94,6 @@ class MaterialItemModel {
         "modifiedBy": modifiedBy,
         "id": id,
         "category": category,
+        "name": name,
       };
 }

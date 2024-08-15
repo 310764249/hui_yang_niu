@@ -38,6 +38,9 @@ class CellTextField extends StatelessWidget {
   final VoidCallback? onOptionPressed;
   final List<TextInputFormatter>? inputFormatters;
 
+  //是否显示分割线
+  final bool showDivider;
+
   CellTextField({
     super.key,
     required this.isRequired,
@@ -55,7 +58,8 @@ class CellTextField extends StatelessWidget {
     this.titleOptionContent,
     this.titleOptionHint,
     this.onOptionPressed,
-    this.inputFormatters
+    this.inputFormatters,
+    this.showDivider = true,
   });
 
   @override
@@ -79,10 +83,8 @@ class CellTextField extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: isRequired ? Colors.red : Colors.transparent)),
             Text(title,
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(14),
-                    fontWeight: FontWeight.w500,
-                    color: SaienteColors.blackE5)),
+                style:
+                    TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
             titleOptionContent != null && titleOptionContent!.isNotEmpty
                 ? Expanded(
                     child: InkWell(
@@ -139,13 +141,9 @@ class CellTextField extends StatelessWidget {
               onChanged: onChanged,
               onEditingComplete: onComplete,
               onSubmitted: onSubmitted,
-              style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(14),
-                  color: SaienteColors.blackB2),
+              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), color: SaienteColors.blackB2),
               textAlignVertical: TextAlignVertical.center, // 设置文本垂直居中对齐
-              inputFormatters: inputFormatters != null ? inputFormatters :[
-                InputFormattersHelper.getFormatterWith(keyboardType)
-              ],
+              inputFormatters: inputFormatters != null ? inputFormatters : [InputFormattersHelper.getFormatterWith(keyboardType)],
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: TextStyle(
@@ -168,7 +166,7 @@ class CellTextField extends StatelessWidget {
                 */
               )),
         ),
-        const DividerLine(),
+        if (showDivider) const DividerLine(),
       ]),
     );
   }

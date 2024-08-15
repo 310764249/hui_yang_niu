@@ -8,6 +8,7 @@ class MaterialItemModel {
     required this.count,
     required this.remark,
     required this.preCount,
+    required this.checker,
     required this.materialId,
     required this.type,
     required this.confirm,
@@ -29,6 +30,7 @@ class MaterialItemModel {
   String? reason;
   String? rowVersion;
   String? created;
+  String? checker;
   num? count;
   String? remark;
   num? preCount;
@@ -51,6 +53,7 @@ class MaterialItemModel {
         date: json["date"],
         no: json["no"],
         reason: json["reason"],
+        checker: json["checker"],
         rowVersion: json["rowVersion"],
         created: json["created"],
         count: json["count"],
@@ -76,6 +79,7 @@ class MaterialItemModel {
         "date": date,
         "no": no,
         "reason": reason,
+        "checker": checker,
         "rowVersion": rowVersion,
         "created": created,
         "count": count,

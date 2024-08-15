@@ -13,17 +13,14 @@ class SelectMaterialView extends StatefulWidget {
   const SelectMaterialView({super.key});
 
   static Future<MaterialItemModel?> push(BuildContext context) async {
-    return Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-          //从底下弹出
-          return FadeTransition(
-            opacity: animation,
-            child: const SelectMaterialView(),
-          );
-        },
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       ),
+      constraints: BoxConstraints.loose(Size.fromHeight(MediaQuery.of(context).size.height * 0.8)),
+      builder: (context) => const SelectMaterialView(),
     );
   }
 
@@ -48,20 +45,28 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
     if (materialList!.isEmpty) {
       return const EmptyView();
     }
-    return ListView.builder(
-      itemCount: materialList!.length,
-      itemBuilder: (BuildContext context, int index) {
-        final item = materialList![index];
-        // 更加不同的分类显示不同的item样式
-        return MaterialItem(
-          showButton: false,
-          title: item.id ?? '',
-          content1: item.materialName ?? '',
-          content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
-          content3: item.executor ?? '',
-          onTap: () {},
-        );
-      },
+    return Material(
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: materialList!.length,
+          itemBuilder: (BuildContext context, int index) {
+            final item = materialList![index];
+            // 更加不同的分类显示不同的item样式
+            return MaterialItem(
+              showButton: false,
+              title: '单号：${item.no ?? ''}',
+              content1: item.name ?? '',
+              content2: (item.created?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
+              content3: item.checker ?? '',
+              onTap: () {
+                Navigator.pop(context, item);
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 

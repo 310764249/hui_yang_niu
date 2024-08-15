@@ -130,6 +130,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //物资id
   String? id;
   String? materialId;
+
   //报废或者领用数量
   String? makeCount;
 
@@ -188,8 +189,23 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 title: '选择物资',
                 hint: "请选择",
                 showArrow: true,
-                onPressed: () async {
-                  SelectMaterialView.push(context);
+                onPressed: () {
+                  SelectMaterialView.push(context).then(
+                    (value) {
+                      if (value != null) {
+                        materialId = value.id;
+                        wzflSelectNotif.value = wzflList?.firstWhereOrNull(
+                          (e) => num.parse(e['value']).toString() == value.category.toString(),
+                        );
+                        wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
+                          (e) => num.parse(e['value']).toString() == value.unit.toString(),
+                        );
+                        materialNameController.text = value.name ?? '';
+                        canUseCount.value = value.count.toString() ?? '';
+                        // selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
+                      }
+                    },
+                  );
                 },
               ),
             ValueListenableBuilder(
@@ -630,7 +646,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       await httpsClient.post(
         '/api/stockrecord/receive',
         data: {
-          "materialId": materialItemModel?.materialId ?? '',
+          "materialId": materialItemModel?.materialId ?? materialId ?? '',
           "count": counterController.text,
           "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,

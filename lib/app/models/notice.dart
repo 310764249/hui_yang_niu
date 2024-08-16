@@ -10,14 +10,12 @@ class Notice {
   late final String? cowHouseId; // 栋舍ID
   late final String? cowHouseName; // 栋舍
   late final int? gender; // 公母
-  late final int?
-      growthStage; // 生长阶段1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int? growthStage; // 生长阶段1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final String? batchNo; // 牛只批次
   late final String? cowCode; // 牛只耳号
   late final String? content; // 内容 有三只牛需要查情；
   late final int? status; // 状态 0：未知；1：待推送；2：推送成功；3：推送失败；
-  late final int?
-      category; // 消息大类 100：普通类；200：预警明细类；300：预警统计类；400：生产繁殖类；500：生产繁殖统计类；600：健康类；700：物资类；800：效益类；900：设备类；
+  late final int? category; // 消息大类 100：普通类；200：预警明细类；300：预警统计类；400：生产繁殖类；500：生产繁殖统计类；600：健康类；700：物资类；800：效益类；900：设备类；
   late final bool? isPush; // 是否需要推送
   late final int?
       type; // 业务类型 101：业务通知；102：系统通知；201：未发情；202：发情未配；203：未孕检；204：未产犊；205：未淘汰；401：待查情；402：待配种；403：待孕检；404：待产犊；405：待断奶；406：待淘汰；407：待销售；408：待防疫；409：待保健；901：环境异常；902：设备故障；903：行为异常；
@@ -29,6 +27,7 @@ class Notice {
   late final String? modified; // 修改时间
   late final String? modifiedBy; // 修改人
   late final String? rowVersion; // 行版本
+  late final String? articleld; // 生产指南的id
 
   Notice({
     required this.id,
@@ -53,7 +52,9 @@ class Notice {
     required this.modified,
     required this.modifiedBy,
     required this.rowVersion,
+    required this.articleld,
   });
+
   Notice.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     receiver = json['receiver'];
@@ -77,6 +78,7 @@ class Notice {
     modified = json['modified'];
     modifiedBy = json['modifiedBy'];
     rowVersion = json['rowVersion'];
+    articleld = json['articleld'];
   }
 
   Map<String, dynamic> toJson() {
@@ -103,6 +105,7 @@ class Notice {
     data['modified'] = modified;
     data['modifiedBy'] = modifiedBy;
     data['rowVersion'] = rowVersion;
+    data['articleld'] = articleld;
     return data;
   }
 
@@ -162,6 +165,16 @@ class Notice {
         return '设备故障';
       case 903:
         return '行为异常';
+      //410：查返情；411：待补饲；412：待换料
+      case 410:
+        return '查返情';
+      case 411:
+        return '待补饲';
+      case 412:
+        return '待换料';
+      //
+      case 210:
+        return '生产指南';
       default:
         return Constant.placeholder;
     }

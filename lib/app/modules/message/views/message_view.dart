@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../../../models/notice.dart';
@@ -21,6 +22,7 @@ class MessageView extends GetView<MessageController> {
   //手动绑定 MineController 注意移除 binding 中的懒加载
   @override
   final MessageController controller = Get.put(MessageController());
+
   MessageView({Key? key}) : super(key: key);
 
   // 个体管理
@@ -121,6 +123,16 @@ class MessageView extends GetView<MessageController> {
   Widget displayNoticeItemsByCategory(Notice notice) {
     switch (notice.category) {
       case 200 || 400:
+        if (notice.type == 210) {
+          Log.d(notice.toJson().toString());
+          return _messageItem(
+              AssetsImages.alert, Notice.getEventNameByCode(notice.type ?? -1), notice.content ?? '', notice.created.orEmpty(),
+              () {
+            //查看指南
+            String openURL = "${Constant.articleHost}/${notice.type}/${notice.articleld ?? ''}";
+            Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+          });
+        }
         return _messageItem(
             AssetsImages.task,
             Notice.getEventNameByCode(notice.type ?? -1),

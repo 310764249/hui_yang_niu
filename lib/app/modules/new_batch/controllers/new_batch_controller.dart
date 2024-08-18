@@ -84,25 +84,20 @@ class NewBatchController extends GetxController {
   void onInit() async {
     super.onInit();
     //默认当前
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
-    birthStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
-    //初始化字典项
-    typeList = AppDictList.searchItems('pclb') ?? [];
-    typeNameList =
-        List<String>.from(typeList.map((item) => item['label']).toList());
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    birthStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    //初始化字典项 app端的批次类型
+    typeList = AppDictList.searchItems('pclb_app') ?? [];
+    typeNameList = List<String>.from(typeList.map((item) => item['label']).toList());
 
     //品种
     pzList = AppDictList.searchItems('pz') ?? [];
     pzCurID = pzList.isNotEmpty ? pzList.first['value'] : '';
-    pzNameList =
-        List<String>.from(pzList.map((item) => item['label']).toList());
+    pzNameList = List<String>.from(pzList.map((item) => item['label']).toList());
     //公母
     gmList = AppDictList.searchItems('gm') ?? [];
     gmCurID = gmList.isNotEmpty ? gmList.first['value'] : '';
-    gmNameList =
-        List<String>.from(gmList.map((item) => item['label']).toList());
+    gmNameList = List<String>.from(gmList.map((item) => item['label']).toList());
 
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -131,8 +126,7 @@ class NewBatchController extends GetxController {
       //批次总数
       countController.text = argument!.count.toString();
       //公母
-      updateGMIndex(
-          AppDictList.findIndexByCode(gmList, argument!.gender.toString()));
+      updateGMIndex(AppDictList.findIndexByCode(gmList, argument!.gender.toString()));
       //出生日期
       updateBirthday(argument!.birth);
       //品种

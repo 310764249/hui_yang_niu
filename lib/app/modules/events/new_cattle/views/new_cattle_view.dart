@@ -187,6 +187,7 @@ class NewCattleView extends GetView<NewCattleController> {
 
   // 性别选择
   Widget _genderSelectionLayout() {
+    return const SizedBox.shrink();
     // return RadioButtonGroup(
     //     isRequired: true,
     //     title: '性别',
@@ -511,7 +512,7 @@ class NewCattleView extends GetView<NewCattleController> {
               },
             ),
           ),
-          title: const Text('新增'),
+          title: const Text('档案'),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.white,

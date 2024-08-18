@@ -53,7 +53,7 @@ class NewCattleController extends GetxController {
   }
 
   // 临时记录品种和胎次的position
-  RxInt tempGenderPosition = 0.obs;
+  // RxInt tempGenderPosition = 0.obs;
   RxInt tempBreedPosition = 0.obs;
   RxInt tempPregnancyNumPosition = 0.obs;
 
@@ -75,10 +75,9 @@ class NewCattleController extends GetxController {
 
     // 设置[品种]和[胎次]为默认值
     cattleInfo.gender?.value =
-        Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
-    cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
-    cattleInfo.pregnancyNum?.value =
-        Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+        // Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
+        cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+    cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
 
     // 防止前面犊牛api没请求到数据的话这里再去请求一次
     if (cattleInfo.currentStage == 1 && tempBatchNumAuto1.value.isBlankEx()) {
@@ -113,8 +112,7 @@ class NewCattleController extends GetxController {
 
     // 品种列表
     breedList = AppDictList.searchItems('pz') ?? [];
-    breedNameList =
-        List<String>.from(breedList.map((item) => item['label']).toList());
+    breedNameList = List<String>.from(breedList.map((item) => item['label']).toList());
 
     // 栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -228,14 +226,10 @@ class NewCattleController extends GetxController {
         if (cattleInfo.gender?.value == 1) {
           return null;
         } else {
-          return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false
-              ? cattleInfo.pregnancyNum?.value ?? '0'
-              : '0');
+          return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false ? cattleInfo.pregnancyNum?.value ?? '0' : '0');
         }
       default:
-        return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false
-            ? cattleInfo.pregnancyNum?.value ?? '0'
-            : '0');
+        return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false ? cattleInfo.pregnancyNum?.value ?? '0' : '0');
     }
   }
 
@@ -253,7 +247,7 @@ class NewCattleController extends GetxController {
     cattleInfo.birthDate?.value = batchCattle.birth.orEmpty();
     // 公母
     cattleInfo.gender?.value = batchCattle.gender;
-    tempGenderPosition.value = batchCattle.gender == 1 ? 0 : 1; // 设置性别
+    // tempGenderPosition.value = batchCattle.gender == 1 ? 0 : 1; // 设置性别
     // 品种
     cattleInfo.breed?.value = batchCattle.kind.toString();
     tempBreedPosition.value = batchCattle.kind - 1; // 设置品种
@@ -329,9 +323,8 @@ class NewCattleController extends GetxController {
           "sourceFarm": cattleInfo.sourceFarm?.value.trim(), // 来源场
           "type": cattleInfo.currentStage, // 生长阶段
           "gender": cattleInfo.gender?.value, // 性别
-          "batchNo": cattleInfo.currentStage == 1
-              ? tempBatchNumAuto1.value.trim()
-              : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
+          "batchNo":
+              cattleInfo.currentStage == 1 ? tempBatchNumAuto1.value.trim() : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
           "birth": cattleInfo.birthDate?.value.trim(), // 出生日期
           "kind": int.parse(cattleInfo.breed?.trim() ?? '1'), // 品种
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
@@ -356,9 +349,7 @@ class NewCattleController extends GetxController {
           "growthStage": cattleInfo.currentStage, // 生长阶段
           "kind": int.parse(cattleInfo.breed?.trim() ?? '0'), // 品种
           "calvNum": getPregnancyNum(), // 胎次
-          "batchCount": cattleInfo.currentStage == 6
-              ? int.parse(cattleInfo.calvingNum!)
-              : null, // 上一次产犊数量
+          "batchCount": cattleInfo.currentStage == 6 ? int.parse(cattleInfo.calvingNum!) : null, // 上一次产犊数量
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注

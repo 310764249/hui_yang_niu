@@ -52,16 +52,11 @@ class NewCattleView extends GetView<NewCattleController> {
             colorTitle: Text.rich(TextSpan(children: [
               TextSpan(
                   text: "批次",
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(14),
-                      fontWeight: FontWeight.w500,
-                      color: SaienteColors.blackE5)),
+                  style:
+                      TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
               TextSpan(
                   text: "（批次牛只必传）",
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(14),
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red))
+                  style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: Colors.red))
             ])),
             hint: '请选择',
             content: controller.cattleInfo.batchNum?.value,
@@ -83,8 +78,7 @@ class NewCattleView extends GetView<NewCattleController> {
           isRequired: false,
           title: '来源场',
           hint: '请输入',
-          controller: TextEditingController(
-              text: controller.cattleInfo.sourceFarm?.value.toString().trim()),
+          controller: TextEditingController(text: controller.cattleInfo.sourceFarm?.value.toString().trim()),
           focusNode: controller.sourceFarmNode,
           onChanged: (value) => {controller.sourceFarmController.text = value},
         ),
@@ -94,12 +88,8 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.inDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.inDate?.value,
-                  onConfirm: (date) {
-                controller.cattleInfo.inDate?.value =
-                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.inDate?.value, onConfirm: (date) {
+                controller.cattleInfo.inDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
               });
             }),
         CellButton(
@@ -108,12 +98,9 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.birthDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.birthDate?.value,
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.birthDate?.value,
                   onConfirm: (date) {
-                controller.cattleInfo.birthDate?.value =
-                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                controller.cattleInfo.birthDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
               });
             }),
         // 品种
@@ -127,9 +114,7 @@ class NewCattleView extends GetView<NewCattleController> {
     return Obx(() => Column(children: [
           // 当切换到[种牛]的时候之后只有[种母牛]有[胎次], 而[种公牛]没有[胎次]
           // 另外需要注意的是: [后备母牛]的胎次直接给成0且不让选择
-          controller.selStage.value == 2 ||
-                  (controller.selStage.value == 3 &&
-                      controller.cattleInfo.gender?.value == 1)
+          controller.selStage.value == 2 || (controller.selStage.value == 3 && controller.cattleInfo.gender?.value == 1)
               ? const SizedBox()
               : RadioButtonGroup(
                   isRequired: true,
@@ -139,16 +124,14 @@ class NewCattleView extends GetView<NewCattleController> {
                   onChanged: (value) {
                     // 赋值temp
                     controller.tempPregnancyNumPosition.value = value;
-                    controller.cattleInfo.pregnancyNum?.value =
-                        Constant.pregnancyNumList[value];
+                    controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[value];
                   }),
           _shedSelectionLayout(context),
           CellTextField(
             isRequired: false,
             title: '栏位',
             hint: '请输入',
-            controller: TextEditingController(
-                text: controller.cattleInfo.field?.value.toString().trim()),
+            controller: TextEditingController(text: controller.cattleInfo.field?.value.toString().trim()),
             focusNode: controller.fieldNode,
             onChanged: (value) {
               controller.fieldController.text = value;
@@ -160,8 +143,7 @@ class NewCattleView extends GetView<NewCattleController> {
   // 底部公共布局: 操作时间 & 备注
   Widget _commonBottomLayout(BuildContext context) {
     // 操作时间自动生成
-    controller.cattleInfo.operationDate?.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    controller.cattleInfo.operationDate?.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     return Column(
       children: [
         // 操作时间
@@ -213,8 +195,7 @@ class NewCattleView extends GetView<NewCattleController> {
         showBottomLine: true,
         onChanged: (value) {
           controller.tempGenderPosition.value = value;
-          controller.cattleInfo.gender?.value =
-              Constant.genderNameList[value] == '公牛' ? 1 : 2;
+          controller.cattleInfo.gender?.value = Constant.genderNameList[value] == '公牛' ? 1 : 2;
           // 如果是公牛的话就设置[胎次]为空
           updatePregnancyNum();
         });
@@ -227,11 +208,9 @@ class NewCattleView extends GetView<NewCattleController> {
       title: '栋舍',
       content: controller.cattleInfo.shed?.value,
       onPressed: () {
-        Picker.showSinglePicker(context, controller.houseNameList,
-            selectData: controller.cattleInfo.shed?.value,
-            title: '请选择栋舍', onConfirm: (value, position) {
-          controller.cattleInfo.shedId?.value =
-              controller.houseList[position].id;
+        Picker.showSinglePicker(context, controller.houseNameList, selectData: controller.cattleInfo.shed?.value, title: '请选择栋舍',
+            onConfirm: (value, position) {
+          controller.cattleInfo.shedId?.value = controller.houseList[position].id;
           controller.cattleInfo.shed?.value = value;
         });
       },
@@ -247,8 +226,7 @@ class NewCattleView extends GetView<NewCattleController> {
         onChanged: (value) {
           // 赋值temp
           controller.tempBreedPosition.value = value;
-          controller.cattleInfo.breed?.value =
-              controller.breedList[value]['value'];
+          controller.cattleInfo.breed?.value = controller.breedList[value]['value'];
         });
   }
 
@@ -256,7 +234,7 @@ class NewCattleView extends GetView<NewCattleController> {
   Widget _youngCattleLayout(BuildContext context, bool isBabyCalf) {
     return Column(
       children: [
-        _genderSelectionLayout(),
+        // _genderSelectionLayout(),
         // 批次号不可编辑
         CellButton(
           isRequired: true,
@@ -278,8 +256,7 @@ class NewCattleView extends GetView<NewCattleController> {
           content: controller.cattleInfo.cattleNumOfBatch,
           controller: controller.cattleNumOfBatchController,
           focusNode: controller.cattleNumOfBatchNode,
-          onChanged: (value) =>
-              {controller.cattleInfo.cattleNumOfBatch = value},
+          onChanged: (value) => {controller.cattleInfo.cattleNumOfBatch = value},
         ),
         // 育肥牛有来源场和入场时间, 犊牛没有
         isBabyCalf
@@ -291,8 +268,7 @@ class NewCattleView extends GetView<NewCattleController> {
                 content: controller.cattleInfo.sourceFarm?.value,
                 controller: controller.sourceFarmController,
                 focusNode: controller.sourceFarmNode,
-                onChanged: (value) =>
-                    {controller.cattleInfo.sourceFarm?.value = value},
+                onChanged: (value) => {controller.cattleInfo.sourceFarm?.value = value},
               ),
         isBabyCalf
             ? const SizedBox()
@@ -302,12 +278,9 @@ class NewCattleView extends GetView<NewCattleController> {
                 hint: '请选择',
                 content: controller.cattleInfo.inDate?.value,
                 onPressed: () {
-                  Picker.showDatePicker(context,
-                      title: '请选择时间',
-                      selectDate: controller.cattleInfo.inDate?.value,
+                  Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.inDate?.value,
                       onConfirm: (date) {
-                    controller.cattleInfo.inDate?.value =
-                        "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                    controller.cattleInfo.inDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                   });
                 }),
         CellButton(
@@ -316,12 +289,9 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.birthDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.birthDate?.value,
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.birthDate?.value,
                   onConfirm: (date) {
-                controller.cattleInfo.birthDate?.value =
-                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                controller.cattleInfo.birthDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
               });
             }),
         _breedSelectionLayout(context),
@@ -334,7 +304,7 @@ class NewCattleView extends GetView<NewCattleController> {
   Widget _reserveCattleLayout(BuildContext context) {
     return Column(
       children: [
-        _genderSelectionLayout(),
+        // _genderSelectionLayout(),
         _commonLayout(context),
         _commonCowLayout(context),
       ],
@@ -345,7 +315,7 @@ class NewCattleView extends GetView<NewCattleController> {
   Widget _breedingCattleLayout(BuildContext context) {
     return Column(
       children: [
-        _genderSelectionLayout(),
+        // _genderSelectionLayout(),
         _commonLayout(context),
         _commonCowLayout(context),
       ],
@@ -364,16 +334,13 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.operationDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.operationDate?.value,
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
                   onConfirm: (date) {
                 // controller.cattleInfo.pregnancyCheckTime?.value =
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 妊娠母牛 - 将[孕检时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 5) {
-                  controller.cattleInfo.operationDate?.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
               });
             }),
@@ -393,16 +360,13 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.operationDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.operationDate?.value,
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
                   onConfirm: (date) {
                 // controller.cattleInfo.calvingTime?.value =
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 哺乳母牛 - 将[产犊时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 6) {
-                  controller.cattleInfo.operationDate?.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
               });
             }),
@@ -432,16 +396,13 @@ class NewCattleView extends GetView<NewCattleController> {
             hint: '请选择',
             content: controller.cattleInfo.operationDate?.value,
             onPressed: () {
-              Picker.showDatePicker(context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.operationDate?.value,
+              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
                   onConfirm: (date) {
                 // controller.cattleInfo.weaningTime?.value =
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 空怀母牛 - 将[断奶时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 7) {
-                  controller.cattleInfo.operationDate?.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
               });
             }),
@@ -464,8 +425,7 @@ class NewCattleView extends GetView<NewCattleController> {
           }
           //* 公牛胎次设置为空
           if (controller.cattleInfo.currentStage == 4) {
-            controller.cattleInfo.pregnancyNum?.value = Constant
-                .pregnancyNumList[controller.tempPregnancyNumPosition.value];
+            controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[controller.tempPregnancyNumPosition.value];
           }
         }
         break;
@@ -487,8 +447,7 @@ class NewCattleView extends GetView<NewCattleController> {
           RadioButtonGroup(
               isRequired: true,
               title: '当前状态',
-              items: List<String>.from(
-                  Constant.currentStageList.map((item) => item.name).toList()),
+              items: List<String>.from(Constant.currentStageList.map((item) => item.name).toList()),
               selectedIndex: controller.selStage.value,
               onChanged: (value) {
                 // 1.更新当前状态显示
@@ -504,8 +463,7 @@ class NewCattleView extends GetView<NewCattleController> {
           // 犊牛
           if (controller.selStage.value == 0) _youngCattleLayout(context, true),
           // 育肥牛
-          if (controller.selStage.value == 1)
-            _youngCattleLayout(context, false),
+          if (controller.selStage.value == 1) _youngCattleLayout(context, false),
           // 后备牛
           if (controller.selStage.value == 2) _reserveCattleLayout(context),
           // 种牛

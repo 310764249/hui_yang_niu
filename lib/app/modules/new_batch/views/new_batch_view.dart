@@ -58,7 +58,7 @@ class NewBatchView extends GetView<NewBatchController> {
         focusNode: controller.countNode,
       ),
       // 公母
-      RadioButtonGroup(
+      /*  RadioButtonGroup(
           isRequired: true,
           title: '公母',
           selectedIndex: controller.gmCurIndex.value,
@@ -67,7 +67,7 @@ class NewBatchView extends GetView<NewBatchController> {
           onChanged: (index) {
             // Toast.show('--> $value');
             controller.updateGMIndex(index);
-          }),
+          }),*/
       CellButton(
         isRequired: true,
         title: "出生日期",
@@ -77,8 +77,7 @@ class NewBatchView extends GetView<NewBatchController> {
         onPressed: () {
           Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
             //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateBirthday(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+            controller.updateBirthday("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),
@@ -108,8 +107,7 @@ class NewBatchView extends GetView<NewBatchController> {
         onPressed: () {
           Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
             //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+            controller.updateSeldate("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),
@@ -121,8 +119,7 @@ class NewBatchView extends GetView<NewBatchController> {
         content: controller.selectedHouseName.value,
         showArrow: true,
         onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
+          Picker.showSinglePicker(context, controller.houseNameList, title: '请选择栋舍', onConfirm: (value, p) {
             controller.updateCurCowHouse(value, p);
           });
         },

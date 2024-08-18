@@ -187,18 +187,18 @@ class NewCattleView extends GetView<NewCattleController> {
 
   // 性别选择
   Widget _genderSelectionLayout() {
-    return RadioButtonGroup(
-        isRequired: true,
-        title: '性别',
-        selectedIndex: controller.tempGenderPosition.value,
-        items: Constant.genderNameList,
-        showBottomLine: true,
-        onChanged: (value) {
-          controller.tempGenderPosition.value = value;
-          controller.cattleInfo.gender?.value = Constant.genderNameList[value] == '公牛' ? 1 : 2;
-          // 如果是公牛的话就设置[胎次]为空
-          updatePregnancyNum();
-        });
+    // return RadioButtonGroup(
+    //     isRequired: true,
+    //     title: '性别',
+    //     selectedIndex: controller.tempGenderPosition.value,
+    //     items: Constant.genderNameList,
+    //     showBottomLine: true,
+    //     onChanged: (value) {
+    //       controller.tempGenderPosition.value = value;
+    //       controller.cattleInfo.gender?.value = Constant.genderNameList[value] == '公牛' ? 1 : 2;
+    //       // 如果是公牛的话就设置[胎次]为空
+    //       updatePregnancyNum();
+    //     });
   }
 
   // 栋舍选择

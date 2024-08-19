@@ -58,11 +58,8 @@ class MeasurementView extends GetView<MeasurementController> {
         hint: "请选择",
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),
@@ -174,6 +171,17 @@ class MeasurementView extends GetView<MeasurementController> {
         focusNode: controller.weightNode,
         onChanged: (value) {
           print('体重: $value');
+        },
+      ),
+      CellButton(
+        isRequired: true,
+        title: "测定时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
         },
       ),
       CellTextArea(

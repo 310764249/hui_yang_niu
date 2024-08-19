@@ -53,20 +53,6 @@ class SemenView extends GetView<SemenController> {
           });
         },
       ),
-      CellButton(
-        isRequired: true,
-        title: "采精时间",
-        hint: "请选择",
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
       CellTextField(
         isRequired: true,
         title: '采精量（ml）',
@@ -98,6 +84,17 @@ class SemenView extends GetView<SemenController> {
           onChanged: (value) {
             controller.updatePass(value);
           }),
+      CellButton(
+        isRequired: true,
+        title: "采精时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
+        },
+      ),
       CellTextArea(
         isRequired: false,
         title: "备注信息",

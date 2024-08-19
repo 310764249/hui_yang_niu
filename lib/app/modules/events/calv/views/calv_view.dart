@@ -55,27 +55,12 @@ class CalvView extends GetView<CalvController> {
       ),
       CellButton(
         isRequired: true,
-        title: "产犊时间",
-        hint: "请选择",
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
-      CellButton(
-        isRequired: true,
         title: "栋舍",
         hint: "请选择",
         showBottomLine: true,
         content: controller.selectedHouseName.value,
         onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
+          Picker.showSinglePicker(context, controller.houseNameList, title: '请选择栋舍', onConfirm: (value, p) {
             //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
             controller.updateCurCowHouse(value, p);
           });
@@ -112,6 +97,17 @@ class CalvView extends GetView<CalvController> {
           onChanged: (value) {
             controller.updatePass(value);
           }),
+      CellButton(
+        isRequired: true,
+        title: "产犊时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
+        },
+      ),
       CellTextArea(
         isRequired: false,
         title: "备注信息",

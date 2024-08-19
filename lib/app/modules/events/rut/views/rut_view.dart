@@ -19,6 +19,7 @@ import '../../../../services/ex_int.dart';
 
 class RutView extends GetView<RutController> {
   const RutView({Key? key}) : super(key: key);
+
   //操作信息
   Widget _operationInfo(context) {
     return MyCard(children: [
@@ -50,6 +51,15 @@ class RutView extends GetView<RutController> {
           });
         },
       ),
+      RadioButtonGroup(
+          isRequired: true,
+          title: '发情表现',
+          selectedIndex: controller.curPassIndex.value,
+          items: controller.passNameList,
+          showBottomLine: true,
+          onChanged: (value) {
+            controller.updatePass(value);
+          }),
       CellButton(
         isRequired: true,
         title: "发情时间",
@@ -61,15 +71,6 @@ class RutView extends GetView<RutController> {
           });
         },
       ),
-      RadioButtonGroup(
-          isRequired: true,
-          title: '发情表现',
-          selectedIndex: controller.curPassIndex.value,
-          items: controller.passNameList,
-          showBottomLine: true,
-          onChanged: (value) {
-            controller.updatePass(value);
-          }),
       CellButton(
         isRequired: true,
         title: "发情时间",

@@ -56,11 +56,8 @@ class RutView extends GetView<RutController> {
         hint: "请选择",
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),
@@ -73,6 +70,17 @@ class RutView extends GetView<RutController> {
           onChanged: (value) {
             controller.updatePass(value);
           }),
+      CellButton(
+        isRequired: true,
+        title: "发情时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
+        },
+      ),
       CellTextArea(
         isRequired: false,
         title: "备注信息",

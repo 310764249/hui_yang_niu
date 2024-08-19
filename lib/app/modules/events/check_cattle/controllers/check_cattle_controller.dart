@@ -67,8 +67,7 @@ class CheckCattleController extends GetxController {
     super.onInit();
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.full);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
     //获取栋舍列表名称用于 Picker 显示

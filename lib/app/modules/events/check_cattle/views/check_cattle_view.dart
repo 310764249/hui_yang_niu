@@ -34,8 +34,7 @@ class CheckCattleView extends GetView<CheckCattleController> {
         content: controller.selectedHouseName.value,
         showArrow: !controller.isEdit.value,
         onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
+          Picker.showSinglePicker(context, controller.houseNameList, title: '请选择栋舍', onConfirm: (value, p) {
             controller.updateCurCowHouse(value, p);
           });
         },
@@ -64,12 +63,9 @@ class CheckCattleView extends GetView<CheckCattleController> {
         showBottomLine: true,
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value,
-              mode: DateMode.YMDHMS, onConfirm: (date) {
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ${date.hour?.addZero()}:${date.minute?.addZero()}:${date.second?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, mode: DateMode.YMD,
+              onConfirm: (date) {
+            controller.updateSeldate("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),

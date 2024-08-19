@@ -132,9 +132,7 @@ class SellCattleView extends GetView<SellCattleController> {
               controller.updateChooseTypeIndex(value);
             }),
         // 类型
-        controller.chooseTypeIndex.value == 0
-            ? _oldCowLayout(context)
-            : _youngCowLayout(context),
+        controller.chooseTypeIndex.value == 0 ? _oldCowLayout(context) : _youngCowLayout(context),
         CellTextField(
           isRequired: true,
           title: '单价（元）',
@@ -168,24 +166,17 @@ class SellCattleView extends GetView<SellCattleController> {
             controller.cost = value;
           },
         ),
-        CellButton(
-            isRequired: true,
-            title: '小计（元）',
-            content: controller.totalStr.value,
-            showArrow: false),
+        CellButton(isRequired: true, title: '小计（元）', content: controller.totalStr.value, showArrow: false),
         CellButton(
           isRequired: true,
-          title: "操作时间",
+          title: "出栏时间",
           hint: "请选择",
           showBottomLine: true,
           content: controller.timesStr.value,
           onPressed: () {
-            Picker.showDatePicker(context,
-                title: '请选择时间',
-                selectDate: controller.timesStr.value, onConfirm: (date) {
+            Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
               //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-              controller.updateSeldate(
-                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+              controller.updateSeldate("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
             });
           },
         ),
@@ -213,8 +204,7 @@ class SellCattleView extends GetView<SellCattleController> {
         body: Obx(() => PageWrapper(
               config: controller.buildConfig(context),
               child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics()), //适配安卓的下拉回弹
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()), //适配安卓的下拉回弹
                   children: [
                     //操作信息
                     _operationInfo(context),

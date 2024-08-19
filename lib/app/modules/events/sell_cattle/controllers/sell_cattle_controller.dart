@@ -95,6 +95,8 @@ class SellCattleController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    //出栏时间默认今天
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     // 价格输入框 添加焦点监听器
     priceNode.addListener(() async {
       if (!priceNode.hasFocus) {
@@ -121,14 +123,12 @@ class SellCattleController extends GetxController {
     });
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
 
     //获取生长阶段字典项
     List szjdList = AppDictList.searchItems('szjd') ?? [];
     // 筛选显示
-    szjdListFiltered =
-        AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
+    szjdListFiltered = AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
     // var res = await Storage.getData(Constant.userResData);
     // if (res != null) {
     //   UserResource resourceModel = UserResource.fromJson(res);
@@ -171,17 +171,13 @@ class SellCattleController extends GetxController {
       //填充数量
       countController.text = event!.count == 0 ? '' : event!.count.toString();
       //填充单价
-      priceController.text =
-          price = event!.price == 0 ? '' : event!.price.toString();
+      priceController.text = price = event!.price == 0 ? '' : event!.price.toString();
       //填充重量
-      weightController.text =
-          weight = event!.weight == 0 ? '' : event!.weight.toString();
+      weightController.text = weight = event!.weight == 0 ? '' : event!.weight.toString();
       //填充折损
-      costController.text =
-          cost = event!.breakage == 0 ? '' : event!.breakage.toString();
+      costController.text = cost = event!.breakage == 0 ? '' : event!.breakage.toString();
       //填充小计
-      totalStr.value =
-          totalStr.value = event!.total == 0 ? '' : event!.total.toString();
+      totalStr.value = totalStr.value = event!.total == 0 ? '' : event!.total.toString();
       //更新小计
       updateTotal();
       //填充时间
@@ -227,8 +223,7 @@ class SellCattleController extends GetxController {
   // 更新 小计
   void updateTotal() {
     // 小计：单价 x 总量 - 折损
-    double number =
-        double.parse(price) * double.parse(weight) - double.parse(cost);
+    double number = double.parse(price) * double.parse(weight) - double.parse(cost);
     totalStr.value = number.toStringAsFixed(2); // 保留两位小数
     debugPrint('price:$price--weight:$weight--totalStr: $totalStr');
     update();

@@ -54,20 +54,7 @@ class WeanView extends GetView<WeanController> {
           });
         },
       ),
-      CellButton(
-        isRequired: true,
-        title: "断奶时间",
-        hint: "请选择",
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
+
       // CellButton(
       //   isRequired: true,
       //   title: "栋舍",
@@ -99,9 +86,7 @@ class WeanView extends GetView<WeanController> {
         content: controller.batchNumber.value,
         showBottomLine: true,
         onPressed: () {
-          Get.toNamed(Routes.BATCH_LIST,
-                  arguments: BatchListArgument(goBack: true, type: 2))
-              ?.then((value) {
+          Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true, type: 2))?.then((value) {
             if (ObjectUtil.isEmpty(value)) {
               return;
             }
@@ -123,6 +108,17 @@ class WeanView extends GetView<WeanController> {
         focusNode: controller.weightNode,
         onChanged: (value) {
           controller.count = value;
+        },
+      ),
+      CellButton(
+        isRequired: true,
+        title: "断奶时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
         },
       ),
       CellTextArea(

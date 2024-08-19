@@ -32,8 +32,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
         content: controller.selectedHouseName.value,
         showArrow: !controller.isEdit.value,
         onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
+          Picker.showSinglePicker(context, controller.houseNameList, title: '请选择栋舍', onConfirm: (value, p) {
             controller.updateCurCowHouse(value, p);
           });
         },
@@ -45,8 +44,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
         showBottomLine: true,
         content: controller.curFeedsType.value,
         onPressed: () {
-          Picker.showSinglePicker(context, controller.feedsTypeNameList,
-              title: '请选择饲料', onConfirm: (value, p) {
+          Picker.showSinglePicker(context, controller.feedsTypeNameList, title: '请选择饲料', onConfirm: (value, p) {
             controller.updateCurFeedsType(value, p);
           });
         },
@@ -76,16 +74,13 @@ class FeedCattleView extends GetView<FeedCattleController> {
       ),
       CellButton(
         isRequired: true,
-        title: "操作时间",
+        title: "饲喂时间",
         hint: "请选择",
         showBottomLine: true,
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateSeldate("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),

@@ -19,8 +19,10 @@ class SelectCattleController extends GetxController {
   //TODO: Implement SelectCattleController
   //传入的参数
   var argument = Get.arguments;
+
   //编辑事件传入
   SelectEvent? event;
+
   //是否是编辑页面
   RxBool isEdit = false.obs;
 
@@ -28,10 +30,12 @@ class SelectCattleController extends GetxController {
   TextEditingController codeController = TextEditingController(); //耳号
   TextEditingController columnController = TextEditingController(); //栏位
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode codeNode = FocusNode(); //
   final FocusNode columnNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
+
   KeyboardActionsConfig buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
@@ -51,13 +55,16 @@ class SelectCattleController extends GetxController {
 
   //当前选中的批次模型
   late CowBatch selectedCowBatch;
+
   //批次号
   final batchNumber = ''.obs;
 
   //入场时间
   final stationedTime = ''.obs;
+
   //耳号
   final codeString = ''.obs;
+
   // "类型"可选项
   List chooseTypeList = [];
   List<String> chooseTypeNameList = [
@@ -66,13 +73,19 @@ class SelectCattleController extends GetxController {
   ];
   String selectedGenderID = ''; //提交数据使用
   RxInt selectedGenderIndex = 0.obs;
+
+  //选种时间
+  final selectTime = ''.obs;
+
   //出生时间
   final birthday = ''.obs;
+
   // "品种"可选项
   List breedList = [];
   List<String> breedNameList = [];
   String selectedBreedID = ''; //提交数据使用
   RxInt selectedBreedIndex = 0.obs;
+
   // "栋舍"可选项
   List<CowHouse> houseList = <CowHouse>[];
   List houseNameList = [];
@@ -84,19 +97,18 @@ class SelectCattleController extends GetxController {
     super.onInit();
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
-    birthday.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    //选种日期默认今天
+    selectTime.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    /*   birthday.value =
+        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);*/
     //初始化字典项
     breedList = AppDictList.searchItems('pz') ?? [];
     selectedBreedID = breedList.isNotEmpty ? breedList.first['value'] : '';
-    breedNameList =
-        List<String>.from(breedList.map((item) => item['label']).toList());
+    breedNameList = List<String>.from(breedList.map((item) => item['label']).toList());
     //公、母
     chooseTypeList = AppDictList.searchItems('gm') ?? [];
-    selectedGenderID =
-        chooseTypeList.isNotEmpty ? chooseTypeList.first['value'] : '1';
+    selectedGenderID = chooseTypeList.isNotEmpty ? chooseTypeList.first['value'] : '1';
 
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -132,12 +144,10 @@ class SelectCattleController extends GetxController {
       updateBirthday(event!.date);
       //填充性别
       selectedGenderID = event!.gender.toString(); //提交数据
-      selectedGenderIndex.value = AppDictList.findIndexByCode(
-          chooseTypeList, event!.gender.toString()); //显示选中项
+      selectedGenderIndex.value = AppDictList.findIndexByCode(chooseTypeList, event!.gender.toString()); //显示选中项
       //填充品种
       selectedBreedID = event!.kind.toString(); //提交数据
-      selectedBreedIndex.value = AppDictList.findIndexByCode(
-          breedList, event!.kind.toString()); //显示选中项
+      selectedBreedIndex.value = AppDictList.findIndexByCode(breedList, event!.kind.toString()); //显示选中项
       //更新栋舍
       selectedHouseID = event!.inCowHouseId;
       selectedHouseName.value = event!.inCowHouseName ?? '';
@@ -168,8 +178,15 @@ class SelectCattleController extends GetxController {
     super.onClose();
   }
 
+  //选择出生日期
   void updateBirthday(String date) {
     birthday.value = date;
+    update();
+  }
+
+  //选择选种时间
+  void updateSelectTime(String date) {
+    selectTime.value = date;
     update();
   }
 
@@ -211,6 +228,16 @@ class SelectCattleController extends GetxController {
       Toast.show('请输入耳号');
       return;
     }
+    String selectTime = this.selectTime.value;
+    if (ObjectUtil.isEmpty(selectTime)) {
+      Toast.show('请选择选种时间');
+      return;
+    }
+    String birthday = this.birthday.value;
+    if (ObjectUtil.isEmpty(birthday)) {
+      Toast.show('请选择出生日期');
+      return;
+    }
     if (ObjectUtil.isEmpty(selectedHouseID)) {
       Toast.show('请选择栋舍');
       return;
@@ -239,8 +266,8 @@ class SelectCattleController extends GetxController {
         'inCowHouseId': selectedHouseID, // 转入栋舍ID
         'inColumn': columnController.text.trim(), //必传 转入栏位
         'executor': UserInfoTool.nickName(), //必传 技术员
-        'date':
-            DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        // 'date': DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        'date': selectTime.value, //
         'remark': remarkController.text.trim(), //必传 备注
       };
       print(para);
@@ -277,8 +304,8 @@ class SelectCattleController extends GetxController {
         'inCowHouseId': selectedHouseID, // 转入栋舍ID
         'inColumn': columnController.text.trim(), //必传 转入栏位
         'executor': UserInfoTool.nickName(), //必传 技术员
-        'date':
-            DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        // 'date': DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        'date': selectTime.value, //
         'remark': remarkController.text.trim(), //必传 备注
       };
       //print(para);

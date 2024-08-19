@@ -89,15 +89,12 @@ class InbreedingView extends GetView<InbreedingController> {
       ),
       CellButton(
         isRequired: true,
-        title: "评估时间",
+        title: "测定时间",
         hint: "请选择",
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),

@@ -61,8 +61,7 @@ class MatingView extends GetView<MatingController> {
           hint: "请选择",
           content: controller.selectNumName.value,
           onPressed: () {
-            Picker.showSinglePicker(context, controller.numberNameList,
-                title: '请选择精液', onConfirm: (value, p) {
+            Picker.showSinglePicker(context, controller.numberNameList, title: '请选择精液', onConfirm: (value, p) {
               //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
               controller.updateCurNumber(value, p);
             });
@@ -117,11 +116,8 @@ class MatingView extends GetView<MatingController> {
         hint: "请选择",
         content: controller.timesStr.value,
         onPressed: () {
-          Picker.showDatePicker(context,
-              title: '请选择时间',
-              selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
           });
         },
       ),
@@ -137,9 +133,18 @@ class MatingView extends GetView<MatingController> {
             controller.updateChooseTypeIndex(value);
           }),
       // 类型
-      controller.chooseTypeID.value == '1'
-          ? _natureLayout(context)
-          : _humanLayout(context),
+      controller.chooseTypeID.value == '1' ? _natureLayout(context) : _humanLayout(context),
+      CellButton(
+        isRequired: true,
+        title: "配种时间",
+        hint: "请选择",
+        content: controller.timesStr.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
+        },
+      ),
       CellTextArea(
         isRequired: false,
         title: "备注信息",

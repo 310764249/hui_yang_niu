@@ -32,18 +32,15 @@ class Constant {
   static const String articleHost = 'http://154.8.193.14:1237/#/details'; //测试环境
 
   //文件上传相关
-  static const String uploadTokenUrl =
-      'https://id.banggongshe.cn/connect/token';
+  static const String uploadTokenUrl = 'https://id.banggongshe.cn/connect/token';
   static const String upClientId = 'toink_security_api_empty';
-  static const String upClientSecret =
-      'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
+  static const String upClientSecret = 'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
   static const String upGrantType = 'client_credentials';
   static const String upScope = 'toink_security_api toink_wechat_access_api';
   static const String upAccessToken = 'up_access_token'; //上传使用的 token
 // https://file.zbxx.info/api/file/preview?id=e4a4242f-9249-4f98-86f8-a27b043f5271
   static const String uploadFile = 'https://file.zbxx.info';
-  static const String uploadFileUrl =
-      'https://file.zbxx.info/api/file/preview?id=';
+  static const String uploadFileUrl = 'https://file.zbxx.info/api/file/preview?id=';
   static const String upProjectId = '0cbd22d8-f7ba-468b-aff9-6b16e173d825';
 
   //默认值、占位字符等
@@ -61,15 +58,19 @@ class Constant {
 
   static List<String> genderNameList = ['公牛', '母牛'];
 
+  // 删除当前状态中的犊牛，育肥牛，后备牛，种牛，增加后备公牛，种公牛，后备母牛三个状态
   // "当前状态"可选项
   static List<CommonData> currentStageList = [
-    CommonData(id: 1, name: '犊牛'), // Calf
-    CommonData(id: 2, name: '育肥牛'), // Young cattle
-    CommonData(id: 3, name: '后备牛'), // Reserve cattle
-    CommonData(id: 4, name: '种牛'), // Breeding cattle
+    // CommonData(id: 1, name: '犊牛'), // Calf
+    // CommonData(id: 2, name: '育肥牛'), // Young cattle
+    // CommonData(id: 3, name: '后备牛'), // Reserve cattle
+    // CommonData(id: 4, name: '种牛'), // Breeding cattle
     CommonData(id: 5, name: '妊娠母牛'), // Pregnant cow
     CommonData(id: 6, name: '哺乳母牛'), // Milking cow
     CommonData(id: 7, name: '空怀母牛'), // Empty cow
+    CommonData(id: 8, name: '后备公牛'), // Reserve bull
+    CommonData(id: 9, name: '种公牛'), // Breeding bull
+    CommonData(id: 10, name: '后备母牛'), // Reserve bull
   ];
 
   // "胎次"可选项

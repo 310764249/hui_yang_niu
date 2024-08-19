@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/models/common_data.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
@@ -30,6 +31,7 @@ class NewCattleController extends GetxController {
   TextEditingController calvingNumController = TextEditingController();
   TextEditingController cattleNumOfBatchController = TextEditingController();
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode earNumNode = FocusNode();
   final FocusNode sourceFarmNode = FocusNode();
@@ -37,6 +39,7 @@ class NewCattleController extends GetxController {
   final FocusNode calvingNumNode = FocusNode();
   final FocusNode cattleNumOfBatchNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
+
   KeyboardActionsConfig buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
@@ -74,9 +77,9 @@ class NewCattleController extends GetxController {
     cattleInfo.currentStage = Constant.currentStageList[position].id;
 
     // 设置[品种]和[胎次]为默认值
-    cattleInfo.gender?.value =
-        // Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
-        cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+    // cattleInfo.gender?.value =
+    // Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
+    cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
     cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
 
     // 防止前面犊牛api没请求到数据的话这里再去请求一次
@@ -291,14 +294,18 @@ class NewCattleController extends GetxController {
       return;
     }
 
-    // 单独判断犊牛和育肥牛的批次号是否获取成功
-    if (cattleInfo.currentStage == 1 && tempBatchNumAuto1.value.isBlankEx()) {
-      Toast.show('批次号生成失败, 请点击批次号重新生成');
-      return;
-    }
-    if (cattleInfo.currentStage == 2 && tempBatchNumAuto2.value.isBlankEx()) {
-      Toast.show('批次号生成失败, 请点击批次号重新生成');
-      return;
+    //种够牛，备用公母母牛批次号非必填
+    if (cattleInfo.currentStage == 8 || cattleInfo.currentStage == 9 || cattleInfo.currentStage == 10) {
+    } else {
+      // 单独判断犊牛和育肥牛的批次号是否获取成功
+      if (cattleInfo.currentStage == 1 && tempBatchNumAuto1.value.isBlankEx()) {
+        Toast.show('批次号生成失败, 请点击批次号重新生成');
+        return;
+      }
+      if (cattleInfo.currentStage == 2 && tempBatchNumAuto2.value.isBlankEx()) {
+        Toast.show('批次号生成失败, 请点击批次号重新生成');
+        return;
+      }
     }
 
     // 校验参数, 如果校验失败, 则Toast输出错误信息

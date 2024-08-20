@@ -39,16 +39,6 @@ class SalesAssessView extends GetView<SalesAssessController> {
                 )
               : Container(),
           CellButton(
-              isRequired: true,
-              title: '销售日期',
-              hint: '请选择',
-              content: controller.assessTime.value,
-              onPressed: () {
-                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
-                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                });
-              }),
-          CellButton(
             isRequired: true,
             title: '销售类型',
             hint: '请选择',
@@ -121,6 +111,16 @@ class SalesAssessView extends GetView<SalesAssessController> {
               controller.amountController.text = double.parse(controller.amountController.text.trim()).toString();
             },
           ),
+          CellButton(
+              isRequired: true,
+              title: '销售日期',
+              hint: '请选择',
+              content: controller.assessTime.value,
+              onPressed: () {
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                });
+              }),
           CellTextArea(
               isRequired: false,
               title: "备注信息",

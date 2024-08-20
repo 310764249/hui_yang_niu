@@ -68,16 +68,13 @@ class SalesAssessController extends GetxController {
   int salesAssessId = -1;
   RxString salesAssess = ''.obs;
 
-
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
 
     salesAssessList = AppDictList.searchItems('xslx') ?? [];
-    salesAssessNameList =
-    List<String>.from(salesAssessList.map((item) => item['label']).toList());
-
+    salesAssessNameList = List<String>.from(salesAssessList.map((item) => item['label']).toList());
 
     //首先处理传入参数
     handleArgument();
@@ -85,7 +82,7 @@ class SalesAssessController extends GetxController {
   }
 
   //处理传入参数
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -96,13 +93,11 @@ class SalesAssessController extends GetxController {
       //编辑
       event = SalesAssessEvent.fromJson(argument.data);
 
-
       // 评估时间
       assessTime.value = event?.date ?? '';
       // 出栏
       salesAssessId = event?.type ?? -1;
-      salesAssess.value = salesAssessList.firstWhere(
-              (item) => int.parse(item['value']) == salesAssessId)['label'];
+      salesAssess.value = salesAssessList.firstWhere((item) => int.parse(item['value']) == salesAssessId)['label'];
 
       //填充数据
       countController.text = event?.count.toString() ?? '';
@@ -116,20 +111,19 @@ class SalesAssessController extends GetxController {
   }
 
   //自动计算总价
-  void autoCalculate(){
-    if( countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty ){
-
+  void autoCalculate() {
+    if (countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty) {
       int count = int.parse(countController.text);
       double price = double.parse(priceController.text);
       // double amount = double.parse(amountController.text);
       double breakage = double.parse(breakageController.text);
-      double amount = price*count-breakage;
-      if(amount > 0){
-        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), '');// "$amount";
-        if(amountController.text.endsWith(".")){
-          amountController.text = amountController.text.substring(0,amountController.text.length-1);
+      double amount = price * count - breakage;
+      if (amount > 0) {
+        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), ''); // "$amount";
+        if (amountController.text.endsWith(".")) {
+          amountController.text = amountController.text.substring(0, amountController.text.length - 1);
         }
-      }else{
+      } else {
         amountController.text = "";
       }
     }
@@ -159,26 +153,25 @@ class SalesAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-
     String? str;
-    if (assessTime.value.isBlankEx()) {
-      str = '请选择销售日期';
-    }else if (salesAssessId == -1) {
+    if (salesAssessId == -1) {
       str = '请选择销售类型';
-    }else if (countController.text.isEmpty) {
+    } else if (countController.text.isEmpty) {
       str = '请输入数量';
-    }else if (priceController.text.isEmpty) {
+    } else if (priceController.text.isEmpty) {
       str = '请输入单价';
-    }else if (amountController.text.isEmpty) {
+    } else if (amountController.text.isEmpty) {
       str = '请输入总价';
-    }else if (breakageController.text.isEmpty) {
+    } else if (breakageController.text.isEmpty) {
       str = '请输入折损';
+    } else if (assessTime.value.isBlankEx()) {
+      str = '请选择销售日期';
     }
     /*if (purchaseAssessId == -1) {
         Toast.show('请选择采购类型');
         return;
       }*/
-    if(str != null && str.isNotEmpty){
+    if (str != null && str.isNotEmpty) {
       Toast.show(str);
       return;
     }
@@ -191,12 +184,12 @@ class SalesAssessController extends GetxController {
       if (!isEdit.value) {
         //* 新增
         mapParam = {
-          "date":assessTime.value,
-          "type":salesAssessId,
-          "count":int.parse(countController.text),
-          "price":double.parse(priceController.text),
-          "amount":double.parse(amountController.text),
-          "breakage":double.parse(breakageController.text),
+          "date": assessTime.value,
+          "type": salesAssessId,
+          "count": int.parse(countController.text),
+          "price": double.parse(priceController.text),
+          "amount": double.parse(amountController.text),
+          "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
@@ -205,23 +198,21 @@ class SalesAssessController extends GetxController {
         mapParam = {
           //* 编辑用的参数
           'id': isEdit.value ? event?.id : '', //事件 ID
-          "no":event?.no,
+          "no": event?.no,
           'rowVersion': isEdit.value ? event?.rowVersion : '', //事件行版本
-          "date":assessTime.value,
-          "type":salesAssessId,
-          "count":int.parse(countController.text),
-          "price":double.parse(priceController.text),
-          "amount":double.parse(amountController.text),
-          "breakage":double.parse(breakageController.text),
+          "date": assessTime.value,
+          "type": salesAssessId,
+          "count": int.parse(countController.text),
+          "price": double.parse(priceController.text),
+          "amount": double.parse(amountController.text),
+          "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
       }
 
       debugPrint('-----> $mapParam');
-      isEdit.value
-          ? await httpsClient.put("/api/sales", data: mapParam)
-          : await httpsClient.post("/api/sales", data: mapParam);
+      isEdit.value ? await httpsClient.put("/api/sales", data: mapParam) : await httpsClient.post("/api/sales", data: mapParam);
 
       Toast.dismiss();
       Toast.success(msg: '提交成功');

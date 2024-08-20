@@ -59,16 +59,6 @@ class ManualAssessView extends GetView<ManualAssessController> {
               controller.amountController.text = int.parse(controller.amountController.text.trim()).toString();
             },
           ),
-          CellButton(
-              isRequired: true,
-              title: '录入日期',
-              hint: '请选择',
-              content: controller.assessTime.value,
-              onPressed: () {
-                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
-                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                });
-              }),
           CellTextField(
               isRequired: true,
               title: '人员姓名',
@@ -82,6 +72,16 @@ class ManualAssessView extends GetView<ManualAssessController> {
               keyboardType: TextInputType.text,
               controller: controller.postController,
               focusNode: controller.postCountNode),
+          CellButton(
+              isRequired: true,
+              title: '发放时间',
+              hint: '请选择',
+              content: controller.assessTime.value,
+              onPressed: () {
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                });
+              }),
           CellTextArea(
               isRequired: false,
               title: "备注信息",

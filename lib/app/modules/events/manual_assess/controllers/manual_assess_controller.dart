@@ -132,10 +132,10 @@ class ManualAssessController extends GetxController {
       str = "请选择人工类型";
     } else if (amountController.text.isEmpty) {
       str = "请输入费用";
-    } else if (assessTime.value.isBlankEx()) {
-      str = '请选择录入时间';
     } else if (employeeController.text.isEmpty) {
       str = "请输入人员姓名";
+    } else if (assessTime.value.isBlankEx()) {
+      str = '请选择录入时间';
     } /*else if(postController.text.isEmpty){
       str = "请输入所在岗位";
     }*/

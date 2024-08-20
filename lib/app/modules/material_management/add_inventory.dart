@@ -403,7 +403,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 builder: (context, PDuration value, Widget? child) {
                   return CellButton(
                       isRequired: true,
-                      title: '日期',
+                      title: '入库时间',
                       hint: '请选择',
                       content: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
                       onPressed: () {

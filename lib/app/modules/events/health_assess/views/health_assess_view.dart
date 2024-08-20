@@ -136,7 +136,7 @@ class HealthAssessView extends GetView<HealthAssessController> {
               showBottomLine: false,
               controller: controller.remarkController,
               focusNode: controller.remarkNode),
-          AssessEditCowView(controller.selectedCow),
+          // AssessEditCowView(controller.selectedCow),
         ]));
   }
 

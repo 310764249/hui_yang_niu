@@ -41,11 +41,15 @@ class FeedCattleView extends GetView<FeedCattleController> {
           });
         },
       ),
-      CellButton(
+      CellTextField(
         isRequired: true,
         title: "栋舍牛只数量",
-        showArrow: false,
+        // showArrow: false,
         content: controller.cowHouseNum.value,
+        keyboardType: TextInputType.number,
+        onChanged: (value) {
+          controller.cowHouseNum.value = value;
+        },
       ),
       CellButton(
         isRequired: true,
@@ -162,7 +166,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
                           alignment: Alignment.center,
                           margin: EdgeInsets.only(top: ScreenAdapter.height(20)),
                           child: Text(
-                            '${controller.selectFormulaModel?.name ?? ''}（头数：${controller.cowHouseNum.value}）',
+                            '${controller.event?.formulaName ?? controller.selectFormulaModel?.name ?? ''}（头数：${controller.cowHouseNum.value}）',
                             style: TextStyle(
                               color: SaienteColors.blackE5,
                               fontSize: ScreenAdapter.fontSize(16),
@@ -184,7 +188,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
                                   ),
                                 ),
                                 Text(
-                                  '${((item.weight ?? 0) * num.parse(controller.cowHouseNum.value) * num.parse(controller.countController.text)).toStringAsFixed(2)} = '
+                                  '${((item.weight ?? 0) * num.parse(controller.cowHouseNum.value) * num.parse(controller.countController.text)).toStringAsFixed(2)}kg = '
                                   '${(item.weight ?? 0)}kg * '
                                   '${controller.cowHouseNum.value}头 * '
                                   '${controller.countController.text}',

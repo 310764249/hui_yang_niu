@@ -112,10 +112,10 @@ class FeedCattleDetailView extends GetView<FeedCattleDetailController> {
                                         ),
                                       ),
                                       Text(
-                                        '${((item.weight ?? 0) * num.parse('${controller.event?.count ?? '0'}') * num.parse('${/*controller.event?.dosage ?? '1'*/ '1'}')).toStringAsFixed(2)} = '
+                                        '${((item.weight ?? 0) * num.parse('${controller.event?.count ?? '0'}') * num.parse('${controller.event?.dosage ?? '1'}')).toStringAsFixed(2)}kg = '
                                         '${(item.weight ?? 0)}kg * '
                                         '${controller.event?.count ?? '0'}头 * '
-                                        '${/*controller.event?.dosage ?? '1'*/ '1'}',
+                                        '${controller.event?.dosage ?? '1'}',
                                         style: TextStyle(
                                           color: SaienteColors.black333333,
                                           fontSize: ScreenAdapter.fontSize(14),

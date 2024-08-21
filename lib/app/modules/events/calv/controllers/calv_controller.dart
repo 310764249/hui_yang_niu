@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:common_utils/common_utils.dart';
+import 'package:intellectual_breed/app/models/cow_batch.dart';
 import 'package:intellectual_breed/app/models/event_argument.dart';
+import 'package:intellectual_breed/app/services/load_image.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
@@ -102,12 +104,23 @@ class CalvController extends GetxController {
     szjdListFiltered = AppDictList.findMapByCode(szjdList, ['5']);
   }
 
+  //请求生成批次号 1 犊牛 2 育肥牛 3 引种牛
+  Future<String> requestBatchNumber(int type) async {
+    String number = await CommonService().requestNewBatchNumber(type);
+    batchNumber.value = ObjectUtil.isEmpty(number) ? '' : number;
+    update();
+    return Future.value(batchNumber.value);
+  }
+
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
   void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
+      //自动生成批次号
+      //请求生成批次号 1 犊牛 2 育肥牛 3 引种牛
+      requestBatchNumber(1);
       return;
     }
     if (argument is Cattle) {
@@ -135,6 +148,7 @@ class CalvController extends GetxController {
       curPassIndex.value = AppDictList.findIndexByCode(passList, event!.reason.toString()); //显示选中项
       //填充备注
       remarkController.text = event?.remark ?? '';
+      batchNumber.value = Get.arguments.batchNo ?? '';
       //更新
       update();
     }
@@ -192,6 +206,10 @@ class CalvController extends GetxController {
       Toast.show('请输入数量');
       return;
     }
+    if (batchNumber.value.isEmpty) {
+      Toast.show('请选择批次号');
+      return;
+    }
     //时间不能小于入场日期
     if (timesStr.value.isBefore(selectedCow.inArea)) {
       Toast.show('产犊时间不能早于入场日期');
@@ -228,6 +246,7 @@ class CalvController extends GetxController {
         'executor': UserInfoTool.nickName(), // string 技术员
         'date': timesStr.value, //必传 string 产犊时间
         'remark': remarkController.text.trim(), // 备注
+        'batchNo': batchNumber.value,
       };
 
       //print(para);
@@ -255,6 +274,7 @@ class CalvController extends GetxController {
       //接口参数
       Map<String, dynamic> para = {
         'id': event!.id, //事件 ID
+        'batchNo': batchNumber.value,
         'rowVersion': event!.rowVersion, //事件行版本
         'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
         'reason': int.parse(curPassID), //必传 integer 产护1：顺产；2：难产；3：难产助产；
@@ -265,7 +285,7 @@ class CalvController extends GetxController {
         'remark': remarkController.text.trim(), // 备注
       };
 
-      //print(para);
+      // print(para);
       await httpsClient.put("/api/calv", data: para);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
@@ -301,5 +321,13 @@ class CalvController extends GetxController {
         Log.d('Other Exception: $error');
       }
     }
+  }
+
+  void updateCalvNumInfo(CowBatch first) {
+    batchNumber.value = first.batchNo ?? '';
+    selectedHouseName.value = first.cowHouseName ?? '';
+    countController.text = first.count == 0 ? '' : first.count.toString();
+    selectedHouseID = first.cowHouseId;
+    update();
   }
 }

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:common_utils/common_utils.dart';
+import 'package:intellectual_breed/app/models/cow_batch.dart';
+import 'package:intellectual_breed/app/modules/batch_list/controllers/batch_list_controller.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 import '../../../../models/cattle.dart';
 import '../../../../models/cattle_list_argu.dart';
 import '../../../../routes/app_pages.dart';
@@ -85,9 +88,23 @@ class CalvView extends GetView<CalvController> {
         showBottomLine: true,
         content: controller.batchNumber.value,
         onPressed: () {
-          // TODO 选择批次
+          if (controller.isEdit.value) {
+            return;
+          }
           //点击后重新请求
           // controller.requestBatchNumber(1);
+          //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+          Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true, type: 1))?.then((value) {
+            if (ObjectUtil.isEmpty(value)) {
+              return;
+            }
+            //拿到批次号数组
+            List<CowBatch> list = value as List<CowBatch>;
+            if (list.isNotEmpty) {
+              Log.d(list.first.toJson().toString());
+              controller.updateCalvNumInfo(list.first);
+            }
+          });
         },
       ),
       CellTextField(

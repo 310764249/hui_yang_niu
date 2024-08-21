@@ -38,8 +38,6 @@ class FeedCattleDetailController extends GetxController {
   void onInit() async {
     super.onInit();
 
-    //TODO 没哟配方名称和和校正饲喂量
-
     if (argument is SimpleEvent) {
       event = FeedEvent.fromJson(argument.data);
       feedsTypeName = event?.formulaName ?? Constant.placeholder;

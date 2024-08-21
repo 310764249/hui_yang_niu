@@ -73,19 +73,12 @@ class NewBatchController extends GetxController {
   String selectedHouseID = ''; //选中的栋舍 ID 提交数据使用
   RxString selectedHouseName = ''.obs;
 
-  //犊牛批次
-  String? DNCowBatch;
-  //育肥牛批次
-  String? YCCowBatch;
-  //引种牛批次
-  String? YZCowBatch;
-
   @override
   void onInit() async {
     super.onInit();
     //默认当前
     timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
-    birthStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    // birthStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //初始化字典项 app端的批次类型
     typeList = AppDictList.searchItems('pclb_app') ?? [];
     typeNameList = List<String>.from(typeList.map((item) => item['label']).toList());
@@ -113,7 +106,7 @@ class NewBatchController extends GetxController {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       //请求生成批次号 1 犊牛 2 育肥牛 3 引种牛
-      DNCowBatch = await requestBatchNumber(1);
+      batchNumber.value = await requestBatchNumber(1);
       return;
     }
     if (argument is CowBatch) {
@@ -169,7 +162,12 @@ class NewBatchController extends GetxController {
     //新增页面支持切换批次类型
     if (!isEdit.value) {
       //切换批次号
-      if (index == 1) {
+
+      // 1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+
+      batchNumber.value = await requestBatchNumber(int.parse(curTypeID));
+
+      /* if (index == 1) {
         if (YCCowBatch == null) {
           YCCowBatch = await requestBatchNumber(2);
         } else {
@@ -183,7 +181,7 @@ class NewBatchController extends GetxController {
         }
       } else {
         batchNumber.value = DNCowBatch!;
-      }
+      }*/
     }
   }
 
@@ -233,6 +231,10 @@ class NewBatchController extends GetxController {
     }
     if (ObjectUtil.isEmpty(selectedHouseID)) {
       Toast.show('请选择栋舍');
+      return;
+    }
+    if (birthStr.isEmpty) {
+      Toast.show('请选择出生年月');
       return;
     }
     //时间不能小于入场日期

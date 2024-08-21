@@ -70,7 +70,7 @@ class NewBatchView extends GetView<NewBatchController> {
           }),*/
       CellButton(
         isRequired: true,
-        title: "出生日期",
+        title: "出生年月",
         hint: "请选择",
         showBottomLine: true,
         content: controller.birthStr.value,

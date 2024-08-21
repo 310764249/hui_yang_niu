@@ -99,6 +99,14 @@ class WeanView extends GetView<WeanController> {
           });
         },
       ),
+      CellButton(
+        isRequired: true,
+        title: "犊牛批次",
+        hint: "请选择",
+        content: controller.calveBatchNumber.value,
+        showBottomLine: true,
+        onPressed: () {},
+      ),
       CellTextField(
         isRequired: false,
         title: '总重量（kg）',

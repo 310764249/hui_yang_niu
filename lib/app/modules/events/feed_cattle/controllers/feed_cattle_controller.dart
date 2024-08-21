@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:intellectual_breed/app/models/feeds.dart';
+import 'package:intellectual_breed/app/models/formula.dart';
 
 import 'package:keyboard_actions/keyboard_actions.dart';
 import '../../../../models/cow_house.dart';
@@ -22,16 +23,24 @@ class FeedCattleController extends GetxController {
   //TODO: Implement FeedCattleController
   //传入的参数
   var argument = Get.arguments;
+
   //编辑事件传入
   FeedEvent? event;
+
   //是否是编辑页面
   RxBool isEdit = false.obs;
+
   //输入框
-  TextEditingController countController = TextEditingController();
+  //矫正饲喂量
+  TextEditingController countController = TextEditingController(text: '1');
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode countNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
+
+  //配方详情信息
+  RxList<FormulaItemModel> modelList = <FormulaItemModel>[].obs;
 
   KeyboardActionsConfig buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
@@ -51,60 +60,69 @@ class FeedCattleController extends GetxController {
   List houseNameList = [];
   String selectedHouseID = ''; //选中的栋舍 ID 提交数据使用
   RxString selectedHouseName = ''.obs;
+
   //当前栋舍的数量
   RxString cowHouseNum = '0'.obs;
 
   // 饲料类型
-  List<Feeds> feedsTypeList = <Feeds>[];
-  List<String> feedsTypeNameList = [];
+  // List<Feeds> feedsTypeList = <Feeds>[];
+  // List<String> feedsTypeNameList = [];
+  // String selectFeedsValue = '';
   RxString curFeedsType = ''.obs;
-  String selectFeedsValue = '';
+
+  //选择的配方
+  FormulaModel? selectFormulaModel;
 
   //饲喂总量
-  String feedsTotal = '';
-  //单头饲喂量
-  RxString feedsSingle = '0'.obs;
+  // String feedsTotal = '';
+  //矫正饲喂量
+  String feedsCorrect = '';
 
   //时间
   final timesStr = ''.obs;
+
   //备注
   String remarkStr = '';
+
+  //是否编辑模式
+  late bool isEditMode;
 
   @override
   void onInit() async {
     super.onInit();
-
+    //首先处理传入参数
+    handleArgument();
     // 输入总量 添加焦点监听器
     countNode.addListener(() async {
       if (!countNode.hasFocus) {
-        // 当焦点失去时执行的逻辑
-        countController.text = feedsTotal == '' ? '0' : feedsTotal;
-        String cowsNum = cowHouseNum.value;
-        double singleWeight = feedsTotal == ''
-            ? 0
-            : (double.parse(feedsTotal) / int.parse(cowsNum));
-        feedsSingle.value = singleWeight.toStringAsFixed(2); // 保留两位小数
-        update();
+        // // 当焦点失去时执行的逻辑
+        // countController.text = feedsCorrect == '' ? '1' : feedsCorrect;
+        // String cowsNum = cowHouseNum.value;
+        // double singleWeight = feedsCorrect == '' ? 0 : (double.parse(feedsCorrect) / int.parse(cowsNum));
+        // feedsSingle.value = singleWeight.toStringAsFixed(2); // 保留两位小数
+
+        // update();
+
+        if (feedsCorrect != countController.text) {
+          getFormulaItems();
+        }
       }
     });
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    if (!isEdit.value) {
+      timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    }
 
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
     //获取栋舍列表名称用于 Picker 显示
     houseNameList.addAll(houseList.map((item) => item.name).toList());
 
-    CommonService().requestFeedStuffAll();
+    // CommonService().requestFeedStuffAll();
     //饲料
-    feedsTypeList = await CommonService().requestFeedStuffAll();
-    feedsTypeNameList
-        .addAll(feedsTypeList.map((item) => item.name ?? '').toList());
-
-    //首先处理传入参数
-    handleArgument();
+    // feedsTypeList = await CommonService().requestFeedStuffAll();
+    // feedsTypeNameList.addAll(feedsTypeList.map((item) => item.name ?? '').toList());
   }
 
   //处理传入参数
@@ -114,43 +132,23 @@ class FeedCattleController extends GetxController {
       //不传值是新增
       return;
     }
-    Toast.showLoading();
     if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑
       event = FeedEvent.fromJson(argument.data);
+      countController.text = '${event?.dosage ?? '1'}';
+      cowHouseNum.value = '${event?.count ?? '0'}';
+      curFeedsType.value = event?.formulaName ?? '--';
       //更新栋舍
       selectedHouseID = event!.cowHouseId;
       selectedHouseName.value = event!.cowHouseName ?? '';
-      for (var element in houseList) {
-        if (event!.cowHouseId == element.id) {
-          //更新栋舍容纳量
-          cowHouseNum.value = element.occupied.toString();
-          break;
-        }
-      }
-
-      for (var element in feedsTypeList) {
-        if (event!.feedstuffId == element.id) {
-          //更新饲料类型
-          selectFeedsValue = element.id;
-          curFeedsType.value = element.name ?? '';
-          break;
-        }
-      }
-
-      //填充总量
-      countController.text = event!.total == 0 ? '' : event!.total.toString();
-      //单头
-      double singleWeight = event!.total / double.parse(cowHouseNum.value);
-      feedsSingle.value = singleWeight.toStringAsFixed(2); // 保留两位小数
       //填充时间
       updateSeldate(event!.date);
       //填充备注
       remarkController.text = event?.remark ?? '';
       //更新
       update();
-      Toast.dismiss();
+      getFormulaItems();
     }
   }
 
@@ -173,16 +171,62 @@ class FeedCattleController extends GetxController {
   }
 
   // 饲料类型
-  void updateCurFeedsType(String feedsType, position) {
-    selectFeedsValue = feedsTypeList[position].id;
-    curFeedsType.value = feedsType;
+  void updateFormulaModel(FormulaModel formulaModel) {
+    selectFormulaModel = formulaModel;
+    curFeedsType.value = formulaModel.name ?? '';
     update();
+    getFormulaItems();
   }
 
   // 调拨时间
   void updateSeldate(String date) {
-    timesStr.value = date;
+    timesStr.value = date.length > 10 ? date.substring(0, 10) : date;
     update();
+  }
+
+  //temp 上次请求的饲喂量
+  String? tempCount;
+
+  //temp 上次请求的id
+  String? tempId;
+
+  //获取配方详情
+  //获取事件详情
+  Future<void> getFormulaItems() async {
+    if (tempCount == countController.text && tempId == (selectFormulaModel?.id ?? '')) {
+      return;
+    }
+
+    if (tempId == (selectFormulaModel?.id ?? '')) {
+      update();
+      return;
+    }
+    tempCount = countController.text;
+    tempId = selectFormulaModel?.id;
+    Toast.showLoading();
+    try {
+      var response = await httpsClient.get("/api/formulaItems/getAll", queryParameters: {
+        "formulaId": (event?.formulaId ?? selectFormulaModel?.id),
+      });
+      Toast.dismiss();
+      modelList.clear();
+      for (var item in response) {
+        FormulaItemModel model = FormulaItemModel.fromJson(item);
+        modelList.add(model);
+      }
+      // items.value = modelList;
+      update();
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        Log.d('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        // HTTP 请求异常情况
+        Log.d('Other Exception: $error');
+      }
+    }
   }
 
   // 提交数据
@@ -195,15 +239,15 @@ class FeedCattleController extends GetxController {
       Toast.show('栋舍中没有牛只');
       return;
     }
-    if (ObjectUtil.isEmpty(selectFeedsValue)) {
-      Toast.show('请选择饲料类型');
+    if (selectFormulaModel?.id == null && event?.formulaId == null) {
+      Toast.show('请选择配方');
       return;
     }
-    String count = countController.text.trim();
-    if (ObjectUtil.isEmpty(count)) {
-      Toast.show('请输入总饲喂量');
-      return;
-    }
+    // String count = countController.text.trim();
+    // if (ObjectUtil.isEmpty(count)) {
+    //   Toast.show('请输入总饲喂量');
+    //   return;
+    // }
 
     //判断提交类型
     if (ObjectUtil.isEmpty(event)) {
@@ -222,15 +266,15 @@ class FeedCattleController extends GetxController {
         Map<String, dynamic> para = {
           'cowHouseId': selectedHouseID, //必传 string 栋舍
           'count': cowHouseNum.value, //必传 integer 头数
-          'feedstuffId': selectFeedsValue, //必传 string 饲料ID
-          'dosage': feedsSingle.value, //必传 number 单头饲喂量
-          'total': countController.text.trim(), //必传 number 总量
+          'formulaId': selectFormulaModel?.id, //必传 string 饲料ID
+          'dosage': countController.text.trim(), //必传 number 单头饲喂量
+          // 'total': countController.text.trim(), //必传 number 总量
           'executor': UserInfoTool.nickName(), // string 饲喂人
           'date': timesStr.value, //必传 string 饲喂时间
           'remark': remarkController.text.trim(), // 备注
         };
 
-        //print(para);
+        print(para);
         await httpsClient.post("/api/feed", data: para);
         Toast.dismiss();
         Toast.success(msg: '提交成功');
@@ -260,9 +304,9 @@ class FeedCattleController extends GetxController {
           'rowVersion': event!.rowVersion, //事件行版本
           'cowHouseId': selectedHouseID, //必传 string 栋舍
           'count': cowHouseNum.value, //必传 integer 头数
-          'feedstuffId': selectFeedsValue, //必传 string 饲料ID
-          'dosage': feedsSingle.value, //必传 number 单头饲喂量
-          'total': countController.text.trim(), //必传 number 总量
+          'formulaId': selectFormulaModel?.id ?? event?.formulaId, //必传 string 饲料ID
+          'dosage': countController.text.trim(), //必传 number 单头饲喂量
+          // 'total': countController.text.trim(), //必传 number 总量
           'executor': UserInfoTool.nickName(), // string 饲喂人
           'date': timesStr.value, //必传 string 饲喂时间
           'remark': remarkController.text.trim(), // 备注

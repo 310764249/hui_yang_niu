@@ -1282,17 +1282,14 @@ class CalvEvent {
 class PreventionEvent {
   late final String id; //ID
   late final String date; //防疫时间
-  late final int
-      loimia; //疫病 1：口蹄疫、2：牛布氏杆菌病、3：牛病毒性腹泻、4：牛副伤寒、5：牛巴氏杆菌病、6：牛传染性胸膜肺炎、7：魏氏梭菌病、8：牛传染性鼻气管炎
-  late final int
-      vaccine; //疫苗 1：口蹄疫疫苗、2：牛布氏杆菌病疫苗、3：牛病毒性腹泻疫苗、4：牛副伤寒灭活菌苗、5：牛巴氏杆菌病灭活菌苗、6：牛传染性胸膜肺炎疫苗、7：魏氏梭菌病疫苗、8：牛传染性鼻气管炎
+  late final int loimia; //疫病 1：口蹄疫、2：牛布氏杆菌病、3：牛病毒性腹泻、4：牛副伤寒、5：牛巴氏杆菌病、6：牛传染性胸膜肺炎、7：魏氏梭菌病、8：牛传染性鼻气管炎
+  late final int vaccine; //疫苗 1：口蹄疫疫苗、2：牛布氏杆菌病疫苗、3：牛病毒性腹泻疫苗、4：牛副伤寒灭活菌苗、5：牛巴氏杆菌病灭活菌苗、6：牛传染性胸膜肺炎疫苗、7：魏氏梭菌病疫苗、8：牛传染性鼻气管炎
   late final String? cowId; //牛只编码
   late final String? cowCode; //耳号
   late final String? batchNo; //批次号
   late final String? cowHouseId; //栋舍
   late final String? cowHouseName; //栋舍名称
-  late final int
-      status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final int count; //头数
   late final double dosage; //单头剂量
   late final int? unit; //剂量单位
@@ -1305,8 +1302,6 @@ class PreventionEvent {
   late final String? modified; //修改时间
   late final String? modifiedBy; //修改人
   late final String rowVersion; //行版本
-
-
 
   PreventionEvent({
     required this.id,
@@ -1342,9 +1337,9 @@ class PreventionEvent {
     batchNo = json['batchNo'];
     cowHouseId = json['cowHouseId'];
     cowHouseName = json['cowHouseName'];
-    if(json['status'] != null){
+    if (json['status'] != null) {
       status = json['status'];
-    }else if(json['state'] != null){
+    } else if (json['state'] != null) {
       status = json['state'];
     }
     count = json['count'] ?? 0;
@@ -1397,8 +1392,7 @@ class HealthCareEvent {
   late final String cowId; //牛只编码
   late final String? batchNo; //批次号
   late final String date; //保健时间
-  late final int
-      status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final int type; //保健类型 1：驱虫；2：消毒；
   late final int count; //头数
   late final String? pharmacy; //用药
@@ -1561,7 +1555,6 @@ class FeedEvent {
   late final String cowHouseId; //栋舍
   late final String? cowHouseName; //栋舍名称
   late final int count; //头数
-  late final String feedstuffId; //饲料ID
   late final double total; //总量
   late final String? executor; //饲喂人
   late final String? remark; //备注
@@ -1571,6 +1564,9 @@ class FeedEvent {
   late final String? modified; //修改时间
   late final String? modifiedBy; //修改人
   late final String rowVersion; //行版本
+  late final String? formulaId; //配方id
+  late final String? formulaName; //配方名称
+  late final int? dosage; //校正饲喂量
 
   FeedEvent({
     required this.id,
@@ -1578,7 +1574,6 @@ class FeedEvent {
     required this.cowHouseId,
     this.cowHouseName,
     required this.count,
-    required this.feedstuffId,
     required this.total,
     this.executor,
     this.remark,
@@ -1588,6 +1583,9 @@ class FeedEvent {
     this.modified,
     this.modifiedBy,
     required this.rowVersion,
+    this.formulaId,
+    this.formulaName,
+    this.dosage,
   });
   FeedEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -1595,7 +1593,6 @@ class FeedEvent {
     cowHouseId = json['cowHouseId'];
     cowHouseName = json['cowHouseName'];
     count = json['count'];
-    feedstuffId = json['feedstuffId'];
     total = double.parse((json['total'] ?? 0).toString());
     executor = json['executor'];
     remark = json['remark'];
@@ -1605,6 +1602,9 @@ class FeedEvent {
     modified = json['modified'];
     modifiedBy = json['modifiedBy'];
     rowVersion = json['rowVersion'];
+    formulaId = json['formulaId'];
+    formulaName = json['formulaName'];
+    dosage = json['dosage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -1614,7 +1614,6 @@ class FeedEvent {
     data['cowHouseId'] = cowHouseId;
     data['cowHouseName'] = cowHouseName;
     data['count'] = count;
-    data['feedstuffId'] = feedstuffId;
     data['total'] = total;
     data['executor'] = executor;
     data['remark'] = remark;
@@ -1624,6 +1623,9 @@ class FeedEvent {
     data['modified'] = modified;
     data['modifiedBy'] = modifiedBy;
     data['rowVersion'] = rowVersion;
+    data['formulaId'] = formulaId;
+    data['formulaName'] = formulaName;
+    data['dosage'] = dosage;
     return data;
   }
 }
@@ -1737,8 +1739,7 @@ class TreatmentEvent {
   late final String? cowCode; //耳号
   late final String? batchNo; //批次号
   late final String date; //诊疗时间
-  late final int
-      illness; //疾病名称 1：口蹄疫、2：病毒性腹泻、3：疟疾、4：高热呼吸道病毒性病害（BHV-1）、5：传染性鼻气管炎、6：瘤胃酸中毒、7：钙缺乏症、8：肺炎、9：产后子宫炎
+  late final int illness; //疾病名称 1：口蹄疫、2：病毒性腹泻、3：疟疾、4：高热呼吸道病毒性病害（BHV-1）、5：传染性鼻气管炎、6：瘤胃酸中毒、7：钙缺乏症、8：肺炎、9：产后子宫炎
   late final int? count; //事件的头数
   late final String? symptom; //症状
   late final String? treatmentPerson; //诊疗人
@@ -2223,8 +2224,7 @@ class CharactersArgument {
     weanWeight = double.parse((json['weanWeight'] ?? 0).toString());
     weanDailyGain = double.parse((json['weanDailyGain'] ?? 0).toString());
     adultWeight = double.parse((json['adultWeight'] ?? 0).toString());
-    pregnancyRateOfBulls =
-        double.parse((json['pregnancyRateOfBulls'] ?? 0).toString());
+    pregnancyRateOfBulls = double.parse((json['pregnancyRateOfBulls'] ?? 0).toString());
     calvRate = double.parse((json['calvRate'] ?? 0).toString());
     rateOfWean = double.parse((json['rateOfWean'] ?? 0).toString());
     deadWeight = double.parse((json['deadWeight'] ?? 0).toString());
@@ -2504,12 +2504,8 @@ class BreedValueEvent {
   }
 }
 
-
-
 //采购事件
 class PurchaseEvent {
-
-
   late final String id;
   late final String no; //单号
   late final String date;
@@ -2530,8 +2526,7 @@ class PurchaseEvent {
   late final String rowVersion;
 
   PurchaseEvent.fromJson(Map<String, dynamic> json) {
-
-    if(json == null){
+    if (json == null) {
       return;
     }
     id = json['id'] ?? "";
@@ -2552,7 +2547,6 @@ class PurchaseEvent {
     modified = json['modified'] ?? "";
     modifiedBy = json['modifiedBy'] ?? "";
     rowVersion = json['rowVersion'] ?? "";
-
   }
 
   Map<String, dynamic> toJson() {
@@ -2579,14 +2573,10 @@ class PurchaseEvent {
 
     return data;
   }
-
 }
-
 
 // 人工事件
 class ManualWorkEvent {
-
-
   late final String id;
   late final String no;
   late final String date;
@@ -2603,10 +2593,8 @@ class ManualWorkEvent {
   late final String modifiedBy;
   late final String rowVersion;
 
-
   ManualWorkEvent.fromJson(Map<String, dynamic> json) {
-
-    if(json == null){
+    if (json == null) {
       return;
     }
     id = json['id'] ?? "";
@@ -2624,7 +2612,6 @@ class ManualWorkEvent {
     modified = json['modified'] ?? "";
     modifiedBy = json['modifiedBy'] ?? "";
     rowVersion = json['rowVersion'] ?? "";
-
   }
 
   Map<String, dynamic> toJson() {
@@ -2648,15 +2635,10 @@ class ManualWorkEvent {
 
     return data;
   }
-
 }
-
-
 
 // 健康评估
 class HealthAssessEvent {
-
-
   late final String id;
   late final String cowId;
   late final String cowCode;
@@ -2676,8 +2658,7 @@ class HealthAssessEvent {
   late final String rowVersion;
 
   HealthAssessEvent.fromJson(Map<String, dynamic> json) {
-
-    if(json == null){
+    if (json == null) {
       return;
     }
     id = json['id'] ?? "";
@@ -2697,7 +2678,6 @@ class HealthAssessEvent {
     modified = json['modified'] ?? "";
     modifiedBy = json['modifiedBy'] ?? "";
     rowVersion = json['rowVersion'] ?? "";
-
   }
 
   Map<String, dynamic> toJson() {
@@ -2723,13 +2703,10 @@ class HealthAssessEvent {
 
     return data;
   }
-
 }
 
 // 效益评估-出栏
 class SalesAssessEvent {
-
-
   late final String id;
   late final String no;
   late final String date;
@@ -2748,8 +2725,7 @@ class SalesAssessEvent {
   late final String rowVersion;
 
   SalesAssessEvent.fromJson(Map<String, dynamic> json) {
-
-    if(json == null){
+    if (json == null) {
       return;
     }
     id = json['id'] ?? "";
@@ -2768,7 +2744,6 @@ class SalesAssessEvent {
     modified = json['modified'] ?? "";
     modifiedBy = json['modifiedBy'] ?? "";
     rowVersion = json['rowVersion'] ?? "";
-
   }
 
   Map<String, dynamic> toJson() {
@@ -2793,5 +2768,4 @@ class SalesAssessEvent {
 
     return data;
   }
-
 }

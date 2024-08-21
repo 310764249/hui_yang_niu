@@ -145,8 +145,7 @@ class CommonService {
     Map<String, dynamic> para = {
       'farmId': farmId,
     };
-    List response =
-        await httpsClient.get("/api/cowhouse/getall", queryParameters: para);
+    List response = await httpsClient.get("/api/cowhouse/getall", queryParameters: para);
     for (var dict in response) {
       CowHouse model = CowHouse.fromJson(dict);
       houseList.add(model);
@@ -188,8 +187,7 @@ class CommonService {
       Map<String, dynamic> para = {
         'farmerId': farmerId,
       };
-      List response =
-          await httpsClient.get("/api/farm/getall", queryParameters: para);
+      List response = await httpsClient.get("/api/farm/getall", queryParameters: para);
       for (var dict in response) {
         Farm model = Farm.fromJson(dict);
         farmList.add(model);
@@ -214,6 +212,7 @@ class CommonService {
       //饲料列表
       List<Feeds> feedsList = <Feeds>[];
       var response = await httpsClient.get("/api/feedstuff/getall");
+      Log.d('eedstuff/getall' + response.toString());
       for (var dict in response) {
         Feeds model = Feeds.fromJson(dict);
         feedsList.add(model);
@@ -238,8 +237,7 @@ class CommonService {
     try {
       //饲料列表
       List<Stock> stockList = <Stock>[];
-      var response = await httpsClient
-          .get("/api/stock/getall", queryParameters: {'category': type});
+      var response = await httpsClient.get("/api/stock/getall", queryParameters: {'category': type});
       for (var dict in response) {
         Stock model = Stock.fromJson(dict);
         stockList.add(model);

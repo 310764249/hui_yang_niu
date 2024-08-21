@@ -82,9 +82,9 @@ class EventListController extends GetxController {
     String title = '';
     if (model.cowCode == null) {
       if (model.batchNo == null) {
-        if(model.no != null){
+        if (model.no != null) {
           title = '单号-${model.no}';
-        }else if(model.cowHouseName != null){
+        } else if (model.cowHouseName != null) {
           title = '栋舍-${model.cowHouseName}';
         }
       } else {
@@ -136,6 +136,9 @@ class EventListController extends GetxController {
         'PageSize': pageSize,
       };
       var response = await httpsClient.get(argument.api, queryParameters: para);
+
+      Log.d('argument: ${argument.api}');
+      Log.d('response: $response');
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);

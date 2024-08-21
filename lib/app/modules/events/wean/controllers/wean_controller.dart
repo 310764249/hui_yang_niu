@@ -71,6 +71,8 @@ class WeanController extends GetxController {
   late CowBatch selectedCowBatch;
   //批次号
   final batchNumber = ''.obs;
+  //犊牛批次
+  final calveBatchNumber = ''.obs;
   //头数
   String count = '0';
 
@@ -80,8 +82,7 @@ class WeanController extends GetxController {
     //首先处理传入参数
     handleArgument();
     //默认当前
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //初始化字典项
 
     //栋舍列表
@@ -124,8 +125,7 @@ class WeanController extends GetxController {
       //数量
       countController.text = event!.nums == 0 ? '' : event!.nums.toString();
       //重量
-      weightController.text =
-          event!.weight == 0 ? '' : event!.weight.toString();
+      weightController.text = event!.weight == 0 ? '' : event!.weight.toString();
       //批次
       updateBatchNumber(event!.batchNo ?? '');
       //填充备注

@@ -77,6 +77,19 @@ class CalvView extends GetView<CalvController> {
           controller.count = value;
         },
       ),
+      CellButton(
+        isRequired: true,
+        title: "批次号（自动生成）",
+        hint: '请选择',
+        showArrow: true,
+        showBottomLine: true,
+        content: controller.batchNumber.value,
+        onPressed: () {
+          // TODO 选择批次
+          //点击后重新请求
+          // controller.requestBatchNumber(1);
+        },
+      ),
       CellTextField(
         isRequired: false,
         title: '总重量（kg）',

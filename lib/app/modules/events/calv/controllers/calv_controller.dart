@@ -27,6 +27,8 @@ class CalvController extends GetxController {
   CalvEvent? event;
   //是否是编辑页面
   RxBool isEdit = false.obs;
+  //批次号
+  final batchNumber = ''.obs;
   //输入框
   TextEditingController countController = TextEditingController(); //头数
   TextEditingController weightController = TextEditingController(); //重量
@@ -78,13 +80,11 @@ class CalvController extends GetxController {
     //首先处理传入参数
     handleArgument();
     //默认当前
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //初始化字典项
     passList = AppDictList.searchItems('ch') ?? [];
     curPassID = passList.isNotEmpty ? passList.first['value'] : '';
-    passNameList =
-        List<String>.from(passList.map((item) => item['label']).toList());
+    passNameList = List<String>.from(passList.map((item) => item['label']).toList());
 
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -129,12 +129,10 @@ class CalvController extends GetxController {
       //数量
       countController.text = event!.nums == 0 ? '' : event!.nums.toString();
       //重量
-      weightController.text =
-          event!.weight == 0 ? '' : event!.weight.toString();
+      weightController.text = event!.weight == 0 ? '' : event!.weight.toString();
       //产护
       curPassID = event!.reason.toString(); //提交数据
-      curPassIndex.value = AppDictList.findIndexByCode(
-          passList, event!.reason.toString()); //显示选中项
+      curPassIndex.value = AppDictList.findIndexByCode(passList, event!.reason.toString()); //显示选中项
       //填充备注
       remarkController.text = event?.remark ?? '';
       //更新

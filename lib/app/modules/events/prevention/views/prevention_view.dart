@@ -31,7 +31,7 @@ class PreventionView extends GetView<PreventionController> {
           const CardTitle(title: "操作信息"),
           RadioButtonGroup(
               isRequired: true,
-              title: '品种',
+              title: '防疫方式',
               selectedIndex: controller.typeIndex.value,
               items: controller.preventionTypeList,
               onChanged: (value) {
@@ -66,16 +66,13 @@ class PreventionView extends GetView<PreventionController> {
                       // 保存选中的牛只模型
                       controller.selectedCow = list.first;
                       controller.setCurrentStage(list.first.growthStage);
-                      debugPrint(
-                          '--->选中的item growthStage: ${list.first.growthStage}');
-                      debugPrint(
-                          '--->选中的item cowHouseId: ${list.first.cowHouseId}');
+                      debugPrint('--->选中的item growthStage: ${list.first.growthStage}');
+                      debugPrint('--->选中的item cowHouseId: ${list.first.cowHouseId}');
                       // 更新耳号显示
                       controller.updateCodeString(list.first.code ?? '');
                       // 更新个体防疫牛只的栋舍
                       controller.cowHouseId = list.first.cowHouseId;
-                      controller.cowHouse?.value =
-                          matchCowHouseById(list.first.cowHouseId);
+                      controller.cowHouse?.value = matchCowHouseById(list.first.cowHouseId);
                     });
                   },
                 ),
@@ -90,22 +87,15 @@ class PreventionView extends GetView<PreventionController> {
           CellButton(
             isRequired: true,
             title: '栋舍',
-            content: controller.typeIndex.value == 0
-                ? controller.batchCowHouse?.value
-                : controller.cowHouse?.value,
+            content: controller.typeIndex.value == 0 ? controller.batchCowHouse?.value : controller.cowHouse?.value,
             // !批量防疫时显示箭头, 个体防疫不显示箭头, -- 另外[编辑]时也不显示箭头
-            showArrow:
-                controller.isEdit.value || controller.typeIndex.value == 1
-                    ? false
-                    : true,
+            showArrow: controller.isEdit.value || controller.typeIndex.value == 1 ? false : true,
             onPressed: () {
               // !批量防疫时才能点击选择栋舍
               if (controller.typeIndex.value == 0) {
                 if (controller.houseNameList.isNotEmpty) {
                   Picker.showSinglePicker(context, controller.houseNameList,
-                      selectData: controller.typeIndex.value == 0
-                          ? controller.batchCowHouse?.value
-                          : controller.cowHouse?.value,
+                      selectData: controller.typeIndex.value == 0 ? controller.batchCowHouse?.value : controller.cowHouse?.value,
                       title: '请选择栋舍', onConfirm: (value, position) {
                     controller.updateCowHouseInfo(value, position);
                   });
@@ -121,11 +111,8 @@ class PreventionView extends GetView<PreventionController> {
               hint: '请选择',
               content: controller.preventionTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.preventionTime.value,
-                    onConfirm: (date) {
-                  controller.preventionTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.preventionTime.value, onConfirm: (date) {
+                  controller.preventionTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellButton(
@@ -134,11 +121,9 @@ class PreventionView extends GetView<PreventionController> {
             hint: '请选择',
             content: controller.loimia.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.loimiaNameList,
-                  selectData: controller.loimia.value,
-                  title: '请选择疫病', onConfirm: (value, position) {
-                controller.loimiaId =
-                    int.parse(controller.loimiaList[position]['value']);
+              Picker.showSinglePicker(context, controller.loimiaNameList, selectData: controller.loimia.value, title: '请选择疫病',
+                  onConfirm: (value, position) {
+                controller.loimiaId = int.parse(controller.loimiaList[position]['value']);
                 controller.loimia.value = controller.loimiaNameList[position];
               });
             },
@@ -149,11 +134,9 @@ class PreventionView extends GetView<PreventionController> {
             hint: '请选择',
             content: controller.vaccine.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.vaccineNameList,
-                  selectData: controller.vaccine.value,
-                  title: '请选择疫苗', onConfirm: (value, position) {
-                controller.vaccineId =
-                    int.parse(controller.vaccineList[position]['value']);
+              Picker.showSinglePicker(context, controller.vaccineNameList, selectData: controller.vaccine.value, title: '请选择疫苗',
+                  onConfirm: (value, position) {
+                controller.vaccineId = int.parse(controller.vaccineList[position]['value']);
                 controller.vaccine.value = controller.vaccineNameList[position];
               });
             },
@@ -163,8 +146,7 @@ class PreventionView extends GetView<PreventionController> {
             title: '单头剂量',
             hint: '请输入',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            controller: TextEditingController(
-                text: controller.dosage.value.toString().trim()),
+            controller: TextEditingController(text: controller.dosage.value.toString().trim()),
             focusNode: controller.dosageNode,
             showTitleOption: true,
             titleOptionHint: '请选择剂量单位',
@@ -191,8 +173,7 @@ class PreventionView extends GetView<PreventionController> {
                   hint: '请输入',
                   keyboardType: TextInputType.number,
                   //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-                  controller: TextEditingController(
-                      text: controller.cattleCount.value.toString().trim()),
+                  controller: TextEditingController(text: controller.cattleCount.value.toString().trim()),
                   focusNode: controller.cattleCountNode,
                   onChanged: (value) {
                     controller.cattleCountController.text = value;
@@ -205,8 +186,7 @@ class PreventionView extends GetView<PreventionController> {
             hint: '请输入',
             titleOptionContent: controller.unit.value,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            controller: TextEditingController(
-                text: controller.totalDosage.value.toString().trim()),
+            controller: TextEditingController(text: controller.totalDosage.value.toString().trim()),
             focusNode: controller.totalDosageNode,
             onChanged: (value) {
               controller.totalDosageController.text = value;

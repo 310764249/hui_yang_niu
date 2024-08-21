@@ -49,7 +49,7 @@ class ManualAssessView extends GetView<ManualAssessController> {
           ),
           CellTextField(
             isRequired: true,
-            title: '费用',
+            title: '费用（元）',
             hint: '请输入',
             keyboardType: TextInputType.number,
             //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制

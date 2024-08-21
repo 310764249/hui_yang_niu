@@ -1566,7 +1566,7 @@ class FeedEvent {
   late final String rowVersion; //行版本
   late final String? formulaId; //配方id
   late final String? formulaName; //配方名称
-  late final int? dosage; //校正饲喂量
+  late final num? dosage; //校正饲喂量
 
   FeedEvent({
     required this.id,

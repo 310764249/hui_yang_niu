@@ -62,19 +62,6 @@ class SelectCattleView extends GetView<SelectCattleController> {
       ),
       CellButton(
         isRequired: true,
-        title: "选种时间",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.selectTime.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择选种时间', onConfirm: (date) {
-            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateSelectTime("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
-      CellButton(
-        isRequired: true,
         title: "出生日期",
         hint: "请选择",
         showBottomLine: true,
@@ -128,6 +115,19 @@ class SelectCattleView extends GetView<SelectCattleController> {
         focusNode: controller.columnNode,
         onChanged: (value) {
           // print(value);
+        },
+      ),
+      CellButton(
+        isRequired: true,
+        title: "选种时间",
+        hint: "请选择",
+        showBottomLine: true,
+        content: controller.selectTime.value,
+        onPressed: () {
+          Picker.showDatePicker(context, title: '请选择选种时间', onConfirm: (date) {
+            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+            controller.updateSelectTime("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+          });
         },
       ),
       CellTextArea(

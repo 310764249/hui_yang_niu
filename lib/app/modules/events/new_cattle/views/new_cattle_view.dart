@@ -46,39 +46,44 @@ class NewCattleView extends GetView<NewCattleController> {
           focusNode: controller.earNumNode,
           onChanged: (value) => {controller.cattleInfo.earNum = value},
         ),
-        CellButton(
-            isRequired: false,
-            title: '批次（批次牛只必传）',
-            colorTitle: Text.rich(TextSpan(children: [
-              TextSpan(
-                  text: "批次",
-                  style:
-                      TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
-              // 备用公牛，母牛，种公牛彼此非必填
-              TextSpan(
-                  text: controller.cattleInfo.currentStage == 8 ||
-                          controller.cattleInfo.currentStage == 9 ||
-                          controller.cattleInfo.currentStage == 10
-                      ? ''
-                      : "（批次牛只必传）",
-                  style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: Colors.red))
-            ])),
-            hint: '请选择',
-            content: controller.cattleInfo.batchNum?.value,
-            onPressed: () {
-              Get.toNamed(Routes.BATCH_LIST,
-                  arguments: BatchListArgument(
-                    goBack: true,
-                  ))?.then((value) {
-                if (ObjectUtil.isEmpty(value)) {
-                  return;
-                }
-                //拿到批次号数组
-                List<CowBatch> list = value as List<CowBatch>;
-                // 选择完批次牛后, 自动带出: 1.批次号, 2.来源场, 3.入场时间等等信息
-                controller.updateCattleData(list.first);
-              });
-            }),
+        controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10
+            ? CellButton(
+                isRequired: false,
+                title: '批次（批次牛只必传）',
+                colorTitle: Text.rich(TextSpan(children: [
+                  TextSpan(
+                      text: "批次",
+                      style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
+                  // 备用公牛，母牛，种公牛彼此非必填
+                  TextSpan(
+                      text: controller.cattleInfo.currentStage == 8 ||
+                              controller.cattleInfo.currentStage == 9 ||
+                              controller.cattleInfo.currentStage == 10
+                          ? ''
+                          : "（批次牛只必传）",
+                      style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: Colors.red))
+                ])),
+                hint: '请选择',
+                content: controller.cattleInfo.batchNum?.value,
+                onPressed: () {
+                  //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+
+                  Get.toNamed(Routes.BATCH_LIST,
+                      arguments: BatchListArgument(
+                        goBack: true,
+                        type: controller.cattleInfo.currentStage == 8 ? 5 : 6,
+                      ))?.then((value) {
+                    if (ObjectUtil.isEmpty(value)) {
+                      return;
+                    }
+                    //拿到批次号数组
+                    List<CowBatch> list = value as List<CowBatch>;
+                    // 选择完批次牛后, 自动带出: 1.批次号, 2.来源场, 3.入场时间等等信息
+                    controller.updateCattleData(list.first);
+                  });
+                })
+            : const SizedBox.shrink(),
         CellTextField(
           isRequired: false,
           title: '来源场',
@@ -246,18 +251,19 @@ class NewCattleView extends GetView<NewCattleController> {
       children: [
         // _genderSelectionLayout(),
         // 批次号不可编辑
-        CellButton(
-          isRequired: true,
-          title: '批次号（自动生成）',
-          content:
-              controller.cattleInfo.currentStage == 1 ? controller.tempBatchNumAuto1.value : controller.tempBatchNumAuto2.value,
-          // 区分犊牛和育肥牛
-          showArrow: false,
-          onPressed: () {
-            // 如果页面初始化批次号获取失败的话, 需要再次点击生成[批次号(自动生成)]
-            controller.retrieveBatchNumAutoIfNeeded();
-          },
-        ),
+        // if (controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10)
+        //   CellButton(
+        //     isRequired: true,
+        //     title: '批次号（自动生成）',
+        //     content:
+        //         controller.cattleInfo.currentStage == 1 ? controller.tempBatchNumAuto1.value : controller.tempBatchNumAuto2.value,
+        //     // 区分犊牛和育肥牛
+        //     showArrow: false,
+        //     onPressed: () {
+        //       // 如果页面初始化批次号获取失败的话, 需要再次点击生成[批次号(自动生成)]
+        //       controller.retrieveBatchNumAutoIfNeeded();
+        //     },
+        //   ),
         CellTextField(
           isRequired: true,
           title: '批次号下牛犊数量',

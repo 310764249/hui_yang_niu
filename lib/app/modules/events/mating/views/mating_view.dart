@@ -110,17 +110,17 @@ class MatingView extends GetView<MatingController> {
           });
         },
       ),
-      CellButton(
-        isRequired: true,
-        title: "配种时间",
-        hint: "请选择",
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
+      // CellButton(
+      //   isRequired: true,
+      //   title: "配种时间",
+      //   hint: "请选择",
+      //   content: controller.timesStr.value,
+      //   onPressed: () {
+      //     Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
+      //       controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
+      //     });
+      //   },
+      // ),
       // 类型
       RadioButtonGroup(
           isRequired: true,

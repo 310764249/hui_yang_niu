@@ -52,17 +52,6 @@ class MeasurementView extends GetView<MeasurementController> {
           });
         },
       ),
-      CellButton(
-        isRequired: true,
-        title: "测定时间",
-        hint: "请选择",
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.timesStr.value, onConfirm: (date) {
-            controller.updateTimeStr("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
       CellTextField(
         isRequired: false,
         title: '额宽(cm)',

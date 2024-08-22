@@ -45,11 +45,8 @@ class FeedCattleView extends GetView<FeedCattleController> {
         isRequired: true,
         title: "栋舍牛只数量",
         // showArrow: false,
-        content: controller.cowHouseNum.value,
+        controller: controller.cowHouseNumController,
         keyboardType: TextInputType.number,
-        onChanged: (value) {
-          controller.cowHouseNum.value = value;
-        },
       ),
       CellButton(
         isRequired: true,
@@ -62,7 +59,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
             Toast.show('请选择栋舍');
             return;
           }
-          if (controller.cowHouseNum.value == '0') {
+          if (controller.cowHouseNumController.text == '0') {
             Toast.show('栋舍中没有牛只');
             return;
           }
@@ -166,7 +163,7 @@ class FeedCattleView extends GetView<FeedCattleController> {
                           alignment: Alignment.center,
                           margin: EdgeInsets.only(top: ScreenAdapter.height(20)),
                           child: Text(
-                            '${controller.event?.formulaName ?? controller.selectFormulaModel?.name ?? ''}（头数：${controller.cowHouseNum.value}）',
+                            '${controller.event?.formulaName ?? controller.selectFormulaModel?.name ?? ''}（头数：${controller.cowHouseNumController.text}）',
                             style: TextStyle(
                               color: SaienteColors.blackE5,
                               fontSize: ScreenAdapter.fontSize(16),
@@ -188,9 +185,9 @@ class FeedCattleView extends GetView<FeedCattleController> {
                                   ),
                                 ),
                                 Text(
-                                  '${((item.weight ?? 0) * num.parse(controller.cowHouseNum.value) * num.parse(controller.countController.text)).toStringAsFixed(2)}kg = '
+                                  '${((item.weight ?? 0) * num.parse(controller.cowHouseNumController.text) * num.parse(controller.countController.text)).toStringAsFixed(2)}kg = '
                                   '${(item.weight ?? 0)}kg * '
-                                  '${controller.cowHouseNum.value}头 * '
+                                  '${controller.cowHouseNumController.text}头 * '
                                   '${controller.countController.text}',
                                   style: TextStyle(
                                     color: SaienteColors.black333333,

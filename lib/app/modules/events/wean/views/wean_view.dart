@@ -68,6 +68,34 @@ class WeanView extends GetView<WeanController> {
       //     });
       //   },
       // ),
+      CellButton(
+        isRequired: true,
+        title: "断奶犊牛批次",
+        hint: "请选择",
+        content: controller.calveBatchNumber.value,
+        showBottomLine: true,
+        onPressed: () {
+          if (controller.isEdit.value) {
+            return;
+          }
+          //点击后重新请求
+          // controller.requestBatchNumber(1);
+          //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+          Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true, type: 1))?.then((value) {
+            if (ObjectUtil.isEmpty(value)) {
+              return;
+            }
+            //拿到批次号数组
+            List<CowBatch> list = value as List<CowBatch>;
+            if (list.isNotEmpty) {
+              // Log.d(list.first.toJson().toString());
+              controller.calveBatchNumber.value = list.first.batchNo ?? '';
+              controller.calveBatchCount = list.first.count;
+              controller.update();
+            }
+          });
+        },
+      ),
       CellTextField(
         isRequired: true,
         title: '头数',
@@ -79,14 +107,7 @@ class WeanView extends GetView<WeanController> {
           controller.count = value;
         },
       ),
-      CellButton(
-        isRequired: true,
-        title: "断奶犊牛批次",
-        hint: "请选择",
-        content: controller.calveBatchNumber.value,
-        showBottomLine: true,
-        onPressed: () {},
-      ),
+
       CellButton(
         isRequired: true,
         title: "育肥牛批次",

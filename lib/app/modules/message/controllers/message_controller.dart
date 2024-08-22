@@ -2,10 +2,12 @@ import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/routes/app_pages.dart';
 
 import '../../../models/cattle.dart';
 import '../../../models/notice.dart';
 import '../../../models/page_info.dart';
+import '../../../models/simple_event.dart';
 import '../../../network/apiException.dart';
 import '../../../network/httpsClient.dart';
 import '../../../services/Log.dart';
@@ -111,8 +113,7 @@ class MessageController extends GetxController {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
-      var response =
-          await httpsClient.get("/api/notice", queryParameters: para);
+      var response = await httpsClient.get("/api/notice", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -140,6 +141,28 @@ class MessageController extends GetxController {
       if (error is ApiException) {
         // 处理 API 请求异常情况 code不为 0 的场景
         Log.d('API Exception: ${error.toString()}');
+      } else {
+        // HTTP 请求异常情况
+        Log.d('Other Exception: $error');
+      }
+    }
+  }
+
+  // 跳转编辑饲喂
+  void goToChangeCattle(Notice notice) async {
+    Log.d(notice.toJson().toString());
+    Toast.showLoading();
+    try {
+      var response = await httpsClient.get('/api/favorites/${notice.id}');
+      Toast.dismiss();
+      SimpleEvent event = SimpleEvent.fromJson(response);
+      Get.toNamed(Routes.FEED_CATTLE, arguments: event);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        Log.d('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.message);
       } else {
         // HTTP 请求异常情况
         Log.d('Other Exception: $error');

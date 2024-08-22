@@ -109,7 +109,7 @@ class NewCattleController extends GetxController {
 
     // 初始化请求参数
     cattleInfo = CattleInfo.init();
-
+    cattleInfo.currentStage = Constant.currentStageList.first.id;
     // 初始化请求生成犊牛的批次号
     requestBatchNumber(1);
 
@@ -155,7 +155,7 @@ class NewCattleController extends GetxController {
     });
     sourceFarmNode.addListener(() {
       if (!sourceFarmNode.hasFocus) {
-        // 当焦点失去时执行的逻辑
+        // 当焦点失去时执行的逻辑c
         cattleInfo.sourceFarm?.value = sourceFarmController.text;
       }
     });

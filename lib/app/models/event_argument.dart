@@ -506,6 +506,7 @@ class WeanEvent {
   late final String? executor; //技术员
   late final String? remark; //备注
   late final String? batchNo; //育肥牛批次
+  late final String? calfBatchNo; //断奶犊牛批次
   late final String tenantId; //租户
   late final String created; //创建时间
   late final String? createdBy; //创建人
@@ -532,6 +533,7 @@ class WeanEvent {
     this.modified,
     this.modifiedBy,
     required this.rowVersion,
+    this.calfBatchNo,
   });
   WeanEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -552,6 +554,7 @@ class WeanEvent {
     modified = json['modified'];
     modifiedBy = json['modifiedBy'];
     rowVersion = json['rowVersion'];
+    calfBatchNo = json['calfBatchNo'];
   }
 
   Map<String, dynamic> toJson() {
@@ -574,6 +577,7 @@ class WeanEvent {
     data['modified'] = modified;
     data['modifiedBy'] = modifiedBy;
     data['rowVersion'] = rowVersion;
+    data['calfBatchNo'] = calfBatchNo;
     return data;
   }
 }

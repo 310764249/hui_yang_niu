@@ -29,125 +29,114 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
     ];
     return Obx(() => MyCard(children: [
-      controller.isEdit.value ?
-      CellButton(
-        isRequired: true,
-        title: '采购单号',
-        hint: '',
-        content: controller.event?.no ?? "",
-        showArrow: false,
-      ):Container(),
+          controller.isEdit.value
+              ? CellButton(
+                  isRequired: true,
+                  title: '采购单号',
+                  hint: '',
+                  content: controller.event?.no ?? "",
+                  showArrow: false,
+                )
+              : Container(),
           CellButton(
-        isRequired: false,
-        title: '采购类型',
-        hint: '请选择',
-        content: controller.purchaseAssess.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.purchaseAssessNameList,
-              selectData: controller.purchaseAssess.value,
-              title: '请选择', onConfirm: (value, position) {
-                controller.purchaseAssessId =
-                    int.parse(controller.purchaseAssessList[position]['value']);
+            isRequired: false,
+            title: '采购类型',
+            hint: '请选择',
+            content: controller.purchaseAssess.value,
+            onPressed: () {
+              Picker.showSinglePicker(context, controller.purchaseAssessNameList,
+                  selectData: controller.purchaseAssess.value, title: '请选择', onConfirm: (value, position) {
+                controller.purchaseAssessId = int.parse(controller.purchaseAssessList[position]['value']);
                 controller.purchaseAssess.value = controller.purchaseAssessNameList[position];
               });
-        },
-      ),
-
-      CellTextField(
-        isRequired: true,
-        title: '物资名称',
-        hint: '请输入',
-        keyboardType: TextInputType.text,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.nameController,
-        focusNode: controller.nameNode
-      ),
-      CellButton(
-          isRequired: true,
-          title: '采购日期',
-          hint: '请选择',
-          content: controller.assessTime.value,
-          onPressed: () {
-            Picker.showDatePicker(context,
-                title: '请选择时间', selectDate: controller.assessTime.value,
-                onConfirm: (date) {
-                  controller.assessTime.value =
-                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+            },
+          ),
+          CellTextField(
+              isRequired: true,
+              title: '物资名称',
+              hint: '请输入',
+              keyboardType: TextInputType.text,
+              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              controller: controller.nameController,
+              focusNode: controller.nameNode),
+          CellTextField(
+              isRequired: false,
+              title: '采购厂家',
+              hint: '请输入',
+              keyboardType: TextInputType.text,
+              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              controller: controller.manufacturersController,
+              focusNode: controller.manufacturersNode),
+          CellTextField(
+            isRequired: true,
+            title: '数量',
+            hint: '请输入',
+            keyboardType: TextInputType.number,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.countController,
+            focusNode: controller.countNode,
+            onChanged: (val) {
+              controller.autoCalculate();
+            },
+            onComplete: () {
+              controller.countController.text = int.parse(controller.countController.text.trim()).toString();
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '单价(元)',
+            hint: '请输入',
+            inputFormatters: lstFormat,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.priceController,
+            focusNode: controller.priceNode,
+            onChanged: (val) {
+              controller.autoCalculate();
+            },
+            onComplete: () {
+              controller.priceController.text = double.parse(controller.priceController.text.trim()).toString();
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '折损(元)',
+            hint: '请输入',
+            inputFormatters: lstFormat,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.breakageController,
+            focusNode: controller.breakageNode,
+            onChanged: (val) {
+              controller.autoCalculate();
+            },
+            onComplete: () {
+              controller.breakageController.text = double.parse(controller.breakageController.text.trim()).toString();
+            },
+          ),
+          CellTextField(
+            isRequired: true,
+            title: '总价(元)',
+            hint: '请输入',
+            inputFormatters: lstFormat,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.amountController,
+            focusNode: controller.amountNode,
+            onComplete: () {
+              controller.amountController.text = double.parse(controller.amountController.text.trim()).toString();
+            },
+          ),
+          CellButton(
+              isRequired: true,
+              title: '采购日期',
+              hint: '请选择',
+              content: controller.assessTime.value,
+              onPressed: () {
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
+                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
-          }),
-
-      CellTextField(
-        isRequired: false,
-        title: '采购厂家',
-        hint: '请输入',
-        keyboardType: TextInputType.text,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.manufacturersController,
-        focusNode: controller.manufacturersNode
-      ),
-
-      CellTextField(
-        isRequired: true,
-        title: '数量',
-        hint: '请输入',
-        keyboardType: TextInputType.number,
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.countController,
-        focusNode: controller.countNode,
-        onChanged: (val){
-          controller.autoCalculate();
-        },
-        onComplete: (){
-          controller.countController.text = int.parse(controller.countController.text.trim()).toString();
-        },
-      ),
-
-      CellTextField(
-        isRequired: true,
-        title: '单价(元)',
-        hint: '请输入',
-        inputFormatters: lstFormat,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.priceController,
-        focusNode: controller.priceNode,
-        onChanged: (val){
-          controller.autoCalculate();
-        },
-        onComplete: (){
-          controller.priceController.text = double.parse(controller.priceController.text.trim()).toString();
-        },
-      ),
-      CellTextField(
-        isRequired: true,
-        title: '折损(元)',
-        hint: '请输入',
-        inputFormatters: lstFormat,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.breakageController,
-        focusNode: controller.breakageNode,
-        onChanged: (val){
-          controller.autoCalculate();
-        },
-        onComplete: (){
-          controller.breakageController.text = double.parse(controller.breakageController.text.trim()).toString();
-        },
-      ),
-      CellTextField(
-        isRequired: true,
-        title: '总价(元)',
-        hint: '请输入',
-        inputFormatters: lstFormat,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-        controller: controller.amountController,
-        focusNode: controller.amountNode,
-        onComplete: (){
-          controller.amountController.text = double.parse(controller.amountController.text.trim()).toString();
-        },
-      ),
-
+              }),
           CellTextArea(
               isRequired: false,
               title: "备注信息",

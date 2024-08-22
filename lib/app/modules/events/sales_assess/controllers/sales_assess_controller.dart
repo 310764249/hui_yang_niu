@@ -78,6 +78,9 @@ class SalesAssessController extends GetxController {
 
     //首先处理传入参数
     handleArgument();
+    if (!isEdit.value) {
+      assessTime.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    }
     Toast.dismiss();
   }
 

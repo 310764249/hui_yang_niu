@@ -134,17 +134,34 @@ class MessageView extends GetView<MessageController> {
           });
         }
         return _messageItem(
-            AssetsImages.task,
-            Notice.getEventNameByCode(notice.type ?? -1),
-            '牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())}); 栋舍: ${notice.cowHouseName}; 事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
-            notice.created.orEmpty(), () {
-          controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
-        });
+          AssetsImages.task,
+          Notice.getEventNameByCode(notice.type ?? -1),
+          '牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())}); 栋舍: ${notice.cowHouseName}; 事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
+          notice.created.orEmpty(),
+          () {
+            print('*****' + notice.type.toString());
+            if (notice.type == 412) {
+              //待换料
+              controller.goToChangeCattle(notice);
+              return;
+            }
+            controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
+          },
+        );
       case 300 || 500:
-        return _messageItem(AssetsImages.alert, '提醒消息', notice.content ?? Constant.placeholder, notice.created.orEmpty(), () {
-          Get.toNamed(Routes.MESSAGE_DETAIL,
-              arguments: {'title': '提醒消息', 'content': notice.content ?? Constant.placeholder, 'time': notice.created.orEmpty()});
-        });
+        return _messageItem(
+          AssetsImages.alert,
+          '提醒消息',
+          notice.content ?? Constant.placeholder,
+          notice.created.orEmpty(),
+          () {
+            Get.toNamed(Routes.MESSAGE_DETAIL, arguments: {
+              'title': '提醒消息',
+              'content': notice.content ?? Constant.placeholder,
+              'time': notice.created.orEmpty()
+            });
+          },
+        );
       default:
         return _messageItem(AssetsImages.notify, '系统通知', notice.content ?? Constant.placeholder, notice.created.orEmpty(), () {
           Get.toNamed(Routes.MESSAGE_DETAIL,

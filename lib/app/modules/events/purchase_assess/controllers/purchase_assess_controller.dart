@@ -32,6 +32,7 @@ class PurchaseAssessController extends GetxController {
   TextEditingController breakageController = TextEditingController();
 
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode nameNode = FocusNode();
   final FocusNode manufacturersNode = FocusNode();
@@ -59,9 +60,9 @@ class PurchaseAssessController extends GetxController {
 
   // 是否是编辑页面
   RxBool isEdit = false.obs;
+
   // 数量
   RxInt cattleCount = 0.obs;
-
 
   // 时间
   final assessTime = ''.obs;
@@ -72,46 +73,45 @@ class PurchaseAssessController extends GetxController {
   int purchaseAssessId = -1;
   RxString purchaseAssess = ''.obs;
 
-
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
 
     purchaseAssessList = AppDictList.searchItems('wzfl') ?? [];
-    purchaseAssessNameList =
-        List<String>.from(purchaseAssessList.map((item) => item['label']).toList());
+    purchaseAssessNameList = List<String>.from(purchaseAssessList.map((item) => item['label']).toList());
 
     //首先处理传入参数
     handleArgument();
+    if (!isEdit.value) {
+      assessTime.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    }
     Toast.dismiss();
   }
 
   //自动计算总价
-  void autoCalculate(){
-    if( countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty ){
-
+  void autoCalculate() {
+    if (countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty) {
       int count = int.parse(countController.text);
       double price = double.parse(priceController.text);
       // double amount = double.parse(amountController.text);
       double breakage = double.parse(breakageController.text);
-      double amount = price*count-breakage;
-      if(amount > 0){
-        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), '');// "$amount";
-        if(amountController.text.endsWith(".")){
-          amountController.text = amountController.text.substring(0,amountController.text.length-1);
+      double amount = price * count - breakage;
+      if (amount > 0) {
+        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), ''); // "$amount";
+        if (amountController.text.endsWith(".")) {
+          amountController.text = amountController.text.substring(0, amountController.text.length - 1);
         }
-      }else{
+      } else {
         amountController.text = "";
       }
     }
   }
 
-
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -127,10 +127,8 @@ class PurchaseAssessController extends GetxController {
       assessTime.value = event?.date ?? '';
       // 采购
       purchaseAssessId = event?.type ?? -1;
-      if(purchaseAssessId != -1){
-        purchaseAssess.value = purchaseAssessList.firstWhere(
-                (item) => int.parse(item['value']) == purchaseAssessId)['label'];
-
+      if (purchaseAssessId != -1) {
+        purchaseAssess.value = purchaseAssessList.firstWhere((item) => int.parse(item['value']) == purchaseAssessId)['label'];
       }
       //填充备注
       nameController.text = event?.name ?? '';
@@ -170,31 +168,30 @@ class PurchaseAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-
-      String? str;
-      if (nameController.text.isEmpty) {
-        str = '请输入物资名称';
-      }else if (nameController.text.isEmpty) {
-        str = '请输入物资名称';
-      }else if (assessTime.value.isBlankEx()) {
-        str = '请选择采购日期';
-      }else if (countController.text.isEmpty) {
-        str = '请输入数量';
-      }else if (priceController.text.isEmpty) {
-        str = '请输入单价';
-      }else if (amountController.text.isEmpty) {
-        str = '请输入总价';
-      }else if (breakageController.text.isEmpty) {
-        str = '请输入折损';
-      }
-      /*if (purchaseAssessId == -1) {
+    String? str;
+    if (nameController.text.isEmpty) {
+      str = '请输入物资名称';
+    } else if (nameController.text.isEmpty) {
+      str = '请输入物资名称';
+    } else if (assessTime.value.isBlankEx()) {
+      str = '请选择采购日期';
+    } else if (countController.text.isEmpty) {
+      str = '请输入数量';
+    } else if (priceController.text.isEmpty) {
+      str = '请输入单价';
+    } else if (amountController.text.isEmpty) {
+      str = '请输入总价';
+    } else if (breakageController.text.isEmpty) {
+      str = '请输入折损';
+    }
+    /*if (purchaseAssessId == -1) {
         Toast.show('请选择采购类型');
         return;
       }*/
-      if(str != null && str.isNotEmpty){
-        Toast.show(str);
-        return;
-      }
+    if (str != null && str.isNotEmpty) {
+      Toast.show(str);
+      return;
+    }
 
     try {
       Toast.showLoading(msg: "提交中...");
@@ -206,14 +203,14 @@ class PurchaseAssessController extends GetxController {
         mapParam = {
           //'id': isEdit.value ? event?.id : '', //事件 ID
           //'rowVersion': isEdit.value ? event?.rowVersion : '', //事件行版本
-          "date":assessTime.value,
-          "type":purchaseAssessId,
-          "name":nameController.text,
-          "manufacturers":manufacturersController.text,
-          "count":int.parse(countController.text),
-          "price":double.parse(priceController.text),
-          "amount":double.parse(amountController.text),
-          "breakage":double.parse(breakageController.text),
+          "date": assessTime.value,
+          "type": purchaseAssessId,
+          "name": nameController.text,
+          "manufacturers": manufacturersController.text,
+          "count": int.parse(countController.text),
+          "price": double.parse(priceController.text),
+          "amount": double.parse(amountController.text),
+          "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };
@@ -223,15 +220,15 @@ class PurchaseAssessController extends GetxController {
           //* 编辑用的参数
           'id': isEdit.value ? event?.id : '', //事件 ID
           'rowVersion': isEdit.value ? event?.rowVersion : '', //事件行版本
-          "no":event?.no ?? "",
-          "date":assessTime.value,
-          "type":purchaseAssessId,
-          "name":nameController.text,
-          "manufacturers":manufacturersController.text,
-          "count":int.parse(countController.text),
-          "price":double.parse(priceController.text),
-          "amount":double.parse(amountController.text),
-          "breakage":double.parse(breakageController.text),
+          "no": event?.no ?? "",
+          "date": assessTime.value,
+          "type": purchaseAssessId,
+          "name": nameController.text,
+          "manufacturers": manufacturersController.text,
+          "count": int.parse(countController.text),
+          "price": double.parse(priceController.text),
+          "amount": double.parse(amountController.text),
+          "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
           "remark": remarkController.text.trim()
         };

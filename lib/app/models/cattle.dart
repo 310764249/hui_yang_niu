@@ -110,6 +110,7 @@ class Cattle {
     this.lastMating,
     this.isBan,
   });
+
   Cattle.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     no = json['no'];
@@ -259,6 +260,10 @@ class Cattle {
       case 409:
         // 待保健
         Get.toNamed(Routes.HEALTH_CARE, arguments: cattle);
+        break;
+      case 412:
+        // 待换料
+        Get.toNamed(Routes.FEED_CATTLE, arguments: cattle);
         break;
       default:
         Toast.show('未知type类型');

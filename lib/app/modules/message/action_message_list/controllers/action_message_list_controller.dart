@@ -26,9 +26,7 @@ class ActionMessageListController extends GetxController {
   /// 设置搜索类型
   void setSearchType(int typeParam) {
     // 初始化picker数据, 判断是从[生产任务]or[预警提醒]
-    typeParam == 400
-        ? typeList.addAll(subtypeList1)
-        : typeList.addAll(subtypeList2);
+    typeParam == 400 ? typeList.addAll(subtypeList1) : typeList.addAll(subtypeList2);
     typeNameList.addAll(typeList.map((item) => item['label']).toList());
     selectedTypeIndex = 0;
     selectedTypeName.value = typeNameList[selectedTypeIndex];
@@ -158,8 +156,7 @@ class ActionMessageListController extends GetxController {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
-      var response =
-          await httpsClient.get("/api/notice", queryParameters: para);
+      var response = await httpsClient.get("/api/notice", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);

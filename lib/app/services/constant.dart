@@ -29,7 +29,7 @@ class Constant {
   // static const String articleHost = 'http://nxbreedcms.sdyihewan.com/#/details'; // 正式环境
   // static const String articleHost = 'http://breedcms.sdyihewan.com/#/details'; //测试环境
   // static const String articleHost = 'http://154.8.193.14:1235/#/details'; // 正式环境
-  static const String articleHost = 'http://154.8.193.14:1237/#/details'; //测试环境
+  static const String articleHost = 'http://154.8.193.14:1235/#/details'; //测试环境
 
   //文件上传相关
   static const String uploadTokenUrl = 'https://id.banggongshe.cn/connect/token';

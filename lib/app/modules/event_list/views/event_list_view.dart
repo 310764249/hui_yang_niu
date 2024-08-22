@@ -174,7 +174,6 @@ class EventListView extends GetView<EventListController> {
                                       shape: MaterialStateProperty.all(
                                           RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
                                   onPressed: () {
-                                    debugPrint('编辑');
                                     Get.toNamed(controller.argument.routerStr, arguments: model)?.then((value) {
                                       // controller.refreshController
                                       //     .callRefresh();

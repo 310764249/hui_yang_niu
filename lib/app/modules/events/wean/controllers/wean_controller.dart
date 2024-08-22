@@ -73,6 +73,8 @@ class WeanController extends GetxController {
   final batchNumber = ''.obs;
   //犊牛批次
   final calveBatchNumber = ''.obs;
+  //犊牛批次数量
+  int calveBatchCount = 0;
   //头数
   String count = '0';
 
@@ -130,6 +132,10 @@ class WeanController extends GetxController {
       updateBatchNumber(event!.batchNo ?? '');
       //填充备注
       remarkController.text = event?.remark ?? '';
+      //断奶犊牛批次
+      calveBatchNumber.value = event?.calfBatchNo ?? '';
+      //犊牛批次数量
+      // calveBatchCount = event!.calfCount ?? 0;
       //更新
       update();
     }
@@ -177,6 +183,21 @@ class WeanController extends GetxController {
       Toast.show('耳号未获取,请点击耳号选择');
       return;
     }
+    if (calveBatchNumber.isEmpty) {
+      Toast.show('请选择断奶犊牛批次');
+      return;
+    }
+    String count = countController.text.trim();
+    if (ObjectUtil.isEmpty(count)) {
+      Toast.show('请输入数量');
+      return;
+    }
+
+    /* if (num.parse(count) > calveBatchCount) {
+      Toast.show('数量不能大于犊牛批次数量($calveBatchCount)');
+      return;
+    }*/
+
     //时间不能小于出生日期
     if (timesStr.value.isBefore(selectedCow.birth)) {
       Toast.show('断奶时间不能早于出生日期');
@@ -191,11 +212,7 @@ class WeanController extends GetxController {
     //   Toast.show('请选择栋舍');
     //   return;
     // }
-    String count = countController.text.trim();
-    if (ObjectUtil.isEmpty(count)) {
-      Toast.show('请输入数量');
-      return;
-    }
+
     //时间不能小于入场日期
     if (timesStr.value.isBefore(selectedCow.inArea)) {
       Toast.show('断奶时间不能早于入场日期');
@@ -226,6 +243,7 @@ class WeanController extends GetxController {
       Map<String, dynamic> para = {
         'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
         'batchNo': batchNumber.value, //必传 育肥牛批次号
+        'calfBatchNo': calveBatchNumber.value, //必传 犊牛批次
         'nums': countController.text.trim(), //必传 integer 断奶头数
         'weight': weightController.text.trim(), //必传 number 断奶重量
         'executor': UserInfoTool.nickName(), // string 技术员
@@ -233,6 +251,7 @@ class WeanController extends GetxController {
         'remark': remarkController.text.trim(), // 备注
       };
 
+      Log.d(para.toString());
       await httpsClient.post("/api/wean", data: para);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
@@ -260,6 +279,7 @@ class WeanController extends GetxController {
         'rowVersion': event!.rowVersion, //事件行版本
         'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
         'batchNo': batchNumber.value, //必传 育肥牛批次号
+        'calfBatchNo': calveBatchNumber.value, //必传 犊牛批次
         'nums': countController.text.trim(), //必传 integer 断奶头数
         'weight': weightController.text.trim(), //必传 number 断奶重量
         'executor': UserInfoTool.nickName(), // string 技术员

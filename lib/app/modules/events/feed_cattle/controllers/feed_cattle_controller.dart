@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:common_utils/common_utils.dart';
@@ -62,7 +63,7 @@ class FeedCattleController extends GetxController {
   RxString selectedHouseName = ''.obs;
 
   //当前栋舍的数量
-  RxString cowHouseNum = '0'.obs;
+  TextEditingController cowHouseNumController = TextEditingController(text: '0');
 
   // 饲料类型
   // List<Feeds> feedsTypeList = <Feeds>[];
@@ -137,7 +138,7 @@ class FeedCattleController extends GetxController {
       //编辑
       event = FeedEvent.fromJson(argument.data);
       countController.text = '${event?.dosage ?? '1'}';
-      cowHouseNum.value = '${event?.count ?? '0'}';
+      cowHouseNumController.text = '${event?.count ?? '0'}';
       curFeedsType.value = event?.formulaName ?? '--';
       //更新栋舍
       selectedHouseID = event!.cowHouseId;
@@ -165,7 +166,7 @@ class FeedCattleController extends GetxController {
   // 更新"栋舍"选中项
   void updateCurCowHouse(String cowHouse, int position) {
     selectedHouseID = houseList[position].id;
-    cowHouseNum.value = houseList[position].occupied.toString();
+    cowHouseNumController.text = houseList[position].occupied.toString();
     selectedHouseName.value = cowHouse;
     update();
   }
@@ -235,7 +236,7 @@ class FeedCattleController extends GetxController {
       Toast.show('请选择栋舍');
       return;
     }
-    if (cowHouseNum.value == '0') {
+    if (cowHouseNumController.text == '0') {
       Toast.show('栋舍中没有牛只');
       return;
     }
@@ -265,7 +266,7 @@ class FeedCattleController extends GetxController {
         //接口参数
         Map<String, dynamic> para = {
           'cowHouseId': selectedHouseID, //必传 string 栋舍
-          'count': cowHouseNum.value, //必传 integer 头数
+          'count': cowHouseNumController.text, //必传 integer 头数
           'formulaId': selectFormulaModel?.id, //必传 string 饲料ID
           'dosage': countController.text.trim(), //必传 number 单头饲喂量
           // 'total': countController.text.trim(), //必传 number 总量
@@ -303,7 +304,7 @@ class FeedCattleController extends GetxController {
           'id': event!.id, //事件 ID
           'rowVersion': event!.rowVersion, //事件行版本
           'cowHouseId': selectedHouseID, //必传 string 栋舍
-          'count': cowHouseNum.value, //必传 integer 头数
+          'count': cowHouseNumController.text, //必传 integer 头数
           'formulaId': selectFormulaModel?.id ?? event?.formulaId, //必传 string 饲料ID
           'dosage': countController.text.trim(), //必传 number 单头饲喂量
           // 'total': countController.text.trim(), //必传 number 总量

@@ -150,6 +150,14 @@ class FeedCattleController extends GetxController {
       //更新
       update();
       getFormulaItems();
+    } else {
+      if (argument is CowHouse) {
+        CowHouse cowHouse = argument;
+        selectedHouseID = cowHouse.id;
+        selectedHouseName.value = cowHouse.name ?? '';
+        cowHouseNumController.text = cowHouse.occupied.toString();
+        update();
+      }
     }
   }
 

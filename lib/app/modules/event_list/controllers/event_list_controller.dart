@@ -137,9 +137,6 @@ class EventListController extends GetxController {
       };
       var response = await httpsClient.get(argument.api, queryParameters: para);
 
-      Log.d('argument: ${argument.api}');
-      Log.d('response: $response');
-
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
       List mapList = model.list;

@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/models/cow_house.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 
 import '../../../models/cattle.dart';
@@ -16,20 +17,26 @@ import '../../../widgets/toast.dart';
 
 class MessageController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
+
   //
   int pageIndex = 1;
   int pageSize = 14;
+
   //
   bool hasMore = false;
+
   // 是否加载中, 在[页面初始化]和[条件搜索]时触发
   var isLoading = true.obs;
+
   //刷新控件
   late EasyRefreshController refreshController;
+
   //当前列表
   RxList<Notice> items = <Notice>[].obs;
 
   //生长阶段
   List szjdList = [];
+
   //公母
   List gmList = [];
 
@@ -66,6 +73,7 @@ class MessageController extends GetxController {
 
   //牛只详情
   Cattle? cattle;
+
   //获取牛只详情
   Future<void> getCattleDataAndGoToEventDetail(int type, String? cowId) async {
     if (ObjectUtil.isEmpty(cowId)) {
@@ -120,7 +128,9 @@ class MessageController extends GetxController {
       List mapList = model.list;
       List<Notice> modelList = [];
       for (var item in mapList) {
+        Log.d(item.toString());
         Notice model = Notice.fromJson(item);
+
         modelList.add(model);
       }
       //更新页面数据
@@ -150,19 +160,19 @@ class MessageController extends GetxController {
 
   // 跳转编辑饲喂
   void goToChangeCattle(Notice notice) async {
-    Log.d(notice.toJson().toString());
-    Toast.showLoading();
     try {
-      var response = await httpsClient.get('/api/favorites/${notice.id}');
+      Toast.showLoading();
+      CowHouse cowHouse = CowHouse.fromJson(await httpsClient.get('/api/cowhouse/${notice.cowHouseId}'));
       Toast.dismiss();
-      SimpleEvent event = SimpleEvent.fromJson(response);
-      Get.toNamed(Routes.FEED_CATTLE, arguments: event);
+      Get.toNamed(
+        Routes.FEED_CATTLE,
+        arguments: cowHouse,
+      );
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {
         // 处理 API 请求异常情况 code不为 0 的场景
         Log.d('API Exception: ${error.toString()}');
-        Toast.failure(msg: error.message);
       } else {
         // HTTP 请求异常情况
         Log.d('Other Exception: $error');

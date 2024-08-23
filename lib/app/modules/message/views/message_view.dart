@@ -140,7 +140,7 @@ class MessageView extends GetView<MessageController> {
           notice.created.orEmpty(),
           () {
             print('*****' + notice.type.toString());
-            if (notice.type == 412) {
+            if (notice.type == 412 || notice.type == 411) {
               //待换料
               controller.goToChangeCattle(notice);
               return;

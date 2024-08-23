@@ -28,6 +28,7 @@ class Notice {
   late final String? modifiedBy; // 修改人
   late final String? rowVersion; // 行版本
   String? articleld; // 生产指南的id
+  int? articleType; // 生产指南的type
   String? formulaId; // 生产指南的id
 
   Notice({
@@ -55,6 +56,7 @@ class Notice {
     required this.rowVersion,
     this.articleld,
     this.formulaId,
+    this.articleType,
   });
 
   Notice.fromJson(Map<String, dynamic> json) {
@@ -82,6 +84,7 @@ class Notice {
     rowVersion = json['rowVersion'];
     articleld = json['articleld'];
     articleld = json['formulaId'];
+    articleType = json['articleType'];
   }
 
   Map<String, dynamic> toJson() {
@@ -110,6 +113,7 @@ class Notice {
     data['rowVersion'] = rowVersion;
     data['articleld'] = articleld;
     data['articleld'] = formulaId;
+    data['articleType'] = articleType;
     return data;
   }
 

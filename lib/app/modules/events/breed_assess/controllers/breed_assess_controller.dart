@@ -86,11 +86,11 @@ class BreedAssessController extends GetxController {
     breedAssessId = cow?.breedStatus ?? -1;
     ageByDay = '${cow?.ageOfDay ?? ''}'.obs;
     calvNum = '${cow?.calvNum ?? ''}'.obs;
-    CowAssess.get(id: /*cow!.id*/ 'c8e799ac-22de-4894-a55b-19fb01c0e4e2').then((value) {
+    CowAssess.get(id: cow!.id /*'c8e799ac-22de-4894-a55b-19fb01c0e4e2'*/).then((value) {
       if (value != null) {
         calfNum.value = '${value.calfNum ?? '0'}';
         weanCalfNum.value = '${value.weanCalfNum ?? '0'}';
-        calfAvgDays.value = '${value.calfAvgDays ?? '0'}';
+        calfAvgDays.value = '${value.calfAvgDays ?? '--'}';
         update();
       }
     });

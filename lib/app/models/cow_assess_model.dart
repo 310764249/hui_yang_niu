@@ -12,16 +12,16 @@ class CowAssessModel {
     required this.treatCount,
   });
 
-  int? weanCalfNum; //断奶犊牛数
+  num? weanCalfNum; //断奶犊牛数
   String? code; //耳号
-  int? ageOfDay; //日龄
-  double? nonpregnantDay; //空怀天数
-  int? calvNum; //胎次
-  int? calfAvgDays; //平均产犊间隔天数
+  num? ageOfDay; //日龄
+  num? nonpregnantDay; //空怀天数
+  num? calvNum; //胎次
+  num? calfAvgDays; //平均产犊间隔天数
   String? id; //牛只ID
-  int? calfNum; //产犊数
+  num? calfNum; //产犊数
   String? illness; //历次疾病名称
-  int? treatCount; //诊疗次数
+  num? treatCount; //诊疗次数
 
   factory CowAssessModel.fromJson(Map<dynamic, dynamic> json) => CowAssessModel(
         weanCalfNum: json["weanCalfNum"],

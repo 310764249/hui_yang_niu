@@ -24,8 +24,9 @@ class BodyAssessController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
 
   //输入框
-  TextEditingController ribCountController = TextEditingController();
+  // TextEditingController ribCountController = TextEditingController();
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode ribCountNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
@@ -43,14 +44,16 @@ class BodyAssessController extends GetxController {
 
   // 是否是编辑页面
   RxBool isEdit = false.obs;
+
   // 数量
   RxInt ribCount = 0.obs;
-  
 
   // 当前选中的牛
   Cattle? selectedCow;
+
   // 耳号
   final codeString = ''.obs;
+
   // 防疫时间
   final assessTime = ''.obs;
 
@@ -60,10 +63,11 @@ class BodyAssessController extends GetxController {
   int bodyAssessId = -1;
   RxString bodyAssess = ''.obs;
 
-  void setSelectedCow(Cattle? cow){
+  void setSelectedCow(Cattle? cow) {
     selectedCow = cow;
     // healthAssess.value = cow?.bodyStatus;
     bodyAssessId = cow?.bodyStatus ?? -1;
+    Log.d(cow?.toJson().toString() ?? '***');
   }
 
   // 更新 耳号
@@ -72,16 +76,13 @@ class BodyAssessController extends GetxController {
     update();
   }
 
-
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
     argument = Get.arguments;
     bodyAssessList = AppDictList.searchItems('tkpg') ?? [];
-    bodyAssessNameList =
-        List<String>.from(bodyAssessList.map((item) => item['label']).toList());
-
+    bodyAssessNameList = List<String>.from(bodyAssessList.map((item) => item['label']).toList());
     //首先处理传入参数
     handleArgument();
     Toast.dismiss();
@@ -90,7 +91,7 @@ class BodyAssessController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async{
+  void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -112,8 +113,7 @@ class BodyAssessController extends GetxController {
       assessTime.value = event?.date ?? '';
       // 体况
       bodyAssessId = event?.status ?? -1;
-      bodyAssess.value = bodyAssessList.firstWhere(
-          (item) => int.parse(item['value']) == event?.status)['label'];
+      bodyAssess.value = bodyAssessList.firstWhere((item) => int.parse(item['value']) == event?.status)['label'];
 
       //填充备注
       remarkController.text = event?.remark ?? '';
@@ -146,20 +146,20 @@ class BodyAssessController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitPreventionData() async {
-      String? str;
-      if (selectedCow == null) {
-        str = '请选择牛只';
-      }else if (ribCountController.text.isEmpty) {
-        str = '请输入肋骨数量';
-      }else if (bodyAssessId == -1) {
-        str = '请选择体况';
-      }else if (assessTime.value.isBlankEx()) {
-        str = '请选择评估日期';
-      }
-      if(str != null && str.isNotEmpty){
-        Toast.show(str);
-        return;
-      }
+    String? str;
+    if (selectedCow == null) {
+      str = '请选择牛只';
+    } else if (ribCount.value == 0) {
+      str = '请输入肋骨数量';
+    } else if (bodyAssessId == -1) {
+      str = '请选择体况';
+    } else if (assessTime.value.isBlankEx()) {
+      str = '请选择评估日期';
+    }
+    if (str != null && str.isNotEmpty) {
+      Toast.show(str);
+      return;
+    }
 
     try {
       Toast.showLoading(msg: "提交中...");

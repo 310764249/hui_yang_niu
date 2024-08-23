@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 
 import '../../../../models/cattle.dart';
 import '../../../../models/cattle_list_argu.dart';
@@ -65,7 +66,7 @@ class BodyAssessView extends GetView<BodyAssessController> {
             },
           ),
 
-          CellTextField(
+          /*    CellTextField(
             isRequired: true,
             title: '肋骨数量',
             hint: '请输入',
@@ -75,6 +76,32 @@ class BodyAssessView extends GetView<BodyAssessController> {
             focusNode: controller.ribCountNode,
             onComplete: () {
               controller.ribCount.value = int.parse(controller.ribCountController.text);
+            },
+          ),*/
+          CellButton(
+            isRequired: true,
+            title: '肋骨数量',
+            hint: '请选择',
+            content: controller.ribCount.value.toString(),
+            onPressed: () {
+              showBottomSelectRibCount(context).then((value) {
+                Log.d(value.toString());
+                if (value != null) {
+                  int count = value['count'];
+                  String content = value['content'];
+                  // controller.bodyAssessId = int.parse(controller.bodyAssessList['value']);
+                  controller.ribCount.value = count;
+                  controller.bodyAssess.value = content;
+                  controller.bodyAssessId = int.parse(
+                    controller.bodyAssessList.firstWhereOrNull(
+                      (e) {
+                        return e['label'] == content;
+                      },
+                    )['value'],
+                  );
+                  controller.update();
+                }
+              });
             },
           ),
           CellButton(
@@ -156,5 +183,102 @@ class BodyAssessView extends GetView<BodyAssessController> {
             _commitButton()
           ]),
         ));
+  }
+
+  //肋骨数量(1,2,3,4,5)→体况评估（偏瘦-良好-偏胖）选项设置中进行配置，体况评估的结果自动生成（1：偏胖；2-3：良好；4-5：偏瘦）
+  showBottomSelectRibCount(BuildContext context) async {
+    int selectRibCount = -1;
+    String content = '未选择';
+
+    return await showModalBottomSheet<Map?>(
+      context: context,
+      constraints: BoxConstraints.loose(const Size.fromHeight(210)),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              title: const Text('请选择肋骨数'),
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              leading: const SizedBox.shrink(),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    if (selectRibCount > -1) {
+                      Navigator.of(context).pop({
+                        'count': selectRibCount + 1,
+                        'content': content,
+                      });
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text(
+                    '确定',
+                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+            body: StatefulBuilder(
+              builder: (BuildContext context, void Function(void Function()) setState) {
+                if (selectRibCount != -1) {
+                  if (selectRibCount + 1 == 1) {
+                    content = '偏胖';
+                  } else if (selectRibCount + 1 > 1 && selectRibCount + 1 < 4) {
+                    content = '良好';
+                  } else if (selectRibCount + 1 > 3 && selectRibCount + 1 < 6) {
+                    content = '偏瘦';
+                  }
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '体况评估：$content',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(5, (index) {
+                          return TextButton(
+                            onPressed: () {
+                              setState(() {
+                                selectRibCount = index;
+                              });
+                            },
+                            style: TextButton.styleFrom(
+                                backgroundColor: selectRibCount == index
+                                    ? Colors.blueAccent.withOpacity(0.6)
+                                    : Colors.blueAccent.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                minimumSize: const Size(50, 50),
+                                side: BorderSide(
+                                  color: selectRibCount == index ? Colors.blue : Colors.blueAccent.withOpacity(0.2),
+                                )),
+                            child: Text(
+                              '${index + 1}',
+                              style: TextStyle(color: selectRibCount == index ? Colors.white : Colors.blueAccent),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }

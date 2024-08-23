@@ -82,8 +82,9 @@ class HealthAssessController extends GetxController {
     if (cow?.id == null) return;
     CowAssess.get(id: cow!.id /*'c8e799ac-22de-4894-a55b-19fb01c0e4e2'*/).then((value) {
       if (value != null) {
-        illnessController.text = value.illness ?? '';
-        treatCountController.text = value.treatCount.toString() ?? '';
+        Log.d('CowAssess' + value.toJson().toString());
+        illnessController.text = ObjectUtil.isEmpty(value.illness) ? '--' : value.illness ?? '--';
+        treatCountController.text = ObjectUtil.isEmpty(value.treatCount) ? '--' : '${value.treatCount ?? '--'}';
       }
     });
   }

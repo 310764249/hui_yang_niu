@@ -124,12 +124,14 @@ class MessageView extends GetView<MessageController> {
     switch (notice.category) {
       case 200 || 400:
         if (notice.type == 210) {
-          Log.d(notice.toJson().toString());
+          // Log.d(notice.toJson().toString());
           return _messageItem(
               AssetsImages.alert, Notice.getEventNameByCode(notice.type ?? -1), notice.content ?? '', notice.created.orEmpty(),
               () {
             //查看指南
-            String openURL = "${Constant.articleHost}/${notice.type}/${notice.articleld ?? ''}";
+            Log.d(notice.toJson().toString());
+            String openURL = "${Constant.articleHost}/${notice.articleType}/${notice.articleId ?? ''}";
+            Log.d(openURL);
             Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
           });
         }
@@ -139,7 +141,6 @@ class MessageView extends GetView<MessageController> {
           '牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())}); 栋舍: ${notice.cowHouseName}; 事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
           notice.created.orEmpty(),
           () {
-            print('*****' + notice.type.toString());
             if (notice.type == 412 || notice.type == 411) {
               //待换料
               controller.goToChangeCattle(notice);

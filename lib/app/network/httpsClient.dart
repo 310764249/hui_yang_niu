@@ -33,8 +33,8 @@ class HttpsClient {
 
   // static String domain = "http://nxbreedapi.sdyihewan.com"; // 正式环境地址
   // static String domain = "http://breedapi.sdyihewan.com"; // 测试环境地址
-  // static String domain = "http://154.8.193.14:5657"; // 正式环境地址
-  static String domain = "http://154.8.193.14:5658"; // 测试环境地址
+  static String domain = "http://154.8.193.14:5657"; // 正式环境地址
+  // static String domain = "http://154.8.193.14:5658"; // 测试环境地址
   static Dio dio = Dio();
 
   // 网络视图UI配置
@@ -174,28 +174,23 @@ class HttpsClient {
       }
 
       // 过滤 Map 中值为空字符或者为 null 的项
-      queryParameters?.removeWhere((key, value) =>
-          (value == null || value.toString().isEmpty) && key != 'attach');
-      data?.removeWhere((key, value) =>
-          (value == null || value.toString().isEmpty) && key != 'attach');
+      queryParameters?.removeWhere((key, value) => (value == null || value.toString().isEmpty) && key != 'attach');
+      data?.removeWhere((key, value) => (value == null || value.toString().isEmpty) && key != 'attach');
 
       // 根据请求方法，选择相应的方法发送请求
       Response response;
       switch (method) {
         case RequestMethod.GET:
-          response = await dio.get(url,
-              queryParameters: queryParameters, options: options);
+          response = await dio.get(url, queryParameters: queryParameters, options: options);
           break;
         case RequestMethod.POST:
           response = await dio.post(url, data: data, options: options);
           break;
         case RequestMethod.DELETE:
-          response = await dio.delete(url,
-              queryParameters: queryParameters, data: data, options: options);
+          response = await dio.delete(url, queryParameters: queryParameters, data: data, options: options);
           break;
         case RequestMethod.PUT:
-          response = await dio.put(url,
-              queryParameters: queryParameters, data: data, options: options);
+          response = await dio.put(url, queryParameters: queryParameters, data: data, options: options);
           break;
         // 可以添加其他请求方法的处理
       }
@@ -209,12 +204,7 @@ class HttpsClient {
     } catch (error) {
       if (error is DioException && error.response?.statusCode == 401) {
         //缓存业务请求异常的接口
-        _failedRequests.add({
-          'method': method,
-          'url': url,
-          'data': data,
-          'queryParameters': queryParameters
-        });
+        _failedRequests.add({'method': method, 'url': url, 'data': data, 'queryParameters': queryParameters});
 
         // 如果请求返回 401 Unauthorized，说明 Token 失效
         // 判断是否正在刷新 Token，如果没有在刷新，则触发刷新

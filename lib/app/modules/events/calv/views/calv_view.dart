@@ -63,6 +63,9 @@ class CalvView extends GetView<CalvController> {
         showBottomLine: true,
         content: controller.selectedHouseName.value,
         onPressed: () {
+          if (controller.houseNameList.isEmpty) {
+            return;
+          }
           Picker.showSinglePicker(context, controller.houseNameList, title: '请选择栋舍', onConfirm: (value, p) {
             //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
             controller.updateCurCowHouse(value, p);

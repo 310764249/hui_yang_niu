@@ -27,9 +27,8 @@ class Notice {
   late final String? modified; // 修改时间
   late final String? modifiedBy; // 修改人
   late final String? rowVersion; // 行版本
-  String? articleld; // 生产指南的id
+  String? articleId; // 生产指南的id
   int? articleType; // 生产指南的type
-  String? formulaId; // 生产指南的id
 
   Notice({
     required this.id,
@@ -54,8 +53,7 @@ class Notice {
     required this.modified,
     required this.modifiedBy,
     required this.rowVersion,
-    this.articleld,
-    this.formulaId,
+    this.articleId,
     this.articleType,
   });
 
@@ -82,8 +80,7 @@ class Notice {
     modified = json['modified'];
     modifiedBy = json['modifiedBy'];
     rowVersion = json['rowVersion'];
-    articleld = json['articleld'];
-    articleld = json['formulaId'];
+    articleId = json['articleId'];
     articleType = json['articleType'];
   }
 
@@ -111,8 +108,7 @@ class Notice {
     data['modified'] = modified;
     data['modifiedBy'] = modifiedBy;
     data['rowVersion'] = rowVersion;
-    data['articleld'] = articleld;
-    data['articleld'] = formulaId;
+    data['articleId'] = articleId;
     data['articleType'] = articleType;
     return data;
   }

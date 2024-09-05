@@ -128,7 +128,6 @@ class MessageController extends GetxController {
       List mapList = model.list;
       List<Notice> modelList = [];
       for (var item in mapList) {
-        Log.d(item.toString());
         Notice model = Notice.fromJson(item);
 
         modelList.add(model);

@@ -351,7 +351,7 @@ class NewCattleController extends GetxController {
     }
 
     //种够牛，备用公母母牛批次号非必填
-    if (cattleInfo.currentStage == 8 || cattleInfo.currentStage == 9 || cattleInfo.currentStage == 10) {
+    if (cattleInfo.currentStage == 3 || cattleInfo.currentStage == 4) {
     } else {
       // 单独判断犊牛和育肥牛的批次号是否获取成功
       if (cattleInfo.currentStage == 1 && tempBatchNumAuto1.value.isBlankEx()) {

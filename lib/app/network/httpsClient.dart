@@ -33,8 +33,8 @@ class HttpsClient {
 
   // static String domain = "http://nxbreedapi.sdyihewan.com"; // 正式环境地址
   // static String domain = "http://breedapi.sdyihewan.com"; // 测试环境地址
-  static String domain = "http://154.8.193.14:5657"; // 正式环境地址
-  // static String domain = "http://154.8.193.14:5658"; // 测试环境地址
+  // static String domain = "http://154.8.193.14:5657"; // 正式环境地址
+  static String domain = "http://154.8.193.14:5658"; // 测试环境地址
   static Dio dio = Dio();
 
   // 网络视图UI配置

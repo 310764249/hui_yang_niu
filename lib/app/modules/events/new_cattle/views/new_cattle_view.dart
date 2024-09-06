@@ -403,22 +403,22 @@ class NewCattleView extends GetView<NewCattleController> {
       children: [
         _commonLayout(context),
         _commonCowLayout(context),
-        CellButton(
-            isRequired: true,
-            title: '上一次断奶时间',
-            hint: '请选择',
-            content: controller.cattleInfo.operationDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
-                  onConfirm: (date) {
-                // controller.cattleInfo.weaningTime?.value =
-                //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                // 空怀母牛 - 将[断奶时间]赋值到[操作时间]的字段
-                if (controller.cattleInfo.currentStage == 7) {
-                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                }
-              });
-            }),
+        // CellButton(
+        //     isRequired: true,
+        //     title: '上一次断奶时间',
+        //     hint: '请选择',
+        //     content: controller.cattleInfo.operationDate?.value,
+        //     onPressed: () {
+        //       Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
+        //           onConfirm: (date) {
+        //         // controller.cattleInfo.weaningTime?.value =
+        //         //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+        //         // 空怀母牛 - 将[断奶时间]赋值到[操作时间]的字段
+        //         if (controller.cattleInfo.currentStage == 7) {
+        //           controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+        //         }
+        //       });
+        //     }),
       ],
     );
   }

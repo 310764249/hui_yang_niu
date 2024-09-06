@@ -122,15 +122,11 @@ class NewCattleView extends GetView<NewCattleController> {
   // 母牛公共部分UI
   Widget _commonCowLayout(BuildContext context) {
     return Obx(() => Column(children: [
-          // 当切换到[种牛]的时候之后只有[种母牛]有[胎次], 而[种公牛]没有[胎次]
-          // 另外需要注意的是: [后备母牛]的胎次直接给成0且不让选择
-          // 备用公牛 种公牛 不显示胎次
-          (controller.selStage.value == 2 ||
-                  (controller.selStage.value == 3 && controller.cattleInfo.gender?.value == 1) ||
-                  controller.cattleInfo.currentStage == 8 ||
-                  controller.cattleInfo.currentStage == 9)
-              ? const SizedBox()
-              : RadioButtonGroup(
+          //妊娠，空怀，哺乳 这三个显示胎次，其他不显示
+          (controller.cattleInfo.currentStage == 5 ||
+                  controller.cattleInfo.currentStage == 6 ||
+                  controller.cattleInfo.currentStage == 7)
+              ? RadioButtonGroup(
                   isRequired: true,
                   title: '胎次',
                   selectedIndex: controller.tempPregnancyNumPosition.value,
@@ -139,7 +135,8 @@ class NewCattleView extends GetView<NewCattleController> {
                     // 赋值temp
                     controller.tempPregnancyNumPosition.value = value;
                     controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[value];
-                  }),
+                  })
+              : const SizedBox(),
           _shedSelectionLayout(context),
           CellTextField(
             isRequired: false,
@@ -426,44 +423,6 @@ class NewCattleView extends GetView<NewCattleController> {
     );
   }
 
-  // 更新胎次逻辑, 在切换[当前状态]和[性别]的时候校验一遍
-  void updatePregnancyNum() {
-    switch (controller.cattleInfo.currentStage) {
-      case 1 || 2 || 3 || 4:
-        //* 前面4中如果是公牛的话就设置[胎次]为空, 母牛根据具体情况设置
-        if (controller.cattleInfo.gender?.value == 1) {
-          //* 公牛胎次设置为空
-          controller.cattleInfo.pregnancyNum?.value = '';
-        } else if (controller.cattleInfo.gender?.value == 2) {
-          //* 后备母牛胎次为0
-          if (controller.cattleInfo.currentStage == 3) {
-            controller.cattleInfo.pregnancyNum?.value = '0';
-          }
-          //* 公牛胎次设置为空
-          if (controller.cattleInfo.currentStage == 4) {
-            controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[controller.tempPregnancyNumPosition.value];
-          }
-        }
-        break;
-      case 5 || 6 || 7:
-        //* 如果是 妊娠母牛 & 哺乳母牛 & 空怀母牛 的话直接把性别设置成2
-        controller.cattleInfo.gender?.value = 2;
-        break;
-      case 8:
-      case 9:
-        //后背公牛|种公牛 公牛胎次设置为空
-        controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[controller.tempPregnancyNumPosition.value];
-        break;
-      case 10:
-        //后背母牛 后备母牛胎次为0
-        controller.cattleInfo.pregnancyNum?.value = '0';
-        break;
-      default:
-        Toast.show('设置胎次异常');
-        break;
-    }
-  }
-
   // 操作信息
   Widget _operationInfo(context) {
     return Obx(() => MyCard(children: [
@@ -482,29 +441,25 @@ class NewCattleView extends GetView<NewCattleController> {
                 controller.initRequestParams(value);
 
                 // 3.更新[胎次]
-                updatePregnancyNum();
+                controller.updatePregnancyNum();
               }),
 
-          // 犊牛
-          if (controller.cattleInfo.currentStage == 1) _youngCattleLayout(context, true),
-          // 育肥牛
-          if (controller.cattleInfo.currentStage == 2) _youngCattleLayout(context, false),
+          // // 犊牛
+          // if (controller.cattleInfo.currentStage == 1) _youngCattleLayout(context, true),
+          // // 育肥牛
+          // if (controller.cattleInfo.currentStage == 2) _youngCattleLayout(context, false),
           // 后备牛
           if (controller.cattleInfo.currentStage == 3) _reserveCattleLayout(context),
-          // 种牛
-          if (controller.cattleInfo.currentStage == 4) _breedingCattleLayout(context),
+          // // 种牛
+          // if (controller.cattleInfo.currentStage == 4) _breedingCattleLayout(context),
           // 妊娠母牛
           if (controller.cattleInfo.currentStage == 5) _pregnantCowLayout(context),
           // 哺乳母牛
           if (controller.cattleInfo.currentStage == 6) _milkingCowLayout(context),
           // 空怀母牛
           if (controller.cattleInfo.currentStage == 7) _emptyCowLayout(context),
-          // 后备公牛
-          if (controller.cattleInfo.currentStage == 8) _reserveCattleLayout(context),
           // 种公牛
-          if (controller.cattleInfo.currentStage == 9) _breedingCattleLayout(context),
-          // 后备母牛
-          if (controller.cattleInfo.currentStage == 10) _reserveCattleLayout(context),
+          if (controller.cattleInfo.currentStage == 4) _breedingCattleLayout(context),
 
           // 底部公共布局: 操作时间 & 备注, 但也要注意区分后3种母牛和前面4种母牛的UI差异
           _commonBottomLayout(context),

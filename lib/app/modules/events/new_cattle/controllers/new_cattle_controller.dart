@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/common_data.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cattle_info.dart';
@@ -159,6 +160,61 @@ class NewCattleController extends GetxController {
         cattleInfo.sourceFarm?.value = sourceFarmController.text;
       }
     });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      // 1.更新当前状态显示
+      updateCurrentStage(0);
+
+      // 2.每次切换都需要把提交的数据初始化一遍, 防止数据字段相互串用
+      initRequestParams(0);
+
+      // 3.更新[胎次]
+      updatePregnancyNum();
+    });
+  }
+
+  // 更新胎次逻辑, 在切换[当前状态]和[性别]的时候校验一遍
+  void updatePregnancyNum() {
+    switch (cattleInfo.currentStage) {
+      case 1 || 2 || 3 || 4:
+        if (cattleInfo.currentStage == 3) {
+          if (Constant.currentStageList[selStage.value].name == '后备母牛') {
+            cattleInfo.gender?.value = 2;
+          } else {
+            cattleInfo.gender?.value = 2;
+          }
+        }
+        //* 前面4中如果是公牛的话就设置[胎次]为空, 母牛根据具体情况设置
+        if (cattleInfo.gender?.value == 1) {
+          //* 公牛胎次设置为空
+          cattleInfo.pregnancyNum?.value = '';
+        } else if (cattleInfo.gender?.value == 2) {
+          //* 后备母牛胎次为0
+          if (cattleInfo.currentStage == 3) {
+            cattleInfo.pregnancyNum?.value = '0';
+          }
+          //* 公牛胎次设置为空
+          if (cattleInfo.currentStage == 4) {
+            cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+          }
+        }
+        break;
+      case 5 || 6 || 7:
+        //* 如果是 妊娠母牛 & 哺乳母牛 & 空怀母牛 的话直接把性别设置成2
+        cattleInfo.gender?.value = 2;
+        break;
+      case 8:
+      case 9:
+        //后背公牛|种公牛 公牛胎次设置为空
+        cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+        break;
+      case 10:
+        //后背母牛 后备母牛胎次为0
+        cattleInfo.pregnancyNum?.value = '0';
+        break;
+      default:
+        Toast.show('设置胎次异常');
+        break;
+    }
   }
 
   // 临时的[自动批次号], 防止cattleInfo切换状态被释放
@@ -361,6 +417,7 @@ class NewCattleController extends GetxController {
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注
         };
+        debugPrint('提交参数: $mapParam');
         await httpsClient.post("/api/cow", data: mapParam);
       }
 
@@ -381,3 +438,5 @@ class NewCattleController extends GetxController {
     }
   }
 }
+//CattleInfo(currentStage: 5, earNum: 411, batchNum: , sourceFarm: , inDate: , gender: 2, cattleNumOfBatch: , birthDate: 2024-09-05, breed: 1, pregnancyNum: 0, shedId: 6acda895-6217-4f30-b39d-d402fb4213ee, shed: 1号舍, field: , matingTime: , pregnancyCheckTime: , calvingTime: , calvingNum: , calfBatch: , weaningTime: , emptyDate: , breedingCowEstrusTime: , remark: )
+// CattleInfo(currentStage: 6, earNum: 11, batchNum: , sourceFarm: , inDate: , gender: 2, cattleNumOfBatch: , birthDate: 2024-09-05, breed: 1, pregnancyNum: 0, shedId: 6acda895-6217-4f30-b39d-d402fb4213ee, shed: 1号舍, field: , matingTime: , pregnancyCheckTime: , calvingTime: , calvingNum: , calfBatch: , weaningTime: , emptyDate: , breedingCowEstrusTime: , remark: )

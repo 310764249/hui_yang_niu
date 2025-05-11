@@ -31,9 +31,8 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             title: '日增重目标',
             content: controller.rzzSelName.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.rzzNameListHB,
-                  selectData: controller.rzzSelName.value,
-                  title: '请选择日增重', onConfirm: (value, position) {
+              Picker.showSinglePicker(context, controller.rzzNameListHB, selectData: controller.rzzSelName.value, title: '请选择日增重',
+                  onConfirm: (value, position) {
                 controller.updateRzzSelectedItems(value, position);
               });
             });
@@ -44,8 +43,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             content: controller.rsyfSelName.value,
             onPressed: () {
               Picker.showSinglePicker(context, controller.rsyfNameList,
-                  selectData: controller.rsyfSelName.value,
-                  title: '请选择妊娠月份', onConfirm: (value, position) {
+                  selectData: controller.rsyfSelName.value, title: '请选择妊娠月份', onConfirm: (value, position) {
                 controller.updateRsyfSelectedItems(value, position);
               });
             });
@@ -58,8 +56,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 content: controller.mryfSelName.value,
                 onPressed: () {
                   Picker.showSinglePicker(context, controller.mryfNameList,
-                      selectData: controller.mryfSelName.value,
-                      title: '请选择哺乳月份', onConfirm: (value, position) {
+                      selectData: controller.mryfSelName.value, title: '请选择哺乳月份', onConfirm: (value, position) {
                     controller.updateMryfSelectedItems(value, position);
                   });
                 }),
@@ -94,9 +91,8 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             title: '日增重目标',
             content: controller.rzzSelName.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.rzzNameListYF,
-                  selectData: controller.rzzSelName.value,
-                  title: '请选择日增重', onConfirm: (value, position) {
+              Picker.showSinglePicker(context, controller.rzzNameListYF, selectData: controller.rzzSelName.value, title: '请选择日增重',
+                  onConfirm: (value, position) {
                 controller.updateRzzSelectedItems(value, position);
               });
             });
@@ -119,8 +115,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 return;
               }
               Picker.showSinglePicker(context, controller.gtlxNameList,
-                  selectData: controller.gtlxSelName.value,
-                  title: '请选择个体类型', onConfirm: (value, position) {
+                  selectData: controller.gtlxSelName.value, title: '请选择个体类型', onConfirm: (value, position) {
                 controller.updateGtlxSelectedItems(value, position);
               });
             }),
@@ -139,8 +134,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               }
 
               Picker.showSinglePicker(context, controller.gtzlNameList,
-                  selectData: controller.gtzlSelName.value,
-                  title: '请选择个体重量', onConfirm: (value, position) {
+                  selectData: controller.gtzlSelName.value, title: '请选择个体重量', onConfirm: (value, position) {
                 controller.updateGtzlSelectedItems(value, position);
               });
             }),
@@ -160,7 +154,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 controller.cslNameList,
                 context,
                 itemsSelected: List.from(controller.cslSelectedIndexList),
-                maxSelectionCount: 3,
+                maxSelectionCount: 4,
                 onConfirm: (selected) {
                   if (ObjectUtil.isEmptyList(selected)) {
                     Toast.failure(msg: '请至少选择一种类型');
@@ -270,9 +264,8 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 Toast.show('预混料类型获取失败');
                 return;
               }
-              Picker.showSinglePicker(context, controller.yhlNameList,
-                  selectData: controller.yhlSelName.value,
-                  title: '请选择预混料', onConfirm: (value, position) {
+              Picker.showSinglePicker(context, controller.yhlNameList, selectData: controller.yhlSelName.value, title: '请选择预混料',
+                  onConfirm: (value, position) {
                 controller.updateYhlSelectedItems(value, position);
               });
             }),
@@ -311,14 +304,9 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
         color: SaienteColors.backGrey,
         child: Obx(() => Stack(children: [
               Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
                 margin: EdgeInsets.fromLTRB(
-                    ScreenAdapter.width(10),
-                    ScreenAdapter.height(10),
-                    ScreenAdapter.width(10),
-                    ScreenAdapter.height(10)),
+                    ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(10)),
                 child: ListView(
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),

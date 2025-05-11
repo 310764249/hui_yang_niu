@@ -1,11 +1,6 @@
-import 'dart:io';
-
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:image_pickers/image_pickers.dart';
-
 import 'package:get/get.dart';
-import 'package:intellectual_breed/app/network/file_upload.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
@@ -16,7 +11,6 @@ import '../../../models/cow_house.dart';
 import '../../../services/AssetsImages.dart';
 import '../../../services/colors.dart';
 import '../../../services/constant.dart';
-import '../../../services/keepAliveWrapper.dart';
 import '../../../services/load_image.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../services/storage.dart';
@@ -342,7 +336,7 @@ class MineView extends GetView<MineController> {
                   });
                 },
               ),
-              _cardItem('养牛总数', controller.cowCount.value),
+              // _cardItem('养牛总数', controller.cowCount.value),
               _cardItem('职工总数', controller.employeeCount.value),
             ]),
           )

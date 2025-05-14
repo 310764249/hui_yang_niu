@@ -10,6 +10,7 @@ import 'package:intellectual_breed/app/modules/home/views/home_view.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
 import 'package:intellectual_breed/app/modules/recipe/views/recipe_view.dart';
+import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
@@ -24,9 +25,8 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   //切换 index 记录
   RxInt currentIndex = 0.obs;
   //页面控制,默认首页，如果有传值就使用传值
-  PageController pageController = Get.arguments == null
-      ? PageController(initialPage: 0)
-      : PageController(initialPage: Get.arguments["initialPage"]);
+  PageController pageController =
+      Get.arguments == null ? PageController(initialPage: 0) : PageController(initialPage: Get.arguments["initialPage"]);
 
   final List names = [
     "首页",
@@ -44,13 +44,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     MineView(),
   ];
 
-  final List<IconData> icons = [
-    Icons.home,
-    Icons.receipt,
-    Icons.medical_services,
-    Icons.message,
-    Icons.people
-  ];
+  final List<IconData> icons = [Icons.home, Icons.receipt, Icons.medical_services, Icons.message, Icons.people];
 
   /// 预加载tab图片
   void precacheIcons(BuildContext context) {
@@ -101,9 +95,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     //实时监听网络状态
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
       if (result == ConnectivityResult.mobile) {
         debugPrint('成功连接移动网络');
@@ -137,6 +129,14 @@ class TabsController extends GetxController with WidgetsBindingObserver {
         Get.toNamed(Routes.LOGIN);
       }
     });
+    checkUpdate();
+  }
+
+  checkUpdate() async {
+    HttpsClient httpsClient = HttpsClient();
+
+    var res = await httpsClient.get("/api/appfile/check");
+    debugPrint('检查更新: $res');
   }
 
   @override
@@ -167,8 +167,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   /// 处理返回键事件: 返回 true 表示允许退出应用，返回 false 表示阻止退出应用
   Future<bool> onBackPressed(BuildContext context) {
     if (ObjectUtil.isEmpty(currentBackPressTime) ||
-        DateTime.now().difference(currentBackPressTime!) >
-            const Duration(seconds: 2)) {
+        DateTime.now().difference(currentBackPressTime!) > const Duration(seconds: 2)) {
       currentBackPressTime = DateTime.now();
       Toast.show('再次点击返回键退出应用');
       return Future.value(false);

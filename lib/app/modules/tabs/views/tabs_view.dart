@@ -5,7 +5,7 @@ import '../../../services/colors.dart';
 import '../controllers/tabs_controller.dart';
 
 class TabsView extends GetView<TabsController> {
-  const TabsView({Key? key}) : super(key: key);
+  const TabsView({super.key});
 
   Widget _getCustomItems() {
     List<Widget> items = [];
@@ -17,10 +17,7 @@ class TabsView extends GetView<TabsController> {
         ),
         label: Text(
           controller.names[i],
-          style: TextStyle(
-              color: controller.currentIndex.value == i
-                  ? Colors.red
-                  : Colors.grey),
+          style: TextStyle(color: controller.currentIndex.value == i ? Colors.red : Colors.grey),
         ),
         onPressed: () {
           controller.setCurrentIndex(i);
@@ -30,10 +27,7 @@ class TabsView extends GetView<TabsController> {
       );
       items.add(item);
     }
-    return Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: items);
+    return Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: items);
   }
 
   List<BottomNavigationBarItem> _getItems() {
@@ -43,12 +37,9 @@ class TabsView extends GetView<TabsController> {
           icon: Badge(
             label: Text("${controller.unReadMsgs}"),
             //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
-            isLabelVisible:
-                (i == 3) && (controller.unReadMsgs.value != 0) ? true : false,
+            isLabelVisible: (i == 3) && (controller.unReadMsgs.value != 0) ? true : false,
             backgroundColor: Colors.red[500],
-            child: controller.currentIndex.value == i
-                ? controller.tabFillIcons[i]
-                : controller.tabLineIcons[i],
+            child: controller.currentIndex.value == i ? controller.tabFillIcons[i] : controller.tabLineIcons[i],
           ),
           label: controller.names[i]);
       items.add(temp);

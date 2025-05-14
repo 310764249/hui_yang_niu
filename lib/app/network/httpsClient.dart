@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 // import 'package:alice/alice.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
-import 'package:flutter/material.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 
 import '../models/authModel.dart';

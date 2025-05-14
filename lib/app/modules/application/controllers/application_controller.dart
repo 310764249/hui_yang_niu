@@ -155,28 +155,42 @@ class ApplicationController extends GetxController {
       bool isRetailer = resourceModel.farmerType == 3;
 
       // 生产管理
-      productionManagementList.value = [
-        CommonData(id: 0, name: "引种", image: AssetsImages.icon1),
-        CommonData(id: 1, name: "选种", image: AssetsImages.icon2),
-        CommonData(id: 2, name: "调拨", image: AssetsImages.icon3),
-        CommonData(id: 3, name: "转群", image: AssetsImages.icon4),
-        CommonData(id: 4, name: "淘汰", image: AssetsImages.icon5),
-        CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
-        CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
-        CommonData(id: 7, name: "盘点", image: AssetsImages.icon8),
-        CommonData(id: 8, name: "饲喂", image: AssetsImages.icon9),
-      ];
+      productionManagementList.value = isRetailer
+          ? [
+              CommonData(id: 4, name: "淘汰", image: AssetsImages.icon5),
+              CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
+              CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
+            ]
+          : [
+              CommonData(id: 0, name: "引种", image: AssetsImages.icon1),
+              CommonData(id: 1, name: "选种", image: AssetsImages.icon2),
+              CommonData(id: 2, name: "调拨", image: AssetsImages.icon3),
+              CommonData(id: 3, name: "转群", image: AssetsImages.icon4),
+              CommonData(id: 4, name: "淘汰", image: AssetsImages.icon5),
+              CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
+              CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
+              CommonData(id: 7, name: "盘点", image: AssetsImages.icon8),
+              CommonData(id: 8, name: "饲喂", image: AssetsImages.icon9),
+            ];
       // 繁殖管理
-      reproductiveManagementList.value = [
-        CommonData(id: 0, name: "采精", image: AssetsImages.icon10),
-        CommonData(id: 1, name: "发情", image: AssetsImages.icon11),
-        CommonData(id: 2, name: "禁配", image: AssetsImages.icon12),
-        CommonData(id: 3, name: "解禁", image: AssetsImages.icon13),
-        CommonData(id: 4, name: "配种", image: AssetsImages.icon14),
-        CommonData(id: 5, name: "孕检", image: AssetsImages.icon15),
-        CommonData(id: 6, name: "产犊", image: AssetsImages.icon16),
-        CommonData(id: 7, name: "断奶", image: AssetsImages.icon17),
-      ];
+      reproductiveManagementList.value = isRetailer
+          ? [
+              CommonData(id: 1, name: "发情", image: AssetsImages.icon11),
+              CommonData(id: 4, name: "配种", image: AssetsImages.icon14),
+              CommonData(id: 5, name: "孕检", image: AssetsImages.icon15),
+              CommonData(id: 6, name: "产犊", image: AssetsImages.icon16),
+              CommonData(id: 7, name: "断奶", image: AssetsImages.icon17),
+            ]
+          : [
+              CommonData(id: 0, name: "采精", image: AssetsImages.icon10),
+              CommonData(id: 1, name: "发情", image: AssetsImages.icon11),
+              CommonData(id: 2, name: "禁配", image: AssetsImages.icon12),
+              CommonData(id: 3, name: "解禁", image: AssetsImages.icon13),
+              CommonData(id: 4, name: "配种", image: AssetsImages.icon14),
+              CommonData(id: 5, name: "孕检", image: AssetsImages.icon15),
+              CommonData(id: 6, name: "产犊", image: AssetsImages.icon16),
+              CommonData(id: 7, name: "断奶", image: AssetsImages.icon17),
+            ];
       // 育种管理 【家庭农场】去掉大功能育种管理，其他不变
       bool isHomeFarm = resourceModel.farmerType == 2;
       breedingManagementList.value = isHomeFarm || isRetailer

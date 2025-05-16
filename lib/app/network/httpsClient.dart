@@ -2,6 +2,7 @@ import 'dart:async';
 
 // import 'package:alice/alice.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 
 import '../models/authModel.dart';
@@ -198,6 +199,7 @@ class HttpsClient {
       }
       return baseModel.data;
     } catch (error) {
+      debugPrint('请求异常: $error');
       if (error is DioException && error.response?.statusCode == 401) {
         //缓存业务请求异常的接口
         _failedRequests.add({'method': method, 'url': url, 'data': data, 'queryParameters': queryParameters});

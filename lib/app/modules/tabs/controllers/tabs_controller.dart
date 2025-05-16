@@ -11,6 +11,7 @@ import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
 import 'package:intellectual_breed/app/modules/recipe/views/recipe_view.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
+import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
@@ -22,8 +23,11 @@ import '../../../services/constant.dart';
 import '../../../services/storage.dart';
 
 class TabsController extends GetxController with WidgetsBindingObserver {
+  HttpsClient httpsClient = HttpsClient();
+
   //切换 index 记录
   RxInt currentIndex = 0.obs;
+
   //页面控制,默认首页，如果有传值就使用传值
   PageController pageController =
       Get.arguments == null ? PageController(initialPage: 0) : PageController(initialPage: Get.arguments["initialPage"]);
@@ -133,10 +137,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   }
 
   checkUpdate() async {
-    HttpsClient httpsClient = HttpsClient();
-
-    var res = await httpsClient.get("/api/appfile/check");
-    debugPrint('检查更新: $res');
+    CheckAppUpdate.checkUpdate();
   }
 
   @override

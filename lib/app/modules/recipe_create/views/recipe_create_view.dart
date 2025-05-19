@@ -91,10 +91,55 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             title: '日增重目标',
             content: controller.rzzSelName.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.rzzNameListYF, selectData: controller.rzzSelName.value, title: '请选择日增重',
+              final weightStr = controller.gtzlSelName.value.replaceAll('千克', '');
+              final weight = int.tryParse(weightStr);
+
+              final Map<int, List<double>> weightRangeMap = {
+                200: [0.5, 1.5],
+                250: [0.5, 1.5],
+                300: [0.5, 1.5],
+                350: [0.5, 1.5],
+                400: [1.0, 2.0],
+                450: [1.0, 2.0],
+                500: [1.0, 2.0],
+                550: [1.0, 2.0],
+                600: [1.0, 1.5],
+                650: [1.0, 1.5],
+                700: [1.0, 1.5],
+                750: [1.0, 1.5],
+                800: [1.0, 1.5],
+              };
+
+              if (weight != null && weightRangeMap.containsKey(weight)) {
+                final range = weightRangeMap[weight]!;
+
+                // 原始数组：字典返回的完整区间
+                final originList = controller.rzzNameListYF;
+
+                // 截取落在当前区间的选项
+                final filteredList = originList.where((item) {
+                  final v = double.tryParse(item.replaceAll('千克', ''));
+                  return v != null && v >= range[0] && v <= range[1];
+                }).toList();
+
+                if (filteredList.isEmpty) {
+                  debugPrint('当前体重无可选日增重区间');
+                  return;
+                }
+
+                // 弹出选择器
+                Picker.showSinglePicker(
+                  context,
+                  filteredList,
+                  selectData: controller.rzzSelName.value,
+                  title: '请选择日增重',
                   onConfirm: (value, position) {
-                controller.updateRzzSelectedItems(value, position);
-              });
+                    controller.updateRzzSelectedItems(value, position);
+                  },
+                );
+              } else {
+                debugPrint('未找到对应体重的区间范围');
+              }
             });
       default:
         return const SizedBox();
@@ -225,7 +270,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             }),
         CellButton(
             isRequired: false,
-            title: '添加剂、精补料',
+            title: '添加剂',
             showBottomLine: true,
             content: controller.tjjSelectedDisplayNames.value,
             onPressed: () {

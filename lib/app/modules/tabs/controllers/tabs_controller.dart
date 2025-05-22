@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/application/views/application_view.dart';
 import 'package:intellectual_breed/app/modules/home/views/home_view.dart';
-import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
-import 'package:intellectual_breed/app/modules/recipe/views/recipe_view.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
@@ -34,17 +32,15 @@ class TabsController extends GetxController with WidgetsBindingObserver {
 
   final List names = [
     "首页",
-    "配方",
     "服务",
-    "消息",
     "我的",
   ];
 
   final List<Widget> pages = [
     const HomeView(),
-    RecipeView(),
+    // RecipeView(),
     ApplicationView(),
-    MessageView(),
+    // MessageView(),
     MineView(),
   ];
 
@@ -64,18 +60,18 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   // tab line icons
   final List<Image> tabLineIcons = [
     Image.asset(AssetsImages.homeLine),
-    Image.asset(AssetsImages.recipeLine),
+    // Image.asset(AssetsImages.recipeLine),
     Image.asset(AssetsImages.applicationLine),
-    Image.asset(AssetsImages.messageLine),
+    // Image.asset(AssetsImages.messageLine),
     Image.asset(AssetsImages.mineLine),
   ];
 
   // tab fill icons
   final List<Image> tabFillIcons = [
     Image.asset(AssetsImages.homeFill),
-    Image.asset(AssetsImages.recipeFill),
+    // Image.asset(AssetsImages.recipeFill),
     Image.asset(AssetsImages.applicationFill),
-    Image.asset(AssetsImages.messageFill),
+    // Image.asset(AssetsImages.messageFill),
     Image.asset(AssetsImages.mineFill),
   ];
 

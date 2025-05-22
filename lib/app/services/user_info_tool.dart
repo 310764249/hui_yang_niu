@@ -3,7 +3,7 @@ import 'package:intellectual_breed/app/models/user_resource.dart';
 import '../models/authModel.dart';
 
 class UserInfoTool {
-  static late UserResource? user;
+  static UserResource? user;
   static AuthModel? auth;
 
   //用户是否登录

@@ -34,13 +34,7 @@ class TabsView extends GetView<TabsController> {
     List<BottomNavigationBarItem> items = [];
     for (var i = 0; i < controller.names.length; i++) {
       BottomNavigationBarItem temp = BottomNavigationBarItem(
-          icon: Badge(
-            label: Text("${controller.unReadMsgs}"),
-            //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
-            isLabelVisible: (i == 3) && (controller.unReadMsgs.value != 0) ? true : false,
-            backgroundColor: Colors.red[500],
-            child: controller.currentIndex.value == i ? controller.tabFillIcons[i] : controller.tabLineIcons[i],
-          ),
+          icon: controller.currentIndex.value == i ? controller.tabFillIcons[i] : controller.tabLineIcons[i],
           label: controller.names[i]);
       items.add(temp);
     }

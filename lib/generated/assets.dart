@@ -34,6 +34,13 @@ class Assets {
   static const String imagesHeaderTest = 'assets/images/header_test.png';
   static const String imagesHomeFill = 'assets/images/home_fill.png';
   static const String imagesHomeLine = 'assets/images/home_line.png';
+  static const String imagesIcFormulaDesign = 'assets/images/ic_formula_design.png';
+  static const String imagesIcHomeLabel = 'assets/images/ic_home_label.svg';
+  static const String imagesIcIntelligentMonitoring = 'assets/images/ic_intelligent_monitoring.png';
+  static const String imagesIcProductionManagement = 'assets/images/ic_production_management.png';
+  static const String imagesIcQuestionAnswer = 'assets/images/ic_question_answer.png';
+  static const String imagesIcTaskReminder = 'assets/images/ic_task_reminder.png';
+  static const String imagesIcTechnicalClassroom = 'assets/images/ic_technical_classroom.png';
   static const String imagesIcon1 = 'assets/images/icon_1.png';
   static const String imagesIcon10 = 'assets/images/icon_10.png';
   static const String imagesIcon11 = 'assets/images/icon_11.png';

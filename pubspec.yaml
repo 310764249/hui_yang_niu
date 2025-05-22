@@ -50,7 +50,7 @@ dependencies:
   url_launcher: ^6.3.0 # 打电话，发短信 https://pub.dev/packages/url_launcher/install
   app_settings: 5.1.1 # https://pub.dev/packages/app_settings
   flutter_bounceable: ^1.1.0
-
+  flutter_svg: ^2.0.10
 dev_dependencies:
   flutter_lints: ^4.0.0
   alice: ^1.0.0-dev.10 # https://pub.dev/packages/alice

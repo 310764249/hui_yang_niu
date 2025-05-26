@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/modules/recipe_create/views/select_recipe.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/widgets/main_button.dart';
 
@@ -195,19 +196,20 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 return;
               }
               // 多选弹窗
-              Alert.showMultiPicker(
+              SelectRecipe.showMultiPicker(
                 controller.cslNameList,
                 context,
                 itemsSelected: List.from(controller.cslSelectedIndexList),
                 maxSelectionCount: 4,
                 onConfirm: (selected) {
+                  debugPrint('selected: $selected');
                   if (ObjectUtil.isEmptyList(selected)) {
                     Toast.failure(msg: '请至少选择一种类型');
                     return;
                   }
                   if (selected.length == 1) {
                     //selected 中是 index 数组。通过这句获取名称
-                    String name = controller.cslNameList[selected[0]];
+                    String name = controller.cslNameList[selected[0].$1];
                     if (name.contains('青贮')) {
                       Toast.failure(msg: '无法单独选择青贮饲料');
                       return;
@@ -219,7 +221,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               );
             }),
         CellButton(
-            isRequired: false,
+            isRequired: true,
             title: '能量饲料',
             content: controller.nlslSelectedDisplayNames.value,
             onPressed: () {
@@ -244,7 +246,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               );
             }),
         CellButton(
-            isRequired: false,
+            isRequired: true,
             title: '蛋白饲料',
             content: controller.dbslSelectedDisplayNames.value,
             onPressed: () {

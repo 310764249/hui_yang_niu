@@ -1,9 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intellectual_breed/app/models/common_data.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
-import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cattle_info.dart';
@@ -81,6 +79,7 @@ class NewCattleController extends GetxController {
     // cattleInfo.gender?.value =
     // Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
     cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+
     cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
 
     // 防止前面犊牛api没请求到数据的话这里再去请求一次
@@ -194,6 +193,7 @@ class NewCattleController extends GetxController {
           }
           //* 公牛胎次设置为空
           if (cattleInfo.currentStage == 4) {
+            cattleInfo.gender?.value = 1;
             cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
           }
         }
@@ -206,6 +206,7 @@ class NewCattleController extends GetxController {
       case 9:
         //后背公牛|种公牛 公牛胎次设置为空
         cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+        cattleInfo.gender?.value = 1;
         break;
       case 10:
         //后背母牛 后备母牛胎次为0
@@ -369,6 +370,13 @@ class NewCattleController extends GetxController {
     if (!paramCheckedResult[0]) {
       Toast.show(paramCheckedResult[1]);
       return;
+    }
+
+//选择牛信息z状态中包含公牛，性别设置为1，反之2
+    if (Constant.currentStageList.any((e) => e.id == cattleInfo.currentStage && e.name.contains('公牛'))) {
+      cattleInfo.gender?.value = 1;
+    } else {
+      cattleInfo.gender?.value = 2;
     }
 
     try {

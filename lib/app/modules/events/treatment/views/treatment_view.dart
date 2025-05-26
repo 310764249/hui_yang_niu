@@ -120,18 +120,14 @@ class TreatmentView extends GetView<TreatmentController> {
                 controller.updateChooseTypeIndex(value);
               }),
           // 类型
-          controller.typeIndex.value == 0
-              ? _oldCowLayout(context)
-              : _littleCowLayout(context),
+          controller.typeIndex.value == 0 ? _oldCowLayout(context) : _littleCowLayout(context),
           // 如果是编辑, 则隐藏[栋舍]组件
           controller.isEdit.value
               ? const SizedBox()
               : CellButton(
                   isRequired: false,
                   title: '栋舍',
-                  content: controller.typeIndex.value == 0
-                      ? controller.oldCowHouse.value
-                      : controller.littleCowHouse.value,
+                  content: controller.typeIndex.value == 0 ? controller.oldCowHouse.value : controller.littleCowHouse.value,
                   showArrow: false,
                 ),
           CellButton(
@@ -140,11 +136,8 @@ class TreatmentView extends GetView<TreatmentController> {
               hint: '请选择',
               content: controller.treatmentTime.value,
               onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间', selectDate: controller.treatmentTime.value,
-                    onConfirm: (date) {
-                  controller.treatmentTime.value =
-                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.treatmentTime.value, onConfirm: (date) {
+                  controller.treatmentTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 });
               }),
           CellButton(
@@ -154,10 +147,8 @@ class TreatmentView extends GetView<TreatmentController> {
             showBottomLine: true,
             content: controller.illness.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.illnessNameList,
-                  title: '请选择疾病名称', onConfirm: (value, position) {
-                controller.illnessId =
-                    int.parse(controller.illnessList[position]['value']);
+              Picker.showSinglePicker(context, controller.illnessNameList, title: '请选择疾病名称', onConfirm: (value, position) {
+                controller.illnessId = int.parse(controller.illnessList[position]['value']);
                 controller.illness.value = controller.illnessNameList[position];
               });
             },
@@ -168,8 +159,7 @@ class TreatmentView extends GetView<TreatmentController> {
                   title: '头数',
                   hint: '请输入',
                   keyboardType: TextInputType.number,
-                  controller: TextEditingController(
-                      text: controller.cattleCount.value.toString().trim()),
+                  controller: TextEditingController(text: controller.cattleCount.value.toString().trim()),
                   focusNode: controller.cattleCountNode,
                   onChanged: (value) {
                     controller.cattleCountController.text = value;
@@ -203,9 +193,7 @@ class TreatmentView extends GetView<TreatmentController> {
             title: '剂量（ml）',
             hint: '请输入',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            content: controller.dosage.value == 0
-                ? ''
-                : controller.dosage.value.toString().trim(),
+            content: controller.dosage.value == 0 ? '' : controller.dosage.value.toString().trim(),
             controller: controller.dosageController,
             focusNode: controller.dosageNode,
             onChanged: (value) {

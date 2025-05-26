@@ -270,7 +270,7 @@ class RecipeCreateController extends GetxController {
   /// 粗饲料
   List cslNameList = []; // 粗饲料名称总列表
   List cslSelectedNameList = []; // 已选粗饲料名称列表
-  List cslSelectedIndexList = []; // 已选粗饲料下标列表, 从弹窗中选择后得到
+  List<(int index, int? lowlimit)> cslSelectedIndexList = []; // 已选粗饲料下标列表, 从弹窗中选择后得到
   List cslSelectedObjList = []; // 已选粗饲料Obj列表, 用于api提交
   RxString cslSelectedDisplayNames = ''.obs; // 已选粗饲料组合起来的名称
 
@@ -296,18 +296,19 @@ class RecipeCreateController extends GetxController {
   RxString tjjSelectedDisplayNames = ''.obs; // 已选组合起来的名称
 
   // 粗饲料更新
-  void updateCslSelectedItems(List selectedList) {
+  void updateCslSelectedItems(List<(int index, int? lowlimit)> selectedList) {
     cslSelectedNameList.clear();
     cslSelectedObjList.clear();
     cslSelectedIndexList = selectedList;
     if (selectedList.isNotEmpty) {
       for (var i = 0; i < selectedList.length; i++) {
-        cslSelectedNameList.add(cslNameList[selectedList[i]]);
+        cslSelectedNameList.add(cslNameList[selectedList[i].$1]);
         cslSelectedObjList.add({
-          "id": cslList[selectedList[i]].id,
-          "variable": cslList[selectedList[i]].category,
+          "id": cslList[selectedList[i].$1].id,
+          "variable": cslList[selectedList[i].$1].category,
           "correlation": 0,
-          "referenceValues": 0
+          "referenceValues": 0,
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
         });
       }
     }

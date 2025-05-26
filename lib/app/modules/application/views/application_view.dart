@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:get/get.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/event_list/controllers/event_list_controller.dart';
 
 import '../../../models/cattle_list_argu.dart';
@@ -576,7 +575,7 @@ class ApplicationView extends GetView<ApplicationController> {
               SizedBox(height: ScreenAdapter.height(16)),
               // 生产管理
               controller.productionManagementList.isNotEmpty
-                  ? _managementView("生产管理", controller.productionManagementList)
+                  ? _managementView("基础管理", controller.productionManagementList)
                   : const SizedBox(),
               // 繁殖管理
               controller.reproductiveManagementList.isNotEmpty

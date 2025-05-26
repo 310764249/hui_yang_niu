@@ -8,7 +8,6 @@ import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/recipe/views/recipe_view.dart';
 import 'package:intellectual_breed/app/modules/tabs/controllers/tabs_controller.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
-import 'package:intellectual_breed/app/services/user_info_tool.dart';
 import 'package:intellectual_breed/app/widgets/information_item.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/generated/assets.dart';
@@ -21,6 +20,7 @@ import '../../../services/load_image.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../widgets/back_image_button.dart';
 import '../../../widgets/refresh_header_footer.dart';
+import '../../mine/controllers/mine_controller.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -52,42 +52,48 @@ class HomeView extends GetView<HomeController> {
       left: 0,
       right: 0,
       child: Obx(
-        () => AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            onPressed: () {
-              //debugPrint("User");
-              // Get.toNamed('/login');
-            },
-            icon: ClipRRect(
-              borderRadius: BorderRadius.circular(ScreenAdapter.width(16)),
-              child: LoadImage(controller.headerImg.value, width: ScreenAdapter.width(32), height: ScreenAdapter.width(32)),
-            ),
-            color: Colors.white,
-          ),
-          title: InkWell(
-            onTap: () {
-              Get.toNamed(Routes.INFORMATION_LIST);
-            },
-            child: Container(
-              height: ScreenAdapter.height(36),
-              width: ScreenAdapter.width(260),
-              decoration: BoxDecoration(
-                // color: const Color(0x33FFFFFF),
-                borderRadius: BorderRadius.circular(32),
+        () {
+          controller.headerImg.value;
+          return AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            leading: IconButton(
+              onPressed: () {
+                //debugPrint("User");
+                // Get.toNamed('/login');
+              },
+              icon: ClipRRect(
+                borderRadius: BorderRadius.circular(ScreenAdapter.width(16)),
+                child: Image.asset(Assets.imagesAppLogo, width: ScreenAdapter.width(32), height: ScreenAdapter.width(32)),
               ),
-              child: Row(children: [
-                Text("${UserInfoTool.nickName() ?? ''}，您好，欢迎回来！",
-                    style: TextStyle(
-                      color: SaienteColors.blackE5,
-                      fontSize: ScreenAdapter.fontSize(16),
-                      fontWeight: FontWeight.w500,
-                    )),
-              ]),
+              color: Colors.white,
             ),
-          ),
-          /*
+            title: InkWell(
+              onTap: () {
+                Get.toNamed(Routes.INFORMATION_LIST);
+              },
+              child: Container(
+                height: ScreenAdapter.height(36),
+                width: ScreenAdapter.width(260),
+                decoration: BoxDecoration(
+                  // color: const Color(0x33FFFFFF),
+                  borderRadius: BorderRadius.circular(32),
+                ),
+                child: Row(children: [
+                  GetBuilder<MineController>(
+                    builder: (MineController controller) {
+                      return Text("${controller.nickName ?? ''}，您好，欢迎回来！",
+                          style: TextStyle(
+                            color: SaienteColors.blackE5,
+                            fontSize: ScreenAdapter.fontSize(16),
+                            fontWeight: FontWeight.w500,
+                          ));
+                    },
+                  ),
+                ]),
+              ),
+            ),
+            /*
         actions: [
           IconButton(
             onPressed: () {
@@ -100,7 +106,8 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
         */
-        ),
+          );
+        },
       ),
     );
   }
@@ -306,109 +313,109 @@ class HomeView extends GetView<HomeController> {
                 ),
               ],
             ),
-            Row(children: [
-              Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 1});
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const LoadImage(
-                          AssetsImages.breedingPng,
-                        ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text("繁殖技术",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
-                      ],
-                    ),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 2});
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const LoadImage(
-                          AssetsImages.nutritionalPng,
-                        ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text("营养调控",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
-                      ],
-                    ),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 3});
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const LoadImage(
-                          AssetsImages.calfPng,
-                        ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text("犊牛护理",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
-                      ],
-                    ),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 4});
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const LoadImage(
-                          AssetsImages.questionPng,
-                        ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text("能繁300问",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
-                      ],
-                    ),
-                  )),
-              /*
-              Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    onTap: () {
-                      print("使用教程");
-                      Get.toNamed(Routes.INFORMATION_LIST,
-                          arguments: {'category': 0, 'type': 5});
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const LoadImage(
-                          AssetsImages.handbooksPng,
-                        ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text("使用教程",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: ScreenAdapter.fontSize(13),
-                                color: SaienteColors.blackE5)),
-                      ],
-                    ),
-                  )),
-                  */
-            ]),
+            // Row(children: [
+            //   Expanded(
+            //       flex: 1,
+            //       child: InkWell(
+            //         onTap: () {
+            //           Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 1});
+            //         },
+            //         child: Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             const LoadImage(
+            //               AssetsImages.breedingPng,
+            //             ),
+            //             SizedBox(height: ScreenAdapter.height(10)),
+            //             Text("繁殖技术",
+            //                 style: TextStyle(
+            //                     fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
+            //           ],
+            //         ),
+            //       )),
+            //   Expanded(
+            //       flex: 1,
+            //       child: InkWell(
+            //         onTap: () {
+            //           Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 2});
+            //         },
+            //         child: Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             const LoadImage(
+            //               AssetsImages.nutritionalPng,
+            //             ),
+            //             SizedBox(height: ScreenAdapter.height(10)),
+            //             Text("营养调控",
+            //                 style: TextStyle(
+            //                     fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
+            //           ],
+            //         ),
+            //       )),
+            //   Expanded(
+            //       flex: 1,
+            //       child: InkWell(
+            //         onTap: () {
+            //           Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 3});
+            //         },
+            //         child: Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             const LoadImage(
+            //               AssetsImages.calfPng,
+            //             ),
+            //             SizedBox(height: ScreenAdapter.height(10)),
+            //             Text("犊牛护理",
+            //                 style: TextStyle(
+            //                     fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
+            //           ],
+            //         ),
+            //       )),
+            //   Expanded(
+            //       flex: 1,
+            //       child: InkWell(
+            //         onTap: () {
+            //           Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 4});
+            //         },
+            //         child: Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             const LoadImage(
+            //               AssetsImages.questionPng,
+            //             ),
+            //             SizedBox(height: ScreenAdapter.height(10)),
+            //             Text("能繁300问",
+            //                 style: TextStyle(
+            //                     fontWeight: FontWeight.w400, fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.blackE5)),
+            //           ],
+            //         ),
+            //       )),
+            //   /*
+            //   Expanded(
+            //       flex: 1,
+            //       child: InkWell(
+            //         onTap: () {
+            //           print("使用教程");
+            //           Get.toNamed(Routes.INFORMATION_LIST,
+            //               arguments: {'category': 0, 'type': 5});
+            //         },
+            //         child: Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             const LoadImage(
+            //               AssetsImages.handbooksPng,
+            //             ),
+            //             SizedBox(height: ScreenAdapter.height(10)),
+            //             Text("使用教程",
+            //                 style: TextStyle(
+            //                     fontWeight: FontWeight.w400,
+            //                     fontSize: ScreenAdapter.fontSize(13),
+            //                     color: SaienteColors.blackE5)),
+            //           ],
+            //         ),
+            //       )),
+            //       */
+            // ]),
           ],
         ),
       ),

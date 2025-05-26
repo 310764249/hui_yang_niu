@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/modules/mine/controllers/mine_controller.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cattle.dart';
@@ -135,9 +136,8 @@ class TreatmentController extends GetxController {
     houseNameList.addAll(houseList.map((item) => item.name).toList());
 
     illnessList = AppDictList.searchItems('jb') ?? [];
-    illnessNameList =
-        List<String>.from(illnessList.map((item) => item['label']).toList());
-
+    illnessNameList = List<String>.from(illnessList.map((item) => item['label']).toList());
+    treatmentPersonController.text = Get.find<MineController>().nickName.value;
     //首先处理传入参数
     handleArgument();
     Toast.dismiss();
@@ -183,8 +183,7 @@ class TreatmentController extends GetxController {
       treatmentTime.value = event?.date ?? '';
       // 疾病名称
       illnessId = event?.illness ?? -1;
-      illness.value = illnessList.firstWhere(
-          (item) => int.parse(item['value']) == event?.illness)['label'];
+      illness.value = illnessList.firstWhere((item) => int.parse(item['value']) == event?.illness)['label'];
       // 诊疗人
       treatmentPersonController.text = event?.treatmentPerson ?? '';
       // 症状
@@ -274,6 +273,12 @@ class TreatmentController extends GetxController {
     //   return;
     // }
 
+    //诊疗人员不能为空
+    if (ObjectUtil.isEmpty(treatmentPersonController.text.trim())) {
+      Toast.show('请输入诊疗人员');
+      return;
+    }
+
     Toast.showLoading();
     try {
       //接口参数
@@ -283,12 +288,8 @@ class TreatmentController extends GetxController {
         //* 新增
         para = {
           "date": treatmentTime.value,
-          "cowHouseId": typeIndex.value == 0
-              ? oldCowHouseId
-              : littleCowHouseId, // 栋舍参数可有可无
-          "cowId": typeIndex.value == 0
-              ? selectedOldCow.id
-              : null, // 犊牛只有批次号,没有cowId
+          "cowHouseId": typeIndex.value == 0 ? oldCowHouseId : littleCowHouseId, // 栋舍参数可有可无
+          "cowId": typeIndex.value == 0 ? selectedOldCow.id : null, // 犊牛只有批次号,没有cowId
           "batchNo": typeIndex.value == 1 ? batchNumber.value : null,
           "illness": illnessId,
           "count": typeIndex.value == 0 ? 1 : cattleCount.value,
@@ -317,11 +318,9 @@ class TreatmentController extends GetxController {
           'rowVersion': isEdit.value ? event!.rowVersion : null, //事件行版本
         };
       }
-
+      para = removeNulls(para);
       // print(para);
-      isEdit.value
-          ? await httpsClient.put("/api/treatment", data: para)
-          : await httpsClient.post("/api/treatment", data: para);
+      isEdit.value ? await httpsClient.put("/api/treatment", data: para) : await httpsClient.post("/api/treatment", data: para);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
       Get.back();
@@ -336,5 +335,10 @@ class TreatmentController extends GetxController {
         Log.d('Other Exception: $error');
       }
     }
+  }
+
+  Map<String, dynamic> removeNulls(Map<String, dynamic> map) {
+    map.removeWhere((key, value) => value == null);
+    return map;
   }
 }

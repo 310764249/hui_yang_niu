@@ -47,8 +47,8 @@ class LoginController extends GetxController {
     if (!Constant.inProduction) {
       // telController.text = "developer";
       // passController.text = "15000000000";
-      telController.text = "15000000000";
-      passController.text = "15000000000";
+      // telController.text = "15000000000";
+      // passController.text = "15000000000";
     }
   }
 

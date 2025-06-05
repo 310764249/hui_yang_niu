@@ -111,9 +111,10 @@ class InformationListController extends GetxController {
         tempPageIndex++;
       }
       //接口参数
-
+//http://154.8.193.14:5657/api/article?pageIndex=1&pageSize=12&classify=zthj&category=5
       Map<String, dynamic> para = {
         'Title': searchStr, //标题
+        'classify': 'zthj',
         //leftCategoryList,取值选择devalue
         // 'Category': 5,
         'Category': selectIndex.value == 0

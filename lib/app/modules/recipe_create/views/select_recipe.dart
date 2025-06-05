@@ -19,7 +19,8 @@ class SelectRecipe {
     VoidCallback? onCancel,
     void Function(List<(int index, int? lowlimit)> selected)? onConfirm,
   }) {
-    List<(int index, int? lowlimit)> selectedIndex = itemsSelected ?? [];
+    List<(int index, int? lowlimit)> selectedIndex =
+        itemsSelected != null ? List<(int index, int? lowlimit)>.from(itemsSelected) : [];
 
     SmartDialog.show(
       alignment: Alignment.bottomCenter,
@@ -116,7 +117,7 @@ class SelectRecipe {
                         if (idx != -1) {
                           int countWithLow = selectedIndex.where((e) => e.$2 != null).length;
                           bool alreadyHad = selectedIndex[idx].$2 != null;
-                          if (!alreadyHad && countWithLow >= 2) {
+                          if (lowLimit != null && !alreadyHad && countWithLow >= 2) {
                             Toast.show("最多有两种饲料可选择占比");
                             return false;
                           }
@@ -142,7 +143,7 @@ class _MultiItem extends StatefulWidget {
   final bool isChecked;
   final int? initialLowLimit;
   final bool Function(bool check)? onCheckChanged;
-  final bool Function(int lowLimit)? onLowLimitSelected;
+  final bool Function(int? lowLimit)? onLowLimitSelected;
 
   const _MultiItem({
     super.key,
@@ -174,7 +175,12 @@ class _MultiItemState extends State<_MultiItem> {
     if (allow) {
       setState(() {
         check = !check;
-        if (!check) selectLowLimit = null;
+        if (!check) {
+          if (selectLowLimit != null) {
+            widget.onLowLimitSelected?.call(null);
+          }
+          selectLowLimit = null;
+        }
       });
     }
   }
@@ -183,7 +189,7 @@ class _MultiItemState extends State<_MultiItem> {
     if (!check) return;
     final isSame = limit == selectLowLimit;
     final newLimit = isSame ? null : limit;
-    final allow = widget.onLowLimitSelected?.call(newLimit ?? 0) ?? true;
+    final allow = widget.onLowLimitSelected?.call(newLimit) ?? true;
     if (allow) {
       setState(() {
         selectLowLimit = newLimit;
@@ -223,8 +229,8 @@ class _MultiItemState extends State<_MultiItem> {
                       children: lowLimitList.map((e) {
                         bool isSelected = e == selectLowLimit;
                         return Container(
-                          width: 50,
-                          height: 30,
+                          width: 42,
+                          height: 26,
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           child: OutlinedButton(
                             onPressed: () => toggleLowLimit(e),
@@ -236,6 +242,7 @@ class _MultiItemState extends State<_MultiItem> {
                             child: Text(
                               "$e%",
                               style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(12),
                                 color: isSelected ? Colors.white : SaienteColors.tab_unselected,
                               ),
                             ),
@@ -245,6 +252,7 @@ class _MultiItemState extends State<_MultiItem> {
                     )
                   : const SizedBox(),
             ),
+            const SizedBox(width: 20),
             Image.asset(
               check ? AssetsImages.checkedPng : AssetsImages.uncheckedPng,
             ),

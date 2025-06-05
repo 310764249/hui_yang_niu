@@ -135,7 +135,10 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                   selectData: controller.rzzSelName.value,
                   title: '请选择日增重',
                   onConfirm: (value, position) {
-                    controller.updateRzzSelectedItems(value, position);
+                    debugPrint('value: $value, position: $position');
+                    //根据返回的value，在没有筛选的数据中找position
+                    int index = originList.indexWhere((item) => item == value);
+                    controller.updateRzzSelectedItems(value, index);
                   },
                 );
               } else {

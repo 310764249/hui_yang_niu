@@ -61,8 +61,8 @@ class InformationListController extends GetxController {
     //获取专题合集字典项
     List pzList = AppDictList.searchItems('zthj') ?? [];
     leftCategoryList.addAll(pzList);
-    leftCategoryNameList
-        .addAll(leftCategoryList.map((item) => item['label']).toList());
+    debugPrint('pzList: $pzList');
+    leftCategoryNameList.addAll(leftCategoryList.map((item) => item['label']).toList());
     print(leftCategoryNameList);
 
     //请求数据
@@ -114,18 +114,21 @@ class InformationListController extends GetxController {
 
       Map<String, dynamic> para = {
         'Title': searchStr, //标题
-        //分类 1：繁殖技术；2：营养调控；3：犊牛护理；4：能繁母牛养殖300问；
+        //leftCategoryList,取值选择devalue
+        // 'Category': 5,
         'Category': selectIndex.value == 0
             ? ''
-            : selectIndex
-                .value, //这里 state 为 0 表示筛选条件为全部，设置为空字符串，提交表单时自动移除该 key-value
+            : leftCategoryList
+                .firstWhereOrNull((element) => element['label'] == leftCategoryNameList[selectIndex.value])?['value'],
+        // : selectIndex
+        //    .value, //这里 state 为 0 表示筛选条件为全部，设置为空字符串，提交表单时自动移除该 key-value
         'Type': listTypeID == 0 ? '' : listTypeID,
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
+      debugPrint('para: $para');
 
-      var response =
-          await httpsClient.get("/api/article", queryParameters: para);
+      var response = await httpsClient.get("/api/article", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       // print(model.itemsCount);

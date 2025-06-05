@@ -1,6 +1,5 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
 import 'package:shimmer/shimmer.dart';
@@ -35,8 +34,7 @@ class InformationListView extends GetView<InformationListController> {
           controller.isLoading.value = true;
           controller.searchArticleList();
         },
-        style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.black28),
+        style: TextStyle(fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.black28),
         decoration: const InputDecoration(
           hintText: '请输入标题',
           counterText: '', // 禁用默认的计数器文本
@@ -81,8 +79,7 @@ class InformationListView extends GetView<InformationListController> {
         width: ScreenAdapter.width(58),
         height: double.infinity,
         child: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           itemCount: controller.leftCategoryNameList.length,
           itemBuilder: ((BuildContext context, int index) {
             return SizedBox(
@@ -90,8 +87,7 @@ class InformationListView extends GetView<InformationListController> {
               height: ScreenAdapter.height(72),
               child: Obx(() => InkWell(
                     onTap: () {
-                      controller.changeIndex(
-                          index, controller.leftCategoryNameList[index] ?? "");
+                      controller.changeIndex(index, controller.leftCategoryNameList[index] ?? "");
                     },
                     child: Stack(children: [
                       Align(
@@ -100,9 +96,7 @@ class InformationListView extends GetView<InformationListController> {
                             width: ScreenAdapter.width(4),
                             height: ScreenAdapter.height(72),
                             decoration: BoxDecoration(
-                                color: controller.selectIndex.value == index
-                                    ? SaienteColors.appMain
-                                    : Colors.transparent,
+                                color: controller.selectIndex.value == index ? SaienteColors.appMain : Colors.transparent,
                                 borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(10), // 右上角圆角
                                   bottomRight: Radius.circular(10), // 右下角圆角
@@ -117,13 +111,9 @@ class InformationListView extends GetView<InformationListController> {
                             controller.leftCategoryNameList[index],
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: controller.selectIndex.value == index
-                                  ? SaienteColors.title_color
-                                  : SaienteColors.black80,
+                              color: controller.selectIndex.value == index ? SaienteColors.title_color : SaienteColors.black80,
                               fontSize: ScreenAdapter.fontSize(14),
-                              fontWeight: controller.selectIndex.value == index
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                              fontWeight: controller.selectIndex.value == index ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),
                         ),
@@ -162,9 +152,7 @@ class InformationListView extends GetView<InformationListController> {
             style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(14),
                 fontWeight: FontWeight.bold,
-                color: controller.listTypeIndex.value == position
-                    ? Colors.white
-                    : SaienteColors.black80),
+                color: controller.listTypeIndex.value == position ? Colors.white : SaienteColors.black80),
           )),
     );
   }
@@ -218,8 +206,7 @@ class InformationListView extends GetView<InformationListController> {
         // 禁止列表滑动
         physics: const NeverScrollableScrollPhysics(),
         // 数量为: 屏幕高度 / item高度 取整数
-        itemCount:
-            ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(100) * 2,
+        itemCount: ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(100) * 2,
         itemBuilder: (context, index) {
           return Container(
             // height: ScreenAdapter.height(300),
@@ -228,8 +215,7 @@ class InformationListView extends GetView<InformationListController> {
               //背景
               color: const Color(0xFFE0E0E0),
               //设置四周圆角 角度
-              borderRadius:
-                  BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
+              borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
             ),
           );
         },
@@ -273,44 +259,33 @@ class InformationListView extends GetView<InformationListController> {
                               onLoad: () async {
                                 // 如果没有更多直接返回
                                 if (!controller.hasMore) {
-                                  controller.refreshController
-                                      .finishLoad(IndicatorResult.noMore);
+                                  controller.refreshController.finishLoad(IndicatorResult.noMore);
                                   return;
                                 }
                                 // 上拉加载更多数据请求
-                                await controller.searchArticleList(
-                                    isRefresh: false);
+                                await controller.searchArticleList(isRefresh: false);
                                 // 设置状态
-                                controller.refreshController.finishLoad(
-                                    controller.hasMore
-                                        ? IndicatorResult.success
-                                        : IndicatorResult.noMore);
+                                controller.refreshController
+                                    .finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
                               },
                               child: GridView.builder(
                                   // itemCount: controller.rightCategoryList.length,
                                   itemCount: controller.items.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 147 / 198), // 宽高比
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2, childAspectRatio: 147 / 198), // 宽高比
                                   itemBuilder: (context, index) {
                                     Article model = controller.items[index];
                                     String isVideo = '';
-                                    model.type == 4
-                                        ? isVideo = '&poster=true'
-                                        : isVideo;
+                                    model.type == 4 ? isVideo = '&poster=true' : isVideo;
                                     return InformationItem(
-                                        image:
-                                            '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
+                                        image: '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
                                         title: model.title ?? '',
                                         userIcon: AssetsImages.avatar,
                                         userName: model.publisher ?? '',
                                         isVideo: model.type == 4,
                                         onPressed: () {
-                                          String openURL =
-                                              "${Constant.articleHost}/${model.type}/${model.id}";
-                                          Get.toNamed(Routes.INFORMATION_DETAIL,
-                                              arguments: openURL);
+                                          String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
+                                          Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                                         });
                                   }),
                             ),

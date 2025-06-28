@@ -232,21 +232,39 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 Toast.show('能量饲料列表获取失败');
                 return;
               }
+
               // 多选弹窗
-              Alert.showMultiPicker(
+              SelectRecipe.showMultiPicker(
                 controller.nlslNameList,
                 context,
                 itemsSelected: List.from(controller.nlslSelectedIndexList),
                 maxSelectionCount: 3,
                 onConfirm: (selected) {
-                  // if (ObjectUtil.isEmptyList(selected)) {
-                  //   Toast.failure(msg: '请至少选择一种类型');
-                  //   return;
-                  // }
+                  debugPrint('selected: $selected');
+                  if (ObjectUtil.isEmptyList(selected)) {
+                    Toast.failure(msg: '请至少选择一种类型');
+                    return;
+                  }
                   // selected 是已选择的下标[数组类型]
                   controller.updateNlslSelectedItems(selected);
                 },
               );
+
+              // 多选弹窗
+              // Alert.showMultiPicker(
+              //   controller.nlslNameList,
+              //   context,
+              //   itemsSelected: List.from(controller.nlslSelectedIndexList),
+              //   maxSelectionCount: 3,
+              //   onConfirm: (selected) {
+              //     // if (ObjectUtil.isEmptyList(selected)) {
+              //     //   Toast.failure(msg: '请至少选择一种类型');
+              //     //   return;
+              //     // }
+              //     // selected 是已选择的下标[数组类型]
+              //     controller.updateNlslSelectedItems(selected);
+              //   },
+              // );
             }),
         CellButton(
             isRequired: true,
@@ -258,20 +276,38 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 return;
               }
               // 多选弹窗
-              Alert.showMultiPicker(
+              SelectRecipe.showMultiPicker(
                 controller.dbslNameList,
                 context,
                 itemsSelected: List.from(controller.dbslSelectedIndexList),
                 maxSelectionCount: 3,
                 onConfirm: (selected) {
-                  // if (ObjectUtil.isEmptyList(selected)) {
-                  //   Toast.failure(msg: '请至少选择一种类型');
-                  //   return;
-                  // }
+                  debugPrint('selected: $selected');
+                  if (ObjectUtil.isEmptyList(selected)) {
+                    Toast.failure(msg: '请至少选择一种类型');
+                    return;
+                  }
+
                   // selected 是已选择的下标[数组类型]
                   controller.updateDbslSelectedItems(selected);
                 },
               );
+
+              // 多选弹窗
+              // Alert.showMultiPicker(
+              //   controller.dbslNameList,
+              //   context,
+              //   itemsSelected: List.from(controller.dbslSelectedIndexList),
+              //   maxSelectionCount: 3,
+              //   onConfirm: (selected) {
+              //     // if (ObjectUtil.isEmptyList(selected)) {
+              //     //   Toast.failure(msg: '请至少选择一种类型');
+              //     //   return;
+              //     // }
+              //     // selected 是已选择的下标[数组类型]
+              //     controller.updateDbslSelectedItems(selected);
+              //   },
+              // );
             }),
         CellButton(
             isRequired: false,

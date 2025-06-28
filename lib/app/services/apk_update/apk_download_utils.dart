@@ -61,7 +61,7 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
   int resultType = 0;
 
   void downloadAPK() {
-    UpdateModel model = UpdateModel(HttpsClient.domain + widget.url, "看比赛.apk", 'ic_launcher', '', showNotification: false);
+    UpdateModel model = UpdateModel(HttpsClient.domain + widget.url, "慧养牛.apk", 'ic_launcher', '', showNotification: false);
     AzhonAppUpdate.update(model).then((value) {
       debugPrint('$value');
     });

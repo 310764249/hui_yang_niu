@@ -318,18 +318,26 @@ class RecipeCreateController extends GetxController {
   }
 
   // 能量饲料更新
-  void updateNlslSelectedItems(List selectedList) {
+  void updateNlslSelectedItems(List<(int index, int? lowlimit)> selectedList) {
     nlslSelectedNameList.clear();
     nlslSelectedObjList.clear();
     nlslSelectedIndexList = selectedList;
     if (selectedList.isNotEmpty) {
       for (var i = 0; i < selectedList.length; i++) {
-        nlslSelectedNameList.add(nlslNameList[selectedList[i]]);
+        // nlslSelectedNameList.add(nlslNameList[selectedList[i]]);
+        // nlslSelectedObjList.add({
+        //   "id": nlslList[selectedList[i]].id,
+        //   "variable": nlslList[selectedList[i]].category,
+        //   "correlation": 0,
+        //   "referenceValues": 0
+        // });
+        nlslSelectedNameList.add(nlslNameList[selectedList[i].$1]);
         nlslSelectedObjList.add({
-          "id": nlslList[selectedList[i]].id,
-          "variable": nlslList[selectedList[i]].category,
+          "id": nlslList[selectedList[i].$1].id,
+          "variable": nlslList[selectedList[i].$1].category,
           "correlation": 0,
-          "referenceValues": 0
+          "referenceValues": 0,
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
         });
       }
     }
@@ -339,18 +347,19 @@ class RecipeCreateController extends GetxController {
   }
 
   // 蛋白饲料更新
-  void updateDbslSelectedItems(List selectedList) {
+  void updateDbslSelectedItems(List<(int index, int? lowlimit)> selectedList) {
     dbslSelectedNameList.clear();
     dbslSelectedObjList.clear();
     dbslSelectedIndexList = selectedList;
     if (selectedList.isNotEmpty) {
       for (var i = 0; i < selectedList.length; i++) {
-        dbslSelectedNameList.add(dbslNameList[selectedList[i]]);
+        dbslSelectedNameList.add(dbslNameList[selectedList[i].$1]);
         dbslSelectedObjList.add({
-          "id": dbslList[selectedList[i]].id,
-          "variable": dbslList[selectedList[i]].category,
+          "id": dbslList[selectedList[i].$1].id,
+          "variable": dbslList[selectedList[i].$1].category,
           "correlation": 0,
-          "referenceValues": 0
+          "referenceValues": 0,
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
         });
       }
     }

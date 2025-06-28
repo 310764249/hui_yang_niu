@@ -224,31 +224,35 @@ class _MultiItemState extends State<_MultiItem> {
             ),
             Expanded(
               child: check
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: lowLimitList.map((e) {
-                        bool isSelected = e == selectLowLimit;
-                        return Container(
-                          width: 42,
-                          height: 26,
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          child: OutlinedButton(
-                            onPressed: () => toggleLowLimit(e),
-                            style: OutlinedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              backgroundColor: isSelected ? SaienteColors.blue4D91F5 : Colors.white,
-                              side: isSelected ? BorderSide.none : null,
-                            ),
-                            child: Text(
-                              "$e%",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(12),
-                                color: isSelected ? Colors.white : SaienteColors.tab_unselected,
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: lowLimitList.map((e) {
+                          bool isSelected = e == selectLowLimit;
+                          return Container(
+                            width: 42,
+                            height: 26,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            child: OutlinedButton(
+                              onPressed: () => toggleLowLimit(e),
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: isSelected ? SaienteColors.blue4D91F5 : Colors.white,
+                                side: isSelected ? BorderSide.none : null,
+                              ),
+                              child: Text(
+                                "$e%",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(12),
+                                  color: isSelected ? Colors.white : SaienteColors.tab_unselected,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     )
                   : const SizedBox(),
             ),

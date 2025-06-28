@@ -184,8 +184,8 @@ class ApplicationController extends GetxController {
           : [
               CommonData(id: 0, name: "采精", image: AssetsImages.icon10),
               CommonData(id: 1, name: "发情", image: AssetsImages.icon11),
-              CommonData(id: 2, name: "禁配", image: AssetsImages.icon12),
-              CommonData(id: 3, name: "解禁", image: AssetsImages.icon13),
+              // CommonData(id: 2, name: "禁配", image: AssetsImages.icon12),
+              // CommonData(id: 3, name: "解禁", image: AssetsImages.icon13),
               CommonData(id: 4, name: "配种", image: AssetsImages.icon14),
               CommonData(id: 5, name: "孕检", image: AssetsImages.icon15),
               CommonData(id: 6, name: "产犊", image: AssetsImages.icon16),

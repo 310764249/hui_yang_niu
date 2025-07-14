@@ -74,7 +74,6 @@ class HomeView extends GetView<HomeController> {
               },
               child: Container(
                 height: ScreenAdapter.height(36),
-                width: ScreenAdapter.width(260),
                 decoration: BoxDecoration(
                   // color: const Color(0x33FFFFFF),
                   borderRadius: BorderRadius.circular(32),
@@ -82,12 +81,15 @@ class HomeView extends GetView<HomeController> {
                 child: Row(children: [
                   GetBuilder<MineController>(
                     builder: (MineController controller) {
-                      return Text("${controller.nickName ?? ''}，您好，欢迎回来！",
-                          style: TextStyle(
-                            color: SaienteColors.blackE5,
-                            fontSize: ScreenAdapter.fontSize(16),
-                            fontWeight: FontWeight.w500,
-                          ));
+                      return Expanded(
+                        child: Text("${controller.nickName ?? ''}，您好，欢迎回来！",
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: SaienteColors.blackE5,
+                              fontSize: ScreenAdapter.fontSize(16),
+                              fontWeight: FontWeight.w500,
+                            )),
+                      );
                     },
                   ),
                 ]),

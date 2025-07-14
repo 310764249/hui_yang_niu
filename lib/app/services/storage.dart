@@ -31,6 +31,18 @@ class Storage {
     }
   }
 
+  //设置bool值
+  static setBool(String key, bool value) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool(key, value);
+  }
+
+  //获取bool值
+  static Future<bool> getBool(String key) async {
+    var prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key) ?? false;
+  }
+
   /// 移除指定数据
   static removeData(String key) async {
     var prefs = await SharedPreferences.getInstance();

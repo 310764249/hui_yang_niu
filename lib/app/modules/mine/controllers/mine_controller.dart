@@ -2,8 +2,8 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:intellectual_breed/app/services/user_info_tool.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../models/user_resource.dart';
 import '../../../network/apiException.dart';
@@ -33,8 +33,11 @@ class MineController extends GetxController {
   RxString cowCount = Constant.placeholder.obs;
   RxString employeeCount = Constant.placeholder.obs;
 
+  //是否开启大字模式
+  RxBool isOpenBigFont = false.obs;
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
 
     //监听用户登录状态
@@ -49,6 +52,15 @@ class MineController extends GetxController {
       headerImg.value = '${Constant.uploadFileUrl}${event.ID}';
       update();
     });
+    isOpenBigFont.value = await Storage.getBool(Constant.isOpenBigFont);
+  }
+
+  updateBigFont(bool isOpen) {
+    isOpenBigFont.value = isOpen;
+    Storage.setBool(Constant.isOpenBigFont, isOpenBigFont.value).then((value) {
+      EventBusUtil.fireEvent('bigFont');
+    });
+    update();
   }
 
   @override
@@ -96,8 +108,7 @@ class MineController extends GetxController {
     headerImg.value = '${Constant.uploadFileUrl}$ID';
     //更新
     //api/user/uploadprofilephoto
-    await httpsClient.post("/api/user/uploadprofilephoto",
-        data: {"id": UserInfoTool.userID(), "avatarUrl": ID});
+    await httpsClient.post("/api/user/uploadprofilephoto", data: {"id": UserInfoTool.userID(), "avatarUrl": ID});
     //UserInfoTool.user?.avatarUrl = ID;
     //通知头像更新
     EventBusUtil.fireEvent(UserIconChangeEvent(ID));
@@ -121,8 +132,7 @@ class MineController extends GetxController {
       if (ObjectUtil.isEmptyString(UserInfoTool.avatarUrl())) {
         headerImg.value = AssetsImages.avatar;
       } else {
-        headerImg.value =
-            '${Constant.uploadFileUrl}${UserInfoTool.avatarUrl()}';
+        headerImg.value = '${Constant.uploadFileUrl}${UserInfoTool.avatarUrl()}';
       }
       //农户散养 状态的不显示备案中心
       // showRecord.value = resourceModel.farmerType == 3 ? false : true;

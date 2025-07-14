@@ -408,6 +408,29 @@ class MineView extends GetView<MineController> {
           Get.snackbar('提示', '隐私政策', snackPosition: SnackPosition.BOTTOM);
         }),
         _line(),
+        ObxValue<RxBool>(
+          (value) => InkWell(
+              onTap: () {
+                controller.updateBigFont(!value.value);
+              },
+              child: SizedBox(
+                height: ScreenAdapter.height(52),
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SizedBox(width: ScreenAdapter.width(9)),
+                  Icon(Icons.brightness_auto_outlined),
+                  SizedBox(width: ScreenAdapter.width(6)),
+                  Text(
+                    '大字模式',
+                    style: TextStyle(color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(14)),
+                  ),
+                  const Spacer(),
+                  Switch(value: value.value, onChanged: controller.updateBigFont),
+                  SizedBox(width: ScreenAdapter.width(18)),
+                ]),
+              )),
+          controller.isOpenBigFont,
+        ),
+        _line(),
         _actionItem(AssetsImages.about, '关于软件', () {
           Get.toNamed(Routes.Production_Guide);
         }),
@@ -457,7 +480,8 @@ class MineView extends GetView<MineController> {
 
   Widget _pageContent(BuildContext context) {
     return Positioned(
-      top: 0, //这里保证布局从屏幕左上角开始
+      top: 0,
+      //这里保证布局从屏幕左上角开始
       left: 0,
       right: 0,
       bottom: 0,

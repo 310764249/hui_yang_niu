@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../models/common_data.dart';
@@ -86,4 +85,6 @@ class Constant {
     '7',
     '8',
   ];
+
+  static const String isOpenBigFont = 'isOpenBigFont';
 }

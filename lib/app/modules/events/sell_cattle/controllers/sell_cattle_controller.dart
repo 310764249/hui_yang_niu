@@ -1,23 +1,20 @@
 import 'package:common_utils/common_utils.dart';
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/event_argument.dart';
-import 'package:intellectual_breed/app/models/user_resource.dart';
-
 import 'package:keyboard_actions/keyboard_actions.dart';
+
 import '../../../../models/cattle.dart';
 import '../../../../models/cow_batch.dart';
 import '../../../../models/simple_event.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
 import '../../../../services/Log.dart';
-import '../../../../services/constant.dart';
+import '../../../../services/ex_string.dart';
 import '../../../../services/keyboard_actions_helper.dart';
-import '../../../../services/storage.dart';
 import '../../../../services/user_info_tool.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
-import '../../../../services/ex_string.dart';
 
 class SellCattleController extends GetxController {
   //TODO: Implement SellCattleController
@@ -305,11 +302,12 @@ class SellCattleController extends GetxController {
   //新增事件
   void newAction() async {
     Toast.showLoading();
+
     try {
       //接口参数
       Map<String, dynamic> para = {
         'type': chooseTypeIndex.value + 1, //必传 integer 类型1：种牛；2：犊牛-育肥牛；
-        'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
+        'cowIds': /*codeString.value.isEmpty ? '' :*/ [selectedCow.id], // string 牛只编码
         'batchNo': batchNumber.value, // string 批次号
         'count': countController.text.trim(), //必传 integer 数量
         'price': priceController.text.trim(), //必传 number 单价
@@ -321,7 +319,7 @@ class SellCattleController extends GetxController {
         'remark': remarkController.text.trim(), // 备注
       };
 
-      //print(para);
+      print('/api/market$para');
       await httpsClient.post("/api/market", data: para);
       Toast.dismiss();
       Toast.success(msg: '提交成功');

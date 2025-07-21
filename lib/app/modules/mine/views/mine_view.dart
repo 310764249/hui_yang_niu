@@ -417,14 +417,23 @@ class MineView extends GetView<MineController> {
                 height: ScreenAdapter.height(52),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   SizedBox(width: ScreenAdapter.width(9)),
-                  Icon(Icons.brightness_auto_outlined),
+                  const Icon(
+                    Icons.brightness_auto_outlined,
+                    size: 16,
+                  ),
                   SizedBox(width: ScreenAdapter.width(6)),
                   Text(
                     '大字模式',
                     style: TextStyle(color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(14)),
                   ),
                   const Spacer(),
-                  Switch(value: value.value, onChanged: controller.updateBigFont),
+                  Switch(
+                    value: value.value,
+                    onChanged: controller.updateBigFont,
+                    activeColor: Colors.white,
+                    activeTrackColor: SaienteColors.blue2559F3,
+                    trackOutlineWidth: MaterialStateProperty.all(0),
+                  ),
                   SizedBox(width: ScreenAdapter.width(18)),
                 ]),
               )),

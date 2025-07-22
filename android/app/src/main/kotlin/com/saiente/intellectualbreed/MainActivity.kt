@@ -1,4 +1,4 @@
-package com.saiente.intellectual_breed
+package com.saiente.intellectualbreed
 
 import io.flutter.embedding.android.FlutterActivity
 

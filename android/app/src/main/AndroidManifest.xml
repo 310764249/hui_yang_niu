@@ -33,14 +33,14 @@
         android:label="慧养牛"
         android:usesCleartextTraffic="true"
         tools:replace="android:label"
-        android:name="com.saiente.intellectualbreed.MyApplication"
+        android:name=".MyApplication"
         >
         <!-- 在这里设置android端ak-->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="D4UBmglkui271YCQWIMoxuiTk8LfrOSl" />
         <activity
-            android:name="com.saiente.intellectual_breed.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"

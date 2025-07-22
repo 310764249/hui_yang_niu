@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:jpush_flutter/jpush_interface.dart';
 
 import '../routes/app_pages.dart';
 //https://github.com/jpush/jpush-flutter-plugin/blob/master/documents/APIs.md
@@ -16,7 +17,7 @@ class JPushTool {
 
   // 初始化设置、业务处理
   static void setup() {
-    JPush jpush = JPush();
+    JPushFlutterInterface jpush = JPush.newJPush();
     //注意：addEventHandler 方法建议放到 setup 之前，其他方法需要在 setup 方法之后调用，
     try {
       jpush.addEventHandler(
@@ -61,8 +62,7 @@ class JPushTool {
             //Alert.showConfirm(JPushTool.curExtras.toString());
             if (JPushTool.curExtras != null) {
               Map temp = JPushTool.curExtras!;
-              Get.toNamed(Routes.ACTION_MESSAGE_LIST,
-                  arguments: temp['category']);
+              Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: temp['category']);
             }
           });
         },
@@ -87,7 +87,7 @@ class JPushTool {
     jpush.setup(
       appKey: Constant.JPushAppKey,
       channel: "theChannel",
-      production: Constant.inProduction,//注意推送环境
+      production: Constant.inProduction, //注意推送环境
       debug: false, // 设置是否打印 debug 日志
     );
 
@@ -102,8 +102,7 @@ class JPushTool {
     //iOS Only
     //申请推送权限，注意这个方法只会向用户弹出一次推送权限请求（如果用户不同意，之后只能用户到设置页面里面勾选相应权限），需要开发者选择合适的时机调用。
     //注意： iOS10+ 可以通过该方法来设置推送是否前台展示，是否触发声音，是否设置应用角标 badge
-    jpush.applyPushAuthority(
-        const NotificationSettingsIOS(sound: true, alert: true, badge: true));
+    jpush.applyPushAuthority(const NotificationSettingsIOS(sound: true, alert: true, badge: true));
     //iOS Only
     //获取 iOS 点击推送启动应用的那条通知。
     jpush.getLaunchAppNotification().then((map) {});

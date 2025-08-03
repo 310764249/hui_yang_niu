@@ -1,25 +1,21 @@
-import 'dart:ffi';
-
 import 'package:common_utils/common_utils.dart';
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/event_argument.dart';
 import 'package:intellectual_breed/app/models/stock.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 import '../../../../models/cattle.dart';
 import '../../../../models/simple_event.dart';
+import '../../../../network/apiException.dart';
+import '../../../../network/httpsClient.dart';
 import '../../../../services/Log.dart';
+import '../../../../services/ex_string.dart';
 import '../../../../services/keyboard_actions_helper.dart';
-import '../../../../widgets/dict_list.dart';
 import '../../../../services/user_info_tool.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
-import '../../../../network/httpsClient.dart';
-import '../../../../network/apiException.dart';
-import '../../../../services/ex_string.dart';
 
 class MatingController extends GetxController {
   //TODO: Implement MatingController
@@ -85,8 +81,7 @@ class MatingController extends GetxController {
     //首先处理传入参数
     handleArgument();
     //默认当前
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //取出公母数组
     mList = List.from(AppDictList.searchItems('gm') ?? []);
     //删除公
@@ -103,10 +98,8 @@ class MatingController extends GetxController {
 
     //初始化字典项
     chooseTypeList = AppDictList.searchItems('pzfs') ?? [];
-    chooseTypeID.value =
-        chooseTypeList.isNotEmpty ? chooseTypeList.first['value'] : '';
-    chooseTypeNameList =
-        List<String>.from(chooseTypeList.map((item) => item['label']).toList());
+    chooseTypeID.value = chooseTypeList.isNotEmpty ? chooseTypeList.first['value'] : '';
+    chooseTypeNameList = List<String>.from(chooseTypeList.map((item) => item['label']).toList());
     //精液编号
     numberList = await CommonService().requestStockAll(1);
     numberNameList.addAll(numberList.map((item) => item.no ?? '').toList());
@@ -141,8 +134,7 @@ class MatingController extends GetxController {
         updateChooseTypeIndex(1);
         selectNumVale = event!.semenNumber ?? '';
         selectNumName.value = event!.semenNumber ?? '';
-        countController.text =
-            event!.copies == 0 ? '' : event!.copies.toString();
+        countController.text = event!.copies == 0 ? '' : event!.copies.toString();
       }
       //填充时间
       updateTimeStr(event!.date);
@@ -214,21 +206,21 @@ class MatingController extends GetxController {
 
     if (chooseTypeID.value == '1') {
       //本交
-      if (ObjectUtil.isEmpty(bullCode.value)) {
-        Toast.show('请选择公牛耳号');
-        return;
-      }
+      // if (ObjectUtil.isEmpty(bullCode.value)) {
+      //   Toast.show('请选择公牛耳号');
+      //   return;
+      // }
     } else {
       //人工受精
-      if (ObjectUtil.isEmpty(selectNumVale)) {
-        Toast.show('请选择精液编号');
-        return;
-      }
-      String count = countController.text.trim();
-      if (ObjectUtil.isEmpty(count)) {
-        Toast.show('请填写份数');
-        return;
-      }
+      // if (ObjectUtil.isEmpty(selectNumVale)) {
+      //   Toast.show('请选择精液编号');
+      //   return;
+      // }
+      // String count = countController.text.trim();
+      // if (ObjectUtil.isEmpty(count)) {
+      //   Toast.show('请填写份数');
+      //   return;
+      // }
     }
 
     //时间不能小于入场日期
@@ -261,8 +253,7 @@ class MatingController extends GetxController {
       Map<String, dynamic> para = {
         'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
         'type': chooseTypeID.value, //必传 integer 配种方式1：本交；2：人工输精；
-        'maleCowId':
-            bullCode.value.isEmpty ? '' : selectedBull.id, //必传 string 公牛ID
+        'maleCowId': bullCode.value.isEmpty ? '' : selectedBull.id, //必传 string 公牛ID
         'semenNumber': selectNumVale, // string 精液编号
         'copies': countController.text.trim(), //必传 integer 精液份数
         'executor': UserInfoTool.nickName(), // string 技术员
@@ -298,8 +289,7 @@ class MatingController extends GetxController {
         'rowVersion': event!.rowVersion, //事件行版本
         'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
         'type': chooseTypeID.value, //必传 integer 配种方式1：本交；2：人工输精；
-        'maleCowId':
-            bullCode.value.isEmpty ? '' : selectedBull.id, //必传 string 公牛ID
+        'maleCowId': bullCode.value.isEmpty ? '' : selectedBull.id, //必传 string 公牛ID
         'semenNumber': selectNumVale, // string 精液编号
         'copies': countController.text.trim(), //必传 integer 精液份数
         'executor': UserInfoTool.nickName(), // string 技术员
@@ -328,9 +318,7 @@ class MatingController extends GetxController {
   //获取牛只详情
   Future<Cattle> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       Cattle model = Cattle.fromJson(response);
       return Future.value(model);
     } catch (error) {

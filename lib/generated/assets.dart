@@ -34,9 +34,12 @@ class Assets {
   static const String imagesHeaderTest = 'assets/images/header_test.png';
   static const String imagesHomeFill = 'assets/images/home_fill.png';
   static const String imagesHomeLine = 'assets/images/home_line.png';
+  static const String imagesIcAgriculturalNews = 'assets/images/ic_agricultural_news.png';
+  static const String imagesIcFeedIngredient = 'assets/images/ic_feed_ingredient.png';
   static const String imagesIcFormulaDesign = 'assets/images/ic_formula_design.png';
   static const String imagesIcHomeLabel = 'assets/images/ic_home_label.svg';
   static const String imagesIcIntelligentMonitoring = 'assets/images/ic_intelligent_monitoring.png';
+  static const String imagesIcPriceLiveCattle = 'assets/images/ic_price_live_cattle.png';
   static const String imagesIcProductionManagement = 'assets/images/ic_production_management.png';
   static const String imagesIcQuestionAnswer = 'assets/images/ic_question_answer.png';
   static const String imagesIcTaskReminder = 'assets/images/ic_task_reminder.png';
@@ -122,4 +125,5 @@ class Assets {
   static const String imagesUnchecked = 'assets/images/unchecked.png';
   static const String imagesUnread = 'assets/images/unread.png';
   static const String imagesUserInput = 'assets/images/userInput.png';
+
 }

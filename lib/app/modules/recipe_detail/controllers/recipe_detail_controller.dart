@@ -21,8 +21,7 @@ class RecipeDetailController extends GetxController {
 
   // 弹窗输入框
   TextEditingController dialogFormulaNameController = TextEditingController();
-  TextEditingController dialogRecipeInstructionController =
-      TextEditingController();
+  TextEditingController dialogRecipeInstructionController = TextEditingController();
   TextEditingController dialogTabooItemController = TextEditingController();
 
   final FocusNode dialogFormulaNameNode = FocusNode();
@@ -50,8 +49,10 @@ class RecipeDetailController extends GetxController {
 
   //配方目标
   List pfmbList = [];
+
   //品种
   List pzList = [];
+
   //原料分类
   List ylflList = [];
 
@@ -78,8 +79,7 @@ class RecipeDetailController extends GetxController {
       });
       dialogRecipeInstructionNode.addListener(() async {
         if (!dialogRecipeInstructionNode.hasFocus) {
-          dialogRecipeInstruction.value =
-              dialogRecipeInstructionController.text;
+          dialogRecipeInstruction.value = dialogRecipeInstructionController.text;
           update();
         }
       });
@@ -125,10 +125,10 @@ class RecipeDetailController extends GetxController {
   Future<void> getFormulaItems() async {
     Toast.showLoading();
     try {
-      var response =
-          await httpsClient.get("/api/formulaItems/getAll", queryParameters: {
-        "formulaId": argument?.id,
-      });
+      var response = await httpsClient.get(
+        "/api/formulaItems/getAll",
+        queryParameters: {"formulaId": argument?.id},
+      );
       Toast.dismiss();
       List<FormulaItemModel> modelList = [];
       for (var item in response) {
@@ -272,7 +272,8 @@ class RecipeDetailController extends GetxController {
 
   /// 保存配方
   Future<void> saveFormula() async {
-    if (dialogFormulaName.value.trim().isEmpty) {
+    String formulaName = dialogFormulaNameController.text.trim();
+    if (formulaName.isEmpty) {
       Toast.show('请输入配方名称');
       return;
     }
@@ -291,7 +292,7 @@ class RecipeDetailController extends GetxController {
       //接口参数
       Map<String, dynamic> mapParam = {
         "nutritionId": argument?.nutritionId,
-        "name": dialogFormulaName.value,
+        "name": formulaName,
         "individualCate": argument?.individualCate,
         "individualType": argument?.individualType,
         "weightType": argument?.weightType,
@@ -378,10 +379,7 @@ class RecipeDetailController extends GetxController {
     try {
       Toast.showLoading(msg: "配方删除中...");
       //接口参数
-      Map<String, dynamic> mapParam = {
-        "id": argument?.id,
-        "rowVersion": argument?.rowVersion
-      };
+      Map<String, dynamic> mapParam = {"id": argument?.id, "rowVersion": argument?.rowVersion};
       await httpsClient.delete("/api/formula", data: mapParam);
       Toast.dismiss();
       Toast.success(msg: '配方删除成功');

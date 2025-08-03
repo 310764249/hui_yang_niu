@@ -36,11 +36,12 @@ class HomeView extends GetView<HomeController> {
         height: ScreenAdapter.width(375),
         width: ScreenAdapter.width(375),
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          colors: [Color(0xFF639FF7), Color(0x00D8D8D8)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        )),
+          gradient: LinearGradient(
+            colors: [Color(0xFF639FF7), Color(0x00D8D8D8)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
       ),
     );
   }
@@ -51,51 +52,58 @@ class HomeView extends GetView<HomeController> {
       top: 0,
       left: 0,
       right: 0,
-      child: Obx(
-        () {
-          controller.headerImg.value;
-          return AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: IconButton(
-              onPressed: () {
-                //debugPrint("User");
-                // Get.toNamed('/login');
-              },
-              icon: ClipRRect(
-                borderRadius: BorderRadius.circular(ScreenAdapter.width(16)),
-                child: Image.asset(Assets.imagesAppLogo, width: ScreenAdapter.width(32), height: ScreenAdapter.width(32)),
+      child: Obx(() {
+        controller.headerImg.value;
+        return AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            onPressed: () {
+              //debugPrint("User");
+              // Get.toNamed('/login');
+            },
+            icon: ClipRRect(
+              borderRadius: BorderRadius.circular(ScreenAdapter.width(16)),
+              child: Image.asset(
+                Assets.imagesAppLogo,
+                width: ScreenAdapter.width(32),
+                height: ScreenAdapter.width(32),
               ),
-              color: Colors.white,
             ),
-            title: InkWell(
-              onTap: () {
-                Get.toNamed(Routes.INFORMATION_LIST);
-              },
-              child: Container(
-                height: ScreenAdapter.height(36),
-                decoration: BoxDecoration(
-                  // color: const Color(0x33FFFFFF),
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Row(children: [
+            color: Colors.white,
+          ),
+          title: InkWell(
+            onTap: () {
+              Get.toNamed(Routes.INFORMATION_LIST);
+            },
+            child: Container(
+              height: ScreenAdapter.height(36),
+              decoration: BoxDecoration(
+                // color: const Color(0x33FFFFFF),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Row(
+                children: [
                   GetBuilder<MineController>(
                     builder: (MineController controller) {
                       return Expanded(
-                        child: Text("${controller.nickName ?? ''}，您好，欢迎回来！",
-                            maxLines: 1,
-                            style: TextStyle(
-                              color: SaienteColors.blackE5,
-                              fontSize: ScreenAdapter.fontSize(16),
-                              fontWeight: FontWeight.w500,
-                            )),
+                        child: Text(
+                          "${controller.nickName ?? ''}，您好，欢迎回来！",
+                          maxLines: 1,
+                          style: TextStyle(
+                            color: SaienteColors.blackE5,
+                            fontSize: ScreenAdapter.fontSize(16),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       );
                     },
                   ),
-                ]),
+                ],
               ),
             ),
-            /*
+          ),
+          /*
         actions: [
           IconButton(
             onPressed: () {
@@ -108,44 +116,41 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
         */
-          );
-        },
-      ),
+        );
+      }),
     );
   }
 
   //_homePage 中的轮播组件
   Widget _focus() {
     return SizedBox(
-        width: ScreenAdapter.getScreenWidth(),
-        height: ScreenAdapter.height(150),
-        child: Obx(
-          () => EasyRefresh(
-            //这里Swiper上面的EasyRefresh只是用来包裹，没有实际作用，如果不包一下，上层的EasyRefresh会作用到下层的Swiper上
-            child: Swiper(
-              itemBuilder: (context, index) {
-                return ClipRRect(
-                  //圆角
-                  borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
-                  child: LoadImage(
-                    controller.swipList[index],
-                    fit: BoxFit.fill,
-                  ),
-                );
-              },
-              itemCount: controller.swipList.length,
-              autoplay: true,
-              duration: 300,
-              pagination: const SwiperPagination(
-                builder: SwiperPagination.rect,
-                alignment: Alignment.bottomCenter,
-              ),
-              onTap: (index) {
-                print(index);
-              },
+      width: ScreenAdapter.getScreenWidth(),
+      height: ScreenAdapter.height(150),
+      child: Obx(
+        () => EasyRefresh(
+          //这里Swiper上面的EasyRefresh只是用来包裹，没有实际作用，如果不包一下，上层的EasyRefresh会作用到下层的Swiper上
+          child: Swiper(
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                //圆角
+                borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
+                child: LoadImage(controller.swipList[index], fit: BoxFit.fill),
+              );
+            },
+            itemCount: controller.swipList.length,
+            autoplay: true,
+            duration: 300,
+            pagination: const SwiperPagination(
+              builder: SwiperPagination.rect,
+              alignment: Alignment.bottomCenter,
             ),
+            onTap: (index) {
+              print(index);
+            },
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   //消息通知
@@ -159,36 +164,51 @@ class HomeView extends GetView<HomeController> {
         width: ScreenAdapter.getScreenWidth(),
         height: ScreenAdapter.height(45),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(ScreenAdapter.width(10)), bottomRight: Radius.circular(ScreenAdapter.width(10))),
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFFDF9E),
-                Color(0xFFFFD074),
-              ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            )),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(ScreenAdapter.width(10)),
+            bottomRight: Radius.circular(ScreenAdapter.width(10)),
+          ),
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFDF9E), Color(0xFFFFD074)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.fromLTRB(ScreenAdapter.width(14), ScreenAdapter.height(10), 0, 0),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            BackImageButton(
-                text: Text("消息通知",
-                    style: TextStyle(color: Colors.white, fontSize: ScreenAdapter.fontSize(12), fontWeight: FontWeight.w500)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BackImageButton(
+                text: Text(
+                  "消息通知",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: ScreenAdapter.fontSize(12),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 imagePath: AssetsImages.msgTitleBackPng,
                 width: ScreenAdapter.width(64),
                 height: ScreenAdapter.height(20),
-                onPressed: () {}),
-            SizedBox(width: ScreenAdapter.width(5)),
-            //需要包裹 Expanded 结合 TextOverflow.ellipsis, 才有效果
-            Expanded(
-              child: Text("您有143积分将于9月30日过期您有143积分将于9月30日过期",
+                onPressed: () {},
+              ),
+              SizedBox(width: ScreenAdapter.width(5)),
+              //需要包裹 Expanded 结合 TextOverflow.ellipsis, 才有效果
+              Expanded(
+                child: Text(
+                  "您有143积分将于9月30日过期您有143积分将于9月30日过期",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: TextStyle(color: const Color(0xFF925927), fontSize: ScreenAdapter.fontSize(13))),
-            ),
-            IconButton(onPressed: () {}, icon: const LoadImage(AssetsImages.msgClosePng)),
-          ]),
+                  style: TextStyle(
+                    color: const Color(0xFF925927),
+                    fontSize: ScreenAdapter.fontSize(13),
+                  ),
+                ),
+              ),
+              IconButton(onPressed: () {}, icon: const LoadImage(AssetsImages.msgClosePng)),
+            ],
+          ),
         ),
       ),
     );
@@ -211,13 +231,11 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                      onTap: () {
-                        Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 1});
-                      },
-                      child: Image.asset(
-                        Assets.imagesIcTechnicalClassroom,
-                        fit: BoxFit.fill,
-                      )),
+                    onTap: () {
+                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 1});
+                    },
+                    child: Image.asset(Assets.imagesIcTechnicalClassroom, fit: BoxFit.fill),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -225,10 +243,7 @@ class HomeView extends GetView<HomeController> {
                     onTap: () {
                       Toast.show("敬请期待");
                     },
-                    child: Image.asset(
-                      Assets.imagesIcQuestionAnswer,
-                      fit: BoxFit.fill,
-                    ),
+                    child: Image.asset(Assets.imagesIcQuestionAnswer, fit: BoxFit.fill),
                   ),
                 ),
               ],
@@ -241,10 +256,7 @@ class HomeView extends GetView<HomeController> {
                     onTap: () {
                       Get.to(RecipeView());
                     },
-                    child: Image.asset(
-                      Assets.imagesIcFormulaDesign,
-                      fit: BoxFit.fill,
-                    ),
+                    child: Image.asset(Assets.imagesIcFormulaDesign, fit: BoxFit.fill),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -273,7 +285,7 @@ class HomeView extends GetView<HomeController> {
                                   backgroundColor: Colors.red[500],
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         );
                       },
@@ -290,10 +302,7 @@ class HomeView extends GetView<HomeController> {
                     onTap: () {
                       Toast.show("敬请期待");
                     },
-                    child: Image.asset(
-                      Assets.imagesIcIntelligentMonitoring,
-                      fit: BoxFit.fill,
-                    ),
+                    child: Image.asset(Assets.imagesIcIntelligentMonitoring, fit: BoxFit.fill),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -305,10 +314,7 @@ class HomeView extends GetView<HomeController> {
                           controller.currentIndex.value = 1;
                           controller.pageController.jumpToPage(1);
                         },
-                        child: Image.asset(
-                          Assets.imagesIcProductionManagement,
-                          fit: BoxFit.fill,
-                        ),
+                        child: Image.asset(Assets.imagesIcProductionManagement, fit: BoxFit.fill),
                       );
                     },
                   ),
@@ -429,32 +435,29 @@ class HomeView extends GetView<HomeController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                bottom: -2,
-                child: SvgPicture.asset(Assets.imagesIcHomeLabel),
-              ),
-              Text(
-                '热门推荐',
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(20),
-                  color: SaienteColors.blackE5,
-                  fontWeight: FontWeight.w600,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Text(
+                  '热门推荐',
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(20),
+                    color: SaienteColors.blackE5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          TextButton(
+              ],
+            ),
+            TextButton(
               onPressed: () {
                 Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 1, 'type': 0});
               },
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.all(0),
-                ),
+                padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
                 alignment: Alignment.centerRight,
               ),
               child: Row(
@@ -463,37 +466,44 @@ class HomeView extends GetView<HomeController> {
                   Text(
                     "查看更多",
                     style: TextStyle(
-                        color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(12), fontWeight: FontWeight.w300),
+                      color: SaienteColors.black80,
+                      fontSize: ScreenAdapter.fontSize(12),
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                   const Icon(
                     Icons.arrow_forward_ios_outlined,
                     color: SaienteColors.black80,
                     size: 12,
-                  )
+                  ),
                 ],
-              ))
-        ]),
+              ),
+            ),
+          ],
+        ),
         SizedBox(
           height: ScreenAdapter.height(208),
           child: EasyRefresh(
             child: ListView.builder(
-                itemCount: controller.videoItems.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) {
-                  Article model = controller.videoItems[index];
-                  return InformationItem(
-                      image: '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
-                      title: model.title ?? '',
-                      userIcon: AssetsImages.avatar,
-                      userName: model.publisher ?? '',
-                      isVideo: true,
-                      onPressed: () {
-                        String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
-                        Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-                      });
-                }),
+              itemCount: controller.videoItems.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                Article model = controller.videoItems[index];
+                return InformationItem(
+                  image: '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
+                  title: model.title ?? '',
+                  userIcon: AssetsImages.avatar,
+                  userName: model.publisher ?? '',
+                  isVideo: true,
+                  onPressed: () {
+                    String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
+                    Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+                  },
+                );
+              },
+            ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -503,27 +513,29 @@ class HomeView extends GetView<HomeController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                bottom: -2,
-                child: SvgPicture.asset(Assets.imagesIcHomeLabel),
-              ),
-              Text('热门文章',
-                  style:
-                      TextStyle(fontSize: ScreenAdapter.fontSize(20), color: SaienteColors.blackE5, fontWeight: FontWeight.w500)),
-            ],
-          ),
-          TextButton(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Text(
+                  '热门文章',
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(20),
+                    color: SaienteColors.blackE5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            TextButton(
               onPressed: () {
                 Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 2, 'type': 0});
               },
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.all(0),
-                ),
+                padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
                 alignment: Alignment.centerRight,
               ),
               child: Row(
@@ -532,71 +544,83 @@ class HomeView extends GetView<HomeController> {
                   Text(
                     "查看更多",
                     style: TextStyle(
-                        color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(12), fontWeight: FontWeight.w300),
+                      color: SaienteColors.black80,
+                      fontSize: ScreenAdapter.fontSize(12),
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                   const Icon(
                     Icons.arrow_forward_ios_outlined,
                     color: SaienteColors.black80,
                     size: 12,
-                  )
+                  ),
                 ],
-              ))
-        ]),
+              ),
+            ),
+          ],
+        ),
         SizedBox(
           height: ScreenAdapter.height(208),
           child: EasyRefresh(
             child: ListView.builder(
-                itemCount: controller.wordItems.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) {
-                  Article model = controller.wordItems[index];
-                  return InformationItem(
-                      image: '${Constant.uploadFileUrl}${model.coverImg}',
-                      title: model.title ?? '',
-                      userIcon: AssetsImages.avatar,
-                      userName: model.publisher ?? '',
-                      onPressed: () {
-                        String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
-                        Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-                      });
-                }),
+              itemCount: controller.wordItems.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                Article model = controller.wordItems[index];
+                return InformationItem(
+                  image: '${Constant.uploadFileUrl}${model.coverImg}',
+                  title: model.title ?? '',
+                  userIcon: AssetsImages.avatar,
+                  userName: model.publisher ?? '',
+                  onPressed: () {
+                    String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
+                    Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+                  },
+                );
+              },
+            ),
           ),
-        )
+        ),
       ],
     );
   }
 
   //页面主体
   Widget _homePage() {
-    return Obx(() => Positioned(
-          top: ScreenAdapter.getStatusBarHeight() + ScreenAdapter.getNavBarHeight(),
-          // top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: EasyRefresh(
-            controller: controller.refreshController,
-            // 指定刷新时的头部组件
-            header: CustomRefresh.refreshHeader(),
-            onRefresh: () async {
-              //
-              await controller.requestArticle();
-              //先结束刷新状态
-              controller.refreshController.finishRefresh();
-            },
-            child: ListView(padding: EdgeInsets.all(ScreenAdapter.width(10)), children: [
+    return Obx(
+      () => Positioned(
+        top: ScreenAdapter.getStatusBarHeight() + ScreenAdapter.getNavBarHeight(),
+        // top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        child: EasyRefresh(
+          controller: controller.refreshController,
+          // 指定刷新时的头部组件
+          header: CustomRefresh.refreshHeader(),
+          onRefresh: () async {
+            //
+            await controller.requestArticle();
+            //先结束刷新状态
+            controller.refreshController.finishRefresh();
+          },
+          child: ListView(
+            padding: EdgeInsets.all(ScreenAdapter.width(10)),
+            children: [
               ConstrainedBox(
                 //这里限制固定大小，保证 Stack 的大小固定
                 constraints: BoxConstraints(
                   minHeight: ScreenAdapter.height(150), //185
                   maxHeight: ScreenAdapter.height(150), //185
                 ),
-                child: Stack(children: [
-                  //消息通知
-                  //_announce(),
-                  //轮播图
-                  _focus(),
-                ]),
+                child: Stack(
+                  children: [
+                    //消息通知
+                    //_announce(),
+                    //轮播图
+                    _focus(),
+                  ],
+                ),
               ),
               //分类
               _mainType(),
@@ -605,9 +629,13 @@ class HomeView extends GetView<HomeController> {
               _videoType(),
               //文章类目
               _articleType(),
-            ]),
+              //资讯
+              _information(),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   @override
@@ -625,6 +653,74 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _information() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Text(
+                  '行业资讯',
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(20),
+                    color: SaienteColors.blackE5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.INFORMATION_DETAIL,
+                    arguments: 'https://www.feedtrade.com.cn/livestock/niujiage/index.html',
+                  );
+                },
+                child: Image.asset(Assets.imagesIcPriceLiveCattle, fit: BoxFit.fill),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.INFORMATION_DETAIL,
+                    arguments: 'https://www.feedtrade.com.cn/index/index',
+                  );
+                },
+                child: Image.asset(Assets.imagesIcFeedIngredient, fit: BoxFit.fill),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.INFORMATION_DETAIL,
+                    arguments: 'https://news.ymt.com/arg_news',
+                  );
+                },
+                child: Image.asset(Assets.imagesIcAgriculturalNews, fit: BoxFit.fill),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

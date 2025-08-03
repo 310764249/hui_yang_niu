@@ -13,6 +13,7 @@ import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
+import 'package:intellectual_breed/route_utils/business_logger.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../../services/AssetsImages.dart';
@@ -28,13 +29,11 @@ class TabsController extends GetxController with WidgetsBindingObserver {
 
   //页面控制,默认首页，如果有传值就使用传值
   PageController pageController =
-      Get.arguments == null ? PageController(initialPage: 0) : PageController(initialPage: Get.arguments["initialPage"]);
+      Get.arguments == null
+          ? PageController(initialPage: 0)
+          : PageController(initialPage: Get.arguments["initialPage"]);
 
-  final List names = [
-    "首页",
-    "服务",
-    "我的",
-  ];
+  final List names = ["首页", "服务", "我的"];
 
   final List<Widget> pages = [
     const HomeView(),
@@ -44,7 +43,13 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     MineView(),
   ];
 
-  final List<IconData> icons = [Icons.home, Icons.receipt, Icons.medical_services, Icons.message, Icons.people];
+  final List<IconData> icons = [
+    Icons.home,
+    Icons.receipt,
+    Icons.medical_services,
+    Icons.message,
+    Icons.people,
+  ];
 
   /// 预加载tab图片
   void precacheIcons(BuildContext context) {
@@ -130,6 +135,15 @@ class TabsController extends GetxController with WidgetsBindingObserver {
       }
     });
     checkUpdate();
+
+    pageController.addListener(() {
+      int index = pageController.page!.round();
+      if (index == 2) {
+        BusinessLogger.instance.logEnter('我的');
+      } else {
+        BusinessLogger.instance.logExit('我的');
+      }
+    });
   }
 
   checkUpdate() async {

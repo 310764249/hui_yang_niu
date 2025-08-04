@@ -200,4 +200,12 @@ class InformationListController extends GetxController {
       }
     }
   }
+
+  @override
+  void onClose() {
+    if (lastLogPath != null) {
+      BusinessLogger.instance.logExit(lastLogPath!);
+    }
+    super.onClose();
+  }
 }

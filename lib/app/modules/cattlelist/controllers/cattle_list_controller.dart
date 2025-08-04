@@ -148,14 +148,14 @@ class CattleListController extends GetxController {
 
   @override
   void onReady() {
-    BusinessLogger.instance.logEnter('牛只列表');
+    BusinessLogger.instance.logEnter('生产管理/牛只列表');
     super.onReady();
   }
 
   @override
   void onClose() {
     super.onClose();
-    BusinessLogger.instance.logExit('牛只列表');
+    BusinessLogger.instance.logExit('生产管理/牛只列表');
   }
 
   // 点击更新index

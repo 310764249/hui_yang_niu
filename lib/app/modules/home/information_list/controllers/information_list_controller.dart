@@ -82,7 +82,7 @@ class InformationListController extends GetxController {
           (element) => element['label'] == leftCategoryNameList[selectIndex.value],
         )?['label'];
     String subHeaderName = subHeaderList[listTypeIndex.value]['title'];
-    return '$leftCategoryName/$subHeaderName';
+    return '技术课堂/$leftCategoryName/$subHeaderName';
   }
 
   //上次提交的日志

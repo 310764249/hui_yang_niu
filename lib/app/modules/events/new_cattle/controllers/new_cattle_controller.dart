@@ -464,14 +464,14 @@ class NewCattleController extends GetxController {
   @override
   void onReady() {
     debugPrint('--onReady--档案新增');
-    BusinessLogger.instance.logEnter('档案新增');
+    BusinessLogger.instance.logEnter('生产管理/档案新增');
     super.onReady();
   }
 
   @override
   void onClose() {
     debugPrint(' --onClose--档案新增');
-    BusinessLogger.instance.logExit('档案新增');
+    BusinessLogger.instance.logExit('生产管理/档案新增');
     super.onClose();
   }
 }

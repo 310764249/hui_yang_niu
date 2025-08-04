@@ -84,14 +84,14 @@ class BatchListController extends GetxController {
   void onReady() {
     super.onReady();
     debugPrint('-- onReady 批次列表--');
-    BusinessLogger.instance.logEnter('批次列表');
+    BusinessLogger.instance.logEnter('生产管理/批次列表');
   }
 
   @override
   void onClose() {
     super.onClose();
     debugPrint('-- onClose 批次列表--');
-    BusinessLogger.instance.logExit('批次列表');
+    BusinessLogger.instance.logExit('生产管理/批次列表');
   }
 
   // 点击更新index

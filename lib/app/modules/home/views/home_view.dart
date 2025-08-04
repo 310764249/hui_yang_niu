@@ -5,7 +5,6 @@ import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
-import 'package:intellectual_breed/app/modules/recipe/views/recipe_view.dart';
 import 'package:intellectual_breed/app/modules/tabs/controllers/tabs_controller.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/widgets/information_item.dart';
@@ -254,7 +253,7 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Get.to(RecipeView());
+                      Get.toNamed(Routes.RECIPE);
                     },
                     child: Image.asset(Assets.imagesIcFormulaDesign, fit: BoxFit.fill),
                   ),

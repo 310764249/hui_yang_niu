@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../route_utils/business_logger.dart';
 import '../../../models/formula.dart';
 import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
@@ -35,10 +36,7 @@ class RecipeController extends GetxController {
   void onInit() {
     super.onInit();
     //初始化
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
   }
 
   // 刷新配方列表数据
@@ -50,11 +48,13 @@ class RecipeController extends GetxController {
   void onReady() {
     super.onReady();
     debugPrint('--onReady--');
+    BusinessLogger.instance.logEnter('配方设计');
   }
 
   @override
   void onClose() {
     super.onClose();
+    BusinessLogger.instance.logExit('配方设计');
     debugPrint('--onClose--');
   }
 
@@ -74,10 +74,7 @@ class RecipeController extends GetxController {
       }
 
       //接口参数
-      Map<String, dynamic> para = {
-        'PageIndex': tempPageIndex,
-        'PageSize': pageSize,
-      };
+      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
       var response = await httpsClient.get("/api/formula", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
@@ -96,7 +93,9 @@ class RecipeController extends GetxController {
         items.addAll(modelList); //上拉加载
       }
       //按时间倒排序
-      items.sort((a, b) => DateTime.parse(a.created!).isBefore(DateTime.parse(b.created!)) ? 1 : -1);
+      items.sort(
+        (a, b) => DateTime.parse(a.created!).isBefore(DateTime.parse(b.created!)) ? 1 : -1,
+      );
       //是否可以加载更多
       hasMore = items.length < model.itemsCount;
       isLoading.value = false;

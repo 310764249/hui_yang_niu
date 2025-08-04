@@ -26,6 +26,7 @@ enum RequestMethod {
 class HttpsClient {
   // 单例
   static final HttpsClient _instance = HttpsClient._internal();
+
   factory HttpsClient() => _instance;
 
   // static String domain = "http://nxbreedapi.sdyihewan.com"; // 正式环境地址
@@ -78,10 +79,7 @@ class HttpsClient {
   /// Get 请求
   /// @param apiUrl 接口地址
   /// @param queryParameters 请求参数
-  Future get(
-    String apiUrl, {
-    Map<String, dynamic>? queryParameters,
-  }) async {
+  Future get(String apiUrl, {Map<String, dynamic>? queryParameters}) async {
     try {
       var response = await _sendAuthenticatedRequest(
         RequestMethod.GET,
@@ -97,16 +95,9 @@ class HttpsClient {
   /// Post 请求
   /// @param apiUrl 接口地址
   /// @param data 请求参数
-  Future post(
-    String apiUrl, {
-    Map? data,
-  }) async {
+  Future post(String apiUrl, {Map? data}) async {
     try {
-      var response = await _sendAuthenticatedRequest(
-        RequestMethod.POST,
-        apiUrl,
-        data: data,
-      );
+      var response = await _sendAuthenticatedRequest(RequestMethod.POST, apiUrl, data: data);
       return response;
     } catch (e) {
       rethrow;
@@ -116,11 +107,7 @@ class HttpsClient {
   /// delete 请求
   /// @param apiUrl 接口地址
   /// @param queryParameters 请求参数
-  Future delete(
-    String apiUrl, {
-    Map<String, dynamic>? queryParameters,
-    Map? data,
-  }) async {
+  Future delete(String apiUrl, {Map<String, dynamic>? queryParameters, Map? data}) async {
     try {
       var response = await _sendAuthenticatedRequest(
         RequestMethod.DELETE,
@@ -137,11 +124,7 @@ class HttpsClient {
   /// put 请求
   /// @param apiUrl 接口地址
   /// @param queryParameters 请求参数
-  Future put(
-    String apiUrl, {
-    Map<String, dynamic>? queryParameters,
-    Map? data,
-  }) async {
+  Future put(String apiUrl, {Map<String, dynamic>? queryParameters, Map? data}) async {
     try {
       var response = await _sendAuthenticatedRequest(
         RequestMethod.PUT,
@@ -156,8 +139,12 @@ class HttpsClient {
   }
 
   ///通用请求封装
-  Future<dynamic> _sendAuthenticatedRequest(RequestMethod method, String url,
-      {Map? data, Map<String, dynamic>? queryParameters}) async {
+  Future<dynamic> _sendAuthenticatedRequest(
+    RequestMethod method,
+    String url, {
+    Map? data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
       Options options = Options();
       // 发送请求前，获取当前有效的 Token
@@ -167,12 +154,18 @@ class HttpsClient {
         AuthModel authModel = UserInfoTool.auth!;
         String accessToken = authModel.accessToken;
         // 添加 Token 到请求头中
-        options = Options(headers: {'Authorization': 'Bearer $accessToken'});
+        options = Options(
+          headers: {'Authorization': 'Bearer $accessToken', 'deviceType': 'Android'},
+        );
       }
 
       // 过滤 Map 中值为空字符或者为 null 的项
-      queryParameters?.removeWhere((key, value) => (value == null || value.toString().isEmpty) && key != 'attach');
-      data?.removeWhere((key, value) => (value == null || value.toString().isEmpty) && key != 'attach');
+      queryParameters?.removeWhere(
+        (key, value) => (value == null || value.toString().isEmpty) && key != 'attach',
+      );
+      data?.removeWhere(
+        (key, value) => (value == null || value.toString().isEmpty) && key != 'attach',
+      );
 
       // 根据请求方法，选择相应的方法发送请求
       Response response;
@@ -184,10 +177,20 @@ class HttpsClient {
           response = await dio.post(url, data: data, options: options);
           break;
         case RequestMethod.DELETE:
-          response = await dio.delete(url, queryParameters: queryParameters, data: data, options: options);
+          response = await dio.delete(
+            url,
+            queryParameters: queryParameters,
+            data: data,
+            options: options,
+          );
           break;
         case RequestMethod.PUT:
-          response = await dio.put(url, queryParameters: queryParameters, data: data, options: options);
+          response = await dio.put(
+            url,
+            queryParameters: queryParameters,
+            data: data,
+            options: options,
+          );
           break;
         // 可以添加其他请求方法的处理
       }
@@ -202,7 +205,12 @@ class HttpsClient {
       debugPrint('请求异常: $error');
       if (error is DioException && error.response?.statusCode == 401) {
         //缓存业务请求异常的接口
-        _failedRequests.add({'method': method, 'url': url, 'data': data, 'queryParameters': queryParameters});
+        _failedRequests.add({
+          'method': method,
+          'url': url,
+          'data': data,
+          'queryParameters': queryParameters,
+        });
 
         // 如果请求返回 401 Unauthorized，说明 Token 失效
         // 判断是否正在刷新 Token，如果没有在刷新，则触发刷新
@@ -229,12 +237,15 @@ class HttpsClient {
     String refreshToken = authModel.refreshToken;
     try {
       // 实现刷新 Token 的逻辑，例如使用 /api/refresh 接口
-      Response response = await dio.post('/api/auth/refresh', data: {
-        "client_id": Constant.clientId,
-        "client_secret": Constant.clientSecret,
-        "grant_type": Constant.grantType,
-        "refresh_token": refreshToken,
-      });
+      Response response = await dio.post(
+        '/api/auth/refresh',
+        data: {
+          "client_id": Constant.clientId,
+          "client_secret": Constant.clientSecret,
+          "grant_type": Constant.grantType,
+          "refresh_token": refreshToken,
+        },
+      );
 
       //首先 Map 转为 Model
       var baseModel = BaseModel.fromJson(response.data);

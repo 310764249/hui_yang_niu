@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
 import 'package:intellectual_breed/app/services/storage.dart';
-import 'package:intellectual_breed/route_utils/route_obs.dart';
 
 import 'app/routes/app_pages.dart';
 import 'app/services/JPush_tool.dart';
@@ -93,7 +92,7 @@ class _MainAppState extends State<MainApp> {
           //页面默认背景色
           defaultTransition: Transition.rightToLeft,
           // Chucker setting
-          navigatorObservers: [FlutterSmartDialog.observer, BusinessRouteObserver()],
+          navigatorObservers: [FlutterSmartDialog.observer /* BusinessRouteObserver()*/],
           builder: FlutterSmartDialog.init(
             builder: (BuildContext context, Widget? child) {
               //全局文本放大

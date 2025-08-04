@@ -2,6 +2,8 @@ import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../../route_utils/business_logger.dart';
 import '../../../../models/cattle.dart';
 import '../../../../models/notice.dart';
 import '../../../../models/page_info.dart';
@@ -84,26 +86,26 @@ class ActionMessageListController extends GetxController {
     szjdList = AppDictList.searchItems('szjd') ?? [];
     gmList = AppDictList.searchItems('gm') ?? [];
     //
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
     debugPrint("==> 任务消息列表type: $typeParam");
     setSearchType(typeParam);
 
     searchCowBatch();
   }
 
+  String get getTypeName => typeParam == 400 ? '生产任务' : '生产指南';
   @override
   void onReady() {
     super.onReady();
-    debugPrint('--onReady--');
+    debugPrint('--onReady--${typeParam}');
+    BusinessLogger.instance.logEnter('任务提醒/$getTypeName');
   }
 
   @override
   void onClose() {
     super.onClose();
     debugPrint('--onClose--');
+    BusinessLogger.instance.logExit('任务提醒/$getTypeName');
   }
 
   //牛只详情
@@ -116,9 +118,7 @@ class ActionMessageListController extends GetxController {
     }
     try {
       Toast.showLoading();
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       cattle = Cattle.fromJson(response);
       Toast.dismiss();
       if (ObjectUtil.isNotEmpty(cattle)) {

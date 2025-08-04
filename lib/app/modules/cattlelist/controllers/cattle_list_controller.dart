@@ -9,6 +9,7 @@ import 'package:intellectual_breed/app/models/cow_house.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 import 'package:intellectual_breed/app/widgets/dict_list.dart';
 
+import '../../../../route_utils/business_logger.dart';
 import '../../../models/cattle_list_argu.dart';
 import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
@@ -21,14 +22,17 @@ class CattleListController extends GetxController {
   CattleListArgument argument = Get.arguments;
 
   HttpsClient httpsClient = HttpsClient();
+
   //刷新控件
   late EasyRefreshController refreshController;
+
   //
   int pageIndex = 1;
   int pageSize = 21;
 
   // 是否加载中, 在[页面初始化]和[条件筛选]时触发
   RxBool isLoading = true.obs;
+
   // 启动loading
   void startLoading() {
     isLoading.value = true;
@@ -40,19 +44,25 @@ class CattleListController extends GetxController {
 
   // 搜索参数-耳号
   String cowCode = '';
+
   // 搜索参数-栋舍ID
   String cowHouseId = '';
+
   // 搜索参数-生长阶段1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   List growthStage = [];
+
   // 搜索参数-品种1：安格斯；2：西门塔尔；3：利木赞；4：皮埃蒙特；5：夏洛莱牛；6：澳洲和牛；7：秦川牛；8：黄牛；
   int kind = 0;
+
   // 搜索参数-公/母
   int sex = 0;
 
   //当前牛只列表
   RxList<Cattle> items = <Cattle>[].obs;
+
   //已选牛只数组
   RxList<Cattle> selectItems = <Cattle>[].obs;
+
   //上次选择的位置，单选模式
   int lastSelectIndex = -1;
 
@@ -61,23 +71,26 @@ class CattleListController extends GetxController {
 
   //品种列表
   List typeList = [
-    {'value': 0, "label": '全部品种'}
+    {'value': 0, "label": '全部品种'},
   ];
   List typeNameList = [];
   int selectedTypeIndex = 0;
   RxString selectedTypeName = '全部品种'.obs;
+
   //公母列表
   List sexList = [
-    {'value': 0, "label": '全部公母'}
+    {'value': 0, "label": '全部公母'},
   ];
   List sexNameList = [];
   int selectedSexIndex = 0;
   RxString selectedSexName = '全部公母'.obs;
+
   //状态列表
   List stateList = [];
   List stateNameList = [];
   List selectedStateIndex = [];
   RxString selectedStateName = '类型'.obs;
+
   //栋舍列表
   List<CowHouse> houseList = <CowHouse>[];
   List houseNameList = ['全部栋舍'];
@@ -92,10 +105,7 @@ class CattleListController extends GetxController {
     super.onInit();
 
     //初始化下拉刷新控制器
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
     //
     if (argument != null) {
       //
@@ -137,9 +147,15 @@ class CattleListController extends GetxController {
   }
 
   @override
+  void onReady() {
+    BusinessLogger.instance.logEnter('牛只列表');
+    super.onReady();
+  }
+
+  @override
   void onClose() {
     super.onClose();
-    debugPrint('- CattleListView onClose');
+    BusinessLogger.instance.logExit('牛只列表');
   }
 
   // 点击更新index
@@ -198,10 +214,7 @@ class CattleListController extends GetxController {
     Toast.showLoading();
     try {
       //接口参数
-      Map<String, dynamic> para = {
-        "id": cattle.id,
-        "rowVersion": cattle.rowVersion,
-      };
+      Map<String, dynamic> para = {"id": cattle.id, "rowVersion": cattle.rowVersion};
       await httpsClient.delete("/api/cow", data: para);
       Toast.dismiss();
       Toast.success(msg: '删除成功');
@@ -236,18 +249,13 @@ class CattleListController extends GetxController {
       growthStage = [];
     }
 
-    kind = selectedTypeIndex == 0
-        ? 0
-        : int.parse(typeList[selectedTypeIndex]['value']);
+    kind = selectedTypeIndex == 0 ? 0 : int.parse(typeList[selectedTypeIndex]['value']);
     if (ObjectUtil.isEmpty(argument?.gmList)) {
-      sex = selectedSexIndex == 0
-          ? 0
-          : int.parse(sexList[selectedSexIndex]['value']);
+      sex = selectedSexIndex == 0 ? 0 : int.parse(sexList[selectedSexIndex]['value']);
     } else {
       sex = int.parse(sexList[selectedSexIndex]['value']);
     }
-    cowHouseId =
-        selectedHouseIndex == -1 ? '' : houseList[selectedHouseIndex].id;
+    cowHouseId = selectedHouseIndex == -1 ? '' : houseList[selectedHouseIndex].id;
     // Toast.showLoading();
     try {
       //使用临时的页码，防止请求失败
@@ -269,7 +277,7 @@ class CattleListController extends GetxController {
         'PageSize': pageSize,
       };
       var response = await httpsClient.get("/api/cow", queryParameters: para);
-print(jsonEncode(response));
+      print(jsonEncode(response));
       PageInfo model = PageInfo.fromJson(response);
       // print(model.itemsCount);
 

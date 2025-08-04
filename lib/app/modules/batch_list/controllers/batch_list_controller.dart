@@ -1,7 +1,8 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:easy_refresh/easy_refresh.dart';
 
+import '../../../../route_utils/business_logger.dart';
 import '../../../models/cow_batch.dart';
 import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
@@ -18,10 +19,7 @@ class BatchListArgument {
   /// 传入的参数 类别1：犊牛；2：育肥牛；3：引种牛；
   final int? type;
 
-  BatchListArgument({
-    required this.goBack,
-    this.type,
-  });
+  BatchListArgument({required this.goBack, this.type});
 }
 
 class BatchListController extends GetxController {
@@ -77,18 +75,23 @@ class BatchListController extends GetxController {
     ssjdList = AppDictList.searchItems('pclb') ?? [];
     gmList = AppDictList.searchItems('gm') ?? [];
     //
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
 
     searchCowBatch();
   }
 
   @override
+  void onReady() {
+    super.onReady();
+    debugPrint('-- onReady 批次列表--');
+    BusinessLogger.instance.logEnter('批次列表');
+  }
+
+  @override
   void onClose() {
     super.onClose();
-    debugPrint('-- onClose --');
+    debugPrint('-- onClose 批次列表--');
+    BusinessLogger.instance.logExit('批次列表');
   }
 
   // 点击更新index
@@ -128,10 +131,7 @@ class BatchListController extends GetxController {
     Toast.showLoading();
     try {
       //接口参数
-      Map<String, dynamic> para = {
-        "id": batch.id,
-        "rowVersion": batch.rowVersion,
-      };
+      Map<String, dynamic> para = {"id": batch.id, "rowVersion": batch.rowVersion};
       await httpsClient.delete("/api/cowbatch", data: para);
       Toast.dismiss();
       Toast.success(msg: '删除成功');
@@ -169,8 +169,7 @@ class BatchListController extends GetxController {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
-      var response =
-          await httpsClient.get("/api/cowbatch", queryParameters: para);
+      var response = await httpsClient.get("/api/cowbatch", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);

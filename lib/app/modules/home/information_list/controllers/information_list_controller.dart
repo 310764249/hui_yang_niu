@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
+import 'package:intellectual_breed/route_utils/business_logger.dart';
 
 import '../../../../models/page_info.dart';
 import '../../../../network/apiException.dart';
@@ -17,11 +18,14 @@ class InformationListController extends GetxController {
 
   // 是否加载中
   var isLoading = true.obs;
+
   //刷新控件
   late EasyRefreshController refreshController;
+
   //
   int pageIndex = 1;
   int pageSize = 8;
+
   //
   bool hasMore = false;
 
@@ -38,7 +42,7 @@ class InformationListController extends GetxController {
 
   // 左侧分类列表
   List leftCategoryList = [
-    {'value': 0, "label": '全部'}
+    {'value': 0, "label": '全部'},
   ];
   List leftCategoryNameList = [];
 
@@ -48,15 +52,14 @@ class InformationListController extends GetxController {
     {"id": 2, "title": "文章"},
   ];
 
+  String? logPath;
+
   @override
   void onInit() {
     super.onInit();
 
     //初始化下拉刷新控制器
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
 
     //获取专题合集字典项
     List pzList = AppDictList.searchItems('zthj') ?? [];
@@ -67,7 +70,23 @@ class InformationListController extends GetxController {
 
     //请求数据
     //searchArticleList();
+    debugPrint(' -- onInit --${getLogPath()}');
   }
+
+  String? getLogPath() {
+    if (selectIndex.value == 0 || listTypeIndex.value == 0) {
+      return null;
+    }
+    String leftCategoryName =
+        leftCategoryList.firstWhereOrNull(
+          (element) => element['label'] == leftCategoryNameList[selectIndex.value],
+        )?['label'];
+    String subHeaderName = subHeaderList[listTypeIndex.value]['title'];
+    return '$leftCategoryName/$subHeaderName';
+  }
+
+  //上次提交的日志
+  String? lastLogPath;
 
   // 点击更新index
   void changeIndex(index, pid) {
@@ -75,7 +94,20 @@ class InformationListController extends GetxController {
     selectIndex.value = index;
     isLoading.value = true;
     update();
+    createLog();
     searchArticleList();
+  }
+
+  void createLog() {
+    debugPrint(' -- onInit --${getLogPath()}');
+    String? logPath = getLogPath();
+    if (lastLogPath != null) {
+      BusinessLogger.instance.logExit(lastLogPath!);
+    }
+    if (logPath != null) {
+      BusinessLogger.instance.logEnter(logPath);
+      lastLogPath = logPath;
+    }
   }
 
   // 点击更新index
@@ -94,6 +126,8 @@ class InformationListController extends GetxController {
       default:
         listTypeID = 0;
     }
+    debugPrint(' -- onInit --${getLogPath()}');
+    createLog();
     searchArticleList();
   }
 
@@ -111,16 +145,18 @@ class InformationListController extends GetxController {
         tempPageIndex++;
       }
       //接口参数
-//http://154.8.193.14:5657/api/article?pageIndex=1&pageSize=12&classify=zthj&category=5
+      //http://154.8.193.14:5657/api/article?pageIndex=1&pageSize=12&classify=zthj&category=5
       Map<String, dynamic> para = {
         'Title': searchStr, //标题
         'classify': 'zthj',
         //leftCategoryList,取值选择devalue
         // 'Category': 5,
-        'Category': selectIndex.value == 0
-            ? ''
-            : leftCategoryList
-                .firstWhereOrNull((element) => element['label'] == leftCategoryNameList[selectIndex.value])?['value'],
+        'Category':
+            selectIndex.value == 0
+                ? ''
+                : leftCategoryList.firstWhereOrNull(
+                  (element) => element['label'] == leftCategoryNameList[selectIndex.value],
+                )?['value'],
         // : selectIndex
         //    .value, //这里 state 为 0 表示筛选条件为全部，设置为空字符串，提交表单时自动移除该 key-value
         'Type': listTypeID == 0 ? '' : listTypeID,

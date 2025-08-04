@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
+import '../../../../../route_utils/business_logger.dart';
 import '../../../../models/cattle_info.dart';
 import '../../../../models/cow_house.dart';
 import '../../../../network/apiException.dart';
@@ -194,7 +195,8 @@ class NewCattleController extends GetxController {
           //* 公牛胎次设置为空
           if (cattleInfo.currentStage == 4) {
             cattleInfo.gender?.value = 1;
-            cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+            cattleInfo.pregnancyNum?.value =
+                Constant.pregnancyNumList[tempPregnancyNumPosition.value];
           }
         }
         break;
@@ -286,10 +288,18 @@ class NewCattleController extends GetxController {
         if (cattleInfo.gender?.value == 1) {
           return null;
         } else {
-          return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false ? cattleInfo.pregnancyNum?.value ?? '0' : '0');
+          return int.parse(
+            cattleInfo.pregnancyNum?.value.isNotBlank() ?? false
+                ? cattleInfo.pregnancyNum?.value ?? '0'
+                : '0',
+          );
         }
       default:
-        return int.parse(cattleInfo.pregnancyNum?.value.isNotBlank() ?? false ? cattleInfo.pregnancyNum?.value ?? '0' : '0');
+        return int.parse(
+          cattleInfo.pregnancyNum?.value.isNotBlank() ?? false
+              ? cattleInfo.pregnancyNum?.value ?? '0'
+              : '0',
+        );
     }
   }
 
@@ -372,8 +382,10 @@ class NewCattleController extends GetxController {
       return;
     }
 
-//选择牛信息z状态中包含公牛，性别设置为1，反之2
-    if (Constant.currentStageList.any((e) => e.id == cattleInfo.currentStage && e.name.contains('公牛'))) {
+    //选择牛信息z状态中包含公牛，性别设置为1，反之2
+    if (Constant.currentStageList.any(
+      (e) => e.id == cattleInfo.currentStage && e.name.contains('公牛'),
+    )) {
       cattleInfo.gender?.value = 1;
     } else {
       cattleInfo.gender?.value = 2;
@@ -395,7 +407,9 @@ class NewCattleController extends GetxController {
           "type": cattleInfo.currentStage, // 生长阶段
           "gender": cattleInfo.gender?.value, // 性别
           "batchNo":
-              cattleInfo.currentStage == 1 ? tempBatchNumAuto1.value.trim() : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
+              cattleInfo.currentStage == 1
+                  ? tempBatchNumAuto1.value.trim()
+                  : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
           "birth": cattleInfo.birthDate?.value.trim(), // 出生日期
           "kind": int.parse(cattleInfo.breed?.trim() ?? '1'), // 品种
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
@@ -420,7 +434,8 @@ class NewCattleController extends GetxController {
           "growthStage": cattleInfo.currentStage, // 生长阶段
           "kind": int.parse(cattleInfo.breed?.trim() ?? '0'), // 品种
           "calvNum": getPregnancyNum(), // 胎次
-          "batchCount": cattleInfo.currentStage == 6 ? int.parse(cattleInfo.calvingNum!) : null, // 上一次产犊数量
+          "batchCount":
+              cattleInfo.currentStage == 6 ? int.parse(cattleInfo.calvingNum!) : null, // 上一次产犊数量
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注
@@ -445,6 +460,21 @@ class NewCattleController extends GetxController {
       }
     }
   }
+
+  @override
+  void onReady() {
+    debugPrint('--onReady--档案新增');
+    BusinessLogger.instance.logEnter('档案新增');
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    debugPrint(' --onClose--档案新增');
+    BusinessLogger.instance.logExit('档案新增');
+    super.onClose();
+  }
 }
+
 //CattleInfo(currentStage: 5, earNum: 411, batchNum: , sourceFarm: , inDate: , gender: 2, cattleNumOfBatch: , birthDate: 2024-09-05, breed: 1, pregnancyNum: 0, shedId: 6acda895-6217-4f30-b39d-d402fb4213ee, shed: 1号舍, field: , matingTime: , pregnancyCheckTime: , calvingTime: , calvingNum: , calfBatch: , weaningTime: , emptyDate: , breedingCowEstrusTime: , remark: )
 // CattleInfo(currentStage: 6, earNum: 11, batchNum: , sourceFarm: , inDate: , gender: 2, cattleNumOfBatch: , birthDate: 2024-09-05, breed: 1, pregnancyNum: 0, shedId: 6acda895-6217-4f30-b39d-d402fb4213ee, shed: 1号舍, field: , matingTime: , pregnancyCheckTime: , calvingTime: , calvingNum: , calfBatch: , weaningTime: , emptyDate: , breedingCowEstrusTime: , remark: )

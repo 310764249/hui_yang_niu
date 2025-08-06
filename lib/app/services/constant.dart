@@ -25,7 +25,7 @@ class Constant {
   static const String AndroidMapAK = 'D4UBmglkui271YCQWIMoxuiTk8LfrOSl';
 
   //正式
-  static const String baseHost = 'http://154.8.193.14:1235';
+  static const String baseHost = 'http://154.8.193.14:5657';
   //测试
   //static const String baseHost = 'http://154.8.193.14:5658';
   //文章详情基地址

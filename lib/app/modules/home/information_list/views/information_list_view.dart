@@ -39,10 +39,7 @@ class InformationListView extends GetView<InformationListController> {
           hintText: '请输入标题',
           counterText: '', // 禁用默认的计数器文本
           border: InputBorder.none, //移除边框
-          prefixIcon: LoadAssetImage(
-            AssetsImages.searchPng,
-            color: SaienteColors.black33,
-          ),
+          prefixIcon: LoadAssetImage(AssetsImages.searchPng, color: SaienteColors.black33),
         ),
       ),
     );
@@ -75,54 +72,68 @@ class InformationListView extends GetView<InformationListController> {
   // 分类列表
   Widget _categoryList() {
     return Container(
-        color: Colors.white,
-        width: ScreenAdapter.width(58),
-        height: double.infinity,
-        child: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          itemCount: controller.leftCategoryNameList.length,
-          itemBuilder: ((BuildContext context, int index) {
-            return SizedBox(
-              width: double.infinity,
-              height: ScreenAdapter.height(72),
-              child: Obx(() => InkWell(
-                    onTap: () {
-                      controller.changeIndex(index, controller.leftCategoryNameList[index] ?? "");
-                    },
-                    child: Stack(children: [
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            width: ScreenAdapter.width(4),
-                            height: ScreenAdapter.height(72),
-                            decoration: BoxDecoration(
-                                color: controller.selectIndex.value == index ? SaienteColors.appMain : Colors.transparent,
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(10), // 右上角圆角
-                                  bottomRight: Radius.circular(10), // 右下角圆角
-                                )),
-                          )),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(5),
-                        ),
-                        child: Center(
-                          child: Text(
-                            controller.leftCategoryNameList[index],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: controller.selectIndex.value == index ? SaienteColors.title_color : SaienteColors.black80,
-                              fontSize: ScreenAdapter.fontSize(14),
-                              fontWeight: controller.selectIndex.value == index ? FontWeight.bold : FontWeight.normal,
-                            ),
+      color: Colors.white,
+      width: ScreenAdapter.width(58),
+      height: double.infinity,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        itemCount: controller.leftCategoryNameList.length,
+        itemBuilder: ((BuildContext context, int index) {
+          return SizedBox(
+            width: double.infinity,
+            height: ScreenAdapter.height(72),
+            child: Obx(
+              () => InkWell(
+                onTap: () {
+                  controller.changeIndex(index, controller.leftCategoryNameList[index] ?? "");
+                },
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: ScreenAdapter.width(4),
+                        height: ScreenAdapter.height(72),
+                        decoration: BoxDecoration(
+                          color:
+                              controller.selectIndex.value == index
+                                  ? SaienteColors.appMain
+                                  : Colors.transparent,
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(10), // 右上角圆角
+                            bottomRight: Radius.circular(10), // 右下角圆角
                           ),
                         ),
-                      )
-                    ]),
-                  )),
-            );
-          }),
-        ));
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
+                      child: Center(
+                        child: Text(
+                          controller.leftCategoryNameList[index],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                controller.selectIndex.value == index
+                                    ? SaienteColors.title_color
+                                    : SaienteColors.black80,
+                            fontSize: ScreenAdapter.fontSize(14),
+                            fontWeight:
+                                controller.selectIndex.value == index
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
   }
 
   Widget _switchItem(String text, int position, Function() onTapEvent) {
@@ -130,64 +141,63 @@ class InformationListView extends GetView<InformationListController> {
       width: ScreenAdapter.width(77),
       height: ScreenAdapter.height(28),
       decoration: BoxDecoration(
-        gradient: controller.listTypeIndex.value == position
-            ? const LinearGradient(
-                colors: [Color(0xFF4D91F5), Color(0xFF2559F3)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              )
-            : null,
+        gradient:
+            controller.listTypeIndex.value == position
+                ? const LinearGradient(
+                  colors: [Color(0xFF4D91F5), Color(0xFF2559F3)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+                : null,
         borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: TextButton(
-          onPressed: () {
-            onTapEvent();
-          },
-          style: ButtonStyle(
-              padding: MaterialStateProperty.all<EdgeInsets>(
-            const EdgeInsets.all(0),
-          )),
-          child: Text(
-            text,
-            style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(14),
-                fontWeight: FontWeight.bold,
-                color: controller.listTypeIndex.value == position ? Colors.white : SaienteColors.black80),
-          )),
+        onPressed: () {
+          onTapEvent();
+        },
+        style: ButtonStyle(padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(0))),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(14),
+            fontWeight: FontWeight.bold,
+            color:
+                controller.listTypeIndex.value == position ? Colors.white : SaienteColors.black80,
+          ),
+        ),
+      ),
     );
   }
 
   // 分类切换条: 全部/视频/文章
   Widget _switchBar() {
     return Padding(
-      padding: EdgeInsets.only(
-        top: ScreenAdapter.height(10),
-        bottom: ScreenAdapter.height(10),
-      ),
+      padding: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
       child: Center(
         child: Container(
-            height: ScreenAdapter.height(28),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+          height: ScreenAdapter.height(28),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _switchItem("全部", 0, () {
+                  controller.changeListTypeIndex(0);
+                }),
+                _switchItem("视频", 1, () {
+                  controller.changeListTypeIndex(1);
+                }),
+                _switchItem("文章", 2, () {
+                  controller.changeListTypeIndex(2);
+                }),
+              ],
             ),
-            child: Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _switchItem("全部", 0, () {
-                    controller.changeListTypeIndex(0);
-                  }),
-                  _switchItem("视频", 1, () {
-                    controller.changeListTypeIndex(1);
-                  }),
-                  _switchItem("文章", 2, () {
-                    controller.changeListTypeIndex(2);
-                  }),
-                ],
-              ),
-            )),
+          ),
+        ),
       ),
     );
   }
@@ -199,10 +209,11 @@ class InformationListView extends GetView<InformationListController> {
       highlightColor: const Color.fromARGB(255, 184, 185, 227),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1 / 1.3,
-            crossAxisSpacing: ScreenAdapter.width(1),
-            mainAxisSpacing: ScreenAdapter.width(8)),
+          crossAxisCount: 2,
+          childAspectRatio: 1 / 1.3,
+          crossAxisSpacing: ScreenAdapter.width(1),
+          mainAxisSpacing: ScreenAdapter.width(8),
+        ),
         // 禁止列表滑动
         physics: const NeverScrollableScrollPhysics(),
         // 数量为: 屏幕高度 / item高度 取整数
@@ -226,11 +237,11 @@ class InformationListView extends GetView<InformationListController> {
   // 内容列表
   Widget _informationList() {
     return Expanded(
-        child: Container(
-      color: SaienteColors.whiteECEFF6,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, 0, 0),
-        child: SizedBox(
+      child: Container(
+        color: SaienteColors.whiteECEFF6,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, 0, 0),
+          child: SizedBox(
             height: double.infinity,
             // child: Obx(() => Column(
             child: Column(
@@ -240,69 +251,85 @@ class InformationListView extends GetView<InformationListController> {
 
                 // Information list
                 Expanded(
-                  child: controller.isLoading.value
-                      ? _loadingView()
-                      : controller.items.isEmpty
+                  child:
+                      controller.isLoading.value
+                          ? _loadingView()
+                          : controller.items.isEmpty
                           ? const EmptyView()
                           : EasyRefresh(
-                              controller: controller.refreshController,
-                              // 指定刷新时的头部组件
-                              header: CustomRefresh.refreshHeader(),
-                              // 指定加载时的底部组件
-                              footer: CustomRefresh.refreshFooter(),
-                              onRefresh: () async {
-                                //
-                                await controller.searchArticleList();
-                                controller.refreshController.finishRefresh();
-                                controller.refreshController.resetFooter();
+                            controller: controller.refreshController,
+                            // 指定刷新时的头部组件
+                            header: CustomRefresh.refreshHeader(),
+                            // 指定加载时的底部组件
+                            footer: CustomRefresh.refreshFooter(),
+                            onRefresh: () async {
+                              //
+                              await controller.searchArticleList();
+                              controller.refreshController.finishRefresh();
+                              controller.refreshController.resetFooter();
+                            },
+                            onLoad: () async {
+                              // 如果没有更多直接返回
+                              if (!controller.hasMore) {
+                                controller.refreshController.finishLoad(IndicatorResult.noMore);
+                                return;
+                              }
+                              // 上拉加载更多数据请求
+                              await controller.searchArticleList(isRefresh: false);
+                              // 设置状态
+                              controller.refreshController.finishLoad(
+                                controller.hasMore
+                                    ? IndicatorResult.success
+                                    : IndicatorResult.noMore,
+                              );
+                            },
+                            child: GridView.builder(
+                              // itemCount: controller.rightCategoryList.length,
+                              itemCount: controller.items.length,
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 147 / 198,
+                              ), // 宽高比
+                              itemBuilder: (context, index) {
+                                Article model = controller.items[index];
+                                String isVideo = '';
+                                model.type == 4 ? isVideo = '&poster=true' : isVideo;
+                                return InformationItem(
+                                  image: '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
+                                  title: model.title ?? '',
+                                  userIcon: AssetsImages.avatar,
+                                  userName: model.publisher ?? '',
+                                  isVideo: model.type == 4,
+                                  onPressed: () {
+                                    String openURL =
+                                        "${Constant.articleHost}/${model.type}/${model.id}";
+                                    debugPrint('openURL: $openURL');
+                                    Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+                                  },
+                                );
                               },
-                              onLoad: () async {
-                                // 如果没有更多直接返回
-                                if (!controller.hasMore) {
-                                  controller.refreshController.finishLoad(IndicatorResult.noMore);
-                                  return;
-                                }
-                                // 上拉加载更多数据请求
-                                await controller.searchArticleList(isRefresh: false);
-                                // 设置状态
-                                controller.refreshController
-                                    .finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
-                              },
-                              child: GridView.builder(
-                                  // itemCount: controller.rightCategoryList.length,
-                                  itemCount: controller.items.length,
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2, childAspectRatio: 147 / 198), // 宽高比
-                                  itemBuilder: (context, index) {
-                                    Article model = controller.items[index];
-                                    String isVideo = '';
-                                    model.type == 4 ? isVideo = '&poster=true' : isVideo;
-                                    return InformationItem(
-                                        image: '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
-                                        title: model.title ?? '',
-                                        userIcon: AssetsImages.avatar,
-                                        userName: model.publisher ?? '',
-                                        isVideo: model.type == 4,
-                                        onPressed: () {
-                                          String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
-                                          Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-                                        });
-                                  }),
                             ),
-                )
+                          ),
+                ),
               ],
-            )),
+            ),
+          ),
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildView() {
-    return Obx(() => Row(children: [
+    return Obx(
+      () => Row(
+        children: [
           // 左侧分类列表
           _categoryList(),
           // 右侧内容列表
           _informationList(),
-        ]));
+        ],
+      ),
+    );
   }
 
   @override
@@ -323,14 +350,13 @@ class InformationListView extends GetView<InformationListController> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: _searchBar(),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: Material(
-          child: SafeArea(child: _buildView()),
-        ));
+      appBar: AppBar(
+        title: _searchBar(),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Material(child: SafeArea(child: _buildView())),
+    );
   }
 }

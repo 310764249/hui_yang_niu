@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/modules/chat_room/image_preview_dialog.dart';
 
+import '../../../../generated/assets.dart';
+
 class ChatImageMessage extends StatelessWidget {
   final String imageUrl;
   final String avatarUrl;
@@ -24,8 +26,7 @@ class ChatImageMessage extends StatelessWidget {
         width: 40,
         height: 40,
         fit: BoxFit.cover,
-        errorBuilder:
-            (_, __, ___) => Image.asset('assets/images/default_avatar.png', width: 40, height: 40),
+        errorBuilder: (_, __, ___) => Image.asset(Assets.imagesAvatar, width: 40, height: 40),
       ),
     );
 

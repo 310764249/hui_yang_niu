@@ -50,6 +50,9 @@ class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWid
     ChatUIKitProvider.instance.addObserver(this);
     ChatUIKit.instance.addObserver(this);
     messages.addAll(widget.messages);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    });
   }
 
   @override

@@ -11,7 +11,7 @@ class ChatRoomUtils {
 
   static init() async {
     await ChatUIKit.instance.init(
-      options: EMOptions.withAppKey('1191250723193069#huiyangniu20250723', debugMode: true),
+      options: EMOptions.withAppKey('1191250723193069#huiyangniu20250723', debugMode: false),
     );
     await login();
   }

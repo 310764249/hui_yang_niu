@@ -147,7 +147,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
     );
 
     content = Scaffold(
-      appBar: AppBar(title: const Text('智能问答'), centerTitle: true),
+      appBar: AppBar(title: const Text('哞哞达人'), centerTitle: true),
       body: SafeArea(child: content),
     );
 

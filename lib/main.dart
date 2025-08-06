@@ -88,6 +88,13 @@ class _MainAppState extends State<MainApp> {
             primarySwatch: Colors.grey,
             splashColor: Colors.transparent,
             scaffoldBackgroundColor: SaienteColors.whiteF8F9FD,
+            appBarTheme: const AppBarTheme(
+              titleTextStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
           ),
           //页面默认背景色
           defaultTransition: Transition.rightToLeft,

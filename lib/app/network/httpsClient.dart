@@ -194,6 +194,9 @@ class HttpsClient {
           break;
         // 可以添加其他请求方法的处理
       }
+      if (url.contains('/api/user/getimtoken')) {
+        return response.data;
+      }
       //首先 Map 转为 BaseModel
       var baseModel = BaseModel.fromJson(response.data);
       // 在这里判断数据是否异常，例如判断返回的状态码或特定字段

@@ -240,7 +240,7 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Toast.show("敬请期待");
+                      Get.toNamed(Routes.CHATROOM);
                     },
                     child: Image.asset(Assets.imagesIcQuestionAnswer, fit: BoxFit.fill),
                   ),

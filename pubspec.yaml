@@ -52,6 +52,16 @@ dependencies:
   app_settings: 5.1.1 # https://pub.dev/packages/app_settings
   flutter_bounceable: ^1.1.0
   flutter_svg: ^2.0.10
+
+  em_chat_uikit:
+    git:
+      url: https://github.com/easemob/easemob-uikit-flutter.git
+      ref: 2.3.0
+
+dependency_overrides:
+  web: any
+  record: ^6.0.0
+
 dev_dependencies:
   flutter_plugin_android_lifecycle: any
   flutter_lints: ^4.0.0

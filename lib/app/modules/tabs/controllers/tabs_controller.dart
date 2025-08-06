@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/application/views/application_view.dart';
+import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/home/views/home_view.dart';
 import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
@@ -28,10 +29,9 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   RxInt currentIndex = 0.obs;
 
   //页面控制,默认首页，如果有传值就使用传值
-  PageController pageController =
-      Get.arguments == null
-          ? PageController(initialPage: 0)
-          : PageController(initialPage: Get.arguments["initialPage"]);
+  PageController pageController = Get.arguments == null
+      ? PageController(initialPage: 0)
+      : PageController(initialPage: Get.arguments["initialPage"]);
 
   final List names = ["首页", "服务", "我的"];
 
@@ -144,6 +144,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
         BusinessLogger.instance.logExit('我的');
       }
     });
+    ChatRoomUtils.init();
   }
 
   checkUpdate() async {

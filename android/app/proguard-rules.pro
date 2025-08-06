@@ -62,3 +62,6 @@
 
 # 若使用 FlutterLocalNotifications
 -keep class com.dexterous.** { *; }
+
+-keep class com.hyphenate.** {*;}
+-dontwarn  com.hyphenate.**

@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId = "com.saiente.intellectualbreed"
-        minSdk = 22
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

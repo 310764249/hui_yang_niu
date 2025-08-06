@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/modules/chat_room/chat_room_page.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
+import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/bindings/collect_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/view/collect_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/material_records/bindings/material_records_bindings.dart';
@@ -12,7 +14,6 @@ import 'package:intellectual_breed/app/modules/material_management/material_scra
 import 'package:intellectual_breed/app/modules/material_management/take_inventory/bindings/take_inventory_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/take_inventory/view/take_inventory_view.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/bindings/warehouse_entry_binding.dart';
-import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/warehouse_entry_view.dart';
 import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
 
@@ -221,33 +222,13 @@ class AppPages {
   static const INITIAL = Routes.TABS;
 
   static final routes = [
-    GetPage(
-      name: _Paths.TABS,
-      page: () => const TabsView(),
-      binding: TabsBinding(),
-    ),
-    GetPage(
-      name: _Paths.APPLICATION,
-      page: () => ApplicationView(),
-    ),
-    GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-    ),
-    GetPage(
-      name: _Paths.MESSAGE,
-      page: () => MessageView(),
-    ),
-    GetPage(
-      name: _Paths.RECIPE,
-      page: () => RecipeView(),
-      middlewares: [LoginMiddleware()],
-    ),
-    GetPage(
-      name: _Paths.MINE,
-      page: () => MineView(),
-      middlewares: [LoginMiddleware()],
-    ),
+    GetPage(name: _Paths.TABS, page: () => const TabsView(), binding: TabsBinding()),
+    GetPage(name: _Paths.CHATROOM, page: () => const ChatRoomContainPage()),
+    GetPage(name: _Paths.APPLICATION, page: () => ApplicationView()),
+    GetPage(name: _Paths.HOME, page: () => const HomeView()),
+    GetPage(name: _Paths.MESSAGE, page: () => MessageView()),
+    GetPage(name: _Paths.RECIPE, page: () => RecipeView(), middlewares: [LoginMiddleware()]),
+    GetPage(name: _Paths.MINE, page: () => MineView(), middlewares: [LoginMiddleware()]),
     GetPage(
       name: _Paths.INFORMATION_LIST,
       page: () => const InformationListView(),
@@ -443,21 +424,9 @@ class AppPages {
       page: () => const ProductionGuideView(),
       binding: ProductionGuideBinding(),
     ),
-    GetPage(
-      name: _Paths.ABOUT_US,
-      page: () => const AboutUsView(),
-      binding: AboutUsBinding(),
-    ),
-    GetPage(
-      name: _Paths.FEED_BACK,
-      page: () => const FeedBackView(),
-      binding: FeedBackBinding(),
-    ),
-    GetPage(
-      name: _Paths.NEW_BATCH,
-      page: () => const NewBatchView(),
-      binding: NewBatchBinding(),
-    ),
+    GetPage(name: _Paths.ABOUT_US, page: () => const AboutUsView(), binding: AboutUsBinding()),
+    GetPage(name: _Paths.FEED_BACK, page: () => const FeedBackView(), binding: FeedBackBinding()),
+    GetPage(name: _Paths.NEW_BATCH, page: () => const NewBatchView(), binding: NewBatchBinding()),
     GetPage(
       name: _Paths.RUT_DETAIL,
       page: () => const RutDetailView(),
@@ -631,11 +600,7 @@ class AppPages {
       page: () => const AssessmentView(),
       binding: AssessmentBinding(),
     ),
-    GetPage(
-      name: _Paths.INHERENT,
-      page: () => const InherentView(),
-      binding: InherentBinding(),
-    ),
+    GetPage(name: _Paths.INHERENT, page: () => const InherentView(), binding: InherentBinding()),
     GetPage(
       name: _Paths.ASSESSMENT_DETAIL,
       page: () => const AssessmentDetailView(),
@@ -671,11 +636,7 @@ class AppPages {
       page: () => const CharactersView(),
       binding: CharactersBinding(),
     ),
-    GetPage(
-      name: _Paths.ASSAY,
-      page: () => const AssayView(),
-      binding: AssayBinding(),
-    ),
+    GetPage(name: _Paths.ASSAY, page: () => const AssayView(), binding: AssayBinding()),
     GetPage(
       name: _Paths.ASSAY_DETAIL,
       page: () => const AssayDetailView(),
@@ -785,15 +746,8 @@ class AppPages {
       page: () => const WarehouseEntryView(),
       binding: WarehouseEntryBinding(),
     ),
-    GetPage(
-      name: _Paths.Collect,
-      page: () => const CollectView(),
-      binding: CollectBindings(),
-    ),
-    GetPage(
-      name: _Paths.AddInventory,
-      page: () => const AddInventoryView(),
-    ),
+    GetPage(name: _Paths.Collect, page: () => const CollectView(), binding: CollectBindings()),
+    GetPage(name: _Paths.AddInventory, page: () => const AddInventoryView()),
     GetPage(
       name: _Paths.MaterialScrap,
       page: () => const MaterialScrapView(),
@@ -809,9 +763,6 @@ class AppPages {
       page: () => const MaterialRecordsView(),
       binding: MaterialRecordsBindings(),
     ),
-    GetPage(
-      name: _Paths.MaterialRecordsDetails,
-      page: () => const MaterialRecordsDetails(),
-    ),
+    GetPage(name: _Paths.MaterialRecordsDetails, page: () => const MaterialRecordsDetails()),
   ];
 }

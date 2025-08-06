@@ -118,9 +118,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
           options: options,
           pageSize: 20,
         );
-    setState(() {
-      historyMessages = result.data;
-    });
+    setState(() => historyMessages = result.data.reversed.toList());
   }
 
   @override

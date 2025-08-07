@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http_parser/http_parser.dart';
 
 import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+import '../models/authModel.dart';
 import '../services/storage.dart';
+import '../services/user_info_tool.dart';
 
 class FileUploadTool {
   static Dio dio = Dio();
@@ -43,8 +46,9 @@ class FileUploadTool {
     Options options = Options();
     options.contentType = "multipart/form-data";
     // 发送请求前，获取当前有效的 Token
-    String? accessToken = await Storage.getData(Constant.upAccessToken);
-    if (accessToken != null) {
+    AuthModel authModel = UserInfoTool.auth!;
+    String accessToken = authModel.accessToken;
+    if (accessToken.isNotEmpty) {
       // 添加 Token 到请求头中
       options = Options(headers: {'Authorization': 'Bearer $accessToken'});
     }
@@ -62,9 +66,10 @@ class FileUploadTool {
           contentType: MediaType.parse('image/jpeg')),
     });
 
+
     ///发送post
     Response response = await dio.post(
-      '${Constant.uploadFile}/api/file',
+      '${Constant.uploadFile}/api/file/upload',
       data: formData,
       queryParameters: para,
       options: options,
@@ -79,7 +84,7 @@ class FileUploadTool {
     ///服务器响应结果
     var data = response.data;
     // print(data['data']);
-    return Future.value(data['data']['id']);
+    return Future.value(data['data']);
   }
 
   ///使用文件 ID 获取文件路径

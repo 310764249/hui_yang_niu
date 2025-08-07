@@ -77,7 +77,8 @@ class UserProfileController extends GetxController {
     try {
       //上传图片
       String ID = await FileUploadTool().uploadWith(path);
-      iconUrl.value = '${Constant.uploadFileUrl}$ID';
+      iconUrl.value = '${Constant.getAPI}/$ID';
+      debugPrint('iconUrl: $iconUrl');
       //更新
       await httpsClient.post("/api/user/uploadprofilephoto",
           data: {"id": UserInfoTool.userID(), "avatarUrl": ID});
@@ -95,7 +96,7 @@ class UserProfileController extends GetxController {
         Toast.failure(msg: error.toString());
       } else {
         // HTTP 请求异常情况
-        Log.d('Other Exception: $error');
+        Log. d('Other Exception: $error');
       }
     }
   }

@@ -20,16 +20,20 @@ class SellCattleController extends GetxController {
   //TODO: Implement SellCattleController
   //传入的参数
   var argument = Get.arguments;
+
   //编辑事件传入
   SellArgument? event;
+
   //是否是编辑页面
   RxBool isEdit = false.obs;
+
   //输入框
   TextEditingController countController = TextEditingController();
   TextEditingController priceController = TextEditingController(); //单价
   TextEditingController weightController = TextEditingController(); //总总量
   TextEditingController costController = TextEditingController(); //折损
   TextEditingController remarkController = TextEditingController();
+
   // TextEditingController sourceController = TextEditingController();
   //
   final FocusNode countNode = FocusNode();
@@ -56,26 +60,32 @@ class SellCattleController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '种牛',
-    '犊牛/育肥牛',
-  ];
+  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
+
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
+
   //当前选中的牛
-  late Cattle selectedCow;
+  Cattle? selectedCow;
+
   //耳号
   final codeString = ''.obs;
+
   //当前选中的批次模型
-  late CowBatch selectedCowBatch;
+  CowBatch? selectedCowBatch;
+
   //批次号
   final batchNumber = ''.obs;
+
   //数量
   final countNum = 0.obs;
+
   //单价
   String price = '0';
+
   //总重量
   String weight = '0';
+
   //折损
   String cost = '0';
 
@@ -84,8 +94,10 @@ class SellCattleController extends GetxController {
 
   //时间
   final timesStr = ''.obs;
+
   //备注
   String remarkStr = '';
+
   //过滤之后的生长阶段，传给筛选页面
   List szjdListFiltered = [];
 
@@ -147,7 +159,7 @@ class SellCattleController extends GetxController {
     Toast.showLoading();
     if (argument is Cattle) {
       selectedCow = argument;
-      updateCodeString(selectedCow.code ?? '');
+      updateCodeString(selectedCow?.code ?? '');
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑
@@ -247,12 +259,12 @@ class SellCattleController extends GetxController {
         return;
       }
       //时间不能小于入场日期
-      if (timesStr.value.isBefore(selectedCow.inArea)) {
+      if (timesStr.value.isBefore(selectedCow?.inArea)) {
         Toast.show('操作时间不能早于入场日期');
         return;
       }
       //时间不能小于出生日期
-      if (timesStr.value.isBefore(selectedCow.birth)) {
+      if (timesStr.value.isBefore(selectedCow?.birth)) {
         Toast.show('操作时间不能早于出生日期');
         return;
       }
@@ -268,7 +280,7 @@ class SellCattleController extends GetxController {
         return;
       }
       //时间不能小于入场日期
-      if (timesStr.value.isBefore(selectedCowBatch.inArea)) {
+      if (timesStr.value.isBefore(selectedCowBatch?.inArea)) {
         Toast.show('操作时间不能早于入场日期');
         return;
       }
@@ -306,17 +318,30 @@ class SellCattleController extends GetxController {
     try {
       //接口参数
       Map<String, dynamic> para = {
-        'type': chooseTypeIndex.value + 1, //必传 integer 类型1：种牛；2：犊牛-育肥牛；
-        'cowIds': /*codeString.value.isEmpty ? '' :*/ [selectedCow.id], // string 牛只编码
-        'batchNo': batchNumber.value, // string 批次号
-        'count': countController.text.trim(), //必传 integer 数量
-        'price': priceController.text.trim(), //必传 number 单价
-        'weight': weightController.text.trim(), //必传 number 重量
-        'breakage': costController.text.trim(), //必传 number 折损
-        'total': totalStr.value, //必传 number 小计
-        'seller': UserInfoTool.nickName(), // string 销售人
-        'date': timesStr.value, //必传 string销售时间
-        'remark': remarkController.text.trim(), // 备注
+        'type': chooseTypeIndex.value + 1,
+        //必传 integer 类型1：种牛；2：犊牛-育肥牛；
+        if(chooseTypeIndex.value == 0)
+        'cowIds': selectedCow == null ? [] : [selectedCow?.id],
+        // string 牛只编码
+        if(chooseTypeIndex.value != 0)
+        'batchNo': batchNumber.value,
+        // string 批次号
+        'count': countController.text.trim(),
+        //必传 integer 数量
+        'price': priceController.text.trim(),
+        //必传 number 单价
+        'weight': weightController.text.trim(),
+        //必传 number 重量
+        'breakage': costController.text.trim(),
+        //必传 number 折损
+        'total': totalStr.value,
+        //必传 number 小计
+        'seller': UserInfoTool.nickName(),
+        // string 销售人
+        'date': timesStr.value,
+        //必传 string销售时间
+        'remark': remarkController.text.trim(),
+        // 备注
       };
 
       print('/api/market$para');
@@ -379,9 +404,7 @@ class SellCattleController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();

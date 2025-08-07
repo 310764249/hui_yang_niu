@@ -302,7 +302,7 @@ class InformationListView extends GetView<InformationListController> {
                                   isVideo: model.type == 4,
                                   onPressed: () {
                                     String openURL =
-                                        "${Constant.articleHost}/${model.type}/${model.id}";
+                                        Constant.getCMS(model.type, model.id);
                                     debugPrint('openURL: $openURL');
                                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                                   },

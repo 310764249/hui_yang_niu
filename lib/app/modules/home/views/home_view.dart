@@ -495,7 +495,8 @@ class HomeView extends GetView<HomeController> {
                   userName: model.publisher ?? '',
                   isVideo: true,
                   onPressed: () {
-                    String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
+                    String openURL =
+                        Constant.getCMS(model.type, model.id);
                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                   },
                 );
@@ -572,7 +573,8 @@ class HomeView extends GetView<HomeController> {
                   userIcon: AssetsImages.avatar,
                   userName: model.publisher ?? '',
                   onPressed: () {
-                    String openURL = "${Constant.articleHost}/${model.type}/${model.id}";
+                    String openURL =
+                    Constant.getCMS(model.type, model.id);
                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                   },
                 );

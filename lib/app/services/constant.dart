@@ -4,7 +4,8 @@ import '../models/common_data.dart';
 
 class Constant {
   /// App运行在Release环境时，inProduction为true；当App运行在Debug和Profile环境时，inProduction为false
-  static const bool inProduction = false; //kReleaseMode; ///这个值在自己调试时设置成false, 在发包的时候设置成true
+  static const bool inProduction =
+      false; //kReleaseMode; ///这个值在自己调试时设置成false, 在发包的时候设置成true
 
   //auth
   static const String clientId = 'angular.security';
@@ -17,30 +18,55 @@ class Constant {
 
   //推送相关-业务接口使用
   static const String pushConfigId = '293bdfd1-6965-11ee-b2e0-0242ac110002';
+
   //极光推送 appKey
   static const String JPushAppKey = '262b2270982f4bc64145de1c';
+
   //百度地图 iOS AK
   static const String iOSMapAK = 'qENe98kBkABWijta2v9YjUs2LgGU3jg3';
+
   //百度地图 Android AK
   static const String AndroidMapAK = 'D4UBmglkui271YCQWIMoxuiTk8LfrOSl';
 
+  //各个环境的端口号按这个来：
+  // 测试环境：
+  // API：5658
+  // CMS：1235
+  // Web：1236
+  //
+  // 生产环境：
+  // API：5657
+  // CMS：1237
+  // Web：1234
+  static const bool isDebug = false;
+  static const String baseHost = 'http://154.8.193.14';
+
+  static String get getAPI => isDebug ? '$baseHost:5658' : '$baseHost:5657';
+
+  static String getCMS(int type, String id) {
+    return "$baseHost:${isDebug ? '1235' : '1237'}/#/details/$type/$id";
+  }
+
   //正式
-  static const String baseHost = 'http://154.8.193.14:5657';
+
   //测试
   //static const String baseHost = 'http://154.8.193.14:5658';
   //文章详情基地址
-  static const String articleHost = '$baseHost/#/details'; // 正式环境
+  static String get articleHost => '$getAPI/#/details'; // 正式环境
 
   //文件上传相关
-  static const String uploadTokenUrl = 'https://id.banggongshe.cn/connect/token';
+  static const String uploadTokenUrl =
+      'https://id.banggongshe.cn/connect/token';
   static const String upClientId = 'toink_security_api_empty';
-  static const String upClientSecret = 'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
+  static const String upClientSecret =
+      'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
   static const String upGrantType = 'client_credentials';
   static const String upScope = 'toink_security_api toink_wechat_access_api';
   static const String upAccessToken = 'up_access_token'; //上传使用的 token
   // https://file.zbxx.info/api/file/preview?id=e4a4242f-9249-4f98-86f8-a27b043f5271
-  static const String uploadFile = 'https://file.zbxx.info';
-  static const String uploadFileUrl = '$baseHost/api/file/preview?id=';
+  static String get uploadFile => getAPI;
+
+  static String get uploadFileUrl => '$getAPI/api/file/preview?id=';
   static const String upProjectId = '0cbd22d8-f7ba-468b-aff9-6b16e173d825';
 
   //默认值、占位字符等
@@ -75,7 +101,17 @@ class Constant {
   ];
 
   // "胎次"可选项
-  static List<String> pregnancyNumList = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
+  static List<String> pregnancyNumList = [
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+  ];
 
   static const String isOpenBigFont = 'isOpenBigFont';
 }

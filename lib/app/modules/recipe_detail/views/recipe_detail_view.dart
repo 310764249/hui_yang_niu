@@ -81,16 +81,17 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           _basicRow(
             '日增重(kg/d)：',
             controller.argument!.dailyGainWeight.toString(),
-            '妊娠月份：',
-            controller.argument!.gestationMonths.toString(),
+            '存栏：',''
+            // '妊娠月份：',
+            // controller.argument!.gestationMonths.toString(),
           ),
           SizedBox(height: ScreenAdapter.height(10)),
-          _basicRow(
-            '泌乳月份：',
-            controller.argument!.calvingMonths.toString(),
-            '泌乳量(kg/d)：',
-            controller.argument!.milkProduction.toString(),
-          ),
+          // _basicRow(
+          //   '泌乳月份：',
+          //   controller.argument!.calvingMonths.toString(),
+          //   '泌乳量(kg/d)：',
+          //   controller.argument!.milkProduction.toString(),
+          // ),
           SizedBox(height: ScreenAdapter.height(10)),
         ]),
       ),

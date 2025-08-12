@@ -156,7 +156,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
       children: [
         CellButton(
             isRequired: true,
-            title: '个体类型',
+            title: '牛只类型',
             content: controller.gtlxSelName.value,
             onPressed: () {
               if (controller.gtlxNameList.isEmpty) {
@@ -170,7 +170,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             }),
         CellButton(
             isRequired: true,
-            title: '个体重量',
+            title: '牛只重量',
             content: controller.gtzlSelName.value,
             onPressed: () {
               if (controller.gtzlList.isEmpty) {

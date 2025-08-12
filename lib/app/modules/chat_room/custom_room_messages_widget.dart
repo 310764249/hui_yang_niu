@@ -38,7 +38,7 @@ class CustomChatRoomMessagesWidget extends StatefulWidget {
 class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWidget>
     with ChatObserver, MessageObserver, ChatUIKitProviderObserver, ChatUIKitThemeMixin {
   final scrollController = ScrollController();
-  final List<Message> messages = [];
+  List<Message> messages = [];
 
   final Map<String, ChatUIKitProfile> profileCache = {};
   int unreadCount = 0;
@@ -50,9 +50,11 @@ class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWid
     ChatUIKitProvider.instance.addObserver(this);
     ChatUIKit.instance.addObserver(this);
     messages.addAll(widget.messages);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scrollController.jumpTo(scrollController.position.maxScrollExtent);
-    });
+    messages = messages.reversed.toList();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //
+    //   scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    // });
   }
 
   @override
@@ -81,6 +83,7 @@ class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWid
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.zero,
       controller: scrollController,
+      reverse: true,
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final msg = messages[index];

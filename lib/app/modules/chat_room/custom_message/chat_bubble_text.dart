@@ -1,3 +1,4 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../generated/assets.dart';
@@ -49,7 +50,14 @@ class ChatBubbleText extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
           decoration: BoxDecoration(color: bubbleColor, borderRadius: BorderRadius.circular(8)),
-          child: Text(content, style: TextStyle(fontSize: 14, color: textColor)),
+          child: Text.rich(
+            TextSpan(
+              children: EmojiPickerUtils().setEmojiTextStyle(
+                content,
+                emojiStyle: TextStyle(fontSize: 14, color: textColor),
+              ),
+            ),
+          ),
         ),
       ],
     );

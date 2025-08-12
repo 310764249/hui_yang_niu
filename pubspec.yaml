@@ -52,6 +52,10 @@ dependencies:
   app_settings: 5.1.1 # https://pub.dev/packages/app_settings
   flutter_bounceable: ^1.1.0
   flutter_svg: ^2.0.10
+  emoji_picker_flutter: ^4.3.0
+  image_picker: ^1.1.2
+  video_player: ^2.5.1
+  flutter_cache_manager: ^3.3.0
 
   em_chat_uikit:
     git:
@@ -61,6 +65,7 @@ dependencies:
 dependency_overrides:
   web: any
   record: ^6.0.0
+  shared_preferences: any
 
 dev_dependencies:
   flutter_plugin_android_lifecycle: any

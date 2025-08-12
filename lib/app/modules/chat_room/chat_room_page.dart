@@ -1,14 +1,15 @@
+import 'dart:io';
+
 import 'package:em_chat_uikit/chat_uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:image_pickers/image_pickers.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
+import 'package:intellectual_breed/app/modules/chat_room/custom_message/chat_video_message.dart';
 
 import '../../models/user_resource.dart';
-import '../../services/colors.dart';
 import '../../services/constant.dart';
 import '../../services/storage.dart';
 import 'app_lifecycle_observer.dart';
-import 'chat_input_bar.dart';
+import 'chat_input_widget.dart';
 import 'custom_message/chat_bubble_text.dart';
 import 'custom_message/chat_image_message.dart';
 import 'custom_room_messages_widget.dart';
@@ -108,7 +109,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
   //获取历史消息
   void getHistoryMessage() async {
     FetchMessageOptions options = const FetchMessageOptions(
-      msgTypes: [MessageType.TXT, MessageType.IMAGE],
+      msgTypes: [MessageType.TXT, MessageType.IMAGE, MessageType.VIDEO],
       needSave: false,
     );
     EMCursorResult<EMMessage> result = await EMClient.getInstance.chatManager
@@ -161,35 +162,43 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
                   imageUrl: body.remotePath ?? '',
                   isSelf: isSelf,
                 );
+              } else if (msg.body.type == MessageType.VIDEO) {
+                EMVideoMessageBody body = msg.body as EMVideoMessageBody;
+                return ChatVideoMessage(
+                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                  nickname: nickname ?? '游客',
+                  videoUrl: body.remotePath ?? '',
+                  isSelf: isSelf,
+                );
               }
               return const SizedBox();
             },
           ),
         ),
-        ChatInputBar(
+        ChatInputWidget(
           onSendText: (msg) {
             if (msg.trim().isEmpty) {
               return;
             }
             ChatUIKit.instance.sendMessage(message: ChatRoomMessage.roomMessage(roomId, msg));
           },
-          onSendImage: () async {
-            List<Media> medias = await ImagePickers.pickerPaths(
-              galleryMode: GalleryMode.image,
-              selectCount: 1,
-              showGif: false,
-              showCamera: true,
-              uiConfig: UIConfig(uiThemeColor: SaienteColors.search_color),
+          onSendImage: (File image) async {
+            EMMessage message = Message.createImageSendMessage(
+              targetId: roomId,
+              filePath: image.path,
+              chatType: ChatType.ChatRoom,
             );
-            if (medias.isNotEmpty && medias.first.path != null) {
-              EMMessage message = Message.createImageSendMessage(
-                targetId: roomId,
-                filePath: medias.first.path!,
-                chatType: ChatType.ChatRoom,
-              );
-              message.addUserInfo(roomId);
-              await ChatUIKit.instance.sendMessage(message: message);
-            }
+            message.addUserInfo(roomId);
+            await ChatUIKit.instance.sendMessage(message: message);
+          },
+          onSendVideo: (File video) async {
+            EMMessage message = Message.createVideoSendMessage(
+              targetId: roomId,
+              filePath: video.path,
+              chatType: ChatType.ChatRoom,
+            );
+            message.addUserInfo(roomId);
+            await ChatUIKit.instance.sendMessage(message: message);
           },
         ),
       ],

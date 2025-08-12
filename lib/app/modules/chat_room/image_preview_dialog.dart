@@ -4,7 +4,7 @@ class ImagePreviewDialog extends StatelessWidget {
   final String imageUrl;
   final String? heroTag;
 
-  const ImagePreviewDialog({Key? key, required this.imageUrl, this.heroTag}) : super(key: key);
+  const ImagePreviewDialog({super.key, required this.imageUrl, this.heroTag});
 
   static void show(BuildContext context, String imageUrl, {String? heroTag}) {
     showDialog(

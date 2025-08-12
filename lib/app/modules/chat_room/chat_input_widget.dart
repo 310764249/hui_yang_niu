@@ -97,6 +97,11 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     if (picked != null) widget.onSendImage(File(picked.path));
   }
 
+  Future<void> _pickVideo() async {
+    final picked = await _picker.pickVideo(source: ImageSource.gallery);
+    if (picked != null) widget.onSendVideo(File(picked.path));
+  }
+
   Future<void> _takeVideo() async {
     final picked = await _picker.pickVideo(source: ImageSource.camera);
     if (picked != null) widget.onSendVideo(File(picked.path));
@@ -124,6 +129,9 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
         children: [
           _moreItem(Icons.image, '图片', () {
             _pickImage();
+          }),
+          _moreItem(Icons.image, '视频', () {
+            _pickVideo();
           }),
           _moreItem(Icons.videocam, '拍摄', () {
             showMediaPickerBottomSheet(

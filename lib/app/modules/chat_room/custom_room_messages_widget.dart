@@ -50,11 +50,9 @@ class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWid
     ChatUIKitProvider.instance.addObserver(this);
     ChatUIKit.instance.addObserver(this);
     messages.addAll(widget.messages);
-    messages = messages.reversed.toList();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //
-    //   scrollController.jumpTo(scrollController.position.maxScrollExtent);
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    });
   }
 
   @override
@@ -83,7 +81,6 @@ class _CustomChatRoomMessagesWidgetState extends State<CustomChatRoomMessagesWid
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.zero,
       controller: scrollController,
-      reverse: true,
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final msg = messages[index];

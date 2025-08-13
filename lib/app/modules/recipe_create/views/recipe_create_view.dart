@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/recipe_create/views/select_recipe.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
+import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
 import 'package:intellectual_breed/app/widgets/main_button.dart';
 
 import '../../../services/screenAdapter.dart';
@@ -28,39 +29,57 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
     switch (controller.gtlxValue.value) {
       case 1:
         return CellButton(
-            isRequired: true,
-            title: '日增重目标',
-            content: controller.rzzSelName.value,
-            onPressed: () {
-              Picker.showSinglePicker(context, controller.rzzNameListHB, selectData: controller.rzzSelName.value, title: '请选择日增重',
-                  onConfirm: (value, position) {
+          isRequired: true,
+          title: '日增重目标',
+          content: controller.rzzSelName.value,
+          onPressed: () {
+            Picker.showSinglePicker(
+              context,
+              controller.rzzNameListHB,
+              selectData: controller.rzzSelName.value,
+              title: '请选择日增重',
+              onConfirm: (value, position) {
                 controller.updateRzzSelectedItems(value, position);
-              });
-            });
+              },
+            );
+          },
+        );
       case 2:
         return CellButton(
-            isRequired: true,
-            title: '妊娠月份',
-            content: controller.rsyfSelName.value,
-            onPressed: () {
-              Picker.showSinglePicker(context, controller.rsyfNameList,
-                  selectData: controller.rsyfSelName.value, title: '请选择妊娠月份', onConfirm: (value, position) {
+          isRequired: true,
+          title: '妊娠月份',
+          content: controller.rsyfSelName.value,
+          onPressed: () {
+            Picker.showSinglePicker(
+              context,
+              controller.rsyfNameList,
+              selectData: controller.rsyfSelName.value,
+              title: '请选择妊娠月份',
+              onConfirm: (value, position) {
                 controller.updateRsyfSelectedItems(value, position);
-              });
-            });
+              },
+            );
+          },
+        );
       case 3:
         return Column(
           children: [
             CellButton(
-                isRequired: true,
-                title: '哺乳月份',
-                content: controller.mryfSelName.value,
-                onPressed: () {
-                  Picker.showSinglePicker(context, controller.mryfNameList,
-                      selectData: controller.mryfSelName.value, title: '请选择哺乳月份', onConfirm: (value, position) {
+              isRequired: true,
+              title: '哺乳月份',
+              content: controller.mryfSelName.value,
+              onPressed: () {
+                Picker.showSinglePicker(
+                  context,
+                  controller.mryfNameList,
+                  selectData: controller.mryfSelName.value,
+                  title: '请选择哺乳月份',
+                  onConfirm: (value, position) {
                     controller.updateMryfSelectedItems(value, position);
-                  });
-                }),
+                  },
+                );
+              },
+            ),
             // CellButton(
             //     isRequired: true,
             //     title: '泌乳量目标',
@@ -88,63 +107,65 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
       case 4:
         // 育肥牛
         return CellButton(
-            isRequired: true,
-            title: '日增重目标',
-            content: controller.rzzSelName.value,
-            onPressed: () {
-              final weightStr = controller.gtzlSelName.value.replaceAll('千克', '');
-              final weight = int.tryParse(weightStr);
+          isRequired: true,
+          title: '日增重目标',
+          content: controller.rzzSelName.value,
+          onPressed: () {
+            final weightStr = controller.gtzlSelName.value.replaceAll('千克', '');
+            final weight = int.tryParse(weightStr);
 
-              final Map<int, List<double>> weightRangeMap = {
-                200: [0.5, 1.5],
-                250: [0.5, 1.5],
-                300: [0.5, 1.5],
-                350: [0.5, 1.5],
-                400: [1.0, 2.0],
-                450: [1.0, 2.0],
-                500: [1.0, 2.0],
-                550: [1.0, 2.0],
-                600: [1.0, 1.5],
-                650: [1.0, 1.5],
-                700: [1.0, 1.5],
-                750: [1.0, 1.5],
-                800: [1.0, 1.5],
-              };
+            final Map<int, List<double>> weightRangeMap = {
+              200: [0.5, 1.5],
+              250: [0.5, 1.5],
+              300: [0.5, 1.5],
+              350: [0.5, 1.5],
+              400: [1.0, 2.0],
+              450: [1.0, 2.0],
+              500: [1.0, 2.0],
+              550: [1.0, 2.0],
+              600: [1.0, 1.5],
+              650: [1.0, 1.5],
+              700: [1.0, 1.5],
+              750: [1.0, 1.5],
+              800: [1.0, 1.5],
+            };
 
-              if (weight != null && weightRangeMap.containsKey(weight)) {
-                final range = weightRangeMap[weight]!;
+            if (weight != null && weightRangeMap.containsKey(weight)) {
+              final range = weightRangeMap[weight]!;
 
-                // 原始数组：字典返回的完整区间
-                final originList = controller.rzzNameListYF;
+              // 原始数组：字典返回的完整区间
+              final originList = controller.rzzNameListYF;
 
-                // 截取落在当前区间的选项
-                final filteredList = originList.where((item) {
-                  final v = double.tryParse(item.replaceAll('千克', ''));
-                  return v != null && v >= range[0] && v <= range[1];
-                }).toList();
+              // 截取落在当前区间的选项
+              final filteredList =
+                  originList.where((item) {
+                    final v = double.tryParse(item.replaceAll('千克', ''));
+                    return v != null && v >= range[0] && v <= range[1];
+                  }).toList();
 
-                if (filteredList.isEmpty) {
-                  debugPrint('当前体重无可选日增重区间');
-                  return;
-                }
-
-                // 弹出选择器
-                Picker.showSinglePicker(
-                  context,
-                  filteredList,
-                  selectData: controller.rzzSelName.value,
-                  title: '请选择日增重',
-                  onConfirm: (value, position) {
-                    debugPrint('value: $value, position: $position');
-                    //根据返回的value，在没有筛选的数据中找position
-                    int index = originList.indexWhere((item) => item == value);
-                    controller.updateRzzSelectedItems(value, index);
-                  },
-                );
-              } else {
-                debugPrint('未找到对应体重的区间范围');
+              if (filteredList.isEmpty) {
+                debugPrint('当前体重无可选日增重区间');
+                return;
               }
-            });
+
+              // 弹出选择器
+              Picker.showSinglePicker(
+                context,
+                filteredList,
+                selectData: controller.rzzSelName.value,
+                title: '请选择日增重',
+                onConfirm: (value, position) {
+                  debugPrint('value: $value, position: $position');
+                  //根据返回的value，在没有筛选的数据中找position
+                  int index = originList.indexWhere((item) => item == value);
+                  controller.updateRzzSelectedItems(value, index);
+                },
+              );
+            } else {
+              debugPrint('未找到对应体重的区间范围');
+            }
+          },
+        );
       default:
         return const SizedBox();
     }
@@ -155,206 +176,234 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
     return Column(
       children: [
         CellButton(
-            isRequired: true,
-            title: '牛只类型',
-            content: controller.gtlxSelName.value,
-            onPressed: () {
-              if (controller.gtlxNameList.isEmpty) {
-                Toast.show('配方目标类型获取失败');
-                return;
-              }
-              Picker.showSinglePicker(context, controller.gtlxNameList,
-                  selectData: controller.gtlxSelName.value, title: '请选择个体类型', onConfirm: (value, position) {
+          isRequired: true,
+          title: '牛只类型',
+          content: controller.gtlxSelName.value,
+          onPressed: () {
+            if (controller.gtlxNameList.isEmpty) {
+              Toast.show('配方目标类型获取失败');
+              return;
+            }
+            Picker.showSinglePicker(
+              context,
+              controller.gtlxNameList,
+              selectData: controller.gtlxSelName.value,
+              title: '请选择个体类型',
+              onConfirm: (value, position) {
                 controller.updateGtlxSelectedItems(value, position);
-              });
-            }),
+              },
+            );
+          },
+        ),
+        CellTextField(
+          isRequired: true,
+          title: '牛只存栏',
+          controller: controller.livestockHandController,
+          keyboardType: TextInputType.number,
+        ),
         CellButton(
-            isRequired: true,
-            title: '牛只重量',
-            content: controller.gtzlSelName.value,
-            onPressed: () {
-              if (controller.gtzlList.isEmpty) {
-                Toast.show('请先选择个体类型');
-                return;
-              }
-              if (controller.gtzlNameList.isEmpty) {
-                Toast.show('个体重量列表获取失败');
-                return;
-              }
+          isRequired: true,
+          title: '牛只重量',
+          content: controller.gtzlSelName.value,
+          onPressed: () {
+            if (controller.gtzlList.isEmpty) {
+              Toast.show('请先选择个体类型');
+              return;
+            }
+            if (controller.gtzlNameList.isEmpty) {
+              Toast.show('个体重量列表获取失败');
+              return;
+            }
 
-              Picker.showSinglePicker(context, controller.gtzlNameList,
-                  selectData: controller.gtzlSelName.value, title: '请选择个体重量', onConfirm: (value, position) {
+            Picker.showSinglePicker(
+              context,
+              controller.gtzlNameList,
+              selectData: controller.gtzlSelName.value,
+              title: '请选择个体重量',
+              onConfirm: (value, position) {
                 controller.updateGtzlSelectedItems(value, position);
-              });
-            }),
+              },
+            );
+          },
+        ),
         // 更加不同牛只类型, 动态显示布局
         _dynamicWidgets(context),
         CellButton(
-            isRequired: true,
-            title: '粗饲料',
-            content: controller.cslSelectedDisplayNames.value,
-            onPressed: () {
-              if (controller.cslNameList.isEmpty) {
-                Toast.show('粗饲料列表获取失败');
-                return;
-              }
-              // 多选弹窗
-              SelectRecipe.showMultiPicker(
-                controller.cslNameList,
-                context,
-                itemsSelected: List.from(controller.cslSelectedIndexList),
-                maxSelectionCount: 4,
-                onConfirm: (selected) {
-                  debugPrint('selected: $selected');
-                  if (ObjectUtil.isEmptyList(selected)) {
-                    Toast.failure(msg: '请至少选择一种类型');
+          isRequired: true,
+          title: '粗饲料',
+          content: controller.cslSelectedDisplayNames.value,
+          onPressed: () {
+            if (controller.cslNameList.isEmpty) {
+              Toast.show('粗饲料列表获取失败');
+              return;
+            }
+            // 多选弹窗
+            SelectRecipe.showMultiPicker(
+              controller.cslNameList,
+              context,
+              itemsSelected: List.from(controller.cslSelectedIndexList),
+              maxSelectionCount: 4,
+              onConfirm: (selected) {
+                debugPrint('selected: $selected');
+                if (ObjectUtil.isEmptyList(selected)) {
+                  Toast.failure(msg: '请至少选择一种类型');
+                  return;
+                }
+                if (selected.length == 1) {
+                  //selected 中是 index 数组。通过这句获取名称
+                  String name = controller.cslNameList[selected[0].$1];
+                  if (name.contains('青贮')) {
+                    Toast.failure(msg: '无法单独选择青贮饲料');
                     return;
                   }
-                  if (selected.length == 1) {
-                    //selected 中是 index 数组。通过这句获取名称
-                    String name = controller.cslNameList[selected[0].$1];
-                    if (name.contains('青贮')) {
-                      Toast.failure(msg: '无法单独选择青贮饲料');
-                      return;
-                    }
-                  }
-                  // selected 是已选择的下标[数组类型]
-                  controller.updateCslSelectedItems(selected);
-                },
-              );
-            }),
+                }
+                // selected 是已选择的下标[数组类型]
+                controller.updateCslSelectedItems(selected);
+              },
+            );
+          },
+        ),
         CellButton(
-            isRequired: true,
-            title: '能量饲料',
-            content: controller.nlslSelectedDisplayNames.value,
-            onPressed: () {
-              if (controller.nlslNameList.isEmpty) {
-                Toast.show('能量饲料列表获取失败');
-                return;
-              }
+          isRequired: true,
+          title: '能量饲料',
+          content: controller.nlslSelectedDisplayNames.value,
+          onPressed: () {
+            if (controller.nlslNameList.isEmpty) {
+              Toast.show('能量饲料列表获取失败');
+              return;
+            }
 
-              // 多选弹窗
-              SelectRecipe.showMultiPicker(
-                controller.nlslNameList,
-                context,
-                itemsSelected: List.from(controller.nlslSelectedIndexList),
-                maxSelectionCount: 3,
-                onConfirm: (selected) {
-                  debugPrint('selected: $selected');
-                  if (ObjectUtil.isEmptyList(selected)) {
-                    Toast.failure(msg: '请至少选择一种类型');
-                    return;
-                  }
-                  // selected 是已选择的下标[数组类型]
-                  controller.updateNlslSelectedItems(selected);
-                },
-              );
+            // 多选弹窗
+            SelectRecipe.showMultiPicker(
+              controller.nlslNameList,
+              context,
+              itemsSelected: List.from(controller.nlslSelectedIndexList),
+              maxSelectionCount: 3,
+              onConfirm: (selected) {
+                debugPrint('selected: $selected');
+                if (ObjectUtil.isEmptyList(selected)) {
+                  Toast.failure(msg: '请至少选择一种类型');
+                  return;
+                }
+                // selected 是已选择的下标[数组类型]
+                controller.updateNlslSelectedItems(selected);
+              },
+            );
 
-              // 多选弹窗
-              // Alert.showMultiPicker(
-              //   controller.nlslNameList,
-              //   context,
-              //   itemsSelected: List.from(controller.nlslSelectedIndexList),
-              //   maxSelectionCount: 3,
-              //   onConfirm: (selected) {
-              //     // if (ObjectUtil.isEmptyList(selected)) {
-              //     //   Toast.failure(msg: '请至少选择一种类型');
-              //     //   return;
-              //     // }
-              //     // selected 是已选择的下标[数组类型]
-              //     controller.updateNlslSelectedItems(selected);
-              //   },
-              // );
-            }),
+            // 多选弹窗
+            // Alert.showMultiPicker(
+            //   controller.nlslNameList,
+            //   context,
+            //   itemsSelected: List.from(controller.nlslSelectedIndexList),
+            //   maxSelectionCount: 3,
+            //   onConfirm: (selected) {
+            //     // if (ObjectUtil.isEmptyList(selected)) {
+            //     //   Toast.failure(msg: '请至少选择一种类型');
+            //     //   return;
+            //     // }
+            //     // selected 是已选择的下标[数组类型]
+            //     controller.updateNlslSelectedItems(selected);
+            //   },
+            // );
+          },
+        ),
         CellButton(
-            isRequired: true,
-            title: '蛋白饲料',
-            content: controller.dbslSelectedDisplayNames.value,
-            onPressed: () {
-              if (controller.dbslNameList.isEmpty) {
-                Toast.show('蛋白饲料列表获取失败');
-                return;
-              }
-              // 多选弹窗
-              SelectRecipe.showMultiPicker(
-                controller.dbslNameList,
-                context,
-                itemsSelected: List.from(controller.dbslSelectedIndexList),
-                maxSelectionCount: 3,
-                onConfirm: (selected) {
-                  debugPrint('selected: $selected');
-                  if (ObjectUtil.isEmptyList(selected)) {
-                    Toast.failure(msg: '请至少选择一种类型');
-                    return;
-                  }
+          isRequired: true,
+          title: '蛋白饲料',
+          content: controller.dbslSelectedDisplayNames.value,
+          onPressed: () {
+            if (controller.dbslNameList.isEmpty) {
+              Toast.show('蛋白饲料列表获取失败');
+              return;
+            }
+            // 多选弹窗
+            SelectRecipe.showMultiPicker(
+              controller.dbslNameList,
+              context,
+              itemsSelected: List.from(controller.dbslSelectedIndexList),
+              maxSelectionCount: 3,
+              onConfirm: (selected) {
+                debugPrint('selected: $selected');
+                if (ObjectUtil.isEmptyList(selected)) {
+                  Toast.failure(msg: '请至少选择一种类型');
+                  return;
+                }
 
-                  // selected 是已选择的下标[数组类型]
-                  controller.updateDbslSelectedItems(selected);
-                },
-              );
+                // selected 是已选择的下标[数组类型]
+                controller.updateDbslSelectedItems(selected);
+              },
+            );
 
-              // 多选弹窗
-              // Alert.showMultiPicker(
-              //   controller.dbslNameList,
-              //   context,
-              //   itemsSelected: List.from(controller.dbslSelectedIndexList),
-              //   maxSelectionCount: 3,
-              //   onConfirm: (selected) {
-              //     // if (ObjectUtil.isEmptyList(selected)) {
-              //     //   Toast.failure(msg: '请至少选择一种类型');
-              //     //   return;
-              //     // }
-              //     // selected 是已选择的下标[数组类型]
-              //     controller.updateDbslSelectedItems(selected);
-              //   },
-              // );
-            }),
+            // 多选弹窗
+            // Alert.showMultiPicker(
+            //   controller.dbslNameList,
+            //   context,
+            //   itemsSelected: List.from(controller.dbslSelectedIndexList),
+            //   maxSelectionCount: 3,
+            //   onConfirm: (selected) {
+            //     // if (ObjectUtil.isEmptyList(selected)) {
+            //     //   Toast.failure(msg: '请至少选择一种类型');
+            //     //   return;
+            //     // }
+            //     // selected 是已选择的下标[数组类型]
+            //     controller.updateDbslSelectedItems(selected);
+            //   },
+            // );
+          },
+        ),
         CellButton(
-            isRequired: false,
-            title: '添加剂',
-            showBottomLine: true,
-            content: controller.tjjSelectedDisplayNames.value,
-            onPressed: () {
-              //! 添加剂中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
-              if (controller.gtzlList.isEmpty) {
-                Toast.show('请先选择个体类型');
-                return;
-              }
-              if (controller.tjjNameList.isEmpty) {
-                Toast.show('添加剂列表获取失败');
-                return;
-              }
-              // 多选弹窗
-              Alert.showMultiPicker(
-                controller.tjjNameList,
-                context,
-                itemsSelected: List.from(controller.tjjSelectedIndexList),
-                onConfirm: (selected) {
-                  // selected 是已选择的下标[数组类型]
-                  controller.updateTjjSelectedItems(selected);
-                },
-              );
-            }),
+          isRequired: false,
+          title: '添加剂',
+          showBottomLine: true,
+          content: controller.tjjSelectedDisplayNames.value,
+          onPressed: () {
+            //! 添加剂中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
+            if (controller.gtzlList.isEmpty) {
+              Toast.show('请先选择个体类型');
+              return;
+            }
+            if (controller.tjjNameList.isEmpty) {
+              Toast.show('添加剂列表获取失败');
+              return;
+            }
+            // 多选弹窗
+            Alert.showMultiPicker(
+              controller.tjjNameList,
+              context,
+              itemsSelected: List.from(controller.tjjSelectedIndexList),
+              onConfirm: (selected) {
+                // selected 是已选择的下标[数组类型]
+                controller.updateTjjSelectedItems(selected);
+              },
+            );
+          },
+        ),
         CellButton(
-            isRequired: false,
-            title: '预混料',
-            showBottomLine: false,
-            content: controller.yhlSelName.value,
-            onPressed: () {
-              //! 预混料中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
-              if (controller.gtzlList.isEmpty) {
-                Toast.show('请先选择个体类型');
-                return;
-              }
-              if (controller.yhlNameList.isEmpty) {
-                Toast.show('预混料类型获取失败');
-                return;
-              }
-              Picker.showSinglePicker(context, controller.yhlNameList, selectData: controller.yhlSelName.value, title: '请选择预混料',
-                  onConfirm: (value, position) {
+          isRequired: false,
+          title: '预混料',
+          showBottomLine: false,
+          content: controller.yhlSelName.value,
+          onPressed: () {
+            //! 预混料中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
+            if (controller.gtzlList.isEmpty) {
+              Toast.show('请先选择个体类型');
+              return;
+            }
+            if (controller.yhlNameList.isEmpty) {
+              Toast.show('预混料类型获取失败');
+              return;
+            }
+            Picker.showSinglePicker(
+              context,
+              controller.yhlNameList,
+              selectData: controller.yhlSelName.value,
+              title: '请选择预混料',
+              onConfirm: (value, position) {
                 controller.updateYhlSelectedItems(value, position);
-              });
-            }),
+              },
+            );
+          },
+        ),
       ],
     );
   }
@@ -368,10 +417,11 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
       child: Container(
         margin: const EdgeInsets.all(10),
         child: MainButton(
-            text: '生成配方',
-            onPressed: () {
-              controller.makeRecipe();
-            }),
+          text: '生成配方',
+          onPressed: () {
+            controller.makeRecipe();
+          },
+        ),
       ),
     );
   }
@@ -386,14 +436,23 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
         backgroundColor: Colors.white,
       ),
       body: PageWrapper(
-          child: Container(
-        color: SaienteColors.backGrey,
-        child: Obx(() => Stack(children: [
-              Container(
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.fromLTRB(
-                    ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(10)),
-                child: ListView(
+        child: Container(
+          color: SaienteColors.backGrey,
+          child: Obx(
+            () => Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  margin: EdgeInsets.fromLTRB(
+                    ScreenAdapter.width(10),
+                    ScreenAdapter.height(10),
+                    ScreenAdapter.width(10),
+                    ScreenAdapter.height(10),
+                  ),
+                  child: ListView(
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
                     // physics: const NeverScrollableScrollPhysics(), // 禁止列表滑动
@@ -401,11 +460,15 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                       //配方基本信息
                       _recipeOptions(context),
                       //物质比例对比
-                    ]),
-              ),
-              _makeRecipeButton(),
-            ])),
-      )),
+                    ],
+                  ),
+                ),
+                _makeRecipeButton(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

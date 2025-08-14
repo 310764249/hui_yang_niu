@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/chat_room/custom_message/chat_video_message.dart';
 
+import '../../../generated/assets.dart';
 import '../../models/user_resource.dart';
 import '../../services/constant.dart';
 import '../../services/storage.dart';
@@ -12,6 +13,7 @@ import 'app_lifecycle_observer.dart';
 import 'chat_input_widget.dart';
 import 'custom_message/chat_bubble_text.dart';
 import 'custom_message/chat_image_message.dart';
+import 'custom_message/chat_voice_message.dart';
 import 'custom_room_messages_widget.dart';
 
 class ChatRoomContainPage extends StatefulWidget {
@@ -167,8 +169,25 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
                 return ChatVideoMessage(
                   avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
                   nickname: nickname ?? '游客',
-                  videoUrl: body.remotePath ?? '',
+                  videoUrl:
+                      body.fileStatus == DownloadStatus.SUCCESS
+                          ? body.localPath ?? ''
+                          : body.remotePath ?? "",
                   isSelf: isSelf,
+                );
+              } else if (msg.body.type == MessageType.VOICE) {
+                EMVoiceMessageBody body = msg.body as EMVoiceMessageBody;
+                return ChatVoiceMessage(
+                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                  nickname: nickname ?? '游客',
+                  isSelf: isSelf,
+                  audioUrl:
+                      body.fileStatus == DownloadStatus.SUCCESS
+                          ? body.localPath ?? ''
+                          : body.remotePath ?? "",
+                  duration: Duration(seconds: body.duration),
+                  messageId: msg.msgId,
+                  defaultAvatarAsset: Assets.imagesAvatar,
                 );
               }
               return const SizedBox();
@@ -176,6 +195,16 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
           ),
         ),
         ChatInputWidget(
+          onSendVoice: (File file, int duration) async {
+            EMMessage message = Message.createVoiceSendMessage(
+              targetId: roomId,
+              filePath: file.path,
+              chatType: ChatType.ChatRoom,
+              duration: duration ~/ 1000,
+            );
+            message.addUserInfo(roomId);
+            await ChatUIKit.instance.sendMessage(message: message);
+          },
           onSendText: (msg) {
             if (msg.trim().isEmpty) {
               return;

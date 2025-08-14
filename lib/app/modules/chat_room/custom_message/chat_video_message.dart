@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 
 class ChatVideoMessage extends StatefulWidget {
@@ -41,36 +40,27 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> {
         _isError = false;
       });
 
-      // 先尝试从缓存取文件
-      final cacheManager = DefaultCacheManager();
-      final fileInfo = await cacheManager.getFileFromCache(widget.videoUrl);
+      bool isNetUrl = widget.videoUrl.startsWith('http');
 
-      File file;
-      if (fileInfo != null && fileInfo.file.existsSync()) {
-        // 缓存文件存在，使用本地路径
-        file = fileInfo.file;
-      } else {
-        // 缓存不存在，下载缓存
-        file = await cacheManager.getSingleFile(widget.videoUrl);
-      }
-
-      _localFile = file;
-
-      _controller = VideoPlayerController.file(file)
-        ..initialize()
-            .then((_) {
-              if (!mounted) return;
-              setState(() {
-                _isLoading = false;
-                _isError = false;
-              });
-            })
-            .catchError((e) {
-              setState(() {
-                _isLoading = false;
-                _isError = true;
-              });
+      _controller =
+          isNetUrl
+              ? VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
+              : VideoPlayerController.file(File(widget.videoUrl));
+      _controller!
+          .initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() {
+              _isLoading = false;
+              _isError = false;
             });
+          })
+          .catchError((e) {
+            setState(() {
+              _isLoading = false;
+              _isError = true;
+            });
+          });
     } catch (e) {
       setState(() {
         _isLoading = false;

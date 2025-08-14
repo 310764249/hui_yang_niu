@@ -3,17 +3,20 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intellectual_breed/app/modules/chat_room/record_panel.dart';
 
 class ChatInputWidget extends StatefulWidget {
   final Function(String text) onSendText;
   final Function(File image) onSendImage;
   final Function(File video) onSendVideo;
+  final Function(File video, int duration) onSendVoice;
 
   const ChatInputWidget({
     super.key,
     required this.onSendText,
     required this.onSendImage,
     required this.onSendVideo,
+    required this.onSendVoice,
   });
 
   @override
@@ -26,6 +29,9 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
 
   bool _showEmoji = false;
   bool _showMore = false;
+  bool _showVoice = false;
+
+  bool _recording = false;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -37,6 +43,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
         setState(() {
           _showEmoji = false;
           _showMore = false;
+          _showVoice = false;
         });
       }
     });
@@ -50,6 +57,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   }
 
   void _toggleEmoji() {
+    hideAllPanel();
     setState(() {
       _showEmoji = !_showEmoji;
       _showMore = false;
@@ -68,6 +76,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   }
 
   void _toggleMore() {
+    hideAllPanel();
     setState(() {
       _showMore = !_showMore;
       _showEmoji = false;
@@ -237,34 +246,95 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            IconButton(icon: const Icon(Icons.emoji_emotions_outlined), onPressed: _toggleEmoji),
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                decoration: const InputDecoration(
-                  hintText: '说点什么...',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                ),
-                onChanged: (_) => setState(() {}),
+        if (!_recording)
+          Row(
+            children: [
+              IconButton(
+                icon:
+                    _showVoice
+                        ? const Icon(Icons.keyboard_alt_outlined)
+                        : const Icon(Icons.keyboard_voice),
+                onPressed: _onTapVoice,
               ),
-            ),
-            ValueListenableBuilder(
-              valueListenable: _controller,
-              builder: (context, value, child) {
-                return value.text.isEmpty
-                    ? IconButton(icon: const Icon(Icons.add_circle_outline), onPressed: _toggleMore)
-                    : IconButton(icon: const Icon(Icons.send), onPressed: _sendText);
-              },
-            ),
-          ],
-        ),
+              Expanded(
+                child: Container(
+                  height: 45,
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withAlpha(50),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    decoration: const InputDecoration(
+                      hintText: '说点什么...',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(icon: const Icon(Icons.emoji_emotions_outlined), onPressed: _toggleEmoji),
+              ValueListenableBuilder(
+                valueListenable: _controller,
+                builder: (context, value, child) {
+                  return value.text.isEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.add_circle_outline),
+                        onPressed: _toggleMore,
+                      )
+                      : IconButton(icon: const Icon(Icons.send), onPressed: _sendText);
+                },
+              ),
+            ],
+          ),
         if (_showEmoji) _buildEmojiPicker(),
         if (_showMore) _buildMorePanel(),
+        if (_showVoice) _buildVoicePanel(),
       ],
+    );
+  }
+
+  void _onTapVoice() {
+    _focusNode.unfocus();
+    setState(() {
+      hideAllPanel();
+      _showVoice = !_showVoice;
+    });
+  }
+
+  void hideAllPanel() {
+    _showEmoji = false;
+    _showMore = false;
+    _showVoice = false;
+  }
+
+  _buildVoicePanel() {
+    return SizedBox(
+      height: 200,
+      child: RecordPanel(
+        onPressedDown: () {
+          setState(() {
+            _recording = true;
+          });
+        },
+        onEnd: () {
+          setState(() {
+            _recording = false;
+          });
+        },
+        onCancel: () {
+          setState(() {
+            _recording = false;
+          });
+        },
+        onSuccess: (File value, int duration) {
+          widget.onSendVoice(value, duration);
+        },
+      ),
     );
   }
 }

@@ -293,7 +293,9 @@ class RecipeCreateController extends GetxController {
   List tjjSelectedNameList = []; // 已选名称列表
   List tjjSelectedIndexList = []; // 已选下标列表, 从弹窗中选择后得到
   List tjjSelectedObjList = []; // 已选添加剂Obj列表, 用于api提交
-  RxString tjjSelectedDisplayNames = ''.obs; // 已选组合起来的名称
+  RxString tjjSelectedDisplayNames = ''.obs;
+
+  var livestockHandController = TextEditingController(text: '1'); // 已选组合起来的名称
 
   // 粗饲料更新
   void updateCslSelectedItems(List<(int index, int? lowlimit)> selectedList) {

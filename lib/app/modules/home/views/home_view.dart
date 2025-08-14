@@ -626,12 +626,13 @@ class HomeView extends GetView<HomeController> {
               //分类
               _mainType(),
               SizedBox(height: ScreenAdapter.height(10)),
+              //资讯
+              _information(),
               //视频类目
               _videoType(),
               //文章类目
               _articleType(),
-              //资讯
-              _information(),
+
             ],
           ),
         ),

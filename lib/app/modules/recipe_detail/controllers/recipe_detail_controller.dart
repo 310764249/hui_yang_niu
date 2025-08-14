@@ -399,4 +399,9 @@ class RecipeDetailController extends GetxController {
       }
     }
   }
+
+  ValueNotifier<bool> compareExpanded = ValueNotifier(false);
+  void onTapCompare() {
+    compareExpanded.value =!compareExpanded.value;
+  }
 }

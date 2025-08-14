@@ -2,6 +2,8 @@ import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../generated/assets.dart';
+
 class ChatBubbleText extends StatelessWidget {
   final String avatarUrl;
   final String nickname;
@@ -21,7 +23,7 @@ class ChatBubbleText extends StatelessWidget {
     required this.isSelf,
     this.bubbleColor = const Color(0xFFE0E0E0),
     this.textColor = Colors.black87,
-    this.defaultAvatarAsset = 'assets/images/avatar.png',
+    this.defaultAvatarAsset = Assets.imagesAvatar,
     required this.msg,
     this.onLongPress,
   });

@@ -15,6 +15,7 @@ class LoginController extends GetxController {
 
   TextEditingController telController = TextEditingController();
   TextEditingController passController = TextEditingController();
+
   //
   final FocusNode telNode = FocusNode();
   final FocusNode passNode = FocusNode();
@@ -25,14 +26,8 @@ class LoginController extends GetxController {
       // keyboardBarColor: Colors.grey.shade200,
       nextFocus: true,
       actions: [
-        KeyboardActionsItem(
-          focusNode: telNode,
-          displayDoneButton: true,
-        ),
-        KeyboardActionsItem(
-          focusNode: passNode,
-          displayDoneButton: true,
-        ),
+        KeyboardActionsItem(focusNode: telNode, displayDoneButton: true),
+        KeyboardActionsItem(focusNode: passNode, displayDoneButton: true),
       ],
     );
   }
@@ -50,25 +45,40 @@ class LoginController extends GetxController {
       // telController.text = "15000000000";
       // passController.text = "15000000000";
     }
+    Storage.getData(Constant.userId).then((value) {
+      if (value != null) {
+        telController.text = value;
+      }
+    });
+
+    Storage.getData(Constant.userPwd).then((value) {
+      if (value != null) {
+        passController.text = value;
+      }
+    });
   }
 
   //请求登录数据
   Future<void> requestLogin() async {
-    var response = await httpsClient.post("/api/Auth", data: {
-      "client_id": Constant.clientId,
-      "client_secret": Constant.clientSecret,
-      "grant_type": Constant.grantType,
-      "account": telController.text,
-      "password": passController.text,
-      "remember": false,
-    });
+    var response = await httpsClient.post(
+      "/api/Auth",
+      data: {
+        "client_id": Constant.clientId,
+        "client_secret": Constant.clientSecret,
+        "grant_type": Constant.grantType,
+        "account": telController.text,
+        "password": passController.text,
+        "remember": false,
+      },
+    );
     // print("----------/api/Auth--------");
     //缓存登录信息
     AuthModel authModel = AuthModel.fromJson(response);
     //写到内存中，方便使用
     UserInfoTool.auth = authModel;
     await Storage.setData(Constant.authData, authModel);
-
+    await Storage.setData(Constant.userId, telController.text);
+    await Storage.setData(Constant.userPwd, passController.text);
     //请求用户资源+字典项
     CommonService().requestAllUserInfo();
 

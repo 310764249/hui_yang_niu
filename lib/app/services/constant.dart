@@ -4,8 +4,7 @@ import '../models/common_data.dart';
 
 class Constant {
   /// App运行在Release环境时，inProduction为true；当App运行在Debug和Profile环境时，inProduction为false
-  static const bool inProduction =
-      false; //kReleaseMode; ///这个值在自己调试时设置成false, 在发包的时候设置成true
+  static const bool inProduction = false; //kReleaseMode; ///这个值在自己调试时设置成false, 在发包的时候设置成true
 
   //auth
   static const String clientId = 'angular.security';
@@ -15,6 +14,8 @@ class Constant {
   static const String authData = 'authData';
   static const String userResData = 'userResData';
   static const String selectFarmData = 'selectFarmData';
+  static const String userId = 'userId';
+  static const String userPwd = 'userPwd';
 
   //推送相关-业务接口使用
   static const String pushConfigId = '293bdfd1-6965-11ee-b2e0-0242ac110002';
@@ -55,11 +56,9 @@ class Constant {
   static String get articleHost => '$getAPI/#/details'; // 正式环境
 
   //文件上传相关
-  static const String uploadTokenUrl =
-      'https://id.banggongshe.cn/connect/token';
+  static const String uploadTokenUrl = 'https://id.banggongshe.cn/connect/token';
   static const String upClientId = 'toink_security_api_empty';
-  static const String upClientSecret =
-      'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
+  static const String upClientSecret = 'aXFw1+V9DMuJg6K8nIWtSS5ZOAo5JIiGULXH6VOfm5A=';
   static const String upGrantType = 'client_credentials';
   static const String upScope = 'toink_security_api toink_wechat_access_api';
   static const String upAccessToken = 'up_access_token'; //上传使用的 token
@@ -101,17 +100,7 @@ class Constant {
   ];
 
   // "胎次"可选项
-  static List<String> pregnancyNumList = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-  ];
+  static List<String> pregnancyNumList = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
 
   static const String isOpenBigFont = 'isOpenBigFont';
 }

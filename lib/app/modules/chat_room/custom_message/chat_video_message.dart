@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -8,6 +9,8 @@ class ChatVideoMessage extends StatefulWidget {
   final String avatarUrl;
   final String nickname;
   final bool isSelf;
+  final Message msg;
+  final Function(Message msg)? onLongPress;
 
   const ChatVideoMessage({
     super.key,
@@ -15,6 +18,8 @@ class ChatVideoMessage extends StatefulWidget {
     required this.avatarUrl,
     required this.nickname,
     required this.isSelf,
+    required this.msg,
+    this.onLongPress,
   });
 
   @override
@@ -94,12 +99,15 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> {
   Widget _buildAvatar() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: Image.network(
-        widget.avatarUrl,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const CircleAvatar(radius: 20, child: Icon(Icons.person)),
+      child: GestureDetector(
+        onLongPress: () => widget.onLongPress?.call(widget.msg),
+        child: Image.network(
+          widget.avatarUrl,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const CircleAvatar(radius: 20, child: Icon(Icons.person)),
+        ),
       ),
     );
   }

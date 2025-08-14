@@ -10,6 +10,7 @@ class ChatInputWidget extends StatefulWidget {
   final Function(File image) onSendImage;
   final Function(File video) onSendVideo;
   final Function(File video, int duration) onSendVoice;
+  final TextEditingController controller;
 
   const ChatInputWidget({
     super.key,
@@ -17,6 +18,7 @@ class ChatInputWidget extends StatefulWidget {
     required this.onSendImage,
     required this.onSendVideo,
     required this.onSendVoice,
+    required this.controller,
   });
 
   @override
@@ -24,7 +26,7 @@ class ChatInputWidget extends StatefulWidget {
 }
 
 class _ChatInputWidgetState extends State<ChatInputWidget> {
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController get _controller => widget.controller;
   final FocusNode _focusNode = FocusNode();
 
   bool _showEmoji = false;

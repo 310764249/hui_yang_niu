@@ -1,7 +1,6 @@
+import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../generated/assets.dart';
 
 class ChatBubbleText extends StatelessWidget {
   final String avatarUrl;
@@ -10,7 +9,9 @@ class ChatBubbleText extends StatelessWidget {
   final bool isSelf;
   final Color bubbleColor;
   final Color textColor;
-  final String defaultAvatarAsset; // 本地默认头像资源路径
+  final String defaultAvatarAsset;
+  final Message msg;
+  final Function(Message msg)? onLongPress;
 
   const ChatBubbleText({
     super.key,
@@ -20,7 +21,9 @@ class ChatBubbleText extends StatelessWidget {
     required this.isSelf,
     this.bubbleColor = const Color(0xFFE0E0E0),
     this.textColor = Colors.black87,
-    this.defaultAvatarAsset = Assets.imagesAvatar,
+    this.defaultAvatarAsset = 'assets/images/avatar.png',
+    required this.msg,
+    this.onLongPress,
   });
 
   @override
@@ -29,17 +32,57 @@ class ChatBubbleText extends StatelessWidget {
       radius: 18,
       backgroundColor: Colors.grey.shade200,
       child: ClipOval(
-        child: Image.network(
-          avatarUrl,
-          fit: BoxFit.cover,
-          width: 36,
-          height: 36,
-          errorBuilder: (context, error, stackTrace) {
-            return Image.asset(defaultAvatarAsset, fit: BoxFit.cover, width: 36, height: 36);
-          },
+        child: GestureDetector(
+          onLongPress: () => onLongPress?.call(msg),
+          child: Image.network(
+            avatarUrl,
+            fit: BoxFit.cover,
+            width: 36,
+            height: 36,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(defaultAvatarAsset, fit: BoxFit.cover, width: 36, height: 36);
+            },
+          ),
         ),
       ),
     );
+
+    List<InlineSpan> parseTextWithEmoji(String text) {
+      final List<InlineSpan> spans = [];
+      final reg = RegExp(r'@[^\s]+'); // 匹配 @ 开头直到空格
+      int start = 0;
+
+      for (final match in reg.allMatches(text)) {
+        if (match.start > start) {
+          final normalText = text.substring(start, match.start);
+          spans.addAll(
+            EmojiPickerUtils().setEmojiTextStyle(
+              normalText,
+              emojiStyle: TextStyle(fontSize: 14, color: textColor),
+            ),
+          );
+        }
+
+        final atText = text.substring(match.start, match.end);
+
+        // 整段 @xxx 高亮，不调用 Emoji 工具
+        spans.add(TextSpan(text: atText, style: const TextStyle(fontSize: 14, color: Colors.blue)));
+
+        start = match.end;
+      }
+
+      if (start < text.length) {
+        final remainingText = text.substring(start);
+        spans.addAll(
+          EmojiPickerUtils().setEmojiTextStyle(
+            remainingText,
+            emojiStyle: TextStyle(fontSize: 14, color: textColor),
+          ),
+        );
+      }
+
+      return spans;
+    }
 
     final messageContent = Column(
       crossAxisAlignment: isSelf ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -50,14 +93,7 @@ class ChatBubbleText extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
           decoration: BoxDecoration(color: bubbleColor, borderRadius: BorderRadius.circular(8)),
-          child: Text.rich(
-            TextSpan(
-              children: EmojiPickerUtils().setEmojiTextStyle(
-                content,
-                emojiStyle: TextStyle(fontSize: 14, color: textColor),
-              ),
-            ),
-          ),
+          child: Text.rich(TextSpan(children: parseTextWithEmoji(content))),
         ),
       ],
     );

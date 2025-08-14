@@ -36,6 +36,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
   String get roomId => ChatRoomUtils.publicRoomId;
   bool isOwner = false;
   List<Message> historyMessages = [];
+  TextEditingController inputController = TextEditingController();
 
   @override
   void initState() {
@@ -151,6 +152,8 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
               bool isSelf = msg.direction == MessageDirection.SEND;
               if (msg.body.type == MessageType.TXT) {
                 return ChatBubbleText(
+                  onLongPress: onLongPressAvatar,
+                  msg: msg,
                   avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
                   nickname: nickname ?? '游客',
                   content: msg.textContent,
@@ -159,6 +162,8 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
               } else if (msg.body.type == MessageType.IMAGE) {
                 EMImageMessageBody body = msg.body as EMImageMessageBody;
                 return ChatImageMessage(
+                  onLongPress: onLongPressAvatar,
+                  msg: msg,
                   avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
                   nickname: nickname ?? '游客',
                   imageUrl: body.remotePath ?? '',
@@ -167,6 +172,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
               } else if (msg.body.type == MessageType.VIDEO) {
                 EMVideoMessageBody body = msg.body as EMVideoMessageBody;
                 return ChatVideoMessage(
+                  msg: msg,
                   avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
                   nickname: nickname ?? '游客',
                   videoUrl:
@@ -174,10 +180,13 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
                           ? body.localPath ?? ''
                           : body.remotePath ?? "",
                   isSelf: isSelf,
+                  onLongPress: onLongPressAvatar,
                 );
               } else if (msg.body.type == MessageType.VOICE) {
                 EMVoiceMessageBody body = msg.body as EMVoiceMessageBody;
                 return ChatVoiceMessage(
+                  onLongPress: onLongPressAvatar,
+                  msg: msg,
                   avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
                   nickname: nickname ?? '游客',
                   isSelf: isSelf,
@@ -195,6 +204,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
           ),
         ),
         ChatInputWidget(
+          controller: inputController,
           onSendVoice: (File file, int duration) async {
             EMMessage message = Message.createVoiceSendMessage(
               targetId: roomId,
@@ -209,6 +219,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
             if (msg.trim().isEmpty) {
               return;
             }
+            bool isAT = msg.trim().startsWith('@');
             ChatUIKit.instance.sendMessage(message: ChatRoomMessage.roomMessage(roomId, msg));
           },
           onSendImage: (File image) async {
@@ -265,6 +276,22 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
         FocusScope.of(context).unfocus();
       },
       child: content,
+    );
+  }
+
+  onLongPressAvatar(Message msg) {
+    bool isSelf = msg.direction == MessageDirection.SEND;
+    if (isSelf) {
+      return;
+    }
+    //输入框添加@消息
+    Map<String, dynamic>? attributes = msg.attributes;
+    String? nickname = attributes?['chatroom_uikit_userInfo']?['nickname'];
+    String avatarURL = attributes?['chatroom_uikit_userInfo']?['avatarURL'] ?? '';
+
+    inputController.text = '@$nickname ';
+    inputController.selection = TextSelection.fromPosition(
+      TextPosition(offset: inputController.text.length),
     );
   }
 }

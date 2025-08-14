@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:flutter/material.dart';
 
 import '../audio_player.dart';
@@ -15,8 +16,10 @@ class ChatVoiceMessage extends StatefulWidget {
     required this.isSelf,
     required this.defaultAvatarAsset,
     this.duration,
+    required this.msg,
+    this.onLongPress,
   });
-
+  final Function(Message msg)? onLongPress;
   final String audioUrl;
   final String messageId;
   final String avatarUrl;
@@ -24,6 +27,7 @@ class ChatVoiceMessage extends StatefulWidget {
   final bool isSelf;
   final String defaultAvatarAsset;
   final Duration? duration;
+  final Message msg;
 
   @override
   State<ChatVoiceMessage> createState() => _ChatVoiceMessageState();
@@ -117,12 +121,15 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage> with SingleTickerPr
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!widget.isSelf)
-            CircleAvatar(
-              radius: 16,
-              backgroundImage:
-                  widget.avatarUrl.isNotEmpty
-                      ? NetworkImage(widget.avatarUrl)
-                      : AssetImage(widget.defaultAvatarAsset) as ImageProvider,
+            GestureDetector(
+              onLongPress: () => widget.onLongPress?.call(widget.msg),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundImage:
+                    widget.avatarUrl.isNotEmpty
+                        ? NetworkImage(widget.avatarUrl)
+                        : AssetImage(widget.defaultAvatarAsset) as ImageProvider,
+              ),
             ),
           if (!widget.isSelf) const SizedBox(width: 8),
           Column(

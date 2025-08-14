@@ -1,3 +1,4 @@
+import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/modules/chat_room/image_preview_dialog.dart';
 
@@ -8,25 +9,31 @@ class ChatImageMessage extends StatelessWidget {
   final String avatarUrl;
   final String nickname;
   final bool isSelf;
-
+  final Message msg;
+  final Function(Message msg)? onLongPress;
   const ChatImageMessage({
     super.key,
     required this.imageUrl,
     required this.avatarUrl,
     required this.nickname,
     required this.isSelf,
+    required this.msg,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     final avatar = ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: Image.network(
-        avatarUrl,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(Assets.imagesAvatar, width: 40, height: 40),
+      child: GestureDetector(
+        onLongPress: () => onLongPress?.call(msg),
+        child: Image.network(
+          avatarUrl,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Image.asset(Assets.imagesAvatar, width: 40, height: 40),
+        ),
       ),
     );
 

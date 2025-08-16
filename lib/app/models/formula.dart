@@ -4,11 +4,11 @@ class FormulaModel {
   late final String? nutritionId; //营养标准ID
   late final String? name; //名称
   late final int? individualCate; //品种 西门塔尔、秦川牛
-  late final int?
-      individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
+  late final int? individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
   late final int? weightType; //个体重量
   late final int? calvingMonths; //产犊后月数
   late final int? gestationMonths; //妊娠月数
+  late int? cowCount; //牛只存栏
   late final double? dailyGainWeight; //日增重
   late final double? milkProduction; //泌乳量
   late final int? milkGrade; //泌乳等级
@@ -51,8 +51,7 @@ class FormulaModel {
   late final String? description; //描述
   late final String? taboo; //禁忌事项
   late final String? executor; //制作人
-  late final int?
-      status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
+  late final int? status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
   late final String? remark; //备注
   late final String? tenantId; //租户
   late final String? created; //创建时间
@@ -67,75 +66,78 @@ class FormulaModel {
   List<FormulaItemModel>? additives; //添加剂集
   List<FormulaItemModel>? premix; //预混料集
 
-  FormulaModel(
-      {required this.id,
-      required this.nutritionId,
-      this.name,
-      required this.individualCate,
-      required this.individualType,
-      required this.weightType,
-      required this.calvingMonths,
-      required this.gestationMonths,
-      required this.dailyGainWeight,
-      required this.milkProduction,
-      required this.milkGrade,
-      required this.baseDM,
-      required this.dm,
-      required this.baseAsh,
-      required this.ash,
-      required this.baseStarch,
-      required this.starch,
-      required this.baseFat,
-      required this.fat,
-      required this.baseFibre,
-      required this.fibre,
-      required this.baseNDF,
-      required this.ndf,
-      required this.baseADF,
-      required this.adf,
-      required this.baseCP,
-      required this.cp,
-      required this.baseDE,
-      required this.de,
-      required this.baseMJ,
-      required this.mj,
-      required this.baseRND,
-      required this.rnd,
-      required this.baseCa,
-      required this.ca,
-      required this.baseP,
-      required this.p,
-      required this.baseNEm,
-      required this.nEm,
-      required this.baseNEg,
-      required this.nEg,
-      required this.baseMP,
-      required this.mp,
-      required this.weight,
-      required this.price,
-      required this.enable,
-      required this.date,
-      this.description,
-      this.taboo,
-      this.executor,
-      required this.status,
-      this.remark,
-      required this.tenantId,
-      required this.created,
-      this.createdBy,
-      this.modified,
-      this.modifiedBy,
-      required this.rowVersion,
-      this.roughages,
-      this.energyFeed,
-      this.proteinFeed,
-      this.additives,
-      this.premix});
+  FormulaModel({
+    required this.id,
+    required this.nutritionId,
+    this.name,
+    required this.individualCate,
+    required this.individualType,
+    required this.weightType,
+    required this.calvingMonths,
+    required this.gestationMonths,
+    required this.dailyGainWeight,
+    required this.milkProduction,
+    required this.milkGrade,
+    required this.baseDM,
+    required this.dm,
+    required this.cowCount,
+    required this.baseAsh,
+    required this.ash,
+    required this.baseStarch,
+    required this.starch,
+    required this.baseFat,
+    required this.fat,
+    required this.baseFibre,
+    required this.fibre,
+    required this.baseNDF,
+    required this.ndf,
+    required this.baseADF,
+    required this.adf,
+    required this.baseCP,
+    required this.cp,
+    required this.baseDE,
+    required this.de,
+    required this.baseMJ,
+    required this.mj,
+    required this.baseRND,
+    required this.rnd,
+    required this.baseCa,
+    required this.ca,
+    required this.baseP,
+    required this.p,
+    required this.baseNEm,
+    required this.nEm,
+    required this.baseNEg,
+    required this.nEg,
+    required this.baseMP,
+    required this.mp,
+    required this.weight,
+    required this.price,
+    required this.enable,
+    required this.date,
+    this.description,
+    this.taboo,
+    this.executor,
+    required this.status,
+    this.remark,
+    required this.tenantId,
+    required this.created,
+    this.createdBy,
+    this.modified,
+    this.modifiedBy,
+    required this.rowVersion,
+    this.roughages,
+    this.energyFeed,
+    this.proteinFeed,
+    this.additives,
+    this.premix,
+  });
 
   FormulaModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nutritionId = json['nutritionId'];
     name = json['name'];
+    cowCount = json['cowCount'];
     individualCate = json['individualCate'];
     individualType = json['individualType'];
     weightType = json['weightType'];
@@ -228,6 +230,7 @@ class FormulaModel {
     data['id'] = id;
     data['nutritionId'] = nutritionId;
     data['name'] = name;
+    data['cowCount'] = cowCount;
     data['individualCate'] = individualCate;
     data['individualType'] = individualType;
     data['weightType'] = weightType;

@@ -88,7 +88,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 '日增重(kg/d)：',
                 controller.argument!.dailyGainWeight.toString(),
                 '存栏：',
-                '',
+                controller.argument!.cowCount.toString(),
                 // '妊娠月份：',
                 // controller.argument!.gestationMonths.toString(),
               ),
@@ -222,7 +222,6 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             );
           },
           child: SingleChildScrollView(
-
             physics: const NeverScrollableScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,

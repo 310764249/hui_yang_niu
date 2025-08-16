@@ -129,6 +129,7 @@ class RecipeDetailController extends GetxController {
         "/api/formulaItems/getAll",
         queryParameters: {"formulaId": argument?.id},
       );
+      debugPrint('response: $response');
       Toast.dismiss();
       List<FormulaItemModel> modelList = [];
       for (var item in response) {
@@ -293,6 +294,7 @@ class RecipeDetailController extends GetxController {
       Map<String, dynamic> mapParam = {
         "nutritionId": argument?.nutritionId,
         "name": formulaName,
+        "cowCount": argument?.cowCount ?? 1,
         "individualCate": argument?.individualCate,
         "individualType": argument?.individualType,
         "weightType": argument?.weightType,
@@ -402,6 +404,6 @@ class RecipeDetailController extends GetxController {
 
   ValueNotifier<bool> compareExpanded = ValueNotifier(false);
   void onTapCompare() {
-    compareExpanded.value =!compareExpanded.value;
+    compareExpanded.value = !compareExpanded.value;
   }
 }

@@ -144,7 +144,10 @@ class RecipeCreateController extends GetxController {
 
         // 添加剂 列表更新
         tjjNameList.clear();
-        tjjList = tjjListTotal.where((element) => element.individualType == 2 || element.individualType == 0).toList();
+        tjjList =
+            tjjListTotal
+                .where((element) => element.individualType == 2 || element.individualType == 0)
+                .toList();
         if (tjjList.isNotEmpty) {
           tjjNameList.addAll(tjjList.map((item) => item.name).toList());
         }
@@ -161,7 +164,10 @@ class RecipeCreateController extends GetxController {
 
         // 添加剂 列表更新
         tjjNameList.clear();
-        tjjList = tjjListTotal.where((element) => element.individualType == 1 || element.individualType == 0).toList();
+        tjjList =
+            tjjListTotal
+                .where((element) => element.individualType == 1 || element.individualType == 0)
+                .toList();
         if (tjjList.isNotEmpty) {
           tjjNameList.addAll(tjjList.map((item) => item.name).toList());
         }
@@ -310,7 +316,7 @@ class RecipeCreateController extends GetxController {
           "variable": cslList[selectedList[i].$1].category,
           "correlation": 0,
           "referenceValues": 0,
-          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2,
         });
       }
     }
@@ -339,7 +345,7 @@ class RecipeCreateController extends GetxController {
           "variable": nlslList[selectedList[i].$1].category,
           "correlation": 0,
           "referenceValues": 0,
-          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2,
         });
       }
     }
@@ -361,7 +367,7 @@ class RecipeCreateController extends GetxController {
           "variable": dbslList[selectedList[i].$1].category,
           "correlation": 0,
           "referenceValues": 0,
-          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2
+          if (selectedList[i].$2 != null) "lowLimit": selectedList[i].$2,
         });
       }
     }
@@ -382,7 +388,7 @@ class RecipeCreateController extends GetxController {
           "id": tjjList[selectedList[i]].id,
           "variable": tjjList[selectedList[i]].category,
           "correlation": 0,
-          "referenceValues": 0
+          "referenceValues": 0,
         });
       }
     }
@@ -399,14 +405,20 @@ class RecipeCreateController extends GetxController {
 
     gtlxList = AppDictList.searchItems('pfmb')?.where((item) => !item['isDeleted']).toList() ?? [];
     // gtzlList = AppDictList.searchItems('gtzl') ?? [];
-    gtzlListHB = AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListRS = AppDictList.searchItems('gtzl-rs')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListBR = AppDictList.searchItems('gtzl-br')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListYF = AppDictList.searchItems('gtzl-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
+    gtzlListHB =
+        AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
+    gtzlListRS =
+        AppDictList.searchItems('gtzl-rs')?.where((item) => !item['isDeleted']).toList() ?? [];
+    gtzlListBR =
+        AppDictList.searchItems('gtzl-br')?.where((item) => !item['isDeleted']).toList() ?? [];
+    gtzlListYF =
+        AppDictList.searchItems('gtzl-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
 
     rzzList = AppDictList.searchItems('rzz')?.where((item) => !item['isDeleted']).toList() ?? [];
-    rzzListHB = AppDictList.searchItems('rzz-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
-    rzzListYF = AppDictList.searchItems('rzz-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
+    rzzListHB =
+        AppDictList.searchItems('rzz-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
+    rzzListYF =
+        AppDictList.searchItems('rzz-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
     rsyfList = AppDictList.searchItems('rsyf')?.where((item) => !item['isDeleted']).toList() ?? [];
     mryfList = AppDictList.searchItems('mryf')?.where((item) => !item['isDeleted']).toList() ?? [];
     // mrlList = AppDictList.searchItems('mrl') ?? [];
@@ -473,8 +485,12 @@ class RecipeCreateController extends GetxController {
       cslList = modelList.where((element) => element.category == 1).toList();
       nlslList = modelList.where((element) => element.category == 2 && element.type == 2).toList();
       dbslList = modelList.where((element) => element.category == 2 && element.type == 3).toList();
-      tjjListTotal = modelList.where((element) => element.category == 2 && (element.type == 4 || element.type == 6)).toList();
-      yhlListTotal = modelList.where((element) => element.category == 2 && element.type == 5).toList();
+      tjjListTotal =
+          modelList
+              .where((element) => element.category == 2 && (element.type == 4 || element.type == 6))
+              .toList();
+      yhlListTotal =
+          modelList.where((element) => element.category == 2 && element.type == 5).toList();
 
       if (cslList.isNotEmpty) {
         cslNameList.addAll(cslList.map((item) => item.name).toList());
@@ -590,6 +606,11 @@ class RecipeCreateController extends GetxController {
         return;
     }
 
+    if (livestockHandController.text.isEmpty) {
+      Toast.show('请输入牛只存栏');
+      return;
+    }
+
     // 饲料判空
     if (cslSelectedObjList.isEmpty) {
       Toast.show('请选择粗饲料');
@@ -601,14 +622,20 @@ class RecipeCreateController extends GetxController {
 
       //接口参数
       Map<String, dynamic> mapParam = {
+        'cowCount': livestockHandController.text,
         "individualCate": 0, // Hardcode:0
         "individualType": gtlxValue.value, // 配方目标
         "weightType": getWeightType(), // 个体重量
-        "dailyGainWeight": gtlxValue.value == 1
-            ? double.parse(rzzListHB[rzzSelIndex]['value'])
-            : (gtlxValue.value == 4 ? double.parse(rzzListYF[rzzSelIndex]['value']) : 0), // 每日增加重量
-        "gestationMonths": gtlxValue.value == 2 ? int.parse(rsyfList[rsyfSelIndex]['value']) : 0, // 妊娠月份
-        "calvingMonths": gtlxValue.value == 3 ? int.parse(mryfList[mryfSelIndex]['value']) : 0, // 泌乳月份
+        "dailyGainWeight":
+            gtlxValue.value == 1
+                ? double.parse(rzzListHB[rzzSelIndex]['value'])
+                : (gtlxValue.value == 4
+                    ? double.parse(rzzListYF[rzzSelIndex]['value'])
+                    : 0), // 每日增加重量
+        "gestationMonths":
+            gtlxValue.value == 2 ? int.parse(rsyfList[rsyfSelIndex]['value']) : 0, // 妊娠月份
+        "calvingMonths":
+            gtlxValue.value == 3 ? int.parse(mryfList[mryfSelIndex]['value']) : 0, // 泌乳月份
         // "milkProduction": gtlxValue.value == 3
         //     ? double.parse(mrlList[mrlSelIndex]['value'])
         //     : 0, // 泌乳量
@@ -620,15 +647,23 @@ class RecipeCreateController extends GetxController {
         "energyFeed": nlslSelectedObjList.isNotEmpty ? nlslSelectedObjList : [], // 能量饲料
         "proteinFeed": dbslSelectedObjList.isNotEmpty ? dbslSelectedObjList : [], // 蛋白饲料
         "additives": tjjSelectedObjList.isNotEmpty ? tjjSelectedObjList : [], // 添加剂
-        "premix": yhlSelIndex != -1
-            ? [
-                {"id": yhlList[yhlSelIndex].id, "variable": yhlList[yhlSelIndex].category, "correlation": 0, "referenceValues": 0}
-              ]
-            : [] // 预混料
+        "premix":
+            yhlSelIndex != -1
+                ? [
+                  {
+                    "id": yhlList[yhlSelIndex].id,
+                    "variable": yhlList[yhlSelIndex].category,
+                    "correlation": 0,
+                    "referenceValues": 0,
+                  },
+                ]
+                : [], // 预混料
       };
       // print('配方参数:$mapParam');
       var response = await httpsClient.post("/api/formula/fabricated", data: mapParam);
+      debugPrint('配方参数:${response.toString()}');
       FormulaModel formulaModel = FormulaModel.fromJson(response);
+      formulaModel.cowCount = int.parse(livestockHandController.text);
       Toast.dismiss();
       Toast.success(msg: '配方生成成功');
       if (ObjectUtil.isNotEmpty(formulaModel)) {

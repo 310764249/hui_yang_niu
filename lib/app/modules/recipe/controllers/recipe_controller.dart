@@ -76,7 +76,7 @@ class RecipeController extends GetxController {
       //接口参数
       Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
       var response = await httpsClient.get("/api/formula", queryParameters: para);
-
+      // debugPrint('searchFormula: $response');
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
       List mapList = model.list;

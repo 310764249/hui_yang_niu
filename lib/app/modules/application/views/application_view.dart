@@ -3,6 +3,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/event_list/controllers/event_list_controller.dart';
 
+import '../../../../route_utils/business_logger.dart';
 import '../../../models/cattle_list_argu.dart';
 import '../../../models/common_data.dart';
 import '../../../routes/app_pages.dart';
@@ -342,13 +343,15 @@ class ApplicationView extends GetView<ApplicationController> {
   // 事件列表item
   Widget _managementItem(CommonData data) {
     return Bounceable(
-      onTap: () {
+      onTap: () async {
         print("--> ${data.name.replaceAll("\n", "")}  data：${data.id}");
         // Get.snackbar("提示", "--> ${data.name.replaceAll("\n", "")}",
         //     snackPosition: SnackPosition.BOTTOM);
         switch (data.name) {
           case '引种':
-            Get.toNamed(
+            String tag = '基础管理/引种事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/restock',
@@ -359,9 +362,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '选种':
-            Get.toNamed(
+            String tag = '基础管理/选种事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/selstock',
@@ -372,9 +378,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '调拨':
-            Get.toNamed(
+            String tag = '基础管理/调拨事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Allot',
@@ -385,9 +394,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '转群':
-            Get.toNamed(
+            String tag = '基础管理/转群事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/TurnGroup',
@@ -398,9 +410,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '淘汰':
-            Get.toNamed(
+            String tag = '基础管理/淘汰事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/WeedOut',
@@ -411,9 +426,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '死亡':
-            Get.toNamed(
+            String tag = '基础管理/死亡事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Death',
@@ -424,11 +442,14 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '销售':
             if (data.id == 2) {
               //效益评估出栏
-              Get.toNamed(
+              String tag = '收支管理/销售事件';
+              BusinessLogger.instance.logEnter(tag);
+              await Get.toNamed(
                 Routes.EVENT_LIST,
                 arguments: EventsArgument(
                   '/api/sales',
@@ -437,11 +458,14 @@ class ApplicationView extends GetView<ApplicationController> {
                   detailRouterStr: Routes.SALES_ASSESS_DETAIL,
                 ),
               );
+              BusinessLogger.instance.logExit(tag);
             }
             break;
           case '出栏':
             //生产管理的出栏
-            Get.toNamed(
+            String tag = '生产管理/出栏事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Market',
@@ -452,9 +476,11 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
-
+            BusinessLogger.instance.logExit(tag);
           case '盘点':
-            Get.toNamed(
+            String tag = '基础管理/盘点事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/CowCheck',
@@ -465,9 +491,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '饲喂':
-            Get.toNamed(
+            String tag = '基础管理/饲喂事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Feed',
@@ -478,9 +507,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '采精':
-            Get.toNamed(
+            String tag = '繁殖管理/采精事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Semen',
@@ -491,9 +523,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '发情':
-            Get.toNamed(
+            String tag = '繁殖管理/发情事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Rut',
@@ -504,9 +539,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '禁配':
-            Get.toNamed(
+            String tag = '繁殖管理/禁配事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Ban',
@@ -517,9 +555,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '解禁':
-            Get.toNamed(
+            String tag = '繁殖管理/解禁事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Pick',
@@ -530,9 +571,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '配种':
-            Get.toNamed(
+            String tag = '繁殖管理/配种事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Mating',
@@ -543,9 +587,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '孕检':
-            Get.toNamed(
+            String tag = '繁殖管理/孕检事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Pregcy',
@@ -556,9 +603,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '产犊':
-            Get.toNamed(
+            String tag = '繁殖管理/产犊事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/calv',
@@ -569,9 +619,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '断奶':
-            Get.toNamed(
+            String tag = '繁殖管理/断奶事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Wean',
@@ -582,9 +635,12 @@ class ApplicationView extends GetView<ApplicationController> {
             )?.then((value) {
               controller.requestBasicStatistics();
             });
+            BusinessLogger.instance.logExit(tag);
             break;
           case '防疫':
-            Get.toNamed(
+            String tag = '健康管理/防疫事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Antidemic',
@@ -593,9 +649,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.PREVENTION_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '诊疗':
-            Get.toNamed(
+            String tag = '健康管理/诊疗事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/Treatment',
@@ -604,9 +663,13 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.TREATMENT_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
+
             break;
           case '保健':
-            Get.toNamed(
+            String tag = '健康管理/保健事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/HealthCare',
@@ -615,10 +678,13 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.HEALTH_CARE_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           //育种管理
           case '后裔登记':
-            Get.toNamed(
+            String tag = '育种管理/后裔登记事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/progeny',
@@ -627,9 +693,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.DESCENDANTS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '选育测定':
-            Get.toNamed(
+            String tag = '育种管理/选育测定事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/breedmeasure',
@@ -638,9 +707,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.ASSAY_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '近交测定':
-            Get.toNamed(
+            String tag = '育种管理/近交测定事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/inbreedmeasure',
@@ -649,9 +721,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.INBREEDING_DETAILS,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '体尺测定':
-            Get.toNamed(
+            String tag = '育种管理/体尺测定事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/bodymeasure',
@@ -660,9 +735,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.MEASUREMENT_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '品相评估':
-            Get.toNamed(
+            String tag = '育种管理/品相评估事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/surfacemeasure',
@@ -671,9 +749,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.ASSESSMENT_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '性状统计':
-            Get.toNamed(
+            String tag = '育种管理/性状统计事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/characterstats',
@@ -682,9 +763,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.CHARACTERS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '育种值统计':
-            Get.toNamed(
+            String tag = '育种管理/育种值统计事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/breedvaluestats',
@@ -693,10 +777,13 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.BREED_VALUE_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
 
           case '体况评估':
-            Get.toNamed(
+            String tag = '养殖管理/体况评估';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/bodyAssess',
@@ -705,9 +792,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.BODY_ASSESS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '健康评估':
-            Get.toNamed(
+            String tag = '养殖管理/健康评估';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/healthAssess',
@@ -716,9 +806,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.HEALTH_ASSESS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '环境评估':
-            Get.toNamed(
+            String tag = '养殖管理/环境评估';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/environmentAssess',
@@ -727,9 +820,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.ENVIRONMENT_ASSESS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '繁殖效率评估':
-            Get.toNamed(
+            String tag = '养殖管理/繁殖效率评估';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/breedAssess',
@@ -738,9 +834,12 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.BREED_ASSESS_DETAIL,
               ),
             );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '采购':
-            Get.toNamed(
+            String tag = '收支管理/采购';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/purchase',
@@ -749,9 +848,13 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.PURCHASE_ASSESS_DETAIL,
               ),
             );
+
+            BusinessLogger.instance.logExit(tag);
             break;
           case '人工':
-            Get.toNamed(
+            String tag = '收支管理/人工';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
               Routes.EVENT_LIST,
               arguments: EventsArgument(
                 '/api/manualWork',
@@ -760,18 +863,36 @@ class ApplicationView extends GetView<ApplicationController> {
                 detailRouterStr: Routes.MANUAL_ASSESS_DETAIL,
               ),
             );
+
+            BusinessLogger.instance.logExit(tag);
             break;
           case '入库':
-            Get.toNamed(Routes.Warehouse_Entry);
+            String tag = '物资管理/入库';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.Warehouse_Entry);
+
+            BusinessLogger.instance.logExit(tag);
             break;
           case '领用':
-            Get.toNamed(Routes.Collect);
+            String tag = '物资管理/领用';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.Collect);
+
+            BusinessLogger.instance.logExit(tag);
             break;
           case '报废':
-            Get.toNamed(Routes.MaterialScrap);
+            String tag = '物资管理/报废';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.MaterialScrap);
+
+            BusinessLogger.instance.logExit(tag);
             break;
           case '盘存':
-            Get.toNamed(Routes.TakeInventory);
+            String tag = '物资管理/盘存';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.TakeInventory);
+
+            BusinessLogger.instance.logExit(tag);
             break;
           default:
         }

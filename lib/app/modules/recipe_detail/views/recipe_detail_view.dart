@@ -655,7 +655,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
               height: ScreenAdapter.height(40),
               alignment: Alignment.center,
               child: Text(
-                model.weight.toString(),
+                ((model.weight??0)*(controller.isFromCreate?(controller.argument?.cowCount??1):1)).toString(),
                 maxLines: 3,
                 textAlign: TextAlign.center,
                 style: TextStyle(

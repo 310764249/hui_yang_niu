@@ -56,6 +56,8 @@ class RecipeDetailController extends GetxController {
   //原料分类
   List ylflList = [];
 
+  bool get isFromCreate => argument?.id == null;
+
   @override
   void onInit() {
     super.onInit();
@@ -403,6 +405,7 @@ class RecipeDetailController extends GetxController {
   }
 
   ValueNotifier<bool> compareExpanded = ValueNotifier(false);
+
   void onTapCompare() {
     compareExpanded.value = !compareExpanded.value;
   }

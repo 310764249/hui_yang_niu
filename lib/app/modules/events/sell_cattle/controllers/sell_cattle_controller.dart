@@ -285,6 +285,7 @@ class SellCattleController extends GetxController {
         return;
       }
     }
+/*
 
     String price = priceController.text.trim();
     if (ObjectUtil.isEmpty(price)) {
@@ -302,6 +303,7 @@ class SellCattleController extends GetxController {
       Toast.show('请输入折损');
       return;
     }
+*/
 
     //判断提交类型
     if (ObjectUtil.isEmpty(event)) {

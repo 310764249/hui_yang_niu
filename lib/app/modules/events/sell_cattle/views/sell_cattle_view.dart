@@ -133,7 +133,7 @@ class SellCattleView extends GetView<SellCattleController> {
             }),
         // 类型
         controller.chooseTypeIndex.value == 0 ? _oldCowLayout(context) : _youngCowLayout(context),
-        CellTextField(
+    /*    CellTextField(
           isRequired: true,
           title: '单价（元）',
           hint: '请输入',
@@ -166,7 +166,7 @@ class SellCattleView extends GetView<SellCattleController> {
             controller.cost = value;
           },
         ),
-        CellButton(isRequired: true, title: '小计（元）', content: controller.totalStr.value, showArrow: false),
+        CellButton(isRequired: true, title: '小计（元）', content: controller.totalStr.value, showArrow: false),*/
         CellButton(
           isRequired: true,
           title: "出栏时间",

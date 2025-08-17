@@ -6,6 +6,7 @@ import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/chat_room/custom_message/chat_video_message.dart';
 
 import '../../../generated/assets.dart';
+import '../../../route_utils/business_logger.dart';
 import '../../models/user_resource.dart';
 import '../../services/constant.dart';
 import '../../services/storage.dart';
@@ -25,6 +26,7 @@ class ChatRoomContainPage extends StatefulWidget {
 
 class _ChatRoomContainPageState extends State<ChatRoomContainPage>
     with RoomObserver, ChatUIKitThemeMixin {
+  String tag = '智能问答';
   RoomInputBarController inputBarController = RoomInputBarController();
   late AppLifecycleObserver _lifecycleObserver;
 
@@ -41,6 +43,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
   @override
   void initState() {
     super.initState();
+    BusinessLogger.instance.logEnter(tag);
     ChatUIKit.instance.addObserver(this);
     theme.setColor(ChatUIKitColor.light());
     setup();
@@ -112,7 +115,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
   //获取历史消息
   void getHistoryMessage() async {
     FetchMessageOptions options = const FetchMessageOptions(
-      msgTypes: [MessageType.TXT, MessageType.IMAGE, MessageType.VIDEO],
+      msgTypes: [MessageType.TXT, MessageType.IMAGE, MessageType.VIDEO, MessageType.VOICE],
       needSave: false,
     );
     EMCursorResult<EMMessage> result = await EMClient.getInstance.chatManager
@@ -127,6 +130,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
 
   @override
   void dispose() {
+    BusinessLogger.instance.logExit(tag);
     _lifecycleObserver.stop();
     ChatUIKit.instance.removeObserver(this);
 

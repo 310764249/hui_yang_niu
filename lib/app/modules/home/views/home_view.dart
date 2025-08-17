@@ -10,6 +10,7 @@ import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/widgets/information_item.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/generated/assets.dart';
+import 'package:intellectual_breed/route_utils/business_logger.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../../services/AssetsImages.dart';
@@ -495,8 +496,7 @@ class HomeView extends GetView<HomeController> {
                   userName: model.publisher ?? '',
                   isVideo: true,
                   onPressed: () {
-                    String openURL =
-                        Constant.getCMS(model.type, model.id);
+                    String openURL = Constant.getCMS(model.type, model.id);
                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                   },
                 );
@@ -573,8 +573,7 @@ class HomeView extends GetView<HomeController> {
                   userIcon: AssetsImages.avatar,
                   userName: model.publisher ?? '',
                   onPressed: () {
-                    String openURL =
-                    Constant.getCMS(model.type, model.id);
+                    String openURL = Constant.getCMS(model.type, model.id);
                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                   },
                 );
@@ -632,7 +631,6 @@ class HomeView extends GetView<HomeController> {
               _videoType(),
               //文章类目
               _articleType(),
-
             ],
           ),
         ),
@@ -687,11 +685,14 @@ class HomeView extends GetView<HomeController> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(
+                onTap: () async {
+                  String tag = '行业资讯/活牛价格';
+                  BusinessLogger.instance.logEnter(tag);
+                  await Get.toNamed(
                     Routes.INFORMATION_DETAIL,
                     arguments: 'https://www.feedtrade.com.cn/livestock/niujiage/index.html',
                   );
+                  BusinessLogger.instance.logExit(tag);
                 },
                 child: Image.asset(Assets.imagesIcPriceLiveCattle, fit: BoxFit.fill),
               ),
@@ -699,11 +700,14 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(
+                onTap: () async {
+                  String tag = '行业资讯/饲料原料';
+                  BusinessLogger.instance.logEnter(tag);
+                  await Get.toNamed(
                     Routes.INFORMATION_DETAIL,
                     arguments: 'https://www.feedtrade.com.cn/index/index',
                   );
+                  BusinessLogger.instance.logExit(tag);
                 },
                 child: Image.asset(Assets.imagesIcFeedIngredient, fit: BoxFit.fill),
               ),
@@ -711,11 +715,14 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
-                onTap: () {
+                onTap: () async{
+                  String tag = '行业资讯/农业新闻';
+                  BusinessLogger.instance.logEnter(tag);
                   Get.toNamed(
                     Routes.INFORMATION_DETAIL,
                     arguments: 'https://news.ymt.com/arg_news',
                   );
+                  BusinessLogger.instance.logExit(tag);
                 },
                 child: Image.asset(Assets.imagesIcAgriculturalNews, fit: BoxFit.fill),
               ),

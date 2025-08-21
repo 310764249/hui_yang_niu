@@ -90,6 +90,7 @@ class ApplicationController extends GetxController {
 
   /// 育种管理 - 角色区分 TODO暂时不要育种管理
   final List<CommonData> breedingManagementListFarmerType1 = [];
+
   // final List<CommonData> breedingManagementListFarmerType3 = [
   //   CommonData(id: 0, name: "后裔登记", image: AssetsImages.icon18),
   //   CommonData(id: 1, name: "性状统计", image: AssetsImages.icon22),
@@ -156,6 +157,8 @@ class ApplicationController extends GetxController {
 
       // 是否散户
       bool isRetailer = resourceModel.farmerType == 3;
+      //是否家庭农场
+      bool isHomeFarm = resourceModel.farmerType == 2;
 
       // 生产管理
       productionManagementList.value =
@@ -168,8 +171,8 @@ class ApplicationController extends GetxController {
               : [
                 CommonData(id: 0, name: "引种", image: AssetsImages.icon1),
                 CommonData(id: 1, name: "选种", image: AssetsImages.icon2),
-          /*      CommonData(id: 2, name: "调拨", image: AssetsImages.icon3),
-                CommonData(id: 3, name: "转群", image: AssetsImages.icon4),*/
+                if (!isHomeFarm) CommonData(id: 2, name: "调拨", image: AssetsImages.icon3),
+                if (!isHomeFarm) CommonData(id: 3, name: "转群", image: AssetsImages.icon4),
                 CommonData(id: 4, name: "淘汰", image: AssetsImages.icon5),
                 CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
                 CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
@@ -197,7 +200,7 @@ class ApplicationController extends GetxController {
                 CommonData(id: 7, name: "断奶", image: AssetsImages.icon17),
               ];
       // 育种管理 【家庭农场】去掉大功能育种管理，其他不变
-      bool isHomeFarm = resourceModel.farmerType == 2;
+
       breedingManagementList.value =
           isHomeFarm || isRetailer
               ? []

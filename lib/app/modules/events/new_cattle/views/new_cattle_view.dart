@@ -154,7 +154,7 @@ class NewCattleView extends GetView<NewCattleController> {
   // 底部公共布局: 操作时间 & 备注
   Widget _commonBottomLayout(BuildContext context) {
     // 操作时间自动生成
-    controller.cattleInfo.operationDate?.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    // controller.cattleInfo.operationDate?.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     return Column(
       children: [
         // 操作时间
@@ -353,6 +353,7 @@ class NewCattleView extends GetView<NewCattleController> {
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 妊娠母牛 - 将[孕检时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 5) {
+                  debugPrint('===============${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ');
                   controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
               });

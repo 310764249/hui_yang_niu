@@ -260,6 +260,7 @@ class CattleDetailController extends GetxController {
       };
       var response =
           await httpsClient.get("/api/cowhistory", queryParameters: para);
+      debugPrint('-----> ${response.toString()}');
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);

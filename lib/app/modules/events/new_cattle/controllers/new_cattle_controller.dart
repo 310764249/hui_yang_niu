@@ -352,7 +352,7 @@ class NewCattleController extends GetxController {
 
   /// 提交表单数据
   Future<void> commitNewCattleData() async {
-    debugPrint('提交参数: ${cattleInfo.toString()}');
+    debugPrint('提交参数💰: ${cattleInfo.toString()}');
 
     // 判断是否登录拿到缓存数据
     var res = await Storage.getData(Constant.selectFarmData);

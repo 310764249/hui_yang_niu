@@ -165,7 +165,7 @@ class CattleInfo {
 
   @override
   String toString() {
-    return 'CattleInfo(currentStage: $currentStage, earNum: $earNum, batchNum: $batchNum, sourceFarm: $sourceFarm, inDate: $inDate, gender: $gender, cattleNumOfBatch: $cattleNumOfBatch, birthDate: $birthDate, breed: $breed, pregnancyNum: $pregnancyNum, shedId: $shedId, shed: $shed, field: $field, matingTime: $matingTime, pregnancyCheckTime: $pregnancyCheckTime, calvingTime: $calvingTime, calvingNum: $calvingNum, calfBatch: $calfBatch, weaningTime: $weaningTime, emptyDate: $emptyDate, breedingCowEstrusTime: $breedingCowEstrusTime, remark: $remark)';
+    return 'CattleInfo(currentStage: $currentStage, earNum: $earNum, batchNum: $batchNum, sourceFarm: $sourceFarm, inDate: $inDate, gender: $gender, cattleNumOfBatch: $cattleNumOfBatch, birthDate: $birthDate, breed: $breed, pregnancyNum: $pregnancyNum, shedId: $shedId, shed: $shed, field: $field, matingTime: $matingTime, pregnancyCheckTime: $pregnancyCheckTime, calvingTime: $calvingTime, calvingNum: $calvingNum, calfBatch: $calfBatch, weaningTime: $weaningTime, emptyDate: $emptyDate, breedingCowEstrusTime: $breedingCowEstrusTime, remark: $remark operationDate $operationDate)';
   }
 
   // 必填项校验
@@ -194,7 +194,8 @@ class CattleInfo {
         bool b7 = false;
         // 日期顺序判断
         if (info.currentStage == 1) {
-          if ((info.birthDate?.value.isNotEmpty ?? false) && (info.operationDate?.value.isNotEmpty ?? false)) {
+          if ((info.birthDate?.value.isNotEmpty ?? false) &&
+              (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于犊牛的日期判断
             b7 = info.birthDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false;
           }
@@ -203,7 +204,8 @@ class CattleInfo {
               (info.inDate?.value.isNotEmpty ?? false) &&
               (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于育肥牛的日期判断, 有输入[入场时间]
-            b7 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+            b7 =
+                (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
                 ((info.inDate?.value.isNotEmpty ?? false) &&
                     (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
           } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
@@ -256,7 +258,8 @@ class CattleInfo {
               (info.inDate?.value.isNotEmpty ?? false) &&
               (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于育肥牛的日期判断, 有输入[入场时间]
-            b7 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+            b7 =
+                (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
                 ((info.inDate?.value.isNotEmpty ?? false) &&
                     (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
           } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
@@ -309,7 +312,8 @@ class CattleInfo {
               (info.inDate?.value.isNotEmpty ?? false) &&
               (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于育肥牛的日期判断, 有输入[入场时间]
-            b8 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+            b8 =
+                (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
                 ((info.inDate?.value.isNotEmpty ?? false) &&
                     (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
           } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
@@ -351,7 +355,9 @@ class CattleInfo {
           debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
           debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
           debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
-          debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+          debugPrint(
+            '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+          ); // 操作日期
           // 公牛
           bool b1 = info.gender?.value == 1;
           bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -364,7 +370,8 @@ class CattleInfo {
               (info.inDate?.value.isNotEmpty ?? false) &&
               (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于育肥牛的日期判断, 有输入[入场时间]
-            b7 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+            b7 =
+                (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
                 ((info.inDate?.value.isNotEmpty ?? false) &&
                     (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
           } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
@@ -401,9 +408,13 @@ class CattleInfo {
           debugPrint('${info.earNum.isNotBlank().orFalse()} - earNum - '); // 耳号
           debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
           debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
-          debugPrint('${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - '); // 胎次, 种牛的公牛没有胎次
+          debugPrint(
+            '${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - ',
+          ); // 胎次, 种牛的公牛没有胎次
           debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
-          debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+          debugPrint(
+            '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+          ); // 操作日期
           // 母牛
           bool b1 = info.gender?.value == 2;
           bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -417,7 +428,8 @@ class CattleInfo {
               (info.inDate?.value.isNotEmpty ?? false) &&
               (info.operationDate?.value.isNotEmpty ?? false)) {
             // 用于育肥牛的日期判断, 有输入[入场时间]
-            b8 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+            b8 =
+                (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
                 ((info.inDate?.value.isNotEmpty ?? false) &&
                     (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
           } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
@@ -456,9 +468,13 @@ class CattleInfo {
         debugPrint('${info.earNum.isNotBlank().orFalse()} - earNum - '); // 耳号
         debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
         debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
-        debugPrint('${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - '); // 胎次, 种牛的公牛没有胎次
+        debugPrint(
+          '${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - ',
+        ); // 胎次, 种牛的公牛没有胎次
         debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
-        debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+        debugPrint(
+          '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+        ); // 操作日期
         // 妊娠母牛
         bool b1 = info.gender?.value == 2;
         bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -472,8 +488,10 @@ class CattleInfo {
             (info.inDate?.value.isNotEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
           // 用于育肥牛的日期判断, 有输入[入场时间]
-          b8 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
-              ((info.inDate?.value.isNotEmpty ?? false) && (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
+          b8 =
+              (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+              ((info.inDate?.value.isNotEmpty ?? false) &&
+                  (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
         } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
             (info.inDate?.value.isEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
@@ -509,10 +527,14 @@ class CattleInfo {
         debugPrint('${info.earNum.isNotBlank().orFalse()} - earNum - '); // 耳号
         debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
         debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
-        debugPrint('${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - '); // 胎次, 种牛的公牛没有胎次
+        debugPrint(
+          '${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - ',
+        ); // 胎次, 种牛的公牛没有胎次
         debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
         debugPrint('${info.calvingNum.isNotBlank().orFalse()} - calvingNum - '); // 上一次产犊数量
-        debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+        debugPrint(
+          '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+        ); // 操作日期
         // 哺乳母牛
         bool b1 = info.gender?.value == 2;
         bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -527,8 +549,10 @@ class CattleInfo {
             (info.inDate?.value.isNotEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
           // 用于育肥牛的日期判断, 有输入[入场时间]
-          b9 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
-              ((info.inDate?.value.isNotEmpty ?? false) && (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
+          b9 =
+              (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+              ((info.inDate?.value.isNotEmpty ?? false) &&
+                  (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
         } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
             (info.inDate?.value.isEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
@@ -566,9 +590,13 @@ class CattleInfo {
         debugPrint('${info.earNum.isNotBlank().orFalse()} - earNum - '); // 耳号
         debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
         debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
-        debugPrint('${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - '); // 胎次, 种牛的公牛没有胎次
+        debugPrint(
+          '${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - ',
+        ); // 胎次, 种牛的公牛没有胎次
         debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
-        debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+        debugPrint(
+          '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+        ); // 操作日期
         // 空怀母牛
         bool b1 = info.gender?.value == 2;
         bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -582,8 +610,10 @@ class CattleInfo {
             (info.inDate?.value.isNotEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
           // 用于育肥牛的日期判断, 有输入[入场时间]
-          b8 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
-              ((info.inDate?.value.isNotEmpty ?? false) && (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
+          b8 =
+              (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+              ((info.inDate?.value.isNotEmpty ?? false) &&
+                  (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
         } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
             (info.inDate?.value.isEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
@@ -622,9 +652,13 @@ class CattleInfo {
         debugPrint('${info.earNum.isNotBlank().orFalse()} - earNum - '); // 耳号
         debugPrint('${info.birthDate.isRxStringNotBlank().orFalse()} - birthDate - '); // 出生日期
         debugPrint('${info.breed.isRxStringNotBlank().orFalse()} - breed - '); // 品种
-        debugPrint('${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - '); // 胎次, 种牛的公牛没有胎次
+        debugPrint(
+          '${info.pregnancyNum.isRxStringNotBlank().orFalse()} - pregnancyNum - ',
+        ); // 胎次, 种牛的公牛没有胎次
         debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - '); // 栋舍
-        debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - '); // 操作日期
+        debugPrint(
+          '${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate - ',
+        ); // 操作日期
 
         // 空怀母牛
         bool b2 = info.earNum.isNotBlank().orFalse(); // 耳号
@@ -638,8 +672,10 @@ class CattleInfo {
             (info.inDate?.value.isNotEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {
           // 用于育肥牛的日期判断, 有输入[入场时间]
-          b8 = (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
-              ((info.inDate?.value.isNotEmpty ?? false) && (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
+          b8 =
+              (info.inDate?.value.isBeforeOrAtSame(info.operationDate?.value) ?? false) &&
+              ((info.inDate?.value.isNotEmpty ?? false) &&
+                  (info.birthDate?.value.isBeforeOrAtSame(info.inDate?.value) ?? false));
         } else if ((info.birthDate?.value.isNotEmpty ?? false) &&
             (info.inDate?.value.isEmpty ?? false) &&
             (info.operationDate?.value.isNotEmpty ?? false)) {

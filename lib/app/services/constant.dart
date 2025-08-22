@@ -39,7 +39,7 @@ class Constant {
   // API：5657
   // CMS：1237
   // Web：1234
-  static const bool isDebug = false;
+  static const bool isDebug = true;
   static const String baseHost = 'http://154.8.193.14';
 
   static String get getAPI => isDebug ? '$baseHost:5658' : '$baseHost:5657';

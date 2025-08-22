@@ -58,7 +58,8 @@ class ProductionGuideView extends GetView<ProductionGuideController> {
                   final item = controller.articleGuideList[index];
                   return TextButton(
                     onPressed: () {
-                      String openURL = "${Constant.articleHost}/${item.type}/${item.id}";
+                      // String openURL = "${Constant.articleHost}/${item.type}/${item.id}";
+                      String openURL = Constant.getCMS(item.type,item.id);
                       Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                     },
                     style: TextButton.styleFrom(

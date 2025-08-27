@@ -1,9 +1,11 @@
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:em_chat_uikit/chat_uikit/src/chat_uikit_service/chat_uikit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
+import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/tabs/controllers/tabs_controller.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
@@ -240,8 +242,20 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      Get.toNamed(Routes.CHATROOM);
+                    onTap: () async {
+                      Toast.showLoading();
+                      if (await ChatUIKit.instance.isLoginBefore()) {
+                        Toast.dismiss();
+                        Get.toNamed(Routes.CHATROOM);
+                      } else {
+                        await ChatRoomUtils.login();
+                        if (!await ChatUIKit.instance.isLoginBefore()) {
+                          Toast.dismiss();
+                          return;
+                        }
+                        Toast.dismiss();
+                        Get.toNamed(Routes.CHATROOM);
+                      }
                     },
                     child: Image.asset(Assets.imagesIcQuestionAnswer, fit: BoxFit.fill),
                   ),
@@ -715,7 +729,7 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
-                onTap: () async{
+                onTap: () async {
                   String tag = '行业资讯/农业新闻';
                   BusinessLogger.instance.logEnter(tag);
                   Get.toNamed(

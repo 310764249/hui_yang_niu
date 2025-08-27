@@ -32,82 +32,96 @@ class MessageView extends GetView<MessageController> {
       mainAxisSize: MainAxisSize.max,
       children: [
         // 按钮图片
-        Row(children: [
-          // 生产任务
-          Expanded(
+        Row(
+          children: [
+            // 生产任务
+            Expanded(
               child: InkWell(
-            onTap: () {
-              Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: 400);
-            },
-            child: const LoadAssetImage(
-              AssetsImages.productionTask,
-              fit: BoxFit.fitWidth,
+                onTap: () {
+                  Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: 400);
+                },
+                child: const LoadAssetImage(AssetsImages.productionTask, fit: BoxFit.fitWidth),
+              ),
             ),
-          )),
-          SizedBox(width: ScreenAdapter.width(6)),
-          // 预警提醒
-          Expanded(
+            SizedBox(width: ScreenAdapter.width(6)),
+            // 预警提醒
+            Expanded(
               child: InkWell(
-            onTap: () {
-              // Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: 200);
-              Get.toNamed(Routes.Production_Guide, arguments: 200);
-            },
-            child: const LoadAssetImage(
-              AssetsImages.alertTask,
-              fit: BoxFit.fitWidth,
+                onTap: () {
+                  // Get.toNamed(Routes.ACTION_MESSAGE_LIST, arguments: 200);
+                  Get.toNamed(Routes.Production_Guide, arguments: 200);
+                },
+                child: const LoadAssetImage(AssetsImages.alertTask, fit: BoxFit.fitWidth),
+              ),
             ),
-          )),
-        ])
+          ],
+        ),
       ],
     );
   }
 
   // 消息展示的item
-  Widget _messageItem(dynamic iconUrl, String title, String content, String time, Function() onTapEvent) {
+  Widget _messageItem(
+    dynamic iconUrl,
+    String title,
+    String content,
+    String time,
+    Function() onTapEvent,
+  ) {
     return InkWell(
       onTap: onTapEvent,
       child: Column(
         children: [
           SizedBox(
             height: ScreenAdapter.height(76),
-            child: Row(children: [
-              SizedBox(width: ScreenAdapter.width(12)),
-              LoadAssetImage(
-                iconUrl,
-                fit: BoxFit.cover,
-              ),
-              SizedBox(width: ScreenAdapter.width(12)),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                            color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(16), fontWeight: FontWeight.w700),
+            child: Row(
+              children: [
+                SizedBox(width: ScreenAdapter.width(12)),
+                LoadAssetImage(iconUrl, fit: BoxFit.cover),
+                SizedBox(width: ScreenAdapter.width(12)),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              color: SaienteColors.blackE5,
+                              fontSize: ScreenAdapter.fontSize(16),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            time.replaceFirst('T', ' '),
+                            style: TextStyle(
+                              color: SaienteColors.black80,
+                              fontSize: ScreenAdapter.fontSize(13),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(width: ScreenAdapter.width(10)),
+                        ],
                       ),
-                      const Spacer(),
+                      SizedBox(height: ScreenAdapter.height(4)),
                       Text(
-                        time.replaceFirst('T', ' '),
+                        content,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400),
+                          color: SaienteColors.black80,
+                          fontSize: ScreenAdapter.fontSize(13),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                      SizedBox(width: ScreenAdapter.width(10)),
-                    ]),
-                    SizedBox(height: ScreenAdapter.height(4)),
-                    Text(
-                      content,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ]),
+              ],
+            ),
           ),
           const DividerLine(),
         ],
@@ -126,14 +140,18 @@ class MessageView extends GetView<MessageController> {
         if (notice.type == 210) {
           // Log.d(notice.toJson().toString());
           return _messageItem(
-              AssetsImages.alert, Notice.getEventNameByCode(notice.type ?? -1), notice.content ?? '', notice.created.orEmpty(),
-              () {
-            //查看指南
-            Log.d(notice.toJson().toString());
-            String openURL = "${Constant.articleHost}/${notice.articleType}/${notice.articleId ?? ''}";
-            Log.d(openURL);
-            Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-          });
+            AssetsImages.alert,
+            Notice.getEventNameByCode(notice.type ?? -1),
+            notice.content ?? '',
+            notice.created.orEmpty(),
+            () {
+              //查看指南
+              Log.d(notice.toJson().toString());
+              String openURL = Constant.getCMS(notice.articleType ?? 0, notice.articleId ?? '');
+              Log.d(openURL);
+              Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+            },
+          );
         }
         return _messageItem(
           AssetsImages.task,
@@ -156,18 +174,33 @@ class MessageView extends GetView<MessageController> {
           notice.content ?? Constant.placeholder,
           notice.created.orEmpty(),
           () {
-            Get.toNamed(Routes.MESSAGE_DETAIL, arguments: {
-              'title': '提醒消息',
-              'content': notice.content ?? Constant.placeholder,
-              'time': notice.created.orEmpty()
-            });
+            Get.toNamed(
+              Routes.MESSAGE_DETAIL,
+              arguments: {
+                'title': '提醒消息',
+                'content': notice.content ?? Constant.placeholder,
+                'time': notice.created.orEmpty(),
+              },
+            );
           },
         );
       default:
-        return _messageItem(AssetsImages.notify, '系统通知', notice.content ?? Constant.placeholder, notice.created.orEmpty(), () {
-          Get.toNamed(Routes.MESSAGE_DETAIL,
-              arguments: {'title': '业务通知', 'content': notice.content ?? Constant.placeholder, 'time': notice.created.orEmpty()});
-        });
+        return _messageItem(
+          AssetsImages.notify,
+          '系统通知',
+          notice.content ?? Constant.placeholder,
+          notice.created.orEmpty(),
+          () {
+            Get.toNamed(
+              Routes.MESSAGE_DETAIL,
+              arguments: {
+                'title': '业务通知',
+                'content': notice.content ?? Constant.placeholder,
+                'time': notice.created.orEmpty(),
+              },
+            );
+          },
+        );
     }
   }
 
@@ -197,17 +230,20 @@ class MessageView extends GetView<MessageController> {
             // 上拉加载更多数据请求
             await controller.getMessageList(isRefresh: false);
             // 设置状态
-            controller.refreshController.finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
+            controller.refreshController.finishLoad(
+              controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
+            );
           },
-          child: controller.items.isEmpty
-              ? const EmptyView()
-              : ListView.builder(
-                  itemCount: controller.items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // 更加不同的分类显示不同的item样式
-                    return displayNoticeItemsByCategory(controller.items[index]);
-                  },
-                ),
+          child:
+              controller.items.isEmpty
+                  ? const EmptyView()
+                  : ListView.builder(
+                    itemCount: controller.items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      // 更加不同的分类显示不同的item样式
+                      return displayNoticeItemsByCategory(controller.items[index]);
+                    },
+                  ),
         ),
       ),
     );
@@ -226,30 +262,36 @@ class MessageView extends GetView<MessageController> {
         elevation: 0,
       ),
       body: GetBuilder<MessageController>(
-          //obx的第三种写法,为了initState方法
-          init: controller,
-          initState: (state) {
-            debugPrint("initState 每次进入页面时触发");
-            controller.initCacheList();
-            //实时获取数据
-            controller.getMessageList();
-          },
-          builder: (controller) {
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
-              child: Column(
-                  // physics: const AlwaysScrollableScrollPhysics(
-                  //     parent: BouncingScrollPhysics()),
-                  children: [
-                    // 任务消息入口
-                    _taskMessageEntryPoint(),
-                    SizedBox(height: ScreenAdapter.height(6)),
-                    // 普通消息列表
-                    _messageList(),
-                  ]),
-            );
-          }),
+        //obx的第三种写法,为了initState方法
+        init: controller,
+        initState: (state) {
+          debugPrint("initState 每次进入页面时触发");
+          controller.initCacheList();
+          //实时获取数据
+          controller.getMessageList();
+        },
+        builder: (controller) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              ScreenAdapter.width(10),
+              ScreenAdapter.height(10),
+              ScreenAdapter.width(10),
+              ScreenAdapter.height(0),
+            ),
+            child: Column(
+              // physics: const AlwaysScrollableScrollPhysics(
+              //     parent: BouncingScrollPhysics()),
+              children: [
+                // 任务消息入口
+                _taskMessageEntryPoint(),
+                SizedBox(height: ScreenAdapter.height(6)),
+                // 普通消息列表
+                _messageList(),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

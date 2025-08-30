@@ -40,6 +40,8 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
   List<Message> historyMessages = [];
   TextEditingController inputController = TextEditingController();
 
+  bool historyLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -125,7 +127,10 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
           options: options,
           pageSize: 20,
         );
-    setState(() => historyMessages = result.data.reversed.toList());
+    setState(() {
+      historyMessages = result.data.reversed.toList();
+      historyLoaded = true;
+    });
   }
 
   @override
@@ -143,69 +148,71 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
     Widget content = Column(
       children: [
         Expanded(
-          child: CustomChatRoomMessagesWidget(
-            key: ValueKey(historyMessages),
-            roomId: roomId,
-            messages: historyMessages,
-            itemBuilder: (ctx, msg, user) {
-              debugPrint('msg: $msg');
-              Map<String, dynamic>? attributes = msg.attributes;
-              String? nickname = attributes?['chatroom_uikit_userInfo']?['nickname'];
-              String avatarURL = attributes?['chatroom_uikit_userInfo']?['avatarURL'] ?? '';
+          child:
+              !historyLoaded
+                  ? const SizedBox()
+                  : CustomChatRoomMessagesWidget(
+                    roomId: roomId,
+                    messages: historyMessages,
+                    itemBuilder: (ctx, msg, user) {
+                      debugPrint('msg: $msg');
+                      Map<String, dynamic>? attributes = msg.attributes;
+                      String? nickname = attributes?['chatroom_uikit_userInfo']?['nickname'];
+                      String avatarURL = attributes?['chatroom_uikit_userInfo']?['avatarURL'] ?? '';
 
-              bool isSelf = msg.direction == MessageDirection.SEND;
-              if (msg.body.type == MessageType.TXT) {
-                return ChatBubbleText(
-                  onLongPress: onLongPressAvatar,
-                  msg: msg,
-                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
-                  nickname: nickname ?? '游客',
-                  content: msg.textContent,
-                  isSelf: isSelf,
-                );
-              } else if (msg.body.type == MessageType.IMAGE) {
-                EMImageMessageBody body = msg.body as EMImageMessageBody;
-                return ChatImageMessage(
-                  onLongPress: onLongPressAvatar,
-                  msg: msg,
-                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
-                  nickname: nickname ?? '游客',
-                  imageUrl: body.remotePath ?? '',
-                  isSelf: isSelf,
-                );
-              } else if (msg.body.type == MessageType.VIDEO) {
-                EMVideoMessageBody body = msg.body as EMVideoMessageBody;
-                return ChatVideoMessage(
-                  msg: msg,
-                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
-                  nickname: nickname ?? '游客',
-                  videoUrl:
-                      body.fileStatus == DownloadStatus.SUCCESS
-                          ? body.localPath ?? ''
-                          : body.remotePath ?? "",
-                  isSelf: isSelf,
-                  onLongPress: onLongPressAvatar,
-                );
-              } else if (msg.body.type == MessageType.VOICE) {
-                EMVoiceMessageBody body = msg.body as EMVoiceMessageBody;
-                return ChatVoiceMessage(
-                  onLongPress: onLongPressAvatar,
-                  msg: msg,
-                  avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
-                  nickname: nickname ?? '游客',
-                  isSelf: isSelf,
-                  audioUrl:
-                      body.fileStatus == DownloadStatus.SUCCESS
-                          ? body.localPath ?? ''
-                          : body.remotePath ?? "",
-                  duration: Duration(seconds: body.duration),
-                  messageId: msg.msgId,
-                  defaultAvatarAsset: Assets.imagesAvatar,
-                );
-              }
-              return const SizedBox();
-            },
-          ),
+                      bool isSelf = msg.direction == MessageDirection.SEND;
+                      if (msg.body.type == MessageType.TXT) {
+                        return ChatBubbleText(
+                          onLongPress: onLongPressAvatar,
+                          msg: msg,
+                          avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                          nickname: nickname ?? '游客',
+                          content: msg.textContent,
+                          isSelf: isSelf,
+                        );
+                      } else if (msg.body.type == MessageType.IMAGE) {
+                        EMImageMessageBody body = msg.body as EMImageMessageBody;
+                        return ChatImageMessage(
+                          onLongPress: onLongPressAvatar,
+                          msg: msg,
+                          avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                          nickname: nickname ?? '游客',
+                          imageUrl: body.remotePath ?? '',
+                          isSelf: isSelf,
+                        );
+                      } else if (msg.body.type == MessageType.VIDEO) {
+                        EMVideoMessageBody body = msg.body as EMVideoMessageBody;
+                        return ChatVideoMessage(
+                          msg: msg,
+                          avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                          nickname: nickname ?? '游客',
+                          videoUrl:
+                              body.fileStatus == DownloadStatus.SUCCESS
+                                  ? body.localPath ?? ''
+                                  : body.remotePath ?? "",
+                          isSelf: isSelf,
+                          onLongPress: onLongPressAvatar,
+                        );
+                      } else if (msg.body.type == MessageType.VOICE) {
+                        EMVoiceMessageBody body = msg.body as EMVoiceMessageBody;
+                        return ChatVoiceMessage(
+                          onLongPress: onLongPressAvatar,
+                          msg: msg,
+                          avatarUrl: '${Constant.uploadFileUrl}$avatarURL',
+                          nickname: nickname ?? '游客',
+                          isSelf: isSelf,
+                          audioUrl:
+                              body.fileStatus == DownloadStatus.SUCCESS
+                                  ? body.localPath ?? ''
+                                  : body.remotePath ?? "",
+                          duration: Duration(seconds: body.duration),
+                          messageId: msg.msgId,
+                          defaultAvatarAsset: Assets.imagesAvatar,
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
         ),
         ChatInputWidget(
           controller: inputController,

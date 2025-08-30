@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/modules/chat_room/image_preview_dialog.dart';
@@ -27,12 +28,12 @@ class ChatImageMessage extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: GestureDetector(
         onLongPress: () => onLongPress?.call(msg),
-        child: Image.network(
-          avatarUrl,
+        child: CachedNetworkImage(
+          imageUrl: avatarUrl,
           width: 40,
           height: 40,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Image.asset(Assets.imagesAvatar, width: 40, height: 40),
+          errorWidget: (_, __, ___) => Image.asset(Assets.imagesAvatar, width: 40, height: 40),
         ),
       ),
     );
@@ -51,10 +52,10 @@ class ChatImageMessage extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           child: Hero(
             tag: imageUrl,
-            child: Image.network(
-              imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
               fit: BoxFit.cover,
-              errorBuilder:
+              errorWidget:
                   (_, __, ___) => Container(
                     color: Colors.grey.shade300,
                     alignment: Alignment.center,

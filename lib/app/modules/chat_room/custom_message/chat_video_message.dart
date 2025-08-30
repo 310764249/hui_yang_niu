@@ -26,7 +26,7 @@ class ChatVideoMessage extends StatefulWidget {
   State<ChatVideoMessage> createState() => _ChatVideoMessageState();
 }
 
-class _ChatVideoMessageState extends State<ChatVideoMessage> {
+class _ChatVideoMessageState extends State<ChatVideoMessage> with AutomaticKeepAliveClientMixin {
   VideoPlayerController? _controller;
   bool _isLoading = true;
   bool _isError = false;
@@ -164,6 +164,7 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final avatar = _buildAvatar();
     final videoPlayer = _buildVideoPlayer();
     final nicknameWidget = _buildNickname();
@@ -194,6 +195,9 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class FullScreenVideoPlayer extends StatefulWidget {

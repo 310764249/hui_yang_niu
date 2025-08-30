@@ -19,6 +19,7 @@ class ChatVoiceMessage extends StatefulWidget {
     required this.msg,
     this.onLongPress,
   });
+
   final Function(Message msg)? onLongPress;
   final String audioUrl;
   final String messageId;
@@ -62,7 +63,7 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage> with SingleTickerPr
 
   @override
   void dispose() {
-    _stop();
+    _stop(true);
     _animCtrl.dispose();
     _positionSub?.cancel();
     super.dispose();
@@ -97,16 +98,22 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage> with SingleTickerPr
     });
   }
 
-  void _stop() {
+  void _stop([bool isDispose = false]) {
     ChatAudioPlayer.instance.stop(widget.messageId);
     _positionSub?.cancel();
     _positionSub = null;
 
-    setState(() {
+    if (!isDispose) {
+      setState(() {
+        _isPlaying = false;
+        _animCtrl.stop();
+        _animCtrl.value = 0.0; // 复位动画
+      });
+    } else {
       _isPlaying = false;
       _animCtrl.stop();
       _animCtrl.value = 0.0; // 复位动画
-    });
+    }
   }
 
   @override

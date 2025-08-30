@@ -374,6 +374,12 @@ class NewCattleController extends GetxController {
         return;
       }
     }
+    if (cattleInfo.operationDate == null || cattleInfo.operationDate!.isEmpty) {
+      cattleInfo.operationDate?.value = DateUtil.formatDate(
+        DateTime.now(),
+        format: DateFormats.y_mo_d,
+      );
+    }
 
     // 校验参数, 如果校验失败, 则Toast输出错误信息
     var paramCheckedResult = CattleInfo.checkRequestParam(cattleInfo);

@@ -135,6 +135,7 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
 
   @override
   void dispose() {
+    VideoPlayerControllerCache.disposeAll();
     BusinessLogger.instance.logExit(tag);
     _lifecycleObserver.stop();
     ChatUIKit.instance.removeObserver(this);
@@ -182,6 +183,8 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
                         );
                       } else if (msg.body.type == MessageType.VIDEO) {
                         EMVideoMessageBody body = msg.body as EMVideoMessageBody;
+                        // return ChatUIKitVideoBubbleWidget(model: MessageModel(message: msg));
+                        // EMVideoMessageBody body = msg.body as EMVideoMessageBody;
                         return ChatVideoMessage(
                           msg: msg,
                           avatarUrl: '${Constant.uploadFileUrl}$avatarURL',

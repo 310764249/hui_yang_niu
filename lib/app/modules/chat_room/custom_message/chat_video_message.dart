@@ -1,11 +1,41 @@
 import 'dart:io';
-
 import 'package:em_chat_uikit/chat_sdk_service/src/chat_sdk_define.dart';
+import 'package:em_chat_uikit/chat_uikit/src/chat_uikit_service/chat_uikit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+/// 缓存控制器，避免重复加载
+class VideoPlayerControllerCache {
+  static final Map<String, VideoPlayerController> _cache = {};
+
+  static VideoPlayerController getController(String id, String url) {
+    if (_cache.containsKey(id)) {
+      return _cache[id]!;
+    }
+    final isNetUrl = url.startsWith('http');
+    final controller =
+        isNetUrl
+            ? VideoPlayerController.networkUrl(Uri.parse(url))
+            : VideoPlayerController.file(File(url));
+    _cache[id] = controller;
+    return controller;
+  }
+
+  static void disposeController(String id) {
+    _cache[id]?.dispose();
+    _cache.remove(id);
+  }
+
+  static void disposeAll() {
+    for (final c in _cache.values) {
+      c.dispose();
+    }
+    _cache.clear();
+  }
+}
+
 class ChatVideoMessage extends StatefulWidget {
-  final String videoUrl; // 远程视频链接
+  final String videoUrl; // 视频链接
   final String avatarUrl;
   final String nickname;
   final bool isSelf;
@@ -30,12 +60,12 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> with AutomaticKeepA
   VideoPlayerController? _controller;
   bool _isLoading = true;
   bool _isError = false;
-  File? _localFile;
 
   @override
   void initState() {
     super.initState();
     _initVideo();
+    ChatUIKit.instance.downloadThumbnail(message: widget.msg);
   }
 
   Future<void> _initVideo() async {
@@ -45,45 +75,29 @@ class _ChatVideoMessageState extends State<ChatVideoMessage> with AutomaticKeepA
         _isError = false;
       });
 
-      bool isNetUrl = widget.videoUrl.startsWith('http');
+      _controller = VideoPlayerControllerCache.getController(widget.msg.msgId, widget.videoUrl);
 
-      _controller =
-          isNetUrl
-              ? VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-              : VideoPlayerController.file(File(widget.videoUrl));
-      _controller!
-          .initialize()
-          .then((_) {
-            if (!mounted) return;
-            setState(() {
-              _isLoading = false;
-              _isError = false;
-            });
-          })
-          .catchError((e) {
-            setState(() {
-              _isLoading = false;
-              _isError = true;
-            });
-          });
+      if (_controller!.value.isInitialized) {
+        setState(() => _isLoading = false);
+      } else {
+        await _controller!.initialize();
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _isError = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isError = true;
+          _isLoading = false;
+        });
+      }
     }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 
   void _onTapVideo() {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
-    // 这里你可以跳转到一个全屏播放器页面，也可以弹窗播放
     Navigator.of(context).push(
       MaterialPageRoute(
         builder:
@@ -223,17 +237,13 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   @override
   void initState() {
     super.initState();
-
     _controller = widget.controller;
-
-    // 监听播放状态改变
     _controller.addListener(_onVideoPlayerChanged);
 
     if (_controller.value.isInitialized) {
       _controller.play();
       _isPlaying = true;
     } else {
-      // 如果还没初始化，等待初始化完成后自动播放
       _controller.initialize().then((_) {
         if (mounted) {
           setState(() {
@@ -247,28 +257,23 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
 
   void _onVideoPlayerChanged() {
     if (!mounted) return;
-    setState(() {}); // 更新UI，比如播放状态和缓冲状态
+    setState(() {}); // 刷新UI
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onVideoPlayerChanged);
-    // 这里不dispose控制器，外面传进来的控制器应该由外部管理
-    _controller.pause();
+    _controller.pause(); // 离开页面暂停
     super.dispose();
   }
 
   void _togglePlayPause() {
     if (_controller.value.isPlaying) {
       _controller.pause();
-      setState(() {
-        _isPlaying = false;
-      });
+      setState(() => _isPlaying = false);
     } else {
       _controller.play();
-      setState(() {
-        _isPlaying = true;
-      });
+      setState(() => _isPlaying = true);
     }
   }
 

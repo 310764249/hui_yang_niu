@@ -32,8 +32,6 @@ class APKDownloadDialog extends StatefulWidget {
   }) {
     SmartDialog.show(
       tag: 'APKDownloadDialog',
-      backDismiss: false,
-      clickMaskDismiss: false,
       builder: (context) {
         return APKDownloadDialog(
           content: content,
@@ -61,7 +59,13 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
   int resultType = 0;
 
   void downloadAPK() {
-    UpdateModel model = UpdateModel(HttpsClient.domain + widget.url, "慧养牛.apk", 'ic_launcher', '', showNotification: false);
+    UpdateModel model = UpdateModel(
+      HttpsClient.domain + widget.url,
+      "慧养牛.apk",
+      'ic_launcher',
+      '',
+      showNotification: false,
+    );
     AzhonAppUpdate.update(model).then((value) {
       debugPrint('$value');
     });
@@ -88,9 +92,7 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +120,7 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -162,9 +164,7 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
                               gradient: LinearGradient(
                                 colors: [Color(0xffE44554), Color(0xff6040FF)],
                               ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(4),
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(4)),
                             ),
                           ),
                         ),
@@ -172,7 +172,11 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
                     ),
                     Text(
                       '${(value * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(color: Color(0xff181829), fontSize: 12, fontWeight: FontWeight.w400),
+                      style: const TextStyle(
+                        color: Color(0xff181829),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 );
@@ -189,70 +193,68 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
               children: [
                 if (!widget.isForceUpdate)
                   Expanded(
-                      child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {
-                      APKDownloadDialog.hide();
-                    },
-                    child: Container(
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        APKDownloadDialog.hide();
+                      },
+                      child: Container(
+                        height: 44,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12)),
                         ),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '取消',
-                          style: TextStyle(
-                            color: Color(0xff181829),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                        child: const Center(
+                          child: Text(
+                            '取消',
+                            style: TextStyle(
+                              color: Color(0xff181829),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  )),
+                  ),
                 if (!widget.isForceUpdate)
                   SizedBox(
                     width: 1,
                     height: 18,
-                    child: VerticalDivider(
-                      color: Colors.black.withOpacity(0.05),
-                    ),
+                    child: VerticalDivider(color: Colors.black.withOpacity(0.05)),
                   ),
                 Expanded(
-                    child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: downloadAPK,
-                  child: Container(
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(12),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: downloadAPK,
+                    child: Container(
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.only(bottomRight: Radius.circular(12)),
                       ),
-                    ),
-                    child: Center(
-                      child: ShaderMask(
-                        shaderCallback: (Rect bounds) {
-                          return const LinearGradient(colors: [Color(0xffE44554), Color(0xff6040FF)]).createShader(bounds);
-                        },
-                        child: const Text(
-                          '立即体验',
-                          style: TextStyle(
-                            color: Color(0xff333333),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                      child: Center(
+                        child: ShaderMask(
+                          shaderCallback: (Rect bounds) {
+                            return const LinearGradient(
+                              colors: [Color(0xffE44554), Color(0xff6040FF)],
+                            ).createShader(bounds);
+                          },
+                          child: const Text(
+                            '立即体验',
+                            style: TextStyle(
+                              color: Color(0xff333333),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                )),
+                ),
               ],
-            )
+            ),
         ],
       ),
     );

@@ -28,10 +28,7 @@ class MineView extends GetView<MineController> {
       top: 0,
       left: 0,
       right: 0,
-      child: LoadAssetImage(
-        AssetsImages.mineBg,
-        fit: BoxFit.fitWidth,
-      ),
+      child: LoadAssetImage(AssetsImages.mineBg, fit: BoxFit.fitWidth),
     );
     // return const Image(
     //   image: AssetImage(AssetsImages.mineBg),
@@ -86,10 +83,7 @@ class MineView extends GetView<MineController> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(ScreenAdapter.width(60)),
-                    child: LoadImage(
-                      controller.headerImg.value,
-                      fit: BoxFit.cover,
-                    ),
+                    child: LoadImage(controller.headerImg.value, fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -101,7 +95,10 @@ class MineView extends GetView<MineController> {
               children: [
                 Text(
                   controller.nickName.value,
-                  style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(20),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 SizedBox(height: ScreenAdapter.height(6)),
                 Row(
@@ -137,11 +134,19 @@ class MineView extends GetView<MineController> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
+                        padding: EdgeInsets.fromLTRB(
+                          ScreenAdapter.width(8),
+                          0,
+                          ScreenAdapter.width(8),
+                          0,
+                        ),
                         child: Text(
                           controller.phoneNum.value,
-                          style:
-                              TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(13),
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -155,28 +160,37 @@ class MineView extends GetView<MineController> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
+                        padding: EdgeInsets.fromLTRB(
+                          ScreenAdapter.width(8),
+                          0,
+                          ScreenAdapter.width(8),
+                          0,
+                        ),
                         child: Text(
                           controller.deptName.value,
-                          style:
-                              TextStyle(fontSize: ScreenAdapter.fontSize(13), fontWeight: FontWeight.w400, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(13),
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }
 
   // 点赞, 收藏
   Widget _supportAndCollection() {
-    return Row(children: [
-      /*
+    return Row(
+      children: [
+        /*
       Expanded(
           child: Center(
         child: Text.rich(TextSpan(children: [
@@ -196,57 +210,97 @@ class MineView extends GetView<MineController> {
         ])),
       )),
       */
-      Expanded(
+        Expanded(
           child: InkWell(
-        onTap: () {
-          Get.toNamed(Routes.LIKE_ARTICLE_LIST, arguments: 1);
-        },
-        child: Center(
-          child: Text.rich(TextSpan(children: [
-            TextSpan(text: "点赞", style: TextStyle(fontSize: ScreenAdapter.fontSize(18), fontWeight: FontWeight.w500)),
-            const TextSpan(
-              text: " ",
+            onTap: () {
+              Get.toNamed(Routes.LIKE_ARTICLE_LIST, arguments: 1);
+            },
+            child: Center(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "点赞",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(18),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const TextSpan(text: " "),
+                    TextSpan(
+                      text: controller.dianZhanNum.value.toString(),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            TextSpan(
-                text: controller.dianZhanNum.value.toString(),
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700))
-          ])),
+          ),
         ),
-      )),
-      Expanded(
+        Expanded(
           child: InkWell(
-        onTap: () {
-          Get.toNamed(Routes.LIKE_ARTICLE_LIST, arguments: 2);
-        },
-        child: Center(
-          child: Text.rich(TextSpan(children: [
-            TextSpan(text: "收藏", style: TextStyle(fontSize: ScreenAdapter.fontSize(18), fontWeight: FontWeight.w500)),
-            const TextSpan(
-              text: " ",
+            onTap: () {
+              Get.toNamed(Routes.LIKE_ARTICLE_LIST, arguments: 2);
+            },
+            child: Center(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "收藏",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(18),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const TextSpan(text: " "),
+                    TextSpan(
+                      text: controller.favoritesNum.value.toString(),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            TextSpan(
-                text: controller.favoritesNum.value.toString(),
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(20), fontWeight: FontWeight.w700))
-          ])),
+          ),
         ),
-      )),
-    ]);
+      ],
+    );
   }
 
   Widget _cardItem(String name, String value, {bool smallValue = false, VoidCallback? onPressed}) {
     return Expanded(
       child: InkWell(
         onTap: onPressed,
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(value,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
               maxLines: 1,
               style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  color: Colors.white,
-                  fontSize: ScreenAdapter.fontSize(smallValue ? 19 : 21),
-                  fontWeight: FontWeight.bold)),
-          Text(name, style: TextStyle(color: Colors.white, fontSize: ScreenAdapter.fontSize(12), fontWeight: FontWeight.w500)),
-        ]),
+                overflow: TextOverflow.ellipsis,
+                color: Colors.white,
+                fontSize: ScreenAdapter.fontSize(smallValue ? 19 : 21),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: ScreenAdapter.fontSize(12),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -264,39 +318,45 @@ class MineView extends GetView<MineController> {
           // 农场名称
           SizedBox(
             height: ScreenAdapter.height(51),
-            child: Row(children: [
-              SizedBox(width: ScreenAdapter.width(15)),
-              Text(
-                controller.farmName.value,
-                maxLines: 1,
-                style: TextStyle(
+            child: Row(
+              children: [
+                SizedBox(width: ScreenAdapter.width(15)),
+                Text(
+                  controller.farmName.value,
+                  maxLines: 1,
+                  style: TextStyle(
                     overflow: TextOverflow.ellipsis,
                     color: Colors.white,
                     fontSize: ScreenAdapter.fontSize(21),
-                    fontWeight: FontWeight.w600),
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () async {
-                  Map userRes = await Storage.getData(Constant.userResData);
-                  List farms = userRes['farms'];
-                  List farmNames = farms.map((item) => item['name']).toList();
-                  Picker.showSinglePicker(
-                    context,
-                    farmNames,
-                    title: '选择养殖场',
-                    onConfirm: (data, position) {
-                      print(data);
-                      Map selectedFarm = farms[position];
-                      Storage.setData(Constant.selectFarmData, selectedFarm);
-                      controller.updateSelFarm();
-                    },
-                  );
-                },
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(
-                      ScreenAdapter.width(10), ScreenAdapter.height(5), ScreenAdapter.width(8), ScreenAdapter.height(5)),
-                  decoration: const BoxDecoration(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: () async {
+                    Map userRes = await Storage.getData(Constant.userResData);
+                    List farms = userRes['farms'];
+                    List farmNames = farms.map((item) => item['name']).toList();
+                    Picker.showSinglePicker(
+                      context,
+                      farmNames,
+                      title: '选择养殖场',
+                      onConfirm: (data, position) {
+                        print(data);
+                        Map selectedFarm = farms[position];
+                        Storage.setData(Constant.selectFarmData, selectedFarm);
+                        controller.updateSelFarm();
+                      },
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(
+                      ScreenAdapter.width(10),
+                      ScreenAdapter.height(5),
+                      ScreenAdapter.width(8),
+                      ScreenAdapter.height(5),
+                    ),
+                    decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -305,59 +365,66 @@ class MineView extends GetView<MineController> {
                         colors: [Color(0xFFFFD493), Color(0xFFFFB54B)],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
-                      )),
-                  child: Text(
-                    '切换养殖场',
-                    style: TextStyle(color: const Color(0xFF9E4C00), fontSize: ScreenAdapter.fontSize(12)),
+                      ),
+                    ),
+                    child: Text(
+                      '切换养殖场',
+                      style: TextStyle(
+                        color: const Color(0xFF9E4C00),
+                        fontSize: ScreenAdapter.fontSize(12),
+                      ),
+                    ),
                   ),
                 ),
-              )
-            ]),
+              ],
+            ),
           ),
 
           // 农场信息
           SizedBox(
             height: ScreenAdapter.height(68),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              _cardItem('管理员', controller.principal.value, smallValue: true),
-              _cardItem(
-                '栋舍汇总>',
-                controller.cowHouseCount.value,
-                onPressed: () {
-                  Get.toNamed(Routes.CATTLE_HOUSE_LIST)?.then((value) {
-                    if (ObjectUtil.isEmpty(value)) {
-                      return;
-                    }
-                    //拿到牛只数组，默认 single: true, 单选
-                    List<CowHouse> list = value as List<CowHouse>;
-                    //保存选中的牛只模型
-                    CowHouse temp = list.first;
-                    print(temp.name);
-                  });
-                },
-              ),
-              // _cardItem('养牛总数', controller.cowCount.value),
-              _cardItem('职工总数', controller.employeeCount.value),
-            ]),
-          )
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _cardItem('管理员', controller.principal.value, smallValue: true),
+                _cardItem(
+                  '栋舍汇总>',
+                  controller.cowHouseCount.value,
+                  onPressed: () {
+                    Get.toNamed(Routes.CATTLE_HOUSE_LIST)?.then((value) {
+                      if (ObjectUtil.isEmpty(value)) {
+                        return;
+                      }
+                      //拿到牛只数组，默认 single: true, 单选
+                      List<CowHouse> list = value as List<CowHouse>;
+                      //保存选中的牛只模型
+                      CowHouse temp = list.first;
+                      print(temp.name);
+                    });
+                  },
+                ),
+                // _cardItem('养牛总数', controller.cowCount.value),
+                _cardItem('职工总数', controller.employeeCount.value),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _line() {
-    return Divider(
-      color: SaienteColors.separateLine,
-      height: ScreenAdapter.height(0.5),
-    );
+    return Divider(color: SaienteColors.separateLine, height: ScreenAdapter.height(0.5));
   }
 
   Widget _actionItem(String iconPath, String title, Function() onTapEvent) {
     return InkWell(
-        onTap: onTapEvent,
-        child: SizedBox(
-          height: ScreenAdapter.height(52),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      onTap: onTapEvent,
+      child: SizedBox(
+        height: ScreenAdapter.height(52),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             SizedBox(width: ScreenAdapter.width(9)),
             LoadAssetImage(iconPath),
             SizedBox(width: ScreenAdapter.width(6)),
@@ -368,8 +435,10 @@ class MineView extends GetView<MineController> {
             const Spacer(),
             const LoadAssetImage(AssetsImages.rightArrow),
             SizedBox(width: ScreenAdapter.width(18)),
-          ]),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _actionLayout() {
@@ -378,72 +447,78 @@ class MineView extends GetView<MineController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
       ),
-      child: Column(children: [
-        controller.showRecord.value
-            ? _actionItem(AssetsImages.events, '备案中心', () {
+      child: Column(
+        children: [
+          controller.showRecord.value
+              ? _actionItem(AssetsImages.events, '备案中心', () {
                 Get.toNamed(Routes.RECORD_CENTER);
               })
-            : const SizedBox(),
-        _line(),
-        _actionItem(AssetsImages.contact, '联系我们', () {
-          //Get.snackbar('提示', '联系我们', snackPosition: SnackPosition.BOTTOM);
-          Alert.showActionSheet(
-            ['业务热线-151xxxx5073', '技术支持-159xxxx5019'],
-            title: '确定拨打客服电话？',
-            onConfirm: (index) {
-              if (index == 0) {
-                controller.launchPhone('15129365073');
-              } else {
-                controller.launchPhone('15929555019');
-              }
-            },
-          );
-        }),
-        _line(),
-        _actionItem(AssetsImages.feedback, '问题反馈', () {
-          Get.toNamed(Routes.FEED_BACK);
-        }),
-        _line(),
-        _actionItem(AssetsImages.lock, '隐私政策', () {
-          Get.snackbar('提示', '隐私政策', snackPosition: SnackPosition.BOTTOM);
-        }),
-        _line(),
-        ObxValue<RxBool>(
-          (value) => InkWell(
+              : const SizedBox(),
+          _line(),
+          _actionItem(AssetsImages.contact, '联系我们', () {
+            //Get.snackbar('提示', '联系我们', snackPosition: SnackPosition.BOTTOM);
+            Alert.showActionSheet(
+              ['业务热线-151xxxx5073', '技术支持-159xxxx5019'],
+              title: '确定拨打客服电话？',
+              onConfirm: (index) {
+                if (index == 0) {
+                  controller.launchPhone('15129365073');
+                } else {
+                  controller.launchPhone('15929555019');
+                }
+              },
+            );
+          }),
+          _line(),
+          _actionItem(AssetsImages.feedback, '问题反馈', () {
+            Get.toNamed(Routes.FEED_BACK);
+          }),
+          _line(),
+          _actionItem(AssetsImages.lock, '隐私政策', () {
+            Get.snackbar('提示', '隐私政策', snackPosition: SnackPosition.BOTTOM);
+          }),
+          _line(),
+          ObxValue<RxBool>(
+            (value) => InkWell(
               onTap: () {
                 controller.updateBigFont(!value.value);
               },
               child: SizedBox(
                 height: ScreenAdapter.height(52),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  SizedBox(width: ScreenAdapter.width(9)),
-                  const Icon(
-                    Icons.brightness_auto_outlined,
-                    size: 16,
-                  ),
-                  SizedBox(width: ScreenAdapter.width(6)),
-                  Text(
-                    '大字模式',
-                    style: TextStyle(color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(14)),
-                  ),
-                  const Spacer(),
-                  Switch(
-                    value: value.value,
-                    onChanged: controller.updateBigFont,
-                    activeColor: Colors.white,
-                    activeTrackColor: SaienteColors.blue2559F3,
-                    trackOutlineWidth: MaterialStateProperty.all(0),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(18)),
-                ]),
-              )),
-          controller.isOpenBigFont,
-        ),
-        _line(),
-        _actionItem(AssetsImages.about, '关于软件', () {
-          Get.toNamed(Routes.Production_Guide);
-        }),
-      ]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: ScreenAdapter.width(9)),
+                    const Icon(Icons.brightness_auto_outlined, size: 16),
+                    SizedBox(width: ScreenAdapter.width(6)),
+                    Text(
+                      '大字模式',
+                      style: TextStyle(
+                        color: SaienteColors.blackE5,
+                        fontSize: ScreenAdapter.fontSize(14),
+                      ),
+                    ),
+                    const Spacer(),
+                    Switch(
+                      value: value.value,
+                      onChanged: controller.updateBigFont,
+                      activeColor: Colors.white,
+                      activeTrackColor: SaienteColors.blue2559F3,
+                      trackOutlineWidth: MaterialStateProperty.all(0),
+                    ),
+                    SizedBox(width: ScreenAdapter.width(18)),
+                  ],
+                ),
+              ),
+            ),
+            controller.isOpenBigFont,
+          ),
+          _line(),
+          _actionItem(AssetsImages.about, '关于软件', () {
+            Get.toNamed(Routes.ABOUT_US);
+          }),
+        ],
+      ),
     );
   }
 
@@ -465,7 +540,11 @@ class MineView extends GetView<MineController> {
         alignment: Alignment.center,
         child: Text(
           '退出登录',
-          style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(14),
+            fontWeight: FontWeight.w500,
+            color: SaienteColors.blackE5,
+          ),
         ),
       ),
     );
@@ -475,10 +554,7 @@ class MineView extends GetView<MineController> {
   Widget _versionAndTechSupport() {
     return const Column(
       children: [
-        Text(
-          'V1.0.0',
-          style: TextStyle(color: SaienteColors.black4D),
-        ),
+        Text('V1.0.0', style: TextStyle(color: SaienteColors.black4D)),
         // Text(
         //   '技术支持：西安赛恩特信息科技有限公司',
         //   style: TextStyle(color: SaienteColors.black4D),
@@ -497,15 +573,17 @@ class MineView extends GetView<MineController> {
       child: Padding(
         padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
         child: GetBuilder<MineController>(
-            //obx的第三种写法,为了initState方法
-            init: controller,
-            initState: (state) {
-              debugPrint("initState 每次进入【我的】页面时触发");
-              //更新用户信息
-              controller.refreshPage();
-            },
-            builder: (controller) {
-              return ListView(physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()), children: [
+          //obx的第三种写法,为了initState方法
+          init: controller,
+          initState: (state) {
+            debugPrint("initState 每次进入【我的】页面时触发");
+            //更新用户信息
+            controller.refreshPage();
+          },
+          builder: (controller) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              children: [
                 //这里留出导航栏高度
                 SizedBox(height: ScreenAdapter.getNavBarHeight()),
                 // 个人信息
@@ -525,8 +603,10 @@ class MineView extends GetView<MineController> {
                 SizedBox(height: ScreenAdapter.height(16)),
                 // 版本号 & 技术支持
                 //_versionAndTechSupport(),
-              ]);
-            }),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -541,10 +621,11 @@ class MineView extends GetView<MineController> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-              onPressed: () {
-                Get.toNamed(Routes.USER_PROFILE);
-              },
-              icon: const LoadAssetImage(AssetsImages.editPng))
+            onPressed: () {
+              Get.toNamed(Routes.USER_PROFILE);
+            },
+            icon: const LoadAssetImage(AssetsImages.editPng),
+          ),
         ],
       ),
     );
@@ -553,12 +634,15 @@ class MineView extends GetView<MineController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(children: [
-      _backgroundImg(),
-      // Page content
-      _pageContent(context),
-      // App bar
-      _appBar(),
-    ]));
+      body: Stack(
+        children: [
+          _backgroundImg(),
+          // Page content
+          _pageContent(context),
+          // App bar
+          _appBar(),
+        ],
+      ),
+    );
   }
 }

@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../../models/app_update.dart';
 import '../../../models/article.dart';
 import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
@@ -14,6 +17,7 @@ class AboutUsController extends GetxController {
 
   RxString versionStr = ''.obs;
   RxString nameStr = ''.obs;
+  RxString checkVersion = '正在检查新版本。。。'.obs;
 
   //列表
   RxList<Article> introsItems = <Article>[].obs;
@@ -37,7 +41,7 @@ class AboutUsController extends GetxController {
     print("version: $version");
     print("buildNumber: $buildNumber");
 
-    String beta = "测试版本";
+    String beta = "版本";
     if (Constant.inProduction) {
       beta = "";
     }
@@ -51,6 +55,7 @@ class AboutUsController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    updateApp();
   }
 
   @override
@@ -67,8 +72,7 @@ class AboutUsController extends GetxController {
       'PageSize': 999,
     };
     try {
-      var response =
-          await httpsClient.get("/api/article", queryParameters: para1);
+      var response = await httpsClient.get("/api/article", queryParameters: para1);
       //缓存登录信息
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -90,5 +94,20 @@ class AboutUsController extends GetxController {
         Log.d('Other Exception: $error');
       }
     }
+  }
+
+  void updateApp() async {
+    AppUpdate? data = await CheckAppUpdate.checkUpdateDate();
+    if (data == null) {
+      checkVersion.value = "暂无新版本";
+    } else {
+      if (await CheckAppUpdate.isHasNewVersion(data)) {
+        checkVersion.value = "检查到最新版本${data.versionName}，点击升级";
+        CheckAppUpdate.showUpdateDialog(data);
+      } else {
+        checkVersion.value = "暂无新版本";
+      }
+    }
+    update();
   }
 }

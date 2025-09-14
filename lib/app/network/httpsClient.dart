@@ -2,6 +2,7 @@ import 'dart:async';
 
 // import 'package:alice/alice.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_logger_plus/dio_logger_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/services/common_service.dart';
 
@@ -50,6 +51,7 @@ class HttpsClient {
     dio.options.connectTimeout = const Duration(seconds: 10); //10s
     //接收数据的最长时间
     dio.options.receiveTimeout = const Duration(seconds: 10);
+    dio.interceptors.add(DioLogger());
     //非生产环境，开启日志以及抓包
     if (!Constant.inProduction) {
       //pretty_dio_logger

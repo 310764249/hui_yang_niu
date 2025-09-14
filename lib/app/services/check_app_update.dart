@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/apk_update/apk_download_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -10,16 +11,7 @@ class CheckAppUpdate {
     try {
       var res = await httpsClient.get("/api/appfile/check");
       AppUpdate appUpdate = AppUpdate.fromJson(res);
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      if (appUpdate.buildNumber > double.parse(packageInfo.buildNumber)) {
-        APKDownloadDialog.show(
-          content: appUpdate.releaseNotes ?? '发现新版本',
-          isForceUpdate: false,
-          url: appUpdate.downloadUrl,
-          versionName: appUpdate.versionName,
-          versionCode: appUpdate.buildNumber,
-        );
-      }
+      showUpdateDialog(appUpdate);
     } catch (e) {
       print(e);
     }
@@ -36,12 +28,16 @@ class CheckAppUpdate {
   }
 
   static Future showUpdateDialog(AppUpdate appUpdate) async {
+    String? cosUrl;
+    if (appUpdate.hasCosUrl) {
+      cosUrl = await CheckAppUpdate.getCosUrl();
+    }
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     if (appUpdate.buildNumber > double.parse(packageInfo.buildNumber)) {
       APKDownloadDialog.show(
         content: appUpdate.releaseNotes ?? '发现新版本',
         isForceUpdate: false,
-        url: appUpdate.downloadUrl,
+        url: cosUrl ?? (HttpsClient.domain + appUpdate.downloadUrl),
         versionName: appUpdate.versionName,
         versionCode: appUpdate.buildNumber,
       );
@@ -54,5 +50,17 @@ class CheckAppUpdate {
       return true;
     }
     return false;
+  }
+
+  static Future<String?> getCosUrl() async {
+    HttpsClient httpsClient = HttpsClient();
+    try {
+      var res = await httpsClient.get("/api/appfile/cosdownloadurl");
+      debugPrint('res: $res');
+      return res;
+    } catch (e) {
+      debugPrint('erroe$e');
+    }
+    return null;
   }
 }

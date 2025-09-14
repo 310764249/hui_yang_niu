@@ -60,7 +60,7 @@ class _APKDownloadDialogState extends State<APKDownloadDialog> {
 
   void downloadAPK() {
     UpdateModel model = UpdateModel(
-      HttpsClient.domain + widget.url,
+      widget.url,
       "慧养牛.apk",
       'ic_launcher',
       '',

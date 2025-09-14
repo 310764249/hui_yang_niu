@@ -12,24 +12,27 @@ class AppUpdate {
     required this.downloadUrl,
     required this.versionName,
     required this.buildNumber,
+    required this.hasCosUrl,
   });
 
   String? releaseNotes;
   String downloadUrl;
   String versionName;
   int buildNumber;
+  bool hasCosUrl;
 
   factory AppUpdate.fromJson(Map<dynamic, dynamic> json) => AppUpdate(
-        releaseNotes: json["releaseNotes"],
-        downloadUrl: json["downloadUrl"],
-        versionName: json["versionName"],
-        buildNumber: json["buildNumber"],
-      );
+    releaseNotes: json["releaseNotes"],
+    downloadUrl: json["downloadUrl"],
+    versionName: json["versionName"],
+    buildNumber: json["buildNumber"],
+    hasCosUrl: json["hasCosUrl"],
+  );
 
   Map<dynamic, dynamic> toJson() => {
-        "releaseNotes": releaseNotes,
-        "downloadUrl": downloadUrl,
-        "versionName": versionName,
-        "buildNumber": buildNumber,
-      };
+    "releaseNotes": releaseNotes,
+    "downloadUrl": downloadUrl,
+    "versionName": versionName,
+    "buildNumber": buildNumber,
+  };
 }

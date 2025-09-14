@@ -249,6 +249,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.8.0+1"
+  dio_logger_plus:
+    dependency: "direct main"
+    description:
+      name: dio_logger_plus
+      sha256: "3edb48813f8adf24899ddecea6cdf5d6bdb22eab464482e1c1b5c1cead117392"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.1"
   dio_web_adapter:
     dependency: transitive
     description:

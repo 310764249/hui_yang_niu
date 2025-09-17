@@ -12,6 +12,7 @@ import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
+import 'package:intellectual_breed/app/services/message_count_service.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/route_utils/business_logger.dart';
@@ -29,9 +30,10 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   RxInt currentIndex = 0.obs;
 
   //页面控制,默认首页，如果有传值就使用传值
-  PageController pageController = Get.arguments == null
-      ? PageController(initialPage: 0)
-      : PageController(initialPage: Get.arguments["initialPage"]);
+  PageController pageController =
+      Get.arguments == null
+          ? PageController(initialPage: 0)
+          : PageController(initialPage: Get.arguments["initialPage"]);
 
   final List names = ["首页", "服务", "我的"];
 

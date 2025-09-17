@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/formula.dart';
+import 'package:intellectual_breed/app/services/tools.dart';
 import 'package:intellectual_breed/app/widgets/dict_list.dart';
 import 'package:intellectual_breed/app/widgets/divider_line.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
@@ -144,7 +145,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             SizedBox(width: ScreenAdapter.width(10)),
             Expanded(child: _compareButton(true, '生成值：$left')),
             SizedBox(width: ScreenAdapter.width(10)),
-            Expanded(child: _compareButton(false, '标准值：$right')),
+            Expanded(child: _compareButton(false, '参考值：$right')),
             SizedBox(width: ScreenAdapter.width(10)),
           ],
         ),
@@ -655,7 +656,11 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
               height: ScreenAdapter.height(40),
               alignment: Alignment.center,
               child: Text(
-                ((model.weight??0)*(controller.isFromCreate?(controller.argument?.cowCount??1):1)).toString(),
+                Tools.formatNumber(
+                  ((model.weight ?? 0) *
+                          (controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1))
+                      .toString(),
+                ),
                 maxLines: 3,
                 textAlign: TextAlign.center,
                 style: TextStyle(

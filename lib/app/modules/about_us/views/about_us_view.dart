@@ -74,6 +74,13 @@ class AboutUsView extends GetView<AboutUsController> {
               child: Column(
                 children: [
                   SizedBox(height: ScreenAdapter.height(50)),
+                  Text(
+                    controller.nameStr.value,
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(22),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
                     child: LoadAssetImage(
@@ -105,13 +112,6 @@ class AboutUsView extends GetView<AboutUsController> {
                     ),
                   ),
                   SizedBox(height: ScreenAdapter.height(10)),
-                  Text(
-                    controller.nameStr.value,
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(22),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ],
               ),
             ),

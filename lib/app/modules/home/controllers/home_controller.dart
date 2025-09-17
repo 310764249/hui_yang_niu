@@ -14,6 +14,7 @@ import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
 import '../../../services/common_service.dart';
 import '../../../services/constant.dart';
+import '../../../services/message_count_service.dart';
 import '../../../services/user_info_tool.dart';
 
 class HomeController extends GetxController {
@@ -29,24 +30,24 @@ class HomeController extends GetxController {
   //当前文章列表
   RxList<Article> wordItems = <Article>[].obs;
 
+  RxInt messageUnReadCount = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
     //
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
 
     swipList.value = [
       AssetsImages.bannerTestPng,
       AssetsImages.bannerTestPng,
-      AssetsImages.bannerTestPng
+      AssetsImages.bannerTestPng,
     ];
 
     Future.delayed(Duration(milliseconds: 500), () {
       //请求视频和文章数据
       requestArticle();
+      getMessageCount();
     });
 
     //监听app 进入前台的状态变化
@@ -99,18 +100,22 @@ class HomeController extends GetxController {
     update();
   }
 
+  Future getMessageCount() async {
+    messageUnReadCount.value = await MessageCountService.getUnReadMessageCount();
+    update();
+  }
+
   //请求视频和文章数据
   Future<void> requestArticle() async {
     //接口参数
     Map<String, dynamic> para1 = {
       'Type': 1, //类型 1：图文；2：图片；3：文字；4：视频；5：音频；
-      'Classify': 'zthj',//业务分类 1: 专题合集[zthj]；99:使用指南[syzn]
+      'Classify': 'zthj', //业务分类 1: 专题合集[zthj]；99:使用指南[syzn]
       'PageIndex': 1,
       'PageSize': 10,
     };
     try {
-      var response =
-          await httpsClient.get("/api/article", queryParameters: para1);
+      var response = await httpsClient.get("/api/article", queryParameters: para1);
       //缓存登录信息
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -136,13 +141,12 @@ class HomeController extends GetxController {
     //接口参数
     Map<String, dynamic> para2 = {
       'Type': 4, //类型 1：图文；2：图片；3：文字；4：视频；5：音频；
-      'Classify': 'zthj',//业务分类 1: 专题合集[zthj]；99:使用指南[syzn]
+      'Classify': 'zthj', //业务分类 1: 专题合集[zthj]；99:使用指南[syzn]
       'PageIndex': 1,
       'PageSize': 10,
     };
     try {
-      var response =
-          await httpsClient.get("/api/article", queryParameters: para2);
+      var response = await httpsClient.get("/api/article", queryParameters: para2);
       //缓存登录信息
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -168,10 +172,10 @@ class HomeController extends GetxController {
 
   void requestAnnounceData() async {
     try {
-      var response = await httpsClient.get("/api/Announce", queryParameters: {
-        "PageIndex": 1,
-        "PageSize": 10,
-      });
+      var response = await httpsClient.get(
+        "/api/Announce",
+        queryParameters: {"PageIndex": 1, "PageSize": 10},
+      );
     } catch (error) {
       if (error is ApiException) {
         // 处理 API 请求异常情况

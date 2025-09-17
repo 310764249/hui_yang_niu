@@ -270,7 +270,7 @@ class CattleListController extends GetxController {
         'Code': cowCode,
         'CowHouseId': cowHouseId,
         'GrowthStages': growthStage,
-        'IsFilterInvalid': argument.isFilterInvalid,
+        'IsFilterInvalid': true,
         'Kind': kind == 0 ? '' : kind,
         'Gender': sex == 0 ? '' : sex,
         'PageIndex': tempPageIndex,

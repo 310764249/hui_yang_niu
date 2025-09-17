@@ -19,6 +19,7 @@ import '../../../services/AssetsImages.dart';
 import '../../../services/constant.dart';
 import '../../../services/keepAliveWrapper.dart';
 import '../../../services/load_image.dart';
+import '../../../services/message_count_service.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../widgets/back_image_button.dart';
 import '../../../widgets/refresh_header_footer.dart';
@@ -279,30 +280,27 @@ class HomeView extends GetView<HomeController> {
                     onTap: () {
                       Get.to(MessageView());
                     },
-                    child: GetBuilder<TabsController>(
-                      builder: (TabsController controller) {
-                        return Stack(
-                          children: [
-                            Image.asset(
-                              Assets.imagesIcTaskReminder,
-                              fit: BoxFit.fill,
-                              width: double.infinity,
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          Assets.imagesIcTaskReminder,
+                          fit: BoxFit.fill,
+                          width: double.infinity,
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 0),
+                            child: Badge(
+                              label: Text("${controller.messageUnReadCount}"),
+                              //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
+                              isLabelVisible:
+                                  (controller.messageUnReadCount.value != 0) ? true : false,
+                              backgroundColor: Colors.red[500],
                             ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 14),
-                                child: Badge(
-                                  label: Text("${controller.unReadMsgs}"),
-                                  //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
-                                  isLabelVisible: (controller.unReadMsgs.value != 0) ? true : false,
-                                  backgroundColor: Colors.red[500],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -615,6 +613,7 @@ class HomeView extends GetView<HomeController> {
           onRefresh: () async {
             //
             await controller.requestArticle();
+            await controller.getMessageCount();
             //先结束刷新状态
             controller.refreshController.finishRefresh();
           },

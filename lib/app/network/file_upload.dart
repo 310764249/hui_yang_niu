@@ -61,15 +61,64 @@ class FileUploadTool {
     };
     //文件信息
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(localImagePath,
-          filename: 'cow_${DateTime.now().millisecondsSinceEpoch}.jpg',
-          contentType: MediaType.parse('image/jpeg')),
+      'file': await MultipartFile.fromFile(
+        localImagePath,
+        filename: 'cow_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        contentType: MediaType.parse('image/jpeg'),
+      ),
     });
-
 
     ///发送post
     Response response = await dio.post(
       '${Constant.uploadFile}/api/file/upload',
+      data: formData,
+      queryParameters: para,
+      options: options,
+      onSendProgress: (int progress, int total) {
+        ///这里是发送请求回调函数
+        ///[progress] 当前的进度
+        ///[total] 总进度
+        //print("当前进度是 $progress 总进度是 $total");
+      },
+    );
+
+    ///服务器响应结果
+    var data = response.data;
+    // print(data['data']);
+    return Future.value(data['data']);
+  }
+
+  //上传文件接口加水印
+  Future<String> uploadWithWithTag(String localImagePath, String tag) async {
+    Options options = Options();
+    options.contentType = "multipart/form-data";
+    // 发送请求前，获取当前有效的 Token
+    AuthModel authModel = UserInfoTool.auth!;
+    String accessToken = authModel.accessToken;
+    if (accessToken.isNotEmpty) {
+      // 添加 Token 到请求头中
+      options = Options(headers: {'Authorization': 'Bearer $accessToken'});
+    }
+    // 根据请求方法，选择相应的方法发送请求
+    Map<String, dynamic> para = {
+      "projectId": Constant.upProjectId,
+      "containsDate": false,
+      "isTemp": false,
+      "isCompress": true,
+    };
+    //文件信息
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        localImagePath,
+        filename: 'cow_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        contentType: MediaType.parse('image/jpeg'),
+      ),
+      'name': tag,
+    });
+
+    ///发送post
+    Response response = await dio.post(
+      '${Constant.uploadFile}/api/file/uploadandaddwatermark',
       data: formData,
       queryParameters: para,
       options: options,
@@ -98,10 +147,7 @@ class FileUploadTool {
         options = Options(headers: {'Authorization': 'Bearer $accessToken'});
       }
       // 根据请求方法，选择相应的方法发送请求
-      Response response = await dio.get(
-        '${Constant.uploadFile}/api/Content/$ID',
-        options: options,
-      );
+      Response response = await dio.get('${Constant.uploadFile}/api/Content/$ID', options: options);
       Map res = response.data;
       //print(res);
       return Future.value(res['data']['path']);
@@ -117,14 +163,16 @@ class FileUploadTool {
       Options options = Options();
       options.contentType = "application/x-www-form-urlencoded";
       // 根据请求方法，选择相应的方法发送请求
-      Response response = await dio.post(Constant.uploadTokenUrl,
-          data: {
-            "grant_type": Constant.upGrantType,
-            "client_id": Constant.upClientId,
-            "client_secret": Constant.upClientSecret,
-            "scope": Constant.upScope,
-          },
-          options: options);
+      Response response = await dio.post(
+        Constant.uploadTokenUrl,
+        data: {
+          "grant_type": Constant.upGrantType,
+          "client_id": Constant.upClientId,
+          "client_secret": Constant.upClientSecret,
+          "scope": Constant.upScope,
+        },
+        options: options,
+      );
       //print(response);
       Map res = response.data;
       // 存储 token

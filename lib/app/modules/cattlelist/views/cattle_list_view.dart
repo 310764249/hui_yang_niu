@@ -7,6 +7,7 @@ import 'package:intellectual_breed/app/services/Log.dart';
 
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/constant.dart';
+import 'package:intellectual_breed/app/services/image_preview.dart';
 import 'package:intellectual_breed/app/services/screenAdapter.dart';
 import 'package:intellectual_breed/app/widgets/down_arrow_button.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
@@ -32,31 +33,36 @@ class CattleListView extends GetView<CattleListController> {
   //顶部搜索区域
   Widget _topArea(context) {
     return Container(
-        // height: ScreenAdapter.height(100),
-        // color: Colors.greenAccent,
-        alignment: Alignment.topCenter,
-        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), 0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                DownArrowButton(controller.selectedSexName.value, () {
-                  Picker.showSinglePicker(
-                    context,
-                    controller.sexNameList,
-                    title: '请选择公母',
-                    onConfirm: (data, position) {
-                      print(data);
-                      controller.selectedSexName.value = data;
-                      controller.selectedSexIndex = position;
-                      controller.startLoading();
-                      controller.searchCowList();
-                    },
-                  );
-                }),
-                SizedBox(width: ScreenAdapter.width(10)),
-                DownArrowButton(controller.selectedStateName.value, () {
-                  /*
+      // height: ScreenAdapter.height(100),
+      // color: Colors.greenAccent,
+      alignment: Alignment.topCenter,
+      padding: EdgeInsets.fromLTRB(
+        ScreenAdapter.width(10),
+        ScreenAdapter.height(10),
+        ScreenAdapter.width(10),
+        0,
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              DownArrowButton(controller.selectedSexName.value, () {
+                Picker.showSinglePicker(
+                  context,
+                  controller.sexNameList,
+                  title: '请选择公母',
+                  onConfirm: (data, position) {
+                    print(data);
+                    controller.selectedSexName.value = data;
+                    controller.selectedSexIndex = position;
+                    controller.startLoading();
+                    controller.searchCowList();
+                  },
+                );
+              }),
+              SizedBox(width: ScreenAdapter.width(10)),
+              DownArrowButton(controller.selectedStateName.value, () {
+                /*
                   Picker.showSinglePicker(
                     context,
                     controller.stateNameList,
@@ -70,146 +76,180 @@ class CattleListView extends GetView<CattleListController> {
                     },
                   );
                   */
-                  //多选
-                  Alert.showMultiPicker(
-                    controller.stateNameList,
-                    context,
-                    itemsSelected: List.from(controller.selectedStateIndex),
-                    onConfirm: (selected) {
-                      if (ObjectUtil.isEmptyList(selected)) {
-                        Toast.failure(msg: '请至少选择一种类型');
-                        // print('请至少选择一种类型');
-                        return;
-                      }
-                      Log.d('onConfirm' + selected.toString());
-                      //这里是数组类型
-                      controller.selectedStateIndex = selected;
-                      controller.startLoading();
-                      controller.searchCowList();
-                    },
-                  );
-                }),
-                SizedBox(width: ScreenAdapter.width(10)),
-                DownArrowButton(controller.selectedHouseName.value, () {
-                  Picker.showSinglePicker(
-                    context,
-                    controller.houseNameList,
-                    title: '请选择栋舍',
-                    onConfirm: (data, position) {
-                      print(data);
-                      controller.selectedHouseName.value = data;
-                      controller.selectedHouseIndex = position - 1; //选项中多了一个全部，所以实际上要-1
-                      controller.startLoading();
-                      controller.searchCowList();
-                    },
-                  );
-                }),
-              ],
-            ),
-            SizedBox(height: ScreenAdapter.height(5)),
-            Row(
-              children: [
-                DownArrowButton(controller.selectedTypeName.value, () {
-                  Picker.showSinglePicker(
-                    context,
-                    controller.typeNameList,
-                    title: '请选择品种',
-                    onConfirm: (data, position) {
-                      print(data);
-                      controller.selectedTypeName.value = data;
-                      controller.selectedTypeIndex = position;
-                      controller.startLoading();
-                      controller.searchCowList();
-                    },
-                  );
-                }),
-                SizedBox(width: ScreenAdapter.width(10)),
-                SearchField(
-                  hintText: '搜索牛只耳号',
-                  onSubmitted: (value) {
-                    print('onSubmitted: $value');
-                    controller.cowCode = value;
+                //多选
+                Alert.showMultiPicker(
+                  controller.stateNameList,
+                  context,
+                  itemsSelected: List.from(controller.selectedStateIndex),
+                  onConfirm: (selected) {
+                    if (ObjectUtil.isEmptyList(selected)) {
+                      Toast.failure(msg: '请至少选择一种类型');
+                      // print('请至少选择一种类型');
+                      return;
+                    }
+                    Log.d('onConfirm' + selected.toString());
+                    //这里是数组类型
+                    controller.selectedStateIndex = selected;
                     controller.startLoading();
                     controller.searchCowList();
                   },
-                ),
-              ],
-            ),
-          ],
-        ));
+                );
+              }),
+              SizedBox(width: ScreenAdapter.width(10)),
+              DownArrowButton(controller.selectedHouseName.value, () {
+                Picker.showSinglePicker(
+                  context,
+                  controller.houseNameList,
+                  title: '请选择栋舍',
+                  onConfirm: (data, position) {
+                    print(data);
+                    controller.selectedHouseName.value = data;
+                    controller.selectedHouseIndex = position - 1; //选项中多了一个全部，所以实际上要-1
+                    controller.startLoading();
+                    controller.searchCowList();
+                  },
+                );
+              }),
+            ],
+          ),
+          SizedBox(height: ScreenAdapter.height(5)),
+          Row(
+            children: [
+              DownArrowButton(controller.selectedTypeName.value, () {
+                Picker.showSinglePicker(
+                  context,
+                  controller.typeNameList,
+                  title: '请选择品种',
+                  onConfirm: (data, position) {
+                    print(data);
+                    controller.selectedTypeName.value = data;
+                    controller.selectedTypeIndex = position;
+                    controller.startLoading();
+                    controller.searchCowList();
+                  },
+                );
+              }),
+              SizedBox(width: ScreenAdapter.width(10)),
+              SearchField(
+                hintText: '搜索牛只耳号',
+                onSubmitted: (value) {
+                  print('onSubmitted: $value');
+                  controller.cowCode = value;
+                  controller.startLoading();
+                  controller.searchCowList();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   //牛只筛选列表
   Widget _cattleList() {
-    return Obx(() => Expanded(
-          child: controller.isLoading.value
-              ? _loadingView()
-              : controller.items.isEmpty
-                  ? const EmptyView()
-                  : Padding(
-                      padding: EdgeInsets.all(ScreenAdapter.width(10)),
-                      child: EasyRefresh(
-                        controller: controller.refreshController,
-                        // 指定刷新时的头部组件
-                        header: CustomRefresh.refreshHeader(),
-                        // 指定加载时的底部组件
-                        footer: CustomRefresh.refreshFooter(),
-                        onRefresh: () async {
-                          //
-                          await controller.searchCowList();
-                          controller.refreshController.finishRefresh();
-                          controller.refreshController.resetFooter();
-                        },
-                        onLoad: () async {
-                          // 如果没有更多直接返回
-                          if (!controller.hasMore) {
-                            controller.refreshController.finishLoad(IndicatorResult.noMore);
-                            return;
-                          }
-                          // 上拉加载更多数据请求
-                          await controller.searchCowList(isRefresh: false);
-                          // 设置状态
-                          controller.refreshController
-                              .finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
-                        },
-                        child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 1.0,
-                              crossAxisSpacing: ScreenAdapter.width(8),
-                              mainAxisSpacing: ScreenAdapter.width(8)),
-                          itemCount: controller.items.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            //是否选中
-                            bool isSelected = controller.items[index].isSelected;
-                            return Bounceable(
-                              onTap: () {
-                                //debugPrint("点击--$index");
-                                if (controller.argument.goBack) {
-                                  controller.selectIndex(index);
-                                } else {
-                                  if (controller.argument.routerStr == null) {
-                                    Get.toNamed(Routes.CATTLE_DETAIL, arguments: controller.items[index])?.then((value) {
-                                      if (value != null && value == 1) {
-                                        //1 表示更新成功，需要刷新页面
-                                        controller.refreshController.callRefresh();
-                                      }
-                                    });
+    return Obx(
+      () => Expanded(
+        child:
+            controller.isLoading.value
+                ? _loadingView()
+                : controller.items.isEmpty
+                ? const EmptyView()
+                : Padding(
+                  padding: EdgeInsets.all(ScreenAdapter.width(10)),
+                  child: EasyRefresh(
+                    controller: controller.refreshController,
+                    // 指定刷新时的头部组件
+                    header: CustomRefresh.refreshHeader(),
+                    // 指定加载时的底部组件
+                    footer: CustomRefresh.refreshFooter(),
+                    onRefresh: () async {
+                      //
+                      await controller.searchCowList();
+                      controller.refreshController.finishRefresh();
+                      controller.refreshController.resetFooter();
+                    },
+                    onLoad: () async {
+                      // 如果没有更多直接返回
+                      if (!controller.hasMore) {
+                        controller.refreshController.finishLoad(IndicatorResult.noMore);
+                        return;
+                      }
+                      // 上拉加载更多数据请求
+                      await controller.searchCowList(isRefresh: false);
+                      // 设置状态
+                      controller.refreshController.finishLoad(
+                        controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
+                      );
+                    },
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.0,
+                        crossAxisSpacing: ScreenAdapter.width(8),
+                        mainAxisSpacing: ScreenAdapter.width(8),
+                      ),
+                      itemCount: controller.items.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //是否选中
+                        bool isSelected = controller.items[index].isSelected;
+                        return Bounceable(
+                          onTap: () {
+                            //debugPrint("点击--$index");
+                            if (controller.argument.goBack) {
+                              controller.selectIndex(index);
+                            } else {
+                              if (controller.argument.routerStr == null) {
+                                Get.toNamed(
+                                  Routes.CATTLE_DETAIL,
+                                  arguments: controller.items[index],
+                                )?.then((value) {
+                                  if (value != null && value == 1) {
+                                    //1 表示更新成功，需要刷新页面
+                                    controller.refreshController.callRefresh();
                                   }
-                                }
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  //背景
-                                  color: isSelected ? SaienteColors.blueE5EEFF : Colors.white,
-                                  //设置四周圆角 角度
-                                  borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.width(5.0))),
-                                  //设置四周边框
-                                  border: Border.all(
-                                      width: ScreenAdapter.width(1.0),
-                                      color: isSelected ? SaienteColors.blue275CF3 : Colors.transparent),
-                                ),
-                                child: Column(
+                                });
+                              }
+                            }
+                          },
+                          onLongPress:
+                              controller.items[index].img != null
+                                  ? () {
+                                    ImagePreview.show(context, [
+                                      '${Constant.uploadFileUrl}${controller.items[index].img}',
+                                    ]);
+                                  }
+                                  : null,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              //背景
+                              color: isSelected ? SaienteColors.blueE5EEFF : Colors.white,
+                              //设置四周圆角 角度
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(ScreenAdapter.width(5.0)),
+                              ),
+                              //设置四周边框
+                              border: Border.all(
+                                width: ScreenAdapter.width(1.0),
+                                color: isSelected ? SaienteColors.blue275CF3 : Colors.transparent,
+                              ),
+                            ),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if (controller.items[index].img != null)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(ScreenAdapter.width(5.0)),
+                                    ),
+                                    child: LoadImage(
+                                      '${Constant.uploadFileUrl}${controller.items[index].img}',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                if (controller.items[index].img != null)
+                                  ColoredBox(color: Colors.white.withValues(alpha: 0.3)),
+                                Column(
                                   children: [
                                     Row(
                                       children: [
@@ -222,37 +262,48 @@ class CattleListView extends GetView<CattleListController> {
                                             ScreenAdapter.width(0),
                                           ),
                                           decoration: BoxDecoration(
-                                            color: isSelected ? SaienteColors.blue275CF3 : SaienteColors.gray0D,
+                                            color:
+                                                isSelected
+                                                    ? SaienteColors.blue275CF3
+                                                    : SaienteColors.gray0D,
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(ScreenAdapter.width(5.0)),
-                                              bottomRight: Radius.circular(ScreenAdapter.width(5.0)),
+                                              bottomRight: Radius.circular(
+                                                ScreenAdapter.width(5.0),
+                                              ),
                                             ),
                                           ),
                                           child: Text(
                                             AppDictList.findLabelByCode(
-                                                controller.typeList, controller.items[index].kind.toString()),
+                                              controller.typeList,
+                                              controller.items[index].kind.toString(),
+                                            ),
                                             style: TextStyle(
-                                                color: isSelected ? Colors.white : SaienteColors.black80,
-                                                fontSize: ScreenAdapter.fontSize(12)),
+                                              color:
+                                                  isSelected ? Colors.white : SaienteColors.black80,
+                                              fontSize: ScreenAdapter.fontSize(12),
+                                            ),
                                           ),
                                         ),
                                         const Spacer(),
                                         controller.argument.goBack
                                             ? const SizedBox()
                                             : InkWell(
-                                                onTap: () {
-                                                  Alert.showConfirm(
-                                                    '确定删除${controller.items[index].code}牛只吗?',
-                                                    onConfirm: () {
-                                                      controller.requestDelete(controller.items[index]);
-                                                    },
-                                                  );
-                                                },
-                                                child: const Icon(
-                                                  Icons.close_rounded,
-                                                  color: SaienteColors.black40,
-                                                ),
+                                              onTap: () {
+                                                Alert.showConfirm(
+                                                  '确定删除${controller.items[index].code}牛只吗?',
+                                                  onConfirm: () {
+                                                    controller.requestDelete(
+                                                      controller.items[index],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.close_rounded,
+                                                color: SaienteColors.black40,
                                               ),
+                                            ),
                                       ],
                                     ),
                                     SizedBox(height: ScreenAdapter.height(2)),
@@ -260,35 +311,49 @@ class CattleListView extends GetView<CattleListController> {
                                     controller.items[index].gender == 1
                                         ? const LoadImage(AssetsImages.selection)
                                         : const ColorFiltered(
-                                            colorFilter: ColorFilter.mode(Colors.redAccent, BlendMode.srcIn),
-                                            child: LoadImage(AssetsImages.selection),
+                                          colorFilter: ColorFilter.mode(
+                                            Colors.redAccent,
+                                            BlendMode.srcIn,
                                           ),
+                                          child: LoadImage(AssetsImages.selection),
+                                        ),
                                     SizedBox(height: ScreenAdapter.height(5)),
                                     Text(
                                       controller.items[index].code ?? Constant.placeholder,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          color: isSelected ? SaienteColors.blue275CF3 : SaienteColors.blackE5,
-                                          fontSize: ScreenAdapter.fontSize(13),
-                                          fontWeight: FontWeight.w700),
+                                        color:
+                                            isSelected
+                                                ? SaienteColors.blue275CF3
+                                                : SaienteColors.blackE5,
+                                        fontSize: ScreenAdapter.fontSize(13),
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                     SizedBox(height: ScreenAdapter.height(5)),
                                     Text(
                                       '日龄${controller.items[index].ageOfDay}天',
                                       style: TextStyle(
-                                          color: isSelected ? SaienteColors.blue275CF3 : SaienteColors.black80,
-                                          fontSize: ScreenAdapter.fontSize(13),
-                                          fontWeight: FontWeight.w300),
+                                        color:
+                                            isSelected
+                                                ? SaienteColors.blue275CF3
+                                                : SaienteColors.black80,
+                                        fontSize: ScreenAdapter.fontSize(13),
+                                        fontWeight: FontWeight.w300,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-        ));
+                  ),
+                ),
+      ),
+    );
   }
 
   // 列表骨架loading
@@ -300,10 +365,11 @@ class CattleListView extends GetView<CattleListController> {
         padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1.0,
-              crossAxisSpacing: ScreenAdapter.width(8),
-              mainAxisSpacing: ScreenAdapter.width(8)),
+            crossAxisCount: 3,
+            childAspectRatio: 1.0,
+            crossAxisSpacing: ScreenAdapter.width(8),
+            mainAxisSpacing: ScreenAdapter.width(8),
+          ),
           // 禁止列表滑动
           physics: const NeverScrollableScrollPhysics(),
           // 数量为: 屏幕高度 / item高度 取整数
@@ -329,20 +395,22 @@ class CattleListView extends GetView<CattleListController> {
     return controller.argument.goBack == false
         ? const SizedBox()
         : Container(
-            height: ScreenAdapter.height(50),
-            width: ScreenAdapter.getScreenWidth(),
-            padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
-            // color: Colors.amber,(已选择 1 头牛) 确认选择
-            child: MainButton(
-                text: "（已选择${controller.selectItems.length}头牛）确认选择",
-                onPressed: () {
-                  if (controller.argument.goBack) {
-                    Get.back(result: controller.selectItems);
-                  } else {
-                    print(controller.argument.routerStr);
-                    Get.toNamed(controller.argument.routerStr!);
-                  }
-                }));
+          height: ScreenAdapter.height(50),
+          width: ScreenAdapter.getScreenWidth(),
+          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+          // color: Colors.amber,(已选择 1 头牛) 确认选择
+          child: MainButton(
+            text: "（已选择${controller.selectItems.length}头牛）确认选择",
+            onPressed: () {
+              if (controller.argument.goBack) {
+                Get.back(result: controller.selectItems);
+              } else {
+                print(controller.argument.routerStr);
+                Get.toNamed(controller.argument.routerStr!);
+              }
+            },
+          ),
+        );
   }
 
   @override
@@ -358,14 +426,18 @@ class CattleListView extends GetView<CattleListController> {
         child: SafeArea(
           child: Container(
             color: SaienteColors.backGrey,
-            child: Obx(() => Column(children: [
+            child: Obx(
+              () => Column(
+                children: [
                   //顶部搜索区域
                   _topArea(context),
                   //牛只筛选列表
                   _cattleList(),
                   //底部确认按钮
                   _bottomButton(),
-                ])),
+                ],
+              ),
+            ),
           ),
         ),
       ),

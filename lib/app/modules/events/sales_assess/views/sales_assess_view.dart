@@ -25,18 +25,18 @@ class SalesAssessView extends GetView<SalesAssessController> {
 
   // 操作信息
   Widget _operationInfo(context) {
-    var lstFormat = [
-      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-    ];
-    return Obx(() => MyCard(children: [
+    var lstFormat = [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))];
+    return Obx(
+      () => MyCard(
+        children: [
           controller.isEdit.value
               ? CellButton(
-                  isRequired: true,
-                  title: '销售单号',
-                  hint: '',
-                  content: controller.event?.no ?? "",
-                  showArrow: false,
-                )
+                isRequired: true,
+                title: '销售单号',
+                hint: '',
+                content: controller.event?.no ?? "",
+                showArrow: false,
+              )
               : Container(),
           CellButton(
             isRequired: true,
@@ -44,14 +44,21 @@ class SalesAssessView extends GetView<SalesAssessController> {
             hint: '请选择',
             content: controller.salesAssess.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.salesAssessNameList,
-                  selectData: controller.salesAssess.value, title: '请选择', onConfirm: (value, position) {
-                controller.salesAssessId = int.parse(controller.salesAssessList[position]['value']);
-                controller.salesAssess.value = controller.salesAssessNameList[position];
-              });
+              Picker.showSinglePicker(
+                context,
+                controller.salesAssessNameList,
+                selectData: controller.salesAssess.value,
+                title: '请选择',
+                onConfirm: (value, position) {
+                  controller.salesAssessId = int.parse(
+                    controller.salesAssessList[position]['value'],
+                  );
+                  controller.salesAssess.value = controller.salesAssessNameList[position];
+                },
+              );
             },
           ),
-          CellTextField(
+          /*  CellTextField(
             isRequired: true,
             title: '数量',
             hint: '请输入',
@@ -97,7 +104,7 @@ class SalesAssessView extends GetView<SalesAssessController> {
             onComplete: () {
               controller.breakageController.text = double.parse(controller.breakageController.text.trim()).toString();
             },
-          ),
+          ),*/
           CellTextField(
             isRequired: true,
             title: '总价(元)',
@@ -108,27 +115,38 @@ class SalesAssessView extends GetView<SalesAssessController> {
             controller: controller.amountController,
             focusNode: controller.amountNode,
             onComplete: () {
-              controller.amountController.text = double.parse(controller.amountController.text.trim()).toString();
+              controller.amountController.text =
+                  double.parse(controller.amountController.text.trim()).toString();
             },
           ),
           CellButton(
-              isRequired: true,
-              title: '销售日期',
-              hint: '请选择',
-              content: controller.assessTime.value,
-              onPressed: () {
-                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
-                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                });
-              }),
+            isRequired: true,
+            title: '销售日期',
+            hint: '请选择',
+            content: controller.assessTime.value,
+            onPressed: () {
+              Picker.showDatePicker(
+                context,
+                title: '请选择时间',
+                selectDate: controller.assessTime.value,
+                onConfirm: (date) {
+                  controller.assessTime.value =
+                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                },
+              );
+            },
+          ),
           CellTextArea(
-              isRequired: false,
-              title: "备注信息",
-              hint: "请输入",
-              showBottomLine: false,
-              controller: controller.remarkController,
-              focusNode: controller.remarkNode),
-        ]));
+            isRequired: false,
+            title: "备注信息",
+            hint: "请输入",
+            showBottomLine: false,
+            controller: controller.remarkController,
+            focusNode: controller.remarkNode,
+          ),
+        ],
+      ),
+    );
   }
 
   // 提交按钮
@@ -136,45 +154,49 @@ class SalesAssessView extends GetView<SalesAssessController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () async {
-            controller.commitPreventionData();
-          }),
+        text: "提交",
+        onPressed: () async {
+          controller.commitPreventionData();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          // leading设置屏蔽长按返回键的back toast
-          leading: WillPopScope(
-            onWillPop: () async {
+      appBar: AppBar(
+        // leading设置屏蔽长按返回键的back toast
+        leading: WillPopScope(
+          onWillPop: () async {
+            // 在这里执行返回按钮的操作
+            Navigator.of(context).pop();
+            return false; // 返回false禁用弹框提示
+          },
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
               // 在这里执行返回按钮的操作
               Navigator.of(context).pop();
-              return false; // 返回false禁用弹框提示
             },
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                // 在这里执行返回按钮的操作
-                Navigator.of(context).pop();
-              },
-            ),
           ),
-          title: const Text('销售'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
         ),
-        body: PageWrapper(
-          config: controller.buildConfig(context),
-          child: ListView(children: [
+        title: const Text('销售'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: PageWrapper(
+        config: controller.buildConfig(context),
+        child: ListView(
+          children: [
             // 操作信息
             _operationInfo(context),
             // 提交按钮
-            _commitButton()
-          ]),
-        ));
+            _commitButton(),
+          ],
+        ),
+      ),
+    );
   }
 }

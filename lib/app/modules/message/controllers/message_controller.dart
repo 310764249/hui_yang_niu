@@ -53,10 +53,7 @@ class MessageController extends GetxController {
   void onInit() {
     super.onInit();
     //
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
   }
 
   @override
@@ -82,9 +79,7 @@ class MessageController extends GetxController {
     }
     try {
       Toast.showLoading();
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       cattle = Cattle.fromJson(response);
       Toast.dismiss();
       if (ObjectUtil.isNotEmpty(cattle)) {
@@ -117,10 +112,7 @@ class MessageController extends GetxController {
       }
 
       //接口参数
-      Map<String, dynamic> para = {
-        'PageIndex': tempPageIndex,
-        'PageSize': pageSize,
-      };
+      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
       var response = await httpsClient.get("/api/notice", queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
@@ -161,12 +153,11 @@ class MessageController extends GetxController {
   void goToChangeCattle(Notice notice) async {
     try {
       Toast.showLoading();
-      CowHouse cowHouse = CowHouse.fromJson(await httpsClient.get('/api/cowhouse/${notice.cowHouseId}'));
-      Toast.dismiss();
-      Get.toNamed(
-        Routes.FEED_CATTLE,
-        arguments: cowHouse,
+      CowHouse cowHouse = CowHouse.fromJson(
+        await httpsClient.get('/api/cowhouse/${notice.cowHouseId}'),
       );
+      Toast.dismiss();
+      Get.toNamed(Routes.FEED_CATTLE, arguments: cowHouse);
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {
@@ -177,5 +168,9 @@ class MessageController extends GetxController {
         Log.d('Other Exception: $error');
       }
     }
+  }
+
+  void readMessage(String msgId) {
+    httpsClient.get('/api/notice/readnotice/$msgId');
   }
 }

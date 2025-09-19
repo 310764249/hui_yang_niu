@@ -79,7 +79,9 @@ class PurchaseAssessController extends GetxController {
     Toast.showLoading();
 
     purchaseAssessList = AppDictList.searchItems('wzfl') ?? [];
-    purchaseAssessNameList = List<String>.from(purchaseAssessList.map((item) => item['label']).toList());
+    purchaseAssessNameList = List<String>.from(
+      purchaseAssessList.map((item) => item['label']).toList(),
+    );
 
     //首先处理传入参数
     handleArgument();
@@ -91,16 +93,23 @@ class PurchaseAssessController extends GetxController {
 
   //自动计算总价
   void autoCalculate() {
-    if (countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty) {
+    if (countController.text.isNotEmpty &&
+        priceController.text.isNotEmpty &&
+        breakageController.text.isNotEmpty) {
       int count = int.parse(countController.text);
       double price = double.parse(priceController.text);
       // double amount = double.parse(amountController.text);
       double breakage = double.parse(breakageController.text);
       double amount = price * count - breakage;
       if (amount > 0) {
-        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), ''); // "$amount";
+        amountController.text = amount
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'0*$'), ''); // "$amount";
         if (amountController.text.endsWith(".")) {
-          amountController.text = amountController.text.substring(0, amountController.text.length - 1);
+          amountController.text = amountController.text.substring(
+            0,
+            amountController.text.length - 1,
+          );
         }
       } else {
         amountController.text = "";
@@ -128,7 +137,10 @@ class PurchaseAssessController extends GetxController {
       // 采购
       purchaseAssessId = event?.type ?? -1;
       if (purchaseAssessId != -1) {
-        purchaseAssess.value = purchaseAssessList.firstWhere((item) => int.parse(item['value']) == purchaseAssessId)['label'];
+        purchaseAssess.value =
+            purchaseAssessList.firstWhere(
+              (item) => int.parse(item['value']) == purchaseAssessId,
+            )['label'];
       }
       //填充备注
       nameController.text = event?.name ?? '';
@@ -147,9 +159,7 @@ class PurchaseAssessController extends GetxController {
   //获取牛只详情
   Future<Cattle> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       Cattle model = Cattle.fromJson(response);
       return Future.value(model);
     } catch (error) {
@@ -175,15 +185,15 @@ class PurchaseAssessController extends GetxController {
       str = '请输入物资名称';
     } else if (assessTime.value.isBlankEx()) {
       str = '请选择采购日期';
-    } else if (countController.text.isEmpty) {
+    } /*else if (countController.text.isEmpty) {
       str = '请输入数量';
     } else if (priceController.text.isEmpty) {
       str = '请输入单价';
-    } else if (amountController.text.isEmpty) {
+    }*/ else if (amountController.text.isEmpty) {
       str = '请输入总价';
-    } else if (breakageController.text.isEmpty) {
+    } /* else if (breakageController.text.isEmpty) {
       str = '请输入折损';
-    }
+    }*/
     /*if (purchaseAssessId == -1) {
         Toast.show('请选择采购类型');
         return;
@@ -207,12 +217,12 @@ class PurchaseAssessController extends GetxController {
           "type": purchaseAssessId,
           "name": nameController.text,
           "manufacturers": manufacturersController.text,
-          "count": int.parse(countController.text),
-          "price": double.parse(priceController.text),
+          // "count": int.parse(countController.text),
+          // "price": double.parse(priceController.text),
           "amount": double.parse(amountController.text),
-          "breakage": double.parse(breakageController.text),
+          // "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       } else {
         //* 编辑
@@ -230,7 +240,7 @@ class PurchaseAssessController extends GetxController {
           "amount": double.parse(amountController.text),
           "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       }
 

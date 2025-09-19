@@ -48,71 +48,103 @@ class NewCattleView extends GetView<NewCattleController> {
         ),
         controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10
             ? CellButton(
-                isRequired: false,
-                title: '批次（批次牛只必传）',
-                colorTitle: Text.rich(TextSpan(children: [
-                  TextSpan(
+              isRequired: false,
+              title: '批次（批次牛只必传）',
+              colorTitle: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
                       text: "批次",
                       style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: SaienteColors.blackE5)),
-                  // 备用公牛，母牛，种公牛彼此非必填
-                  TextSpan(
-                      text: controller.cattleInfo.currentStage == 8 ||
-                              controller.cattleInfo.currentStage == 9 ||
-                              controller.cattleInfo.currentStage == 10
-                          ? ''
-                          : "（批次牛只必传）",
-                      style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w500, color: Colors.red))
-                ])),
-                hint: '请选择',
-                content: controller.cattleInfo.batchNum?.value,
-                onPressed: () {
-                  //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+                        fontSize: ScreenAdapter.fontSize(14),
+                        fontWeight: FontWeight.w500,
+                        color: SaienteColors.blackE5,
+                      ),
+                    ),
+                    // 备用公牛，母牛，种公牛彼此非必填
+                    TextSpan(
+                      text:
+                          controller.cattleInfo.currentStage == 8 ||
+                                  controller.cattleInfo.currentStage == 9 ||
+                                  controller.cattleInfo.currentStage == 10
+                              ? ''
+                              : "（批次牛只必传）",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(14),
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              hint: '请选择',
+              content: controller.cattleInfo.batchNum?.value,
+              onPressed: () {
+                //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
 
-                  Get.toNamed(Routes.BATCH_LIST,
-                      arguments: BatchListArgument(
-                        goBack: true,
-                        type: controller.cattleInfo.currentStage == 8 ? 5 : 6,
-                      ))?.then((value) {
-                    if (ObjectUtil.isEmpty(value)) {
-                      return;
-                    }
-                    //拿到批次号数组
-                    List<CowBatch> list = value as List<CowBatch>;
-                    // 选择完批次牛后, 自动带出: 1.批次号, 2.来源场, 3.入场时间等等信息
-                    controller.updateCattleData(list.first);
-                  });
-                })
+                Get.toNamed(
+                  Routes.BATCH_LIST,
+                  arguments: BatchListArgument(
+                    goBack: true,
+                    type: controller.cattleInfo.currentStage == 8 ? 5 : 6,
+                  ),
+                )?.then((value) {
+                  if (ObjectUtil.isEmpty(value)) {
+                    return;
+                  }
+                  //拿到批次号数组
+                  List<CowBatch> list = value as List<CowBatch>;
+                  // 选择完批次牛后, 自动带出: 1.批次号, 2.来源场, 3.入场时间等等信息
+                  controller.updateCattleData(list.first);
+                });
+              },
+            )
             : const SizedBox.shrink(),
         CellTextField(
           isRequired: false,
           title: '来源场',
           hint: '请输入',
-          controller: TextEditingController(text: controller.cattleInfo.sourceFarm?.value.toString().trim()),
+          controller: TextEditingController(
+            text: controller.cattleInfo.sourceFarm?.value.toString().trim(),
+          ),
           focusNode: controller.sourceFarmNode,
           onChanged: (value) => {controller.sourceFarmController.text = value},
         ),
         CellButton(
-            isRequired: false,
-            title: '入场时间',
-            hint: '请选择',
-            content: controller.cattleInfo.inDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.inDate?.value, onConfirm: (date) {
-                controller.cattleInfo.inDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-              });
-            }),
+          isRequired: false,
+          title: '入场时间',
+          hint: '请选择',
+          content: controller.cattleInfo.inDate?.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              selectDate: controller.cattleInfo.inDate?.value,
+              onConfirm: (date) {
+                controller.cattleInfo.inDate?.value =
+                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+              },
+            );
+          },
+        ),
         CellButton(
-            isRequired: true,
-            title: '出生年月',
-            hint: '请选择',
-            content: controller.cattleInfo.birthDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.birthDate?.value,
-                  onConfirm: (date) {
-                controller.cattleInfo.birthDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-              });
-            }),
+          isRequired: true,
+          title: '出生年月',
+          hint: '请选择',
+          content: controller.cattleInfo.birthDate?.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              selectDate: controller.cattleInfo.birthDate?.value,
+              onConfirm: (date) {
+                controller.cattleInfo.birthDate?.value =
+                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+              },
+            );
+          },
+        ),
         // 品种
         _breedSelectionLayout(context),
       ],
@@ -121,34 +153,41 @@ class NewCattleView extends GetView<NewCattleController> {
 
   // 母牛公共部分UI
   Widget _commonCowLayout(BuildContext context) {
-    return Obx(() => Column(children: [
+    return Obx(
+      () => Column(
+        children: [
           //妊娠，空怀，哺乳 这三个显示胎次，其他不显示
           (controller.cattleInfo.currentStage == 5 ||
                   controller.cattleInfo.currentStage == 6 ||
                   controller.cattleInfo.currentStage == 7)
               ? RadioButtonGroup(
-                  isRequired: true,
-                  title: '胎次',
-                  selectedIndex: controller.tempPregnancyNumPosition.value,
-                  items: Constant.pregnancyNumList,
-                  onChanged: (value) {
-                    // 赋值temp
-                    controller.tempPregnancyNumPosition.value = value;
-                    controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[value];
-                  })
+                isRequired: true,
+                title: '胎次',
+                selectedIndex: controller.tempPregnancyNumPosition.value,
+                items: Constant.pregnancyNumList,
+                onChanged: (value) {
+                  // 赋值temp
+                  controller.tempPregnancyNumPosition.value = value;
+                  controller.cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[value];
+                },
+              )
               : const SizedBox(),
           _shedSelectionLayout(context),
           CellTextField(
             isRequired: false,
             title: '栏位',
             hint: '请输入',
-            controller: TextEditingController(text: controller.cattleInfo.field?.value.toString().trim()),
+            controller: TextEditingController(
+              text: controller.cattleInfo.field?.value.toString().trim(),
+            ),
             focusNode: controller.fieldNode,
             onChanged: (value) {
               controller.fieldController.text = value;
             },
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   // 底部公共布局: 操作时间 & 备注
@@ -163,35 +202,37 @@ class NewCattleView extends GetView<NewCattleController> {
                 controller.cattleInfo.currentStage == 7
             ? const SizedBox()
             : CellButton(
-                isRequired: false,
-                title: '操作时间',
-                // hint: '请选择',
-                showArrow: false,
-                content: controller.cattleInfo.operationDate?.value,
-                onPressed: () {
-                  // Picker.showDatePicker(context,
-                  //     title: '请选择时间',
-                  //     selectDate: controller.cattleInfo.operationDate?.value,
-                  //     onConfirm: (date) {
-                  //   // 前4中状态的牛才能赋值[操作时间], 后面3种母牛有指定的时间
-                  //   if (controller.cattleInfo.currentStage == 1 ||
-                  //       controller.cattleInfo.currentStage == 2 ||
-                  //       controller.cattleInfo.currentStage == 3 ||
-                  //       controller.cattleInfo.currentStage == 4) {
-                  //     controller.cattleInfo.operationDate?.value =
-                  //         "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                  //   }
-                  // });
-                }),
+              isRequired: false,
+              title: '操作时间',
+              // hint: '请选择',
+              showArrow: false,
+              content: controller.cattleInfo.operationDate?.value,
+              onPressed: () {
+                // Picker.showDatePicker(context,
+                //     title: '请选择时间',
+                //     selectDate: controller.cattleInfo.operationDate?.value,
+                //     onConfirm: (date) {
+                //   // 前4中状态的牛才能赋值[操作时间], 后面3种母牛有指定的时间
+                //   if (controller.cattleInfo.currentStage == 1 ||
+                //       controller.cattleInfo.currentStage == 2 ||
+                //       controller.cattleInfo.currentStage == 3 ||
+                //       controller.cattleInfo.currentStage == 4) {
+                //     controller.cattleInfo.operationDate?.value =
+                //         "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                //   }
+                // });
+              },
+            ),
         // 备注信息
         CellTextArea(
-            isRequired: false,
-            title: "备注信息",
-            hint: "请输入",
-            showBottomLine: false,
-            controller: controller.remarkController,
-            focusNode: controller.remarkNode,
-            onChanged: (value) => {controller.cattleInfo.remark = value}),
+          isRequired: false,
+          title: "备注信息",
+          hint: "请输入",
+          showBottomLine: false,
+          controller: controller.remarkController,
+          focusNode: controller.remarkNode,
+          onChanged: (value) => {controller.cattleInfo.remark = value},
+        ),
       ],
     );
   }
@@ -220,26 +261,32 @@ class NewCattleView extends GetView<NewCattleController> {
       title: '栋舍',
       content: controller.cattleInfo.shed?.value,
       onPressed: () {
-        Picker.showSinglePicker(context, controller.houseNameList, selectData: controller.cattleInfo.shed?.value, title: '请选择栋舍',
-            onConfirm: (value, position) {
-          controller.cattleInfo.shedId?.value = controller.houseList[position].id;
-          controller.cattleInfo.shed?.value = value;
-        });
+        Picker.showSinglePicker(
+          context,
+          controller.houseNameList,
+          selectData: controller.cattleInfo.shed?.value,
+          title: '请选择栋舍',
+          onConfirm: (value, position) {
+            controller.cattleInfo.shedId?.value = controller.houseList[position].id;
+            controller.cattleInfo.shed?.value = value;
+          },
+        );
       },
     );
   }
 
   Widget _breedSelectionLayout(BuildContext context) {
     return RadioButtonGroup(
-        isRequired: true,
-        title: '品种',
-        selectedIndex: controller.tempBreedPosition.value,
-        items: controller.breedNameList,
-        onChanged: (value) {
-          // 赋值temp
-          controller.tempBreedPosition.value = value;
-          controller.cattleInfo.breed?.value = controller.breedList[value]['value'];
-        });
+      isRequired: true,
+      title: '品种',
+      selectedIndex: controller.tempBreedPosition.value,
+      items: controller.breedNameList,
+      onChanged: (value) {
+        // 赋值temp
+        controller.tempBreedPosition.value = value;
+        controller.cattleInfo.breed?.value = controller.breedList[value]['value'];
+      },
+    );
   }
 
   // 犊牛 & 育肥牛
@@ -275,38 +322,50 @@ class NewCattleView extends GetView<NewCattleController> {
         isBabyCalf
             ? const SizedBox()
             : CellTextField(
-                isRequired: false,
-                title: '来源场',
-                hint: '请输入',
-                content: controller.cattleInfo.sourceFarm?.value,
-                controller: controller.sourceFarmController,
-                focusNode: controller.sourceFarmNode,
-                onChanged: (value) => {controller.cattleInfo.sourceFarm?.value = value},
-              ),
+              isRequired: false,
+              title: '来源场',
+              hint: '请输入',
+              content: controller.cattleInfo.sourceFarm?.value,
+              controller: controller.sourceFarmController,
+              focusNode: controller.sourceFarmNode,
+              onChanged: (value) => {controller.cattleInfo.sourceFarm?.value = value},
+            ),
         isBabyCalf
             ? const SizedBox()
             : CellButton(
-                isRequired: false,
-                title: '入场时间',
-                hint: '请选择',
-                content: controller.cattleInfo.inDate?.value,
-                onPressed: () {
-                  Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.inDate?.value,
-                      onConfirm: (date) {
-                    controller.cattleInfo.inDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                  });
-                }),
-        CellButton(
-            isRequired: true,
-            title: '出生年月',
-            hint: '请选择',
-            content: controller.cattleInfo.birthDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.birthDate?.value,
+              isRequired: false,
+              title: '入场时间',
+              hint: '请选择',
+              content: controller.cattleInfo.inDate?.value,
+              onPressed: () {
+                Picker.showDatePicker(
+                  context,
+                  title: '请选择时间',
+                  selectDate: controller.cattleInfo.inDate?.value,
                   onConfirm: (date) {
-                controller.cattleInfo.birthDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-              });
-            }),
+                    controller.cattleInfo.inDate?.value =
+                        "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  },
+                );
+              },
+            ),
+        CellButton(
+          isRequired: true,
+          title: '出生年月',
+          hint: '请选择',
+          content: controller.cattleInfo.birthDate?.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              selectDate: controller.cattleInfo.birthDate?.value,
+              onConfirm: (date) {
+                controller.cattleInfo.birthDate?.value =
+                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+              },
+            );
+          },
+        ),
         _breedSelectionLayout(context),
         _shedSelectionLayout(context),
       ],
@@ -342,22 +401,30 @@ class NewCattleView extends GetView<NewCattleController> {
         _commonLayout(context),
         _commonCowLayout(context),
         CellButton(
-            isRequired: true,
-            title: '上一次配种时间',
-            hint: '请选择',
-            content: controller.cattleInfo.operationDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
-                  onConfirm: (date) {
+          isRequired: true,
+          title: '上一次配种时间',
+          hint: '请选择',
+          content: controller.cattleInfo.operationDate?.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              selectDate: controller.cattleInfo.operationDate?.value,
+              onConfirm: (date) {
                 // controller.cattleInfo.pregnancyCheckTime?.value =
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 妊娠母牛 - 将[孕检时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 5) {
-                  debugPrint('===============${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ');
-                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  debugPrint(
+                    '===============${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ',
+                  );
+                  controller.cattleInfo.operationDate?.value =
+                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
-              });
-            }),
+              },
+            );
+          },
+        ),
       ],
     );
   }
@@ -369,21 +436,27 @@ class NewCattleView extends GetView<NewCattleController> {
         _commonLayout(context),
         _commonCowLayout(context),
         CellButton(
-            isRequired: true,
-            title: '上一次产犊时间',
-            hint: '请选择',
-            content: controller.cattleInfo.operationDate?.value,
-            onPressed: () {
-              Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.cattleInfo.operationDate?.value,
-                  onConfirm: (date) {
+          isRequired: true,
+          title: '上一次产犊时间',
+          hint: '请选择',
+          content: controller.cattleInfo.operationDate?.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              selectDate: controller.cattleInfo.operationDate?.value,
+              onConfirm: (date) {
                 // controller.cattleInfo.calvingTime?.value =
                 //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 // 哺乳母牛 - 将[产犊时间]赋值到[操作时间]的字段
                 if (controller.cattleInfo.currentStage == 6) {
-                  controller.cattleInfo.operationDate?.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  controller.cattleInfo.operationDate?.value =
+                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
                 }
-              });
-            }),
+              },
+            );
+          },
+        ),
         CellTextField(
           isRequired: true,
           title: '上一次产犊数量',
@@ -426,24 +499,77 @@ class NewCattleView extends GetView<NewCattleController> {
 
   // 操作信息
   Widget _operationInfo(context) {
-    return Obx(() => MyCard(children: [
+    return Obx(
+      () => MyCard(
+        children: [
           const CardTitle(title: "操作信息"),
           // 当前状态选择器
           RadioButtonGroup(
-              isRequired: true,
-              title: '当前状态',
-              items: List<String>.from(Constant.currentStageList.map((item) => item.name).toList()),
-              selectedIndex: controller.selStage.value,
-              onChanged: (value) {
-                // 1.更新当前状态显示
-                controller.updateCurrentStage(value);
+            isRequired: true,
+            title: '当前状态',
+            items: List<String>.from(Constant.currentStageList.map((item) => item.name).toList()),
+            selectedIndex: controller.selStage.value,
+            onChanged: (value) {
+              // 1.更新当前状态显示
+              controller.updateCurrentStage(value);
 
-                // 2.每次切换都需要把提交的数据初始化一遍, 防止数据字段相互串用
-                controller.initRequestParams(value);
+              // 2.每次切换都需要把提交的数据初始化一遍, 防止数据字段相互串用
+              controller.initRequestParams(value);
 
-                // 3.更新[胎次]
-                controller.updatePregnancyNum();
-              }),
+              // 3.更新[胎次]
+              controller.updatePregnancyNum();
+            },
+          ),
+
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('牛只图片', style: TextStyle(fontWeight: FontWeight.w500)),
+                GestureDetector(
+                  onTap: () {
+                    controller.selectCawImage();
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: GetBuilder<NewCattleController>(
+                        builder: (context) {
+                          return controller.cowImg == null
+                              ? const Icon(Icons.add)
+                              : Stack(
+                                clipBehavior: Clip.none,
+                                fit: StackFit.expand,
+                                children: [
+                                  Image.file(controller.cowImg!, fit: BoxFit.fill),
+                                  Positioned(
+                                    top: -10,
+                                    right: -10,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.close, color: Colors.white),
+                                      onPressed: () {
+                                        controller.clearCowImg();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           // // 犊牛
           // if (controller.cattleInfo.currentStage == 1) _youngCattleLayout(context, true),
@@ -464,7 +590,9 @@ class NewCattleView extends GetView<NewCattleController> {
 
           // 底部公共布局: 操作时间 & 备注, 但也要注意区分后3种母牛和前面4种母牛的UI差异
           _commonBottomLayout(context),
-        ]));
+        ],
+      ),
+    );
   }
 
   // 提交按钮
@@ -472,48 +600,51 @@ class NewCattleView extends GetView<NewCattleController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () async {
-            controller.commitNewCattleData();
-          }),
+        text: "提交",
+        onPressed: () async {
+          controller.commitNewCattleData();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          // leading设置屏蔽长按返回键的back toast
-          leading: WillPopScope(
-            onWillPop: () async {
+      appBar: AppBar(
+        // leading设置屏蔽长按返回键的back toast
+        leading: WillPopScope(
+          onWillPop: () async {
+            // 在这里执行返回按钮的操作
+            Navigator.of(context).pop();
+            return false; // 返回false禁用弹框提示
+          },
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
               // 在这里执行返回按钮的操作
               Navigator.of(context).pop();
-              return false; // 返回false禁用弹框提示
             },
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                // 在这里执行返回按钮的操作
-                Navigator.of(context).pop();
-              },
-            ),
           ),
-          title: const Text('档案'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
         ),
-        body: PageWrapper(
-          config: controller.buildConfig(context),
-          child: ListView(
-              // physics: const AlwaysScrollableScrollPhysics(
-              // parent: BouncingScrollPhysics()),
-              children: [
-                // 操作信息
-                _operationInfo(context),
-                // 提交按钮
-                _commitButton()
-              ]),
-        ));
+        title: const Text('档案'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: PageWrapper(
+        config: controller.buildConfig(context),
+        child: ListView(
+          // physics: const AlwaysScrollableScrollPhysics(
+          // parent: BouncingScrollPhysics()),
+          children: [
+            // 操作信息
+            _operationInfo(context),
+            // 提交按钮
+            _commitButton(),
+          ],
+        ),
+      ),
+    );
   }
 }

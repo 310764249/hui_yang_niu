@@ -277,8 +277,10 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      Get.to(MessageView());
+                    onTap: () async {
+                      Get.to(MessageView())?.then((_) {
+                        controller.getMessageCount();
+                      });
                     },
                     child: Stack(
                       children: [

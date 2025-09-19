@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
+import 'package:intellectual_breed/app/network/file_upload.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../../route_utils/business_logger.dart';
@@ -104,6 +108,8 @@ class NewCattleController extends GetxController {
   List<CowHouse> houseList = <CowHouse>[];
   List houseNameList = [];
 
+  File? cowImg;
+
   @override
   void onInit() async {
     super.onInit();
@@ -169,6 +175,16 @@ class NewCattleController extends GetxController {
 
       // 3.更新[胎次]
       updatePregnancyNum();
+    });
+  }
+
+  selectCawImage() {
+    final ImagePicker _picker = ImagePicker();
+    _picker.pickImage(source: ImageSource.gallery).then((value) {
+      if (value != null) {
+        cowImg = File(value.path);
+        update();
+      }
     });
   }
 
@@ -446,6 +462,20 @@ class NewCattleController extends GetxController {
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注
         };
+        if (cowImg != null) {
+          print("uploadWithWithTag：开始上传牛只图片");
+          try {
+            String ID = await FileUploadTool().uploadWithWithTag(
+              cowImg!.path,
+              cattleInfo.earNum!.trim(),
+            );
+            // iconUrl.value = '${Constant.getAPI}/$ID';
+            mapParam['img'] = ID;
+          } catch (e) {
+            print("uploadWithWithTag$e");
+            Toast.dismiss();
+          }
+        }
         debugPrint('提交参数: $mapParam');
         await httpsClient.post("/api/cow", data: mapParam);
       }
@@ -479,6 +509,11 @@ class NewCattleController extends GetxController {
     debugPrint(' --onClose--档案新增');
     BusinessLogger.instance.logExit('生产管理/档案新增');
     super.onClose();
+  }
+
+  void clearCowImg() {
+    cowImg = null;
+    update();
   }
 }
 

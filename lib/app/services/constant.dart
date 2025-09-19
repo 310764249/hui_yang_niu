@@ -48,6 +48,10 @@ class Constant {
     return "$baseHost:${isDebug ? '1235' : '1237'}/#/details/$type/$id";
   }
 
+  static String getImageUrl(String id) {
+    return '${Constant.uploadFileUrl}$id';
+  }
+
   //正式
 
   //测试

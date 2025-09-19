@@ -100,7 +100,8 @@ class SalesAssessController extends GetxController {
       assessTime.value = event?.date ?? '';
       // 出栏
       salesAssessId = event?.type ?? -1;
-      salesAssess.value = salesAssessList.firstWhere((item) => int.parse(item['value']) == salesAssessId)['label'];
+      salesAssess.value =
+          salesAssessList.firstWhere((item) => int.parse(item['value']) == salesAssessId)['label'];
 
       //填充数据
       countController.text = event?.count.toString() ?? '';
@@ -115,16 +116,23 @@ class SalesAssessController extends GetxController {
 
   //自动计算总价
   void autoCalculate() {
-    if (countController.text.isNotEmpty && priceController.text.isNotEmpty && breakageController.text.isNotEmpty) {
+    if (countController.text.isNotEmpty &&
+        priceController.text.isNotEmpty &&
+        breakageController.text.isNotEmpty) {
       int count = int.parse(countController.text);
       double price = double.parse(priceController.text);
       // double amount = double.parse(amountController.text);
       double breakage = double.parse(breakageController.text);
       double amount = price * count - breakage;
       if (amount > 0) {
-        amountController.text = amount.toStringAsFixed(2).replaceAll(RegExp(r'0*$'), ''); // "$amount";
+        amountController.text = amount
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'0*$'), ''); // "$amount";
         if (amountController.text.endsWith(".")) {
-          amountController.text = amountController.text.substring(0, amountController.text.length - 1);
+          amountController.text = amountController.text.substring(
+            0,
+            amountController.text.length - 1,
+          );
         }
       } else {
         amountController.text = "";
@@ -135,9 +143,7 @@ class SalesAssessController extends GetxController {
   //获取牛只详情
   Future<Cattle> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       Cattle model = Cattle.fromJson(response);
       return Future.value(model);
     } catch (error) {
@@ -159,15 +165,15 @@ class SalesAssessController extends GetxController {
     String? str;
     if (salesAssessId == -1) {
       str = '请选择销售类型';
-    } else if (countController.text.isEmpty) {
+    } /* else if (countController.text.isEmpty) {
       str = '请输入数量';
     } else if (priceController.text.isEmpty) {
       str = '请输入单价';
-    } else if (amountController.text.isEmpty) {
+    }*/ else if (amountController.text.isEmpty) {
       str = '请输入总价';
-    } else if (breakageController.text.isEmpty) {
+    } /* else if (breakageController.text.isEmpty) {
       str = '请输入折损';
-    } else if (assessTime.value.isBlankEx()) {
+    } */ else if (assessTime.value.isBlankEx()) {
       str = '请选择销售日期';
     }
     /*if (purchaseAssessId == -1) {
@@ -189,12 +195,12 @@ class SalesAssessController extends GetxController {
         mapParam = {
           "date": assessTime.value,
           "type": salesAssessId,
-          "count": int.parse(countController.text),
-          "price": double.parse(priceController.text),
+          // "count": int.parse(countController.text),
+          // "price": double.parse(priceController.text),
           "amount": double.parse(amountController.text),
-          "breakage": double.parse(breakageController.text),
+          // "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       } else {
         //* 编辑
@@ -210,12 +216,14 @@ class SalesAssessController extends GetxController {
           "amount": double.parse(amountController.text),
           "breakage": double.parse(breakageController.text),
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       }
 
       debugPrint('-----> $mapParam');
-      isEdit.value ? await httpsClient.put("/api/sales", data: mapParam) : await httpsClient.post("/api/sales", data: mapParam);
+      isEdit.value
+          ? await httpsClient.put("/api/sales", data: mapParam)
+          : await httpsClient.post("/api/sales", data: mapParam);
 
       Toast.dismiss();
       Toast.success(msg: '提交成功');

@@ -55,6 +55,7 @@ class Cattle {
   late final int? nonantCount; //空怀次数
   late final String? lastMating; //上次配种时间
   late final bool? isBan; //是否禁配
+  late String? img; //图片
   bool isSelected = false; //是否选中，页面内部使用
 
   Cattle({
@@ -68,6 +69,7 @@ class Cattle {
     this.sourceFarm,
     this.code,
     this.eleCode,
+    this.img,
     this.batchNo,
     required this.paternalCowId,
     required this.maternalCowId,
@@ -119,6 +121,7 @@ class Cattle {
     farmName = json['farmName'];
     cowHouseId = json['cowHouseId'];
     cowHouseName = json['cowHouseName'];
+    img = json['img'];
     sourceFarm = json['sourceFarm'];
     code = json['code'];
     eleCode = json['eleCode'];

@@ -25,18 +25,18 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
 
   // 操作信息
   Widget _operationInfo(context) {
-    var lstFormat = [
-      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-    ];
-    return Obx(() => MyCard(children: [
+    var lstFormat = [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))];
+    return Obx(
+      () => MyCard(
+        children: [
           controller.isEdit.value
               ? CellButton(
-                  isRequired: true,
-                  title: '采购单号',
-                  hint: '',
-                  content: controller.event?.no ?? "",
-                  showArrow: false,
-                )
+                isRequired: true,
+                title: '采购单号',
+                hint: '',
+                content: controller.event?.no ?? "",
+                showArrow: false,
+              )
               : Container(),
           CellButton(
             isRequired: false,
@@ -44,30 +44,39 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
             hint: '请选择',
             content: controller.purchaseAssess.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.purchaseAssessNameList,
-                  selectData: controller.purchaseAssess.value, title: '请选择', onConfirm: (value, position) {
-                controller.purchaseAssessId = int.parse(controller.purchaseAssessList[position]['value']);
-                controller.purchaseAssess.value = controller.purchaseAssessNameList[position];
-              });
+              Picker.showSinglePicker(
+                context,
+                controller.purchaseAssessNameList,
+                selectData: controller.purchaseAssess.value,
+                title: '请选择',
+                onConfirm: (value, position) {
+                  controller.purchaseAssessId = int.parse(
+                    controller.purchaseAssessList[position]['value'],
+                  );
+                  controller.purchaseAssess.value = controller.purchaseAssessNameList[position];
+                },
+              );
             },
           ),
           CellTextField(
-              isRequired: true,
-              title: '物资名称',
-              hint: '请输入',
-              keyboardType: TextInputType.text,
-              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-              controller: controller.nameController,
-              focusNode: controller.nameNode),
+            isRequired: true,
+            title: '物资名称',
+            hint: '请输入',
+            keyboardType: TextInputType.text,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.nameController,
+            focusNode: controller.nameNode,
+          ),
           CellTextField(
-              isRequired: false,
-              title: '采购厂家',
-              hint: '请输入',
-              keyboardType: TextInputType.text,
-              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-              controller: controller.manufacturersController,
-              focusNode: controller.manufacturersNode),
-          CellTextField(
+            isRequired: false,
+            title: '采购厂家',
+            hint: '请输入',
+            keyboardType: TextInputType.text,
+            //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+            controller: controller.manufacturersController,
+            focusNode: controller.manufacturersNode,
+          ),
+          /*          CellTextField(
             isRequired: true,
             title: '数量',
             hint: '请输入',
@@ -113,7 +122,7 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
             onComplete: () {
               controller.breakageController.text = double.parse(controller.breakageController.text.trim()).toString();
             },
-          ),
+          ),*/
           CellTextField(
             isRequired: true,
             title: '总价(元)',
@@ -124,27 +133,38 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
             controller: controller.amountController,
             focusNode: controller.amountNode,
             onComplete: () {
-              controller.amountController.text = double.parse(controller.amountController.text.trim()).toString();
+              controller.amountController.text =
+                  double.parse(controller.amountController.text.trim()).toString();
             },
           ),
           CellButton(
-              isRequired: true,
-              title: '采购日期',
-              hint: '请选择',
-              content: controller.assessTime.value,
-              onPressed: () {
-                Picker.showDatePicker(context, title: '请选择时间', selectDate: controller.assessTime.value, onConfirm: (date) {
-                  controller.assessTime.value = "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                });
-              }),
+            isRequired: true,
+            title: '采购日期',
+            hint: '请选择',
+            content: controller.assessTime.value,
+            onPressed: () {
+              Picker.showDatePicker(
+                context,
+                title: '请选择时间',
+                selectDate: controller.assessTime.value,
+                onConfirm: (date) {
+                  controller.assessTime.value =
+                      "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                },
+              );
+            },
+          ),
           CellTextArea(
-              isRequired: false,
-              title: "备注信息",
-              hint: "请输入",
-              showBottomLine: false,
-              controller: controller.remarkController,
-              focusNode: controller.remarkNode),
-        ]));
+            isRequired: false,
+            title: "备注信息",
+            hint: "请输入",
+            showBottomLine: false,
+            controller: controller.remarkController,
+            focusNode: controller.remarkNode,
+          ),
+        ],
+      ),
+    );
   }
 
   // 提交按钮
@@ -152,45 +172,49 @@ class PurchaseAssessView extends GetView<PurchaseAssessController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () async {
-            controller.commitPreventionData();
-          }),
+        text: "提交",
+        onPressed: () async {
+          controller.commitPreventionData();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          // leading设置屏蔽长按返回键的back toast
-          leading: WillPopScope(
-            onWillPop: () async {
+      appBar: AppBar(
+        // leading设置屏蔽长按返回键的back toast
+        leading: WillPopScope(
+          onWillPop: () async {
+            // 在这里执行返回按钮的操作
+            Navigator.of(context).pop();
+            return false; // 返回false禁用弹框提示
+          },
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
               // 在这里执行返回按钮的操作
               Navigator.of(context).pop();
-              return false; // 返回false禁用弹框提示
             },
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                // 在这里执行返回按钮的操作
-                Navigator.of(context).pop();
-              },
-            ),
           ),
-          title: const Text('采购'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
         ),
-        body: PageWrapper(
-          config: controller.buildConfig(context),
-          child: ListView(children: [
+        title: const Text('采购'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: PageWrapper(
+        config: controller.buildConfig(context),
+        child: ListView(
+          children: [
             // 操作信息
             _operationInfo(context),
             // 提交按钮
-            _commitButton()
-          ]),
-        ));
+            _commitButton(),
+          ],
+        ),
+      ),
+    );
   }
 }

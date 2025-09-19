@@ -66,10 +66,14 @@ class MessageView extends GetView<MessageController> {
     String title,
     String content,
     String time,
+    String msgId,
     Function() onTapEvent,
   ) {
     return InkWell(
-      onTap: onTapEvent,
+      onTap: () {
+        onTapEvent();
+        controller.readMessage(msgId);
+      },
       child: Column(
         children: [
           SizedBox(
@@ -144,6 +148,7 @@ class MessageView extends GetView<MessageController> {
             Notice.getEventNameByCode(notice.type ?? -1),
             notice.content ?? '',
             notice.created.orEmpty(),
+            notice.id!,
             () {
               //查看指南
               Log.d(notice.toJson().toString());
@@ -158,6 +163,7 @@ class MessageView extends GetView<MessageController> {
           Notice.getEventNameByCode(notice.type ?? -1),
           '牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())}); 栋舍: ${notice.cowHouseName}; 事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
           notice.created.orEmpty(),
+          notice.id!,
           () {
             if (notice.type == 412 || notice.type == 411) {
               //待换料
@@ -173,6 +179,7 @@ class MessageView extends GetView<MessageController> {
           '提醒消息',
           notice.content ?? Constant.placeholder,
           notice.created.orEmpty(),
+          notice.id!,
           () {
             Get.toNamed(
               Routes.MESSAGE_DETAIL,
@@ -190,6 +197,7 @@ class MessageView extends GetView<MessageController> {
           '系统通知',
           notice.content ?? Constant.placeholder,
           notice.created.orEmpty(),
+          notice.id!,
           () {
             Get.toNamed(
               Routes.MESSAGE_DETAIL,

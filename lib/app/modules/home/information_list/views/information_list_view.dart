@@ -34,6 +34,9 @@ class InformationListView extends GetView<InformationListController> {
           controller.isLoading.value = true;
           controller.searchArticleList();
         },
+        onChanged: (value) {
+          controller.searchStr = value;
+        },
         style: TextStyle(fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.black28),
         decoration: const InputDecoration(
           hintText: '请输入标题',
@@ -301,8 +304,7 @@ class InformationListView extends GetView<InformationListController> {
                                   userName: model.publisher ?? '',
                                   isVideo: model.type == 4,
                                   onPressed: () {
-                                    String openURL =
-                                        Constant.getCMS(model.type, model.id);
+                                    String openURL = Constant.getCMS(model.type, model.id);
                                     debugPrint('openURL: $openURL');
                                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                                   },

@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/services/Log.dart';
+import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../../../models/notice.dart';
@@ -167,9 +168,14 @@ class MessageView extends GetView<MessageController> {
           notice.created.orEmpty(),
           notice.id!,
           () {
-            if (notice.type == 412 || notice.type == 411) {
+            if (notice.type == 412 || notice.type == 411 || 403 == notice.type) {
               //待换料
-              controller.goToChangeCattle(notice);
+              // controller.goToChangeCattle(notice);
+              Alert.showSure(
+                '栋舍: ${notice.cowHouseName}; '
+                '\n牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())});'
+                '\n事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
+              );
               return;
             }
             controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);

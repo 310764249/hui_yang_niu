@@ -77,20 +77,17 @@ class BuyInController extends GetxController {
     super.onInit();
 
     //初始化为当前日期
-    birthday.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
-    stationedTime.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    birthday.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    stationedTime.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //初始化字典项
     breedList = AppDictList.searchItems('pz') ?? [];
     selectedBreedID = breedList.isNotEmpty ? breedList.first['value'] : '';
-    breedNameList =
-        List<String>.from(breedList.map((item) => item['label']).toList());
+    breedNameList = List<String>.from(breedList.map((item) => item['label']).toList());
     //公、母
     genderList = AppDictList.searchItems('gm') ?? [];
     selectedGenderID = genderList.isNotEmpty ? genderList.first['value'] : '';
-    genderNameList =
-        List<String>.from(genderList.map((item) => item['label']).toList());
+    genderNameList = List<String>.from(genderList.map((item) => item['label']).toList());
+    genderNameList.removeWhere((element) => element == '混合');
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
     //获取栋舍列表名称用于 Picker 显示
@@ -127,11 +124,15 @@ class BuyInController extends GetxController {
       //性别
       selectedGenderID = event!.gender.toString(); //提交数据
       selectedGenderIndex.value = AppDictList.findIndexByCode(
-          genderList, event!.gender.toString()); //显示选中项
+        genderList,
+        event!.gender.toString(),
+      ); //显示选中项
       //品种
       selectedBreedID = event!.kind.toString(); //提交数据
       selectedBreedIndex.value = AppDictList.findIndexByCode(
-          breedList, event!.kind.toString()); //显示选中项
+        breedList,
+        event!.kind.toString(),
+      ); //显示选中项
       //更新栋舍
       selectedHouseID = event!.cowHouseId;
       selectedHouseName.value = event!.cowHouseName ?? '';
@@ -220,8 +221,7 @@ class BuyInController extends GetxController {
         'gender': int.parse(selectedGenderID), // 性别1：公；2：母；
         'count': countController.text.trim(), // 数量
         'executor': UserInfoTool.nickName(), //必传 引种人
-        'date':
-            DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        'date': DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
         'remark': remarkController.text.trim(), //必传 备注
       };
       // print(para);
@@ -259,8 +259,7 @@ class BuyInController extends GetxController {
         'gender': int.parse(selectedGenderID), // 性别1：公；2：母；
         'count': countController.text.trim(), // 数量
         'executor': UserInfoTool.nickName(), //必传 引种人
-        'date':
-            DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
+        'date': DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d), //
         'remark': remarkController.text.trim(), //必传 备注
       };
       // print(para);

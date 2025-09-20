@@ -257,10 +257,10 @@ class CattleEditController extends GetxController {
       return;
     }
     //时间不能小于入场日期
-    if (timesStr.value.isBefore(birthStr.value)) {
-      Toast.show('入场时间不能早于出生日期');
-      return;
-    }
+    // if (timesStr.value.isBefore(birthStr.value)) {
+    //   Toast.show('入场时间不能早于出生日期');
+    //   return;
+    // }
     //
     editAction();
   }
@@ -275,7 +275,6 @@ class CattleEditController extends GetxController {
           'id': argument!.id, //事件 ID
           'farmId': argument!.farmId, //事件 ID
           'rowVersion': argument!.rowVersion, //事件行版本
-
           'sourceFarm': sourceController.text.trim(), //来源场
           'cowHouseId': selectedHouseID, //必传 string 栋舍
           'code': codeController.text.trim(), //耳号

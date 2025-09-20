@@ -203,7 +203,7 @@ class CattleEditView extends GetView<CattleEditController> {
           focusNode: controller.sourceNode,
         ),
         CellButton(
-          isRequired: true,
+          isRequired: false,
           title: "入场时间",
           hint: "请选择",
           showBottomLine: true,

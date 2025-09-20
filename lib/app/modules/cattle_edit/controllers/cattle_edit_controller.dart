@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
@@ -8,6 +11,7 @@ import 'package:keyboard_actions/keyboard_actions_config.dart';
 import '../../../models/cattle.dart';
 import '../../../models/cow_house.dart';
 import '../../../network/apiException.dart';
+import '../../../network/file_upload.dart';
 import '../../../network/httpsClient.dart';
 import '../../../services/Log.dart';
 import '../../../services/common_service.dart';
@@ -88,17 +92,17 @@ class CattleEditController extends GetxController {
   String pregnancyCurID = '';
   RxInt pregnancyNumPosition = 0.obs;
 
+  File? cowImg;
+
   @override
   void onInit() async {
     super.onInit();
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //初始化字典项
     szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
     szjdCurID = szjdList.isNotEmpty ? szjdList.first['value'] : '';
-    szjdNameList =
-        List<String>.from(szjdList.map((item) => item['label']).toList());
+    szjdNameList = List<String>.from(szjdList.map((item) => item['label']).toList());
     //公牛的生长阶段
     List temp = [];
     for (var element in szjdList) {
@@ -107,19 +111,16 @@ class CattleEditController extends GetxController {
       }
     }
     gSzjdList = temp;
-    gSzjdNameList =
-        List<String>.from(gSzjdList.map((item) => item['label']).toList());
+    gSzjdNameList = List<String>.from(gSzjdList.map((item) => item['label']).toList());
 
     //品种
     pzList = AppDictList.searchItems('pz') ?? [];
     pzCurID = pzList.isNotEmpty ? pzList.first['value'] : '';
-    pzNameList =
-        List<String>.from(pzList.map((item) => item['label']).toList());
+    pzNameList = List<String>.from(pzList.map((item) => item['label']).toList());
     //公母
     gmList = AppDictList.searchItems('gm') ?? [];
     gmCurID = gmList.isNotEmpty ? gmList.first['value'] : '';
-    gmNameList =
-        List<String>.from(gmList.map((item) => item['label']).toList());
+    gmNameList = List<String>.from(gmList.map((item) => item['label']).toList());
     //胎次
     pregnancyCurID = '0';
     pregnancyNumPosition.value = 0;
@@ -144,19 +145,12 @@ class CattleEditController extends GetxController {
       //填充耳号
       codeController.text = argument!.code ?? '';
       //
-      updateGMIndex(
-          AppDictList.findIndexByCode(gmList, argument!.gender.toString()));
+      updateGMIndex(AppDictList.findIndexByCode(gmList, argument!.gender.toString()));
       if (argument!.gender == 1) {
         //公
-        updateSZJD(
-            AppDictList.findIndexByCode(
-                gSzjdList, argument!.growthStage.toString()),
-            0);
+        updateSZJD(AppDictList.findIndexByCode(gSzjdList, argument!.growthStage.toString()), 0);
       } else {
-        updateSZJD(
-            AppDictList.findIndexByCode(
-                szjdList, argument!.growthStage.toString()),
-            1);
+        updateSZJD(AppDictList.findIndexByCode(szjdList, argument!.growthStage.toString()), 1);
       }
       updatePZ(AppDictList.findIndexByCode(pzList, argument!.kind.toString()));
       updatePregnancy(argument?.calvNum ?? 0);
@@ -296,6 +290,21 @@ class CattleEditController extends GetxController {
           'remark': remarkController.text.trim(), // 备注
         };
 
+        if (cowImg != null) {
+          print("uploadWithWithTag：开始上传牛只图片");
+          try {
+            String ID = await FileUploadTool().uploadWithWithTag(
+              cowImg!.path,
+              codeController.text.trim(),
+            );
+            // iconUrl.value = '${Constant.getAPI}/$ID';
+            para['img'] = ID;
+          } catch (e) {
+            print("uploadWithWithTag$e");
+            Toast.dismiss();
+          }
+        }
+
         //print(para);
         await httpsClient.put("/api/cow", data: para);
         Toast.dismiss();
@@ -314,5 +323,20 @@ class CattleEditController extends GetxController {
         }
       }
     }
+  }
+
+  selectCawImage() {
+    final ImagePicker _picker = ImagePicker();
+    _picker.pickImage(source: ImageSource.gallery).then((value) {
+      if (value != null) {
+        cowImg = File(value.path);
+        update();
+      }
+    });
+  }
+
+  void clearCowImg() {
+    cowImg = null;
+    update();
   }
 }

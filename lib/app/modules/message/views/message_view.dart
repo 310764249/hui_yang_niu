@@ -155,6 +155,8 @@ class MessageView extends GetView<MessageController> {
               String openURL = Constant.getCMS(notice.articleType ?? 0, notice.articleId ?? '');
               Log.d(openURL);
               Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
+              notice.readTime = '';
+              controller.update();
             },
           );
         }
@@ -249,7 +251,17 @@ class MessageView extends GetView<MessageController> {
                     itemCount: controller.items.length,
                     itemBuilder: (BuildContext context, int index) {
                       // 更加不同的分类显示不同的item样式
-                      return displayNoticeItemsByCategory(controller.items[index]);
+                      return Stack(
+                        children: [
+                          displayNoticeItemsByCategory(controller.items[index]),
+                          if (!controller.items[index].isRead())
+                            const Positioned(
+                              top: 16,
+                              left: 14,
+                              child: Icon(Icons.circle, color: Colors.red, size: 12),
+                            ),
+                        ],
+                      );
                     },
                   ),
         ),

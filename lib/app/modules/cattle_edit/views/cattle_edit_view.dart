@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/services/load_image.dart';
 import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
 
 import '../../../services/constant.dart';
@@ -25,39 +26,94 @@ class CattleEditView extends GetView<CattleEditController> {
       children: [
         // 生长阶段
         RadioButtonGroup(
-            isRequired: true,
-            title: '生长阶段',
-            selectedIndex: controller.szjdCurIndex.value,
-            items: controller.szjdNameList,
-            showBottomLine: true,
-            onChanged: (index) {
-              controller.updateSZJD(index,1);
-            }),
+          isRequired: true,
+          title: '生长阶段',
+          selectedIndex: controller.szjdCurIndex.value,
+          items: controller.szjdNameList,
+          showBottomLine: true,
+          onChanged: (index) {
+            controller.updateSZJD(index, 1);
+          },
+        ),
         RadioButtonGroup(
-            isRequired: true,
-            title: '胎次',
-            selectedIndex: controller.pregnancyNumPosition.value,
-            items: Constant.pregnancyNumList,
-            onChanged: (index) {
-              controller.updatePregnancy(index);
-            }),
+          isRequired: true,
+          title: '胎次',
+          selectedIndex: controller.pregnancyNumPosition.value,
+          items: Constant.pregnancyNumList,
+          onChanged: (index) {
+            controller.updatePregnancy(index);
+          },
+        ),
       ],
     );
   }
 
   //操作信息
   Widget _operationInfo(context) {
-    return MyCard(children: [
-      const CardTitle(title: "操作信息"),
-      CellTextField(
-        isRequired: true,
-        title: '耳号',
-        hint: "请输入",
-        controller: controller.codeController,
-        focusNode: controller.codeNode,
-      ),
-      // 公母
-      RadioButtonGroup(
+    return MyCard(
+      children: [
+        const CardTitle(title: "操作信息"),
+        CellTextField(
+          isRequired: true,
+          title: '耳号',
+          hint: "请输入",
+          controller: controller.codeController,
+          focusNode: controller.codeNode,
+        ),
+        Container(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('牛只图片', style: TextStyle(fontWeight: FontWeight.w500)),
+              GestureDetector(
+                onTap: () {
+                  controller.selectCawImage();
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: GetBuilder<CattleEditController>(
+                      builder: (context) {
+                        return controller.cowImg == null
+                            ? controller.argument?.img != null
+                                ? LoadImage(Constant.getImageUrl(controller.argument!.img!))
+                                : const Icon(Icons.add)
+                            : Stack(
+                              clipBehavior: Clip.none,
+                              fit: StackFit.expand,
+                              children: [
+                                Image.file(controller.cowImg!, fit: BoxFit.fill),
+                                Positioned(
+                                  top: -10,
+                                  right: -10,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.close, color: Colors.white),
+                                    onPressed: () {
+                                      controller.clearCowImg();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // 公母
+        RadioButtonGroup(
           isRequired: true,
           title: '公母',
           selectedIndex: controller.gmCurIndex.value,
@@ -66,45 +122,52 @@ class CattleEditView extends GetView<CattleEditController> {
           onChanged: (index) {
             // Toast.show('--> $value');
             controller.updateGMIndex(index);
-          }),
+          },
+        ),
 
-      // 公母-类型
-      controller.gmCurIndex.value == 0
-          ? // 生长阶段
-          RadioButtonGroup(
+        // 公母-类型
+        controller.gmCurIndex.value == 0
+            ? // 生长阶段
+            RadioButtonGroup(
               isRequired: true,
               title: '生长阶段',
               selectedIndex: controller.szjdCurIndex.value,
               items: controller.gSzjdNameList,
               showBottomLine: true,
               onChanged: (index) {
-                controller.updateSZJD(index,0);
-              })
-          : _cowLayout(context),
-      CellTextField(
-        isRequired: false,
-        title: '电子耳号',
-        hint: "请输入",
-        controller: controller.eleCodeController,
-        focusNode: controller.eleCodeNode,
-      ),
-      CellButton(
-        isRequired: true,
-        title: "出生年月",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.birthStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
-            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateBirthday(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
+                controller.updateSZJD(index, 0);
+              },
+            )
+            : _cowLayout(context),
+        CellTextField(
+          isRequired: false,
+          title: '电子耳号',
+          hint: "请输入",
+          controller: controller.eleCodeController,
+          focusNode: controller.eleCodeNode,
+        ),
+        CellButton(
+          isRequired: true,
+          title: "出生年月",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.birthStr.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              onConfirm: (date) {
+                //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+                controller.updateBirthday(
+                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+                );
+              },
+            );
+          },
+        ),
 
-      // 品种
-      RadioButtonGroup(
+        // 品种
+        RadioButtonGroup(
           isRequired: true,
           title: '品种',
           selectedIndex: controller.pzCurIndex.value,
@@ -112,58 +175,69 @@ class CattleEditView extends GetView<CattleEditController> {
           showBottomLine: true,
           onChanged: (index) {
             controller.updatePZ(index);
-          }),
-      CellButton(
-        isRequired: true,
-        title: "栋舍",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.selectedHouseName.value,
-        showArrow: true,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
-            controller.updateCurCowHouse(value, p);
-          });
-        },
-      ),
-      CellTextField(
-        isRequired: false,
-        title: '来源场',
-        hint: "请输入",
-        controller: controller.sourceController,
-        focusNode: controller.sourceNode,
-      ),
-      CellButton(
-        isRequired: true,
-        title: "入场时间",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
-            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
-      CellTextField(
-        isRequired: false,
-        title: '栏位',
-        hint: "请输入",
-        controller: controller.columnController,
-        focusNode: controller.columnNode,
-      ),
-      CellTextArea(
-        isRequired: false,
-        title: "备注信息",
-        hint: "请输入",
-        showBottomLine: false,
-        controller: controller.remarkController,
-        focusNode: controller.remarkNode,
-      ),
-    ]);
+          },
+        ),
+        CellButton(
+          isRequired: true,
+          title: "栋舍",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.selectedHouseName.value,
+          showArrow: true,
+          onPressed: () {
+            Picker.showSinglePicker(
+              context,
+              controller.houseNameList,
+              title: '请选择栋舍',
+              onConfirm: (value, p) {
+                controller.updateCurCowHouse(value, p);
+              },
+            );
+          },
+        ),
+        CellTextField(
+          isRequired: false,
+          title: '来源场',
+          hint: "请输入",
+          controller: controller.sourceController,
+          focusNode: controller.sourceNode,
+        ),
+        CellButton(
+          isRequired: true,
+          title: "入场时间",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.timesStr.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              onConfirm: (date) {
+                //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+                controller.updateSeldate(
+                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+                );
+              },
+            );
+          },
+        ),
+        CellTextField(
+          isRequired: false,
+          title: '栏位',
+          hint: "请输入",
+          controller: controller.columnController,
+          focusNode: controller.columnNode,
+        ),
+        CellTextArea(
+          isRequired: false,
+          title: "备注信息",
+          hint: "请输入",
+          showBottomLine: false,
+          controller: controller.remarkController,
+          focusNode: controller.remarkNode,
+        ),
+      ],
+    );
   }
 
   //提交按钮
@@ -171,30 +245,36 @@ class CattleEditView extends GetView<CattleEditController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () {
-            controller.requestCommit();
-          }),
+        text: "提交",
+        onPressed: () {
+          controller.requestCommit();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('牛只编辑'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('牛只编辑'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Obx(
+        () => PageWrapper(
+          config: controller.buildConfig(context),
+          child: ListView(
+            children: [
+              //操作信息
+              _operationInfo(context),
+              //提交按钮
+              _commitButton(),
+            ],
+          ),
         ),
-        body: Obx(() => PageWrapper(
-              config: controller.buildConfig(context),
-              child: ListView(children: [
-                //操作信息
-                _operationInfo(context),
-                //提交按钮
-                _commitButton()
-              ]),
-            )));
+      ),
+    );
   }
 }

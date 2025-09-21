@@ -53,10 +53,7 @@ class DieCattleController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '种牛',
-    '犊牛/育肥牛',
-  ];
+  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
   //当前选中的牛
@@ -93,18 +90,15 @@ class DieCattleController extends GetxController {
     super.onInit();
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //淘汰原因
     reasonList = AppDictList.searchItems('swyy') ?? [];
     curReasonID = reasonList.isNotEmpty ? reasonList.first['value'] : '';
-    reasonNameList =
-        List<String>.from(reasonList.map((item) => item['label']).toList());
+    reasonNameList = List<String>.from(reasonList.map((item) => item['label']).toList());
     //获取生长阶段字典项
     List szjdList = AppDictList.searchItems('szjd') ?? [];
     // 筛选显示
-    szjdListFiltered =
-        AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
+    szjdListFiltered = AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
     //首先处理传入参数
     handleArgument();
   }
@@ -143,19 +137,18 @@ class DieCattleController extends GetxController {
       countController.text = event!.count == 0 ? '' : event!.count.toString();
       //填充原因
       curReasonID = event!.cause.toString(); //提交数据
-      reasonIndex.value = AppDictList.findIndexByCode(
-          reasonList, event!.cause.toString()); //显示选中项
+      reasonIndex.value = AppDictList.findIndexByCode(reasonList, event!.cause.toString()); //显示选中项
 
-      if (!ObjectUtil.isEmpty(event!.attach) &&
-          event!.attach != Constant.placeholder) {
+      if (!ObjectUtil.isEmpty(event!.attach) && event!.attach != Constant.placeholder) {
         //图片
         imgsPathList = (event!.attach ?? '').split(',');
         //把 ID 换为 图片地址
         List<String> temp = [];
         for (String ID in imgsPathList) {
           //
-          String path = await FileUploadTool().requestUploadPath(ID);
-          temp.add('${Constant.uploadFile}/$path?id=$ID');
+          // String path = await FileUploadTool().requestUploadPath(ID);
+          String path = Constant.getImageUrl(ID);
+          temp.add(path);
           //https://file.zbxx.info/uploads/jxzx/breed/breedmini/4e.jpg?id=1
         }
         // imgsList.value =
@@ -305,9 +298,10 @@ class DieCattleController extends GetxController {
         'count': countController.text.trim(), //必传 integer 数量
         'cause': int.parse(curReasonID), //必传 integer 死亡原因
         'executor': UserInfoTool.nickName(), // string 鉴定人
-        'attach': ObjectUtil.isEmpty(imgsPathList.join(','))
-            ? ''
-            : imgsPathList.join(','), // string 附件 "xxx.png,xxx.png,xxx.png"
+        'attach':
+            ObjectUtil.isEmpty(imgsPathList.join(','))
+                ? ''
+                : imgsPathList.join(','), // string 附件 "xxx.png,xxx.png,xxx.png"
         'date': timesStr.value, //必传 string 死亡时间
         'remark': remarkController.text.trim(), // 备注
       };
@@ -346,9 +340,10 @@ class DieCattleController extends GetxController {
         'count': countController.text.trim(), //必传 integer 数量
         'cause': int.parse(curReasonID), //必传 integer 死亡原因
         'executor': UserInfoTool.nickName(), // string 鉴定人
-        'attach': ObjectUtil.isEmpty(imgsPathList.join(','))
-            ? ''
-            : imgsPathList.join(','), // string 附件 "xxx.png,xxx.png,xxx.png"
+        'attach':
+            ObjectUtil.isEmpty(imgsPathList.join(','))
+                ? ''
+                : imgsPathList.join(','), // string 附件 "xxx.png,xxx.png,xxx.png"
         'date': timesStr.value, //必传 string 死亡时间
         'remark': remarkController.text.trim(), // 备注
       };
@@ -374,9 +369,7 @@ class DieCattleController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();

@@ -67,10 +67,7 @@ class SelectCattleController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '后备公牛',
-    '后备母牛',
-  ];
+  List<String> chooseTypeNameList = ['后备公牛', '后备母牛'];
   String selectedGenderID = ''; //提交数据使用
   RxInt selectedGenderIndex = 0.obs;
 
@@ -144,10 +141,14 @@ class SelectCattleController extends GetxController {
       updateBirthday(event!.date);
       //填充性别
       selectedGenderID = event!.gender.toString(); //提交数据
-      selectedGenderIndex.value = AppDictList.findIndexByCode(chooseTypeList, event!.gender.toString()); //显示选中项
+      selectedGenderIndex.value = AppDictList.findIndexByCode(
+        chooseTypeList,
+        event!.gender.toString(),
+      ); //显示选中项
       //填充品种
       selectedBreedID = event!.kind.toString(); //提交数据
-      selectedBreedIndex.value = AppDictList.findIndexByCode(breedList, event!.kind.toString()); //显示选中项
+      // selectedBreedIndex.value = AppDictList.findIndexByCode(breedList, event!.kind.toString()); //显示选中项
+      selectedBreedIndex.value = event?.gender ?? 1;
       //更新栋舍
       selectedHouseID = event!.inCowHouseId;
       selectedHouseName.value = event!.inCowHouseName ?? '';

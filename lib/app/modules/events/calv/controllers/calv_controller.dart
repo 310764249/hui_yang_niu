@@ -183,6 +183,13 @@ class CalvController extends GetxController {
     update();
   }
 
+  // 更新"栋舍"选中项
+  void updateCurCowHouseName(String cowHouse) {
+    selectedHouseName.value = cowHouse;
+    update();
+    selectedHouseID = houseList.firstWhereOrNull((e) => e.name == cowHouse)?.id ?? '';
+  }
+
   // 更新产护
   void updatePass(int index) {
     curPassID = passList[index]['value'];
@@ -306,9 +313,7 @@ class CalvController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();

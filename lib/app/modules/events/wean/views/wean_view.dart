@@ -56,6 +56,8 @@ class WeanView extends GetView<WeanController> {
               controller.updateCodeString(list.first.code ?? '');
               controller.count = '1';
               controller.countController.text = '1';
+              debugPrint('获取的牛只模型：${list.first.toJson().toString()}');
+              controller.getNewBatchNumber(controller.selectedCow);
             });
           },
         ),

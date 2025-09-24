@@ -307,9 +307,7 @@ class WeanController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();
@@ -320,6 +318,24 @@ class WeanController extends GetxController {
       } else {
         // HTTP 请求异常情况
         Log.d('Other Exception: $error');
+      }
+    }
+  }
+
+  void getNewBatchNumber(Cattle selectedCow) {
+    try {
+      httpsClient.get("/api/calv/getbatchnobyno", queryParameters: {'no': selectedCow.code}).then((
+        value,
+      ) {
+        calveBatchNumber.value = value;
+        update();
+      });
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        // 处理 API 请求异常情况 code不为 0 的场景
+        Log.d('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
       }
     }
   }

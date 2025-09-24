@@ -181,6 +181,8 @@ class Notice {
         return '待补饲';
       case 412:
         return '待换料';
+      case 413:
+        return '待孕检';
       //
       case 210:
         return '生产指南';

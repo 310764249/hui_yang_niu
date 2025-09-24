@@ -134,7 +134,6 @@ class Alert {
                 SizedBox(height: ScreenAdapter.height(5)),
                 Text(
                   msg,
-                  maxLines: 3,
                   style: TextStyle(
                     color: const Color(0xFF333333),
                     fontSize: ScreenAdapter.fontSize(16),

@@ -89,7 +89,9 @@ class SelectCattleView extends GetView<SelectCattleController> {
           items: controller.chooseTypeNameList,
           showBottomLine: true,
           onChanged: (value) {
-            // controller.updateCurGender(value);
+            if (!controller.batchNumber.contains('YZ')) {
+              controller.updateCurGender(value);
+            }
           },
         ),
 

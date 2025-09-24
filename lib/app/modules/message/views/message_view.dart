@@ -168,13 +168,15 @@ class MessageView extends GetView<MessageController> {
           notice.created.orEmpty(),
           notice.id!,
           () {
-            if (notice.type == 412 || notice.type == 411 || 403 == notice.type) {
+            debugPrint('待换料${notice.toJson()}');
+            if (notice.type == 412 || notice.type == 411) {
               //待换料
               // controller.goToChangeCattle(notice);
               Alert.showSure(
                 '栋舍: ${notice.cowHouseName}; '
                 '\n牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())});'
-                '\n事件: ${Notice.getEventNameByCode(notice.type ?? -1)};',
+                '\n事件: ${Notice.getEventNameByCode(notice.type ?? -1)};'
+                '${notice.type == 412 ? '\n\n\t\t\t${notice.content ?? ''}' : ''}',
               );
               return;
             }

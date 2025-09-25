@@ -18,7 +18,7 @@ import '../controllers/recipe_create_controller.dart';
 /// 创建配方
 ///
 class RecipeCreateView extends GetView<RecipeCreateController> {
-  const RecipeCreateView({Key? key}) : super(key: key);
+  const RecipeCreateView({super.key});
 
   // 根据选择的个体类型不同去显示不同的选项
   // 日增重目标 - 生长母牛
@@ -26,6 +26,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
   // 哺乳月份 - 哺乳母牛
   // 泌乳量目标 - 哺乳母牛
   Widget _dynamicWidgets(BuildContext context) {
+    // debugPrint('controller.gtlxValue.value${controller.gtlxValue.value}');
     switch (controller.gtlxValue.value) {
       case 1:
         return CellButton(
@@ -106,42 +107,40 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
         );
       case 4:
         // 育肥牛
+        final Map<int, List<double>> weightRangeMap = {
+          240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+          280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+          320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+          360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+          520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+          560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+          600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+          640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+          760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+          800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+          840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+        };
+        final weightStr = controller.gtzlSelName.value.replaceAll('kg', '');
+        final weight = int.tryParse(weightStr);
         return CellButton(
           isRequired: true,
           title: '日增重目标',
           content: controller.rzzSelName.value,
           onPressed: () {
-            final weightStr = controller.gtzlSelName.value.replaceAll('千克', '');
-            final weight = int.tryParse(weightStr);
+            debugPrint('controller.gtzlSelName.value${controller.gtzlSelName.value}');
 
-            final Map<int, List<double>> weightRangeMap = {
-              200: [0.5, 1.5],
-              250: [0.5, 1.5],
-              300: [0.5, 1.5],
-              350: [0.5, 1.5],
-              400: [1.0, 2.0],
-              450: [1.0, 2.0],
-              500: [1.0, 2.0],
-              550: [1.0, 2.0],
-              600: [1.0, 1.5],
-              650: [1.0, 1.5],
-              700: [1.0, 1.5],
-              750: [1.0, 1.5],
-              800: [1.0, 1.5],
-            };
+            debugPrint('weight$weight');
 
             if (weight != null && weightRangeMap.containsKey(weight)) {
               final range = weightRangeMap[weight]!;
 
-              // 原始数组：字典返回的完整区间
-              final originList = controller.rzzNameListYF;
-
-              // 截取落在当前区间的选项
-              final filteredList =
-                  originList.where((item) {
-                    final v = double.tryParse(item.replaceAll('千克', ''));
-                    return v != null && v >= range[0] && v <= range[1];
-                  }).toList();
+              // 直接取 key 对应的所有数据，不再去 originList 里筛
+              final filteredList = range.map((e) => '${e}kg').toList();
 
               if (filteredList.isEmpty) {
                 debugPrint('当前体重无可选日增重区间');
@@ -156,8 +155,8 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                 title: '请选择日增重',
                 onConfirm: (value, position) {
                   debugPrint('value: $value, position: $position');
-                  //根据返回的value，在没有筛选的数据中找position
-                  int index = originList.indexWhere((item) => item == value);
+                  // 在原始列表里找对应位置（如果需要的话）
+                  int index = filteredList.indexOf(value);
                   controller.updateRzzSelectedItems(value, index);
                 },
               );

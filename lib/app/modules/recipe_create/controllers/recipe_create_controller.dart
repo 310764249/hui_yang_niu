@@ -79,7 +79,7 @@ class RecipeCreateController extends GetxController {
   void updateGtlxSelectedItems(value, int position) {
     // 更新类型value, 显示不同的布局
     gtlxValue.value = int.parse(gtlxList[position]['value']);
-
+    debugPrint('==> 个体类型: ${gtlxValue.value}');
     gtlxSelIndex = position;
     gtlxSelName.value = gtlxNameList[position];
 
@@ -408,7 +408,7 @@ class RecipeCreateController extends GetxController {
     gtzlListHB =
         AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
     gtzlListRS =
-        AppDictList.searchItems('gtzl-rs')?.where((item) => !item['isDeleted']).toList() ?? [];
+        AppDictList.searchItems('gtzl-qnrs')?.where((item) => !item['isDeleted']).toList() ?? [];
     gtzlListBR =
         AppDictList.searchItems('gtzl-br')?.where((item) => !item['isDeleted']).toList() ?? [];
     gtzlListYF =

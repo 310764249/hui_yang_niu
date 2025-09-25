@@ -29,22 +29,41 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
     // debugPrint('controller.gtlxValue.value${controller.gtlxValue.value}');
     switch (controller.gtlxValue.value) {
       case 1:
+        //3.妊娠母牛
+        // 姬去掉牛只重量和日增重，
         return CellButton(
           isRequired: true,
-          title: '日增重目标',
-          content: controller.rzzSelName.value,
+          title: '妊娠月份',
+          content: controller.rsyfSelName.value,
           onPressed: () {
             Picker.showSinglePicker(
               context,
-              controller.rzzNameListHB,
-              selectData: controller.rzzSelName.value,
-              title: '请选择日增重',
+              controller.rsyfNameList,
+              selectData: controller.rsyfSelName.value,
+              title: '请选择妊娠月份',
               onConfirm: (value, position) {
-                controller.updateRzzSelectedItems(value, position);
+                controller.updateRsyfSelectedItems(value, position);
               },
             );
           },
         );
+        ;
+      // return CellButton(
+      //   isRequired: true,
+      //   title: '日增重目标',
+      //   content: controller.rzzSelName.value,
+      //   onPressed: () {
+      //     Picker.showSinglePicker(
+      //       context,
+      //       controller.rzzNameListHB,
+      //       selectData: controller.rzzSelName.value,
+      //       title: '请选择日增重',
+      //       onConfirm: (value, position) {
+      //         controller.updateRzzSelectedItems(value, position);
+      //       },
+      //     );
+      //   },
+      // );
       case 2:
         return CellButton(
           isRequired: true,
@@ -200,31 +219,34 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           controller: controller.livestockHandController,
           keyboardType: TextInputType.number,
         ),
-        CellButton(
-          isRequired: true,
-          title: '牛只重量',
-          content: controller.gtzlSelName.value,
-          onPressed: () {
-            if (controller.gtzlList.isEmpty) {
-              Toast.show('请先选择个体类型');
-              return;
-            }
-            if (controller.gtzlNameList.isEmpty) {
-              Toast.show('个体重量列表获取失败');
-              return;
-            }
+        //3.妊娠母牛
+        // 姬去掉牛只重量和日增重，gtlxValue.value ==1和3不显示牛只重量
+        if (controller.gtlxValue != 1 && controller.gtlxValue != 3)
+          CellButton(
+            isRequired: true,
+            title: '牛只重量',
+            content: controller.gtzlSelName.value,
+            onPressed: () {
+              if (controller.gtzlList.isEmpty) {
+                Toast.show('请先选择个体类型');
+                return;
+              }
+              if (controller.gtzlNameList.isEmpty) {
+                Toast.show('个体重量列表获取失败');
+                return;
+              }
 
-            Picker.showSinglePicker(
-              context,
-              controller.gtzlNameList,
-              selectData: controller.gtzlSelName.value,
-              title: '请选择个体重量',
-              onConfirm: (value, position) {
-                controller.updateGtzlSelectedItems(value, position);
-              },
-            );
-          },
-        ),
+              Picker.showSinglePicker(
+                context,
+                controller.gtzlNameList,
+                selectData: controller.gtzlSelName.value,
+                title: '请选择个体重量',
+                onConfirm: (value, position) {
+                  controller.updateGtzlSelectedItems(value, position);
+                },
+              );
+            },
+          ),
         // 更加不同牛只类型, 动态显示布局
         _dynamicWidgets(context),
         CellButton(
@@ -241,7 +263,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               controller.cslNameList,
               context,
               itemsSelected: List.from(controller.cslSelectedIndexList),
-              maxSelectionCount: 4,
+              maxSelectionCount: 99,
               onConfirm: (selected) {
                 debugPrint('selected: $selected');
                 if (ObjectUtil.isEmptyList(selected)) {
@@ -277,7 +299,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               controller.nlslNameList,
               context,
               itemsSelected: List.from(controller.nlslSelectedIndexList),
-              maxSelectionCount: 3,
+              maxSelectionCount: 99,
               onConfirm: (selected) {
                 debugPrint('selected: $selected');
                 if (ObjectUtil.isEmptyList(selected)) {
@@ -320,7 +342,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               controller.dbslNameList,
               context,
               itemsSelected: List.from(controller.dbslSelectedIndexList),
-              maxSelectionCount: 3,
+              maxSelectionCount: 99,
               onConfirm: (selected) {
                 debugPrint('selected: $selected');
                 if (ObjectUtil.isEmptyList(selected)) {

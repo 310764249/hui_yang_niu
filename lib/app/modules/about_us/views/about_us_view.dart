@@ -73,7 +73,7 @@ class AboutUsView extends GetView<AboutUsController> {
               alignment: Alignment.center,
               child: Column(
                 children: [
-                  SizedBox(height: ScreenAdapter.height(50)),
+                  SizedBox(height: ScreenAdapter.height(20)),
                   Text(
                     controller.nameStr.value,
                     style: TextStyle(
@@ -116,7 +116,7 @@ class AboutUsView extends GetView<AboutUsController> {
               ),
             ),
             Positioned(
-              top: ScreenAdapter.height(260),
+              top: ScreenAdapter.height(240),
               bottom: ScreenAdapter.height(100),
               left: 0,
               right: 0,

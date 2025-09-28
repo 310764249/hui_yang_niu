@@ -16,35 +16,46 @@ class RecipeCreateController extends GetxController {
 
   // 个体类型
   late List gtlxList;
+
   // 个体重量
   RxList gtzlList = [].obs;
   late List gtzlListHB;
   late List gtzlListRS;
   late List gtzlListBR;
   late List gtzlListYF;
+
   // 日增重目标
   late List rzzList;
   late List rzzListHB;
   late List rzzListYF;
+
   // 妊娠月份
   late List rsyfList;
+
   // 泌乳月份
   late List mryfList;
+
   // 泌乳量目标
   // late List mrlList;
   // 泌乳等级/优秀等级
   late List yxdjList;
+
   // 粗饲料
   late List<RawMaterial> cslList;
+
   // 精饲料
   late List<RawMaterial> jslList;
+
   // 能量饲料
   late List<RawMaterial> nlslList;
+
   // 蛋白饲料
   late List<RawMaterial> dbslList;
+
   // 添加剂
   late List<RawMaterial> tjjListTotal; // 存储所有的添加剂数据
   late List<RawMaterial> tjjList;
+
   // 预混料
   late List<RawMaterial> yhlListTotal; // 存储所有的预混料数据
   late List<RawMaterial> yhlList; // 根据条件过滤后的结果
@@ -199,6 +210,7 @@ class RecipeCreateController extends GetxController {
   List rzzNameListYF = [];
   int rzzSelIndex = -1;
   RxString rzzSelName = ''.obs;
+
   // 更新个体类型
   void updateRzzSelectedItems(value, int position) {
     rzzSelIndex = position;
@@ -222,6 +234,7 @@ class RecipeCreateController extends GetxController {
   List yhlNameList = [];
   int yhlSelIndex = -1;
   RxString yhlSelName = ''.obs;
+
   // 更新个体类型
   void updateYhlSelectedItems(value, int position) {
     yhlSelIndex = position;
@@ -233,6 +246,7 @@ class RecipeCreateController extends GetxController {
   List rsyfNameList = [];
   int rsyfSelIndex = -1;
   RxString rsyfSelName = ''.obs;
+
   // 更新妊娠月份
   void updateRsyfSelectedItems(value, int position) {
     rsyfSelIndex = position;
@@ -244,6 +258,7 @@ class RecipeCreateController extends GetxController {
   List mryfNameList = [];
   int mryfSelIndex = -1;
   RxString mryfSelName = ''.obs;
+
   // 更新泌乳月份
   void updateMryfSelectedItems(value, int position) {
     mryfSelIndex = position;
@@ -560,8 +575,8 @@ class RecipeCreateController extends GetxController {
   /// 生成配方
   Future<void> makeRecipe() async {
     switch (gtlxValue.value) {
-      case 1 || 4:
-        // 生长母牛 & 育肥牛
+      case 4:
+        // 育肥牛
         if (gtzlSelIndex == -1) {
           Toast.show('请选择个体重量');
           return;
@@ -572,8 +587,8 @@ class RecipeCreateController extends GetxController {
         }
         break;
       case 2:
-        // 妊娠母牛
-        if (gtzlSelName.value.isEmpty) {
+        // 青年妊娠母牛
+        if (gtzlSelIndex == -1) {
           Toast.show('请选择个体重量');
           return;
         }
@@ -582,12 +597,23 @@ class RecipeCreateController extends GetxController {
           return;
         }
         break;
-      case 3:
-        // 哺乳母牛
-        if (gtzlSelName.value.isEmpty) {
-          Toast.show('请选择个体重量');
+      case 1:
+        // 妊娠母牛
+        // if (gtzlSelName.value.isEmpty) {
+        //   Toast.show('请选择个体重量');
+        //   return;
+        // }
+        if (rsyfSelIndex == -1) {
+          Toast.show('请选择妊娠月份');
           return;
         }
+        break;
+      case 3:
+        // 哺乳母牛
+        // if (gtzlSelName.value.isEmpty) {
+        //   Toast.show('请选择个体重量');
+        //   return;
+        // }
         if (mryfSelIndex == -1) {
           Toast.show('请选择哺乳月份');
           return;
@@ -625,15 +651,21 @@ class RecipeCreateController extends GetxController {
         'cowCount': livestockHandController.text,
         "individualCate": 0, // Hardcode:0
         "individualType": gtlxValue.value, // 配方目标
-        "weightType": getWeightType(), // 个体重量
+        "weightType": gtzlSelIndex == -1 ? null : getWeightType(), // 个体重量
         "dailyGainWeight":
             gtlxValue.value == 1
-                ? double.parse(rzzListHB[rzzSelIndex]['value'])
+                ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListHB.length
+                    ? double.parse(rzzListHB[rzzSelIndex]['value'])
+                    : 0)
                 : (gtlxValue.value == 4
-                    ? double.parse(rzzListYF[rzzSelIndex]['value'])
-                    : 0), // 每日增加重量
+                    ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListYF.length
+                        ? double.parse(rzzListYF[rzzSelIndex]['value'])
+                        : 0)
+                    : 0),
         "gestationMonths":
-            gtlxValue.value == 2 ? int.parse(rsyfList[rsyfSelIndex]['value']) : 0, // 妊娠月份
+            gtlxValue.value == 1 || gtlxValue.value == 2
+                ? int.parse(rsyfList[rsyfSelIndex]['value'])
+                : 0, // 妊娠月份
         "calvingMonths":
             gtlxValue.value == 3 ? int.parse(mryfList[mryfSelIndex]['value']) : 0, // 泌乳月份
         // "milkProduction": gtlxValue.value == 3

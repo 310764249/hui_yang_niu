@@ -75,32 +75,84 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             children: [
               const DividerLine(),
               SizedBox(height: ScreenAdapter.height(10)),
-              _basicRow(
-                '配方目标：',
-                AppDictList.findLabelByCode(
-                  controller.pfmbList,
-                  controller.argument!.individualType.toString(),
-                ),
-                '个体重量(kg)：',
-                controller.argument!.weightType.toString(),
-              ),
-              SizedBox(height: ScreenAdapter.height(10)),
-              _basicRow(
-                '日增重(kg/d)：',
-                controller.argument!.dailyGainWeight.toString(),
-                '存栏：',
-                controller.argument!.cowCount.toString(),
-                // '妊娠月份：',
-                // controller.argument!.gestationMonths.toString(),
-              ),
-              SizedBox(height: ScreenAdapter.height(10)),
+              ...() {
+                if (controller.argument!.individualType == 1) {
+                  return [
+                    _basicRow(
+                      '配方目标：',
+                      AppDictList.findLabelByCode(
+                        controller.pfmbList,
+                        controller.argument!.individualType.toString(),
+                      ),
+                      '妊娠月份：',
+                      controller.argument!.gestationMonths.toString(),
+                    ),
+                  ];
+                }
+                if (controller.argument!.individualType == 3) {
+                  return [
+                    _basicRow(
+                      '配方目标：',
+                      AppDictList.findLabelByCode(
+                        controller.pfmbList,
+                        controller.argument!.individualType.toString(),
+                      ),
+                      '哺乳月份：',
+                      controller.argument!.calvingMonths.toString(),
+                    ),
+                  ];
+                }
+                if (controller.argument!.individualType == 2) {
+                  return [
+                    _basicRow(
+                      '配方目标：',
+                      AppDictList.findLabelByCode(
+                        controller.pfmbList,
+                        controller.argument!.individualType.toString(),
+                      ),
+                      '个体重量(kg)：',
+                      controller.argument!.weightType.toString(),
+                    ),
+                    SizedBox(height: ScreenAdapter.height(10)),
+                    _basicRow(
+                      '妊娠月份：',
+                      controller.argument!.gestationMonths.toString(),
+                      '存栏：',
+                      controller.argument!.cowCount.toString(),
+                      // '妊娠月份：',
+                      // controller.argument!.gestationMonths.toString(),
+                    ),
+                  ];
+                }
+                return [
+                  _basicRow(
+                    '配方目标：',
+                    AppDictList.findLabelByCode(
+                      controller.pfmbList,
+                      controller.argument!.individualType.toString(),
+                    ),
+                    '个体重量(kg)：',
+                    controller.argument!.weightType.toString(),
+                  ),
+                  SizedBox(height: ScreenAdapter.height(10)),
+                  _basicRow(
+                    '日增重(kg/d)：',
+                    controller.argument!.dailyGainWeight.toString(),
+                    '存栏：',
+                    controller.argument!.cowCount.toString(),
+                    // '妊娠月份：',
+                    // controller.argument!.gestationMonths.toString(),
+                  ),
+                ];
+              }(),
+              SizedBox(height: ScreenAdapter.height(20)),
               // _basicRow(
               //   '泌乳月份：',
               //   controller.argument!.calvingMonths.toString(),
               //   '泌乳量(kg/d)：',
               //   controller.argument!.milkProduction.toString(),
               // ),
-              SizedBox(height: ScreenAdapter.height(10)),
+              // SizedBox(height: ScreenAdapter.height(10)),
             ],
           ),
         ),

@@ -126,6 +126,11 @@ class RecipeCreateController extends GetxController {
         gtzlList.value = gtzlListYF;
         gtzlNameList.value = gtzlNameListYF;
         break;
+      case 5:
+        // 后背母牛
+        gtzlList.value = gtzlListHB;
+        gtzlNameList.value = gtzlNameListHB;
+        break;
       default:
         break;
     }
@@ -576,6 +581,7 @@ class RecipeCreateController extends GetxController {
   Future<void> makeRecipe() async {
     switch (gtlxValue.value) {
       case 4:
+      case 5:
         // 育肥牛
         if (gtzlSelIndex == -1) {
           Toast.show('请选择个体重量');

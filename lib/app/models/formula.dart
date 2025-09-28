@@ -29,6 +29,16 @@ class FormulaModel {
   late final double? baseCP; //基准粗蛋白(%DM)
   late final double? cp; //粗蛋白(%DM)
   late final double? baseDE; //基准消化能
+  late final double? rdp; //粗蛋白(%DM)
+  late final double? baseRDP; //基准消化能
+  late final double? rup; //基准消化能
+  late final double? baseRUP;
+  late final double? me;
+  late final double? baseME;
+  late final double? mLys;
+  late final double? baseMLys;
+  late final double? mMet;
+  late final double? baseMMet;
   late final double? de; //消化能
   late final double? baseMJ; //基准综合净能
   late final double? mj; //综合净能
@@ -110,6 +120,16 @@ class FormulaModel {
     required this.baseNEg,
     required this.nEg,
     required this.baseMP,
+    required this.rdp,
+    required this.baseRDP,
+    required this.rup,
+    required this.baseRUP,
+    required this.me,
+    required this.baseME,
+    required this.mLys,
+    required this.baseMLys,
+    required this.mMet,
+    required this.baseMMet,
     required this.mp,
     required this.weight,
     required this.price,
@@ -173,6 +193,16 @@ class FormulaModel {
     baseP = double.parse((json['baseP'] ?? 0).toString());
     p = double.parse((json['p'] ?? 0).toString());
     baseNEm = double.parse((json['baseNEm'] ?? 0).toString());
+    rdp = double.parse((json['rdp'] ?? 0).toString());
+    baseRDP = double.parse((json['baseRDP'] ?? 0).toString());
+    baseRUP = double.parse((json['baseRUP'] ?? 0).toString());
+    rup = double.parse((json['rup'] ?? 0).toString());
+    baseME = double.parse((json['baseME'] ?? 0).toString());
+    me = double.parse((json['me'] ?? 0).toString());
+    baseMLys = double.parse((json['baseMLys'] ?? 0).toString());
+    mLys = double.parse((json['mLys'] ?? 0).toString());
+    baseMMet = double.parse((json['baseMMet'] ?? 0).toString());
+    mMet = double.parse((json['mMet'] ?? 0).toString());
     nEm = double.parse((json['nEm'] ?? 0).toString());
     baseNEg = double.parse((json['baseNEg'] ?? 0).toString());
     nEg = double.parse((json['nEg'] ?? 0).toString());

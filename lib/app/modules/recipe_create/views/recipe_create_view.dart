@@ -47,7 +47,6 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
             );
           },
         );
-        ;
       // return CellButton(
       //   isRequired: true,
       //   title: '日增重目标',
@@ -125,6 +124,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           ],
         );
       case 4:
+      case 5:
         // 育肥牛
         final Map<int, List<double>> weightRangeMap = {
           240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],

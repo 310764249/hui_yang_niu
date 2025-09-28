@@ -87,6 +87,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                       '妊娠月份：',
                       controller.argument!.gestationMonths.toString(),
                     ),
+                    SizedBox(height: ScreenAdapter.height(10)),
+                    _basicRow('存栏：', controller.argument!.cowCount.toString(), '', ''),
                   ];
                 }
                 if (controller.argument!.individualType == 3) {
@@ -100,6 +102,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                       '哺乳月份：',
                       controller.argument!.calvingMonths.toString(),
                     ),
+                    SizedBox(height: ScreenAdapter.height(10)),
+                    _basicRow('存栏：', controller.argument!.cowCount.toString(), '', ''),
                   ];
                 }
                 if (controller.argument!.individualType == 2) {

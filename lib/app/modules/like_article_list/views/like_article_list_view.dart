@@ -44,9 +44,7 @@ class LikeArticleListView extends GetView<LikeArticleListController> {
               //背景
               color: const Color(0xFFE0E0E0),
               //设置四周圆角 角度
-              borderRadius: BorderRadius.all(
-                Radius.circular(ScreenAdapter.height(10.0)),
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
             ),
           );
         },
@@ -79,29 +77,25 @@ class LikeArticleListView extends GetView<LikeArticleListController> {
                   onLoad: () async {
                     // 如果没有更多直接返回
                     if (!controller.hasMore) {
-                      controller.refreshController.finishLoad(
-                        IndicatorResult.noMore,
-                      );
+                      controller.refreshController.finishLoad(IndicatorResult.noMore);
                       return;
                     }
                     // 上拉加载更多数据请求
                     await controller.searchArticle(isRefresh: false);
                     // 设置状态
                     controller.refreshController.finishLoad(
-                      controller.hasMore
-                          ? IndicatorResult.success
-                          : IndicatorResult.noMore,
+                      controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
                     );
                   },
                   child: GridView.builder(
                     itemCount: controller.items.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 147 / 198,
-                        ), // 宽高比
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 147 / 198,
+                    ), // 宽高比
                     itemBuilder: (BuildContext context, int index) {
                       var model = controller.items[index];
+                      debugPrint('model: ${model.toString()}');
                       String isVideo = '';
                       if (controller.title.value != '点赞') {
                         model = model as FavoriteModel;
@@ -112,21 +106,14 @@ class LikeArticleListView extends GetView<LikeArticleListController> {
                       }
 
                       return InformationItem(
-                        image:
-                            '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
+                        image: '${Constant.uploadFileUrl}${model.coverImg}$isVideo',
                         title: model.title ?? '',
                         userIcon: AssetsImages.avatar,
                         userName: model.publisher ?? '',
                         isVideo: model.type == 4,
                         onPressed: () {
-                          String openURL = Constant.getCMS(
-                            model.type,
-                            model.id,
-                          );
-                          Get.toNamed(
-                            Routes.INFORMATION_DETAIL,
-                            arguments: openURL,
-                          );
+                          String openURL = Constant.getCMS(model.type, model.articleId);
+                          Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
                         },
                       );
                     },

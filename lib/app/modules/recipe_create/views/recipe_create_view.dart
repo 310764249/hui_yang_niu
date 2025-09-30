@@ -126,40 +126,44 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
       case 4:
       case 5:
         // 育肥牛
-        final Map<int, List<double>> weightRangeMap = {
-          240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-          280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-          320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-          360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-          520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-          560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-          600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-          640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-          760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-          800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-          840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-        };
-        final weightStr = controller.gtzlSelName.value.replaceAll('kg', '');
-        final weight = int.tryParse(weightStr);
+
         return CellButton(
           isRequired: true,
           title: '日增重目标',
           content: controller.rzzSelName.value,
           onPressed: () {
-            debugPrint('controller.gtzlSelName.value${controller.gtzlSelName.value}');
+            final Map<int, List<double>> weightRangeMap = {
+              240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+              280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+              320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+              360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+              520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+              560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+              600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+              640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+              760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+              800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+              840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+            };
 
-            debugPrint('weight$weight');
+            final weightStr = controller.gtzlSelName.value.replaceAll('kg', '');
+            final weight = int.tryParse(weightStr);
+            debugPrint('controller.gtzlSelName.value = ${controller.gtzlSelName.value}');
+            debugPrint('weight = $weight');
 
             if (weight != null && weightRangeMap.containsKey(weight)) {
               final range = weightRangeMap[weight]!;
 
-              // 直接取 key 对应的所有数据，不再去 originList 里筛
-              final filteredList = range.map((e) => '${e}kg').toList();
+              // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
+              final filteredList =
+                  range.map((e) {
+                    return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                  }).toList();
 
               if (filteredList.isEmpty) {
                 debugPrint('当前体重无可选日增重区间');

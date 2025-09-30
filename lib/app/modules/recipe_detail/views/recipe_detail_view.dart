@@ -733,16 +733,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
   }
 
   List<TableRow> _renderList() {
-    List titleList = [
-      '原料名称',
-      '原料分类',
-      '原料需要量(kg/d)',
-      // '干物质需要量(kg)',
-      // '干物质含量(%鲜样)',
-      // '粗蛋白(%鲜样)',
-      // '钙(%鲜样)',
-      // '磷(%鲜样)'
-    ];
+    List titleList = ['原料名称', '原料分类', '需要量(kg/d)', '成本(元/kg)'];
 
     List<Widget> header = [];
     for (String title in titleList) {
@@ -767,8 +758,18 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
     List<TableRow> list = [];
     list.add(TableRow(children: header));
+
+    double totalWeight = 0;
+    double totalCost = 0;
+
     for (var i = 0; i < controller.items.length; i++) {
       FormulaItemModel model = controller.items[i];
+      final weight = (model.weight ?? 0);
+      final cost = weight * (model.price ?? 0);
+
+      totalWeight += weight;
+      totalCost += cost;
+
       list.add(
         TableRow(
           children: [
@@ -818,77 +819,70 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 ),
               ),
             ),
-            /*
-        Container(
-          height: ScreenAdapter.height(40),
-          alignment: Alignment.center,
-          child: Text(
-            model.demand.toString(),
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: SaienteColors.blackE5,
-                fontSize: ScreenAdapter.fontSize(13),
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        Container(
-          height: ScreenAdapter.height(40),
-          alignment: Alignment.center,
-          child: Text(
-            model.dm.toString(),
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: SaienteColors.blackE5,
-                fontSize: ScreenAdapter.fontSize(13),
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        Container(
-          height: ScreenAdapter.height(40),
-          alignment: Alignment.center,
-          child: Text(
-            model.cp.toString(),
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: SaienteColors.blackE5,
-                fontSize: ScreenAdapter.fontSize(13),
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        Container(
-          height: ScreenAdapter.height(40),
-          alignment: Alignment.center,
-          child: Text(
-            model.ca.toString(),
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: SaienteColors.blackE5,
-                fontSize: ScreenAdapter.fontSize(13),
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        Container(
-          height: ScreenAdapter.height(40),
-          alignment: Alignment.center,
-          child: Text(
-            model.p.toString(),
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: SaienteColors.blackE5,
-                fontSize: ScreenAdapter.fontSize(13),
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        */
+            Container(
+              height: ScreenAdapter.height(40),
+              alignment: Alignment.center,
+              child: Text(
+                Tools.formatNumber(cost.toString()),
+                maxLines: 3,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: SaienteColors.blackE5,
+                  fontSize: ScreenAdapter.fontSize(13),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ],
         ),
       );
     }
+
+    // 添加合计行
+    list.add(
+      TableRow(
+        children: [
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              '合计',
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(),
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              Tools.formatNumber(totalWeight.toString()),
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              Tools.formatNumber(totalCost.toString()),
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
     return list;
   }
 

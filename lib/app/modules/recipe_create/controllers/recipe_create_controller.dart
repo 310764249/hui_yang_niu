@@ -219,19 +219,22 @@ class RecipeCreateController extends GetxController {
   // 更新个体类型
   void updateRzzSelectedItems(value, int position) {
     rzzSelIndex = position;
-    switch (gtlxValue.value) {
-      case 1:
-        rzzSelName.value = rzzNameListHB[position];
-        break;
-      case 2 || 3:
-        rzzSelName.value = rzzNameList[position];
-        break;
-      case 4:
-        rzzSelName.value = rzzNameListYF[position];
-        break;
-      default:
-        return;
-    }
+    rzzSelName.value = value;
+    // switch (gtlxValue.value) {
+    //   case 1:
+    //     rzzSelName.value = rzzNameListHB[position];
+    //     break;
+    //   case 2 || 3:
+    //     rzzSelName.value = rzzNameList[position];
+    //     break;
+    //   case 4:
+    //     rzzSelName.value = rzzNameListYF[position];
+    //   case 5:
+    //     rzzSelName.value = rzzNameListHB[position];
+    //     break;
+    //   default:
+    //     return;
+    // }
     update();
   }
 
@@ -658,16 +661,16 @@ class RecipeCreateController extends GetxController {
         "individualCate": 0, // Hardcode:0
         "individualType": gtlxValue.value, // 配方目标
         "weightType": gtzlSelIndex == -1 ? null : getWeightType(), // 个体重量
-        "dailyGainWeight":
-            gtlxValue.value == 1
-                ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListHB.length
-                    ? double.parse(rzzListHB[rzzSelIndex]['value'])
-                    : 0)
-                : (gtlxValue.value == 4
-                    ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListYF.length
-                        ? double.parse(rzzListYF[rzzSelIndex]['value'])
-                        : 0)
-                    : 0),
+        "dailyGainWeight": rzzSelName.value.replaceAll('kg', ''),
+        // gtlxValue.value == 1
+        //     ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListHB.length
+        //         ? double.parse(rzzListHB[rzzSelIndex]['value'])
+        //         : 0)
+        //     : (gtlxValue.value == 4
+        //         ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListYF.length
+        //             ? double.parse(rzzListYF[rzzSelIndex]['value'])
+        //             : 0)
+        //         : 0),
         "gestationMonths":
             gtlxValue.value == 1 || gtlxValue.value == 2
                 ? int.parse(rsyfList[rsyfSelIndex]['value'])

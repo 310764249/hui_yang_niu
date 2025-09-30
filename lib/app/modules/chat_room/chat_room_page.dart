@@ -263,7 +263,8 @@ class _ChatRoomContainPageState extends State<ChatRoomContainPage>
         title: ValueListenableBuilder(
           valueListenable: messageCount,
           builder: (context, value, child) {
-            return Text('哞哞达人($value人)');
+            // return Text('哞哞达人($value人)');
+            return const Text('哞哞达人(99+人)');
           },
         ),
         centerTitle: true,

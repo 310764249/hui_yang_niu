@@ -45,11 +45,23 @@ class ActionMessageListController extends GetxController {
     {'value': 403, 'label': '待孕检'},
     {'value': 404, 'label': '待产犊'},
     {'value': 405, 'label': '待断奶'},
-    {'value': 406, 'label': '待淘汰'},
-    {'value': 407, 'label': '待销售'},
-    {'value': 408, 'label': '待防疫'},
-    {'value': 409, 'label': '待保健'},
+    {'value': 407, 'label': '待出栏'}, // 原“待销售”改成“待出栏”
+    {'value': 410, 'label': '待查返情'}, // 新增
+    {'value': 411, 'label': '待补饲'}, // 新增
+    {'value': 412, 'label': '待换料'}, // 新增
   ];
+  // List subtypeList1 = [
+  //   {'value': -1, 'label': '全部'},
+  //   {'value': 401, 'label': '待查情'},
+  //   {'value': 402, 'label': '待配种'},
+  //   {'value': 403, 'label': '待孕检'},
+  //   {'value': 404, 'label': '待产犊'},
+  //   {'value': 405, 'label': '待断奶'},
+  //   {'value': 406, 'label': '待淘汰'},
+  //   {'value': 407, 'label': '待销售'},
+  //   {'value': 408, 'label': '待防疫'},
+  //   {'value': 409, 'label': '待保健'},
+  // ];
   // 预警提醒
   List subtypeList2 = [
     {'value': -1, 'label': '全部'},

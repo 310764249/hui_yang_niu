@@ -574,6 +574,8 @@ class RecipeCreateController extends GetxController {
         break;
       case 4:
         targetWeight = gtzlListYF[gtzlSelIndex]['value'];
+      case 5:
+        targetWeight = gtzlListHB[gtzlSelIndex]['value'];
         break;
     }
     Log.i("-- targetWeight: $targetWeight");

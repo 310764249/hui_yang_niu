@@ -764,8 +764,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
     for (var i = 0; i < controller.items.length; i++) {
       FormulaItemModel model = controller.items[i];
-      final weight = (model.weight ?? 0);
-      final cost = (model.price ?? 0);
+      final weight =
+          ((model.weight ?? 0) *
+              (controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1));
+      final cost = (model.price ?? 0) * (controller.argument!.cowCount ?? 1);
 
       totalWeight += weight;
       totalCost += cost;

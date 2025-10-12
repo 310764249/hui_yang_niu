@@ -499,6 +499,7 @@ class RecipeCreateController extends GetxController {
     Toast.showLoading();
     try {
       var response = await httpsClient.get("/api/rawmaterial/getall");
+
       List<RawMaterial> modelList = [];
       for (var item in response) {
         RawMaterial model = RawMaterial.fromJson(item);

@@ -23,7 +23,10 @@ class RawMaterial {
   late final String? createdBy; // 创建人
   late final String? modified; // 修改时间
   late final String? modifiedBy; // 修改人
-  late final String? rowVersion; // 行版本
+  late final String? rowVersion;
+
+  // 验证饲料的种类
+  double verifyWeight = 0.1; // 行版本
 
   RawMaterial({
     required this.id,

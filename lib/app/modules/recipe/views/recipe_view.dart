@@ -89,25 +89,52 @@ class RecipeView extends GetView<RecipeController> {
 
   // 创建配方按钮
   Widget _createRecipeButton() {
-    return Container(
-      width: ScreenAdapter.width(335),
-      height: ScreenAdapter.height(45),
-      margin: EdgeInsets.only(left: ScreenAdapter.width(20), right: ScreenAdapter.width(20)),
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(SaienteColors.appMain),
-          foregroundColor: MaterialStateProperty.all(Colors.white),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(100))),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(SaienteColors.appMain),
+                foregroundColor: MaterialStateProperty.all(Colors.white),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ScreenAdapter.width(100)),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Get.toNamed(Routes.RECIPE_CREATE);
+              },
+              child: Text(
+                '创建配方',
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(17), fontWeight: FontWeight.w500),
+              ),
+            ),
           ),
-        ),
-        onPressed: () {
-          Get.toNamed(Routes.RECIPE_CREATE);
-        },
-        child: Text(
-          '创建配方',
-          style: TextStyle(fontSize: ScreenAdapter.fontSize(17), fontWeight: FontWeight.w500),
-        ),
+          SizedBox(width: ScreenAdapter.width(10)),
+          Expanded(
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.orange),
+                foregroundColor: MaterialStateProperty.all(Colors.white),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ScreenAdapter.width(100)),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Get.toNamed(Routes.RecipeVerifyPage);
+              },
+              child: Text(
+                '验证配方',
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(17), fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

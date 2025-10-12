@@ -206,6 +206,7 @@ import '../modules/recipe_create/bindings/recipe_create_binding.dart';
 import '../modules/recipe_create/views/recipe_create_view.dart';
 import '../modules/recipe_detail/bindings/recipe_detail_binding.dart';
 import '../modules/recipe_detail/views/recipe_detail_view.dart';
+import '../modules/recipe_verify/recipe_verify_page.dart';
 import '../modules/record_center/bindings/record_center_binding.dart';
 import '../modules/record_center/views/record_center_view.dart';
 import '../modules/tabs/bindings/tabs_binding.dart';
@@ -764,5 +765,6 @@ class AppPages {
       binding: MaterialRecordsBindings(),
     ),
     GetPage(name: _Paths.MaterialRecordsDetails, page: () => const MaterialRecordsDetails()),
+    GetPage(name: _Paths.RecipeVerifyPage, page: () => const RecipeVerifyPage()),
   ];
 }

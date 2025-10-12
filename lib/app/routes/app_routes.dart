@@ -113,6 +113,7 @@ abstract class Routes {
   static const TakeInventory = _Paths.TakeInventory;
   static const MaterialRecords = _Paths.MaterialRecords;
   static const MaterialRecordsDetails = _Paths.MaterialRecordsDetails;
+  static const RecipeVerifyPage = _Paths.RecipeVerifyPage;
 }
 
 abstract class _Paths {
@@ -228,4 +229,5 @@ abstract class _Paths {
   static const TakeInventory = '/take-inventory';
   static const MaterialRecords = '/material-records';
   static const MaterialRecordsDetails = '/material-records-details';
+  static const RecipeVerifyPage = '/recipe-verify-page';
 }

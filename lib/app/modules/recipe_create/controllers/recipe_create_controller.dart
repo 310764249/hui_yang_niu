@@ -660,6 +660,7 @@ class RecipeCreateController extends GetxController {
 
       //接口参数
       Map<String, dynamic> mapParam = {
+        'formulaType': 0,
         'cowCount': livestockHandController.text,
         "individualCate": 0, // Hardcode:0
         "individualType": gtlxValue.value, // 配方目标

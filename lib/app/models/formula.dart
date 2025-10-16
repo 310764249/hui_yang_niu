@@ -1,5 +1,6 @@
 ///
 class FormulaModel {
+  int? formulaType;
   late final String? id; //ID
   late final String? nutritionId; //营养标准ID
   late final String? name; //名称
@@ -151,10 +152,15 @@ class FormulaModel {
     this.proteinFeed,
     this.additives,
     this.premix,
+    this.formulaType,
   });
+
+  // 是否验证配方
+  bool isVerified() => formulaType == 1;
 
   FormulaModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    formulaType = json['formulaType'];
     nutritionId = json['nutritionId'];
     name = json['name'];
     cowCount = json['cowCount'];

@@ -294,6 +294,7 @@ class RecipeDetailController extends GetxController {
 
       //接口参数
       Map<String, dynamic> mapParam = {
+        'formulaType': argument?.formulaType,
         "nutritionId": argument?.nutritionId,
         "name": formulaName,
         "cowCount": argument?.cowCount ?? 1,

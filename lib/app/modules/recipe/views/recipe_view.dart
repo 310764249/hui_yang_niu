@@ -100,7 +100,7 @@ class RecipeView extends GetView<RecipeController> {
                 foregroundColor: MaterialStateProperty.all(Colors.white),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ScreenAdapter.width(100)),
+                    borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
                   ),
                 ),
               ),
@@ -121,7 +121,7 @@ class RecipeView extends GetView<RecipeController> {
                 foregroundColor: MaterialStateProperty.all(Colors.white),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ScreenAdapter.width(100)),
+                    borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
                   ),
                 ),
               ),
@@ -167,7 +167,7 @@ class RecipeView extends GetView<RecipeController> {
                   width: ScreenAdapter.width(3),
                   height: ScreenAdapter.height(13.5),
                   decoration: BoxDecoration(
-                    color: SaienteColors.blue275CF3,
+                    color: model.isVerified() ? Colors.orange : SaienteColors.blue275CF3,
                     borderRadius: BorderRadius.circular(ScreenAdapter.width(1.5)),
                   ),
                 ),

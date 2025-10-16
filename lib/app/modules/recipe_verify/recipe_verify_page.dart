@@ -49,7 +49,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
       currentItem['value'] == '4' || currentItem['value'] == '2' || currentItem['value'] == '5';
 
   //显示日增重的牛只类型 育肥牛 后备母牛
-  bool get showNuDailyWeight => currentItem['value'] == '4' || currentItem['value'] == '1';
+  bool get showNuDailyWeight => currentItem['value'] == '4' || currentItem['value'] == '5';
 
   //显示妊娠月份的牛只类型 青年妊娠母牛 妊娠母牛
   bool get showNuPregnancyMonth => currentItem['value'] == '2' || currentItem['value'] == '1';
@@ -115,7 +115,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
 
   //验证配方的结果
   FormulaModel? formulaModel;
-  ValueNotifier<bool> compareExpanded = ValueNotifier(false);
+  ValueNotifier<bool> compareExpanded = ValueNotifier(true);
 
   @override
   void initState() {
@@ -175,6 +175,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
       var response = await httpsClient.post(
         "/api/formula/verifyformula",
         data: {
+          'formulaType': 1,
           "individualCate": 0,
           "individualType": currentItem['value'],
           "weightType": currentNuWeight?['value'],
@@ -213,6 +214,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
       setState(() {
         formulaModel = FormulaModel.fromJson(response);
         formulaModel?.cowCount = int.parse(countController.text);
+        formulaModel?.formulaType = 1;
       });
     } catch (e) {
       setState(() {
@@ -275,12 +277,12 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                 );
               },
             ),
-            _TopLabel(
-              title: '牛只存栏',
-              controller: countController,
-              content: countController.text,
-              isInput: true,
-            ),
+            // _TopLabel(
+            //   title: '牛只存栏',
+            //   controller: countController,
+            //   content: countController.text,
+            //   isInput: true,
+            // ),
             if (showNuWeight)
               _TopLabel(
                 title: '牛只重量',
@@ -400,15 +402,22 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
               ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Text('原料组成', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              child: Text('原料组成（kg）', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
             ),
             ...addRawMaterialList.map((e) {
-              return _RawMaterialInfoItem(rawMaterial: e);
+              return _RawMaterialInfoItem(
+                rawMaterial: e,
+                onTapDelete: () {
+                  setState(() {
+                    addRawMaterialList.remove(e);
+                  });
+                },
+              );
             }),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
-                alignment: Alignment.centerRight,
+                alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
                     //列表移除已经添加的原料
@@ -435,21 +444,21 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: const Text(
                       '+添加原料',
-                      style: TextStyle(fontSize: 16, color: SaienteColors.dark_app_main),
+                      style: TextStyle(fontSize: 14, color: SaienteColors.dark_app_main),
                     ),
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(SaienteColors.appMain),
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   shape: MaterialStateProperty.all(
                     RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ScreenAdapter.width(100)),
+                      borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
                     ),
                   ),
                 ),
@@ -467,10 +476,9 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
             if (formulaModel != null)
               Container(
-                margin: const EdgeInsets.all(16),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: SaienteColors.appMain.withValues(alpha: 0.2),
@@ -480,21 +488,22 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                   children: [
                     Expanded(
                       child: Center(
-                        child: Column(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text(
                               '单头每日成本',
                               style: TextStyle(
                                 color: SaienteColors.title_color,
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Text(
                               '¥ ${formulaModel?.price ?? 0.0}',
                               style: const TextStyle(
-                                color: Colors.orange,
+                                color: SaienteColors.appMain,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -523,7 +532,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
           },
           child: Container(
             padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: SaienteColors.blue2559F3.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
@@ -535,7 +544,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
               children: [
                 const Text(
                   '营养成分详情',
-                  style: TextStyle(color: SaienteColors.blue2559F3, fontSize: 16),
+                  style: TextStyle(color: SaienteColors.blue2559F3, fontSize: 14),
                 ),
                 ValueListenableBuilder(
                   valueListenable: compareExpanded,
@@ -670,9 +679,10 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
 }
 
 class _RawMaterialInfoItem extends StatefulWidget {
-  const _RawMaterialInfoItem({super.key, required this.rawMaterial});
+  const _RawMaterialInfoItem({super.key, required this.rawMaterial, required this.onTapDelete});
 
   final RawMaterial rawMaterial;
+  final VoidCallback onTapDelete;
 
   @override
   State<_RawMaterialInfoItem> createState() => _RawMaterialInfoItemState();
@@ -688,7 +698,10 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
     verifyWeightController.addListener(() {
       if (verifyWeightController.text.isEmpty || double.parse(verifyWeightController.text) < 0.1) {
         verifyWeightController.text = '0.1';
+        widget.rawMaterial.verifyWeight = 0.1;
         return;
+      } else {
+        widget.rawMaterial.verifyWeight = double.parse(verifyWeightController.text);
       }
     });
   }
@@ -701,65 +714,85 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(widget.rawMaterial.name ?? '', style: const TextStyle(fontSize: 16)),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    verifyWeightController.text = (double.parse(verifyWeightController.text) - 0.1)
-                        .toStringAsFixed(2);
-                  },
-                  icon: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: SaienteColors.dark_app_main.withValues(alpha: 0.4),
-
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Text('-', style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: TextField(
-                      controller: verifyWeightController,
-                      style: const TextStyle(fontSize: 16),
-                      onChanged: (value) {
-                        widget.rawMaterial.verifyWeight = double.parse(value);
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          color: Colors.white,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(widget.rawMaterial.name ?? '', style: const TextStyle(fontSize: 14)),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        verifyWeightController.text =
+                            (double.parse(verifyWeightController.text) - 0.1).toStringAsFixed(2);
                       },
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(border: InputBorder.none),
+                      icon: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: const BoxDecoration(
+                          color: SaienteColors.dark_app_main,
+
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Text('-', style: TextStyle(fontSize: 16, color: Colors.white)),
+                      ),
                     ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    verifyWeightController.text = (double.parse(verifyWeightController.text) + 0.1)
-                        .toStringAsFixed(2);
-                  },
-                  icon: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: SaienteColors.dark_app_main.withValues(alpha: 0.4),
-                      shape: BoxShape.circle,
+                    Expanded(
+                      child: Center(
+                        child: TextField(
+                          controller: verifyWeightController,
+                          style: const TextStyle(fontSize: 14),
+                          onChanged: (value) {
+                            widget.rawMaterial.verifyWeight = double.parse(value);
+                          },
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(border: InputBorder.none),
+                        ),
+                      ),
                     ),
-                    child: const Text('+', style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ),
+                    IconButton(
+                      onPressed: () {
+                        verifyWeightController.text =
+                            (double.parse(verifyWeightController.text) + 0.1).toStringAsFixed(2);
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: SaienteColors.dark_app_main,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Text('+', style: TextStyle(fontSize: 16, color: Colors.white)),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          right: 4,
+          top: 0,
+          child: GestureDetector(
+            onTap: widget.onTapDelete,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
+              child: const Icon(Icons.close, color: Colors.black, size: 18),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -790,12 +823,12 @@ class _TopLabel extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          const Text('*', style: TextStyle(fontSize: 16, color: SaienteColors.redFF3D3D)),
+          const Text('*', style: TextStyle(fontSize: 14, color: SaienteColors.redFF3D3D)),
           Expanded(
             child: Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: SaienteColors.title_color,
                 fontWeight: FontWeight.w500,
               ),
@@ -827,7 +860,7 @@ class _TopLabel extends StatelessWidget {
                                   isDense: true,
                                 ),
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: SaienteColors.title_color,
                                 ),
                               )
@@ -836,7 +869,7 @@ class _TopLabel extends StatelessWidget {
                                 child: Text(
                                   content,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     color: SaienteColors.title_color,
                                   ),
                                 ),

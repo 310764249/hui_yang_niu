@@ -8,6 +8,7 @@ import 'package:intellectual_breed/app/models/raw_material.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
+import 'package:intellectual_breed/app/widgets/cell_button.dart';
 import 'package:intellectual_breed/app/widgets/dict_list.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
@@ -251,155 +252,166 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            _TopLabel(
-              title: '牛只类型',
-              content: currentLabel,
-              onTap: () {
-                if (gtlxList.isEmpty) {
-                  Toast.show('配方目标类型获取失败');
-                  return;
-                }
-                Picker.showSinglePicker(
-                  context,
-                  labels,
-                  selectData: currentItem['label'],
-                  title: '请选择个体类型',
-                  onConfirm: (value, position) {
-                    setState(() {
-                      currentItem = gtlxList[position];
-                      currentNuWeight = null;
-                      currentRsyf = null;
-                      nuDailyWeight = '';
-                      countController.text = '1';
-                    });
-                    debugPrint('当前选择: $currentItem');
-                  },
-                );
-              },
-            ),
-            // _TopLabel(
-            //   title: '牛只存栏',
-            //   controller: countController,
-            //   content: countController.text,
-            //   isInput: true,
-            // ),
-            if (showNuWeight)
-              _TopLabel(
-                title: '牛只重量',
-                content: nuWeightLabel,
-                onTap: () {
-                  Picker.showSinglePicker(
-                    context,
-                    nuWeightLabels,
-                    selectData: nuWeightLabel,
-                    title: '请选择牛只重量',
-                    onConfirm: (value, position) {
-                      setState(() {
-                        currentNuWeight = nuWeight[position];
-                      });
-                    },
-                  );
-                },
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-            if (showNuDailyWeight)
-              _TopLabel(
-                title: '牛只日增重',
-                content: nuDailyWeight,
-                onTap: () {
-                  if (currentNuWeight == null) {
-                    Toast.show('请选择牛只重量');
-                    return;
-                  }
-                  final Map<int, List<double>> weightRangeMap = {
-                    240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                    280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                    320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                    360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                    520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                    560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                    600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                    640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                    760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                    800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                    840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                  };
-
-                  final weightStr = nuWeightLabel.replaceAll('kg', '');
-                  debugPrint('当前选择: $weightStr');
-                  final weight = int.tryParse(weightStr);
-
-                  if (weight != null && weightRangeMap.containsKey(weight)) {
-                    final range = weightRangeMap[weight]!;
-
-                    // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
-                    final filteredList =
-                        range.map((e) {
-                          return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
-                        }).toList();
-
-                    if (filteredList.isEmpty) {
-                      debugPrint('当前体重无可选日增重区间');
-                      return;
-                    }
-
-                    // 弹出选择器
-                    Picker.showSinglePicker(
-                      context,
-                      filteredList,
-                      selectData: nuDailyWeight,
-                      title: '请选择日增重',
-                      onConfirm: (value, position) {
-                        setState(() {
-                          nuDailyWeight = filteredList[position];
-                        });
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CellButton(
+                    isRequired: true,
+                    title: '牛只类型',
+                    content: currentLabel,
+                    onPressed: () {
+                      if (gtlxList.isEmpty) {
+                        Toast.show('配方目标类型获取失败');
+                        return;
+                      }
+                      Picker.showSinglePicker(
+                        context,
+                        labels,
+                        selectData: currentItem['label'],
+                        title: '请选择个体类型',
+                        onConfirm: (value, position) {
+                          setState(() {
+                            currentItem = gtlxList[position];
+                            currentNuWeight = null;
+                            currentRsyf = null;
+                            nuDailyWeight = '';
+                            countController.text = '1';
+                          });
+                          debugPrint('当前选择: $currentItem');
+                        },
+                      );
+                    },
+                  ),
+                  if (showNuWeight)
+                    CellButton(
+                      title: '牛只重量',
+                      content: nuWeightLabel,
+                      onPressed: () {
+                        Picker.showSinglePicker(
+                          context,
+                          nuWeightLabels,
+                          selectData: nuWeightLabel,
+                          title: '请选择牛只重量',
+                          onConfirm: (value, position) {
+                            setState(() {
+                              currentNuWeight = nuWeight[position];
+                            });
+                          },
+                        );
                       },
-                    );
-                  } else {
-                    debugPrint('未找到对应体重的区间范围');
-                  }
-                },
+                      isRequired: true,
+                    ),
+                  if (showNuDailyWeight)
+                    CellButton(
+                      title: '牛只日增重',
+                      content: nuDailyWeight,
+                      onPressed: () {
+                        if (currentNuWeight == null) {
+                          Toast.show('请选择牛只重量');
+                          return;
+                        }
+                        final Map<int, List<double>> weightRangeMap = {
+                          240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                          280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                          320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                          360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                          520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                          560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                          600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                          640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                          760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                          800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                          840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                        };
+
+                        final weightStr = nuWeightLabel.replaceAll('kg', '');
+                        debugPrint('当前选择: $weightStr');
+                        final weight = int.tryParse(weightStr);
+
+                        if (weight != null && weightRangeMap.containsKey(weight)) {
+                          final range = weightRangeMap[weight]!;
+
+                          // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
+                          final filteredList =
+                              range.map((e) {
+                                return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                              }).toList();
+
+                          if (filteredList.isEmpty) {
+                            debugPrint('当前体重无可选日增重区间');
+                            return;
+                          }
+
+                          // 弹出选择器
+                          Picker.showSinglePicker(
+                            context,
+                            filteredList,
+                            selectData: nuDailyWeight,
+                            title: '请选择日增重',
+                            onConfirm: (value, position) {
+                              setState(() {
+                                nuDailyWeight = filteredList[position];
+                              });
+                            },
+                          );
+                        } else {
+                          debugPrint('未找到对应体重的区间范围');
+                        }
+                      },
+                      isRequired: true,
+                    ),
+                  if (showNuPregnancyMonth)
+                    CellButton(
+                      title: '妊娠月份',
+                      isRequired: true,
+                      content: rsyfLabel,
+                      onPressed: () {
+                        Picker.showSinglePicker(
+                          context,
+                          rsyfLabels,
+                          selectData: rsyfLabel,
+                          title: '请选择妊娠月份',
+                          onConfirm: (value, position) {
+                            setState(() {
+                              currentRsyf = rsyfList[position];
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  if (showNuBreastMonth)
+                    CellButton(
+                      title: '哺乳月份',
+                      content: rsyfLabel,
+                      isRequired: true,
+                      onPressed: () {
+                        Picker.showSinglePicker(
+                          context,
+                          rsyfLabels,
+                          selectData: rsyfLabel,
+                          title: '请选择哺乳月份',
+                          onConfirm: (value, position) {
+                            setState(() {
+                              currentRsyf = rsyfList[position];
+                            });
+                          },
+                        );
+                      },
+                    ),
+                ],
               ),
-            if (showNuPregnancyMonth)
-              _TopLabel(
-                title: '妊娠月份',
-                content: rsyfLabel,
-                onTap: () {
-                  Picker.showSinglePicker(
-                    context,
-                    rsyfLabels,
-                    selectData: rsyfLabel,
-                    title: '请选择妊娠月份',
-                    onConfirm: (value, position) {
-                      setState(() {
-                        currentRsyf = rsyfList[position];
-                      });
-                    },
-                  );
-                },
-              ),
-            if (showNuBreastMonth)
-              _TopLabel(
-                title: '哺乳月份',
-                content: rsyfLabel,
-                onTap: () {
-                  Picker.showSinglePicker(
-                    context,
-                    rsyfLabels,
-                    selectData: rsyfLabel,
-                    title: '请选择哺乳月份',
-                    onConfirm: (value, position) {
-                      setState(() {
-                        currentRsyf = rsyfList[position];
-                      });
-                    },
-                  );
-                },
-              ),
+            ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Text('原料组成（kg）', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
@@ -735,12 +747,18 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
                       },
                       icon: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: const BoxDecoration(
-                          color: SaienteColors.dark_app_main,
-
+                        decoration: BoxDecoration(
+                          color: SaienteColors.blue2559F3.withAlpha(20),
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            width: ScreenAdapter.height(1),
+                            color: SaienteColors.blue2559F3,
+                          ),
                         ),
-                        child: const Text('-', style: TextStyle(fontSize: 16, color: Colors.white)),
+                        child: const Text(
+                          '-',
+                          style: TextStyle(fontSize: 16, color: SaienteColors.appMain),
+                        ),
                       ),
                     ),
                     Expanded(
@@ -764,10 +782,17 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
                       icon: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: SaienteColors.dark_app_main,
+                          color: SaienteColors.blue2559F3.withAlpha(20),
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            width: ScreenAdapter.height(1),
+                            color: SaienteColors.blue2559F3,
+                          ),
                         ),
-                        child: const Text('+', style: TextStyle(fontSize: 16, color: Colors.white)),
+                        child: const Text(
+                          '+',
+                          style: TextStyle(fontSize: 16, color: SaienteColors.appMain),
+                        ),
                       ),
                     ),
                   ],

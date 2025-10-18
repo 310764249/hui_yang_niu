@@ -47,6 +47,12 @@ class RecipeDetailController extends GetxController {
   //当前列表
   RxList<FormulaItemModel> items = <FormulaItemModel>[].obs;
 
+  //粗饲料
+  List<FormulaItemModel> get roughages => items.where((e) => e.type == 1).toList();
+
+  //精饲料e.type不等于0和不等于1的.其他都是精饲料
+  List<FormulaItemModel> get energyFeed => items.where((e) => e.type != 0 && e.type != 1).toList();
+
   //配方目标
   List pfmbList = [];
 
@@ -108,6 +114,7 @@ class RecipeDetailController extends GetxController {
         items.addAll(argument!.premix!);
       }
     }
+
     update();
   }
 

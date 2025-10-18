@@ -70,6 +70,8 @@ class FormulaModel {
   late final String? modified; //修改时间
   late final String? modifiedBy; //修改人
   late final String? rowVersion; //行版本
+  late final double? baseRoughagesPercent; //行版本
+  late final double? roughagesPercent; //行版本
   // 创建配方跳转参数, 考虑到列表进详情的用处, 这里去掉了late final
   List<FormulaItemModel>? roughages; //粗饲料集
   List<FormulaItemModel>? energyFeed; //能量饲料集
@@ -81,6 +83,8 @@ class FormulaModel {
     required this.id,
     required this.nutritionId,
     this.name,
+    this.roughagesPercent,
+    this.baseRoughagesPercent,
     required this.individualCate,
     required this.individualType,
     required this.weightType,
@@ -169,6 +173,8 @@ class FormulaModel {
     weightType = json['weightType'];
     calvingMonths = json['calvingMonths'];
     gestationMonths = json['gestationMonths'];
+    roughagesPercent = double.parse((json['roughagesPercent'] ?? 0).toString());
+    baseRoughagesPercent = double.parse((json['baseRoughagesPercent'] ?? 0).toString());
     dailyGainWeight = double.parse((json['dailyGainWeight'] ?? 0).toString());
     milkProduction = double.parse((json['milkProduction'] ?? 0).toString());
     milkGrade = json['milkGrade'];

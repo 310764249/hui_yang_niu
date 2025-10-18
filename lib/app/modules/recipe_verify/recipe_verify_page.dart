@@ -218,6 +218,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
         formulaModel?.formulaType = 1;
       });
     } catch (e) {
+      debugPrint('verifyRecipe error: $e');
       setState(() {
         formulaModel = null;
       });
@@ -251,9 +252,8 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -580,7 +580,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
           valueListenable: compareExpanded,
           builder: (context, value, child) {
             return AnimatedContainer(
-              height: value ? 130 * 8 : 0,
+              height: value ? 130 * 14 : 0,
               duration: const Duration(milliseconds: 400),
               child: child!,
             );
@@ -590,51 +590,68 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: // 13个营养指标展示
-              // 8个营养指标展示
-              [
+                  [
                 _compareCell(
                   '干物质采食量(kg/d)',
                   formulaModel!.dm.toString(),
                   formulaModel!.baseDM.toString(),
                 ),
-
+                _compareCell(
+                  '粗料比(%)',
+                  formulaModel!.roughagesPercent.toString(),
+                  formulaModel!.baseRoughagesPercent.toString(),
+                ),
                 _compareCell(
                   '粗蛋白需要量(kg/d)',
                   formulaModel!.cp.toString(),
                   formulaModel!.baseCP.toString(),
                 ),
-
+                _compareCell(
+                  '瘤胃降解蛋白(kg/d)',
+                  formulaModel!.rdp.toString(),
+                  formulaModel!.baseRDP.toString(),
+                ),
+                _compareCell(
+                  '瘤胃非降解蛋白(kg/d)',
+                  formulaModel!.rup.toString(),
+                  formulaModel!.baseRUP.toString(),
+                ),
                 _compareCell(
                   '代谢蛋白(kg/d)',
                   formulaModel!.mp.toString(),
                   formulaModel!.baseMP.toString(),
                 ),
-
                 _compareCell(
-                  '钙(kg/d)',
-                  formulaModel!.ca.toString(),
-                  formulaModel!.baseCa.toString(),
+                  '代谢赖氨酸(kg/d)',
+                  formulaModel!.mLys.toString(),
+                  formulaModel!.baseMLys.toString(),
                 ),
-
-                _compareCell('磷(kg/d)', formulaModel!.p.toString(), formulaModel!.baseP.toString()),
-
+                _compareCell(
+                  '代谢蛋氨酸(kg/d)',
+                  formulaModel!.mMet.toString(),
+                  formulaModel!.baseMMet.toString(),
+                ),
                 _compareCell(
                   '代谢能(Mcal/d)',
                   formulaModel!.me.toString(),
                   formulaModel!.baseME.toString(),
                 ),
-
                 _compareCell(
                   '维持净能(Mcal/d)',
                   formulaModel!.nEm.toString(),
                   formulaModel!.baseNEm.toString(),
                 ),
-
                 _compareCell(
                   '增重净能(Mcal/d)',
                   formulaModel!.nEg.toString(),
                   formulaModel!.baseNEg.toString(),
                 ),
+                _compareCell(
+                  '钙(kg/d)',
+                  formulaModel!.ca.toString(),
+                  formulaModel!.baseCa.toString(),
+                ),
+                _compareCell('磷(kg/d)', formulaModel!.p.toString(), formulaModel!.baseP.toString()),
               ],
             ),
           ),
@@ -750,10 +767,6 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
                         decoration: BoxDecoration(
                           color: SaienteColors.blue2559F3.withAlpha(20),
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            width: ScreenAdapter.height(1),
-                            color: SaienteColors.blue2559F3,
-                          ),
                         ),
                         child: const Text(
                           '-',
@@ -784,10 +797,6 @@ class _RawMaterialInfoItemState extends State<_RawMaterialInfoItem> {
                         decoration: BoxDecoration(
                           color: SaienteColors.blue2559F3.withAlpha(20),
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            width: ScreenAdapter.height(1),
-                            color: SaienteColors.blue2559F3,
-                          ),
                         ),
                         child: const Text(
                           '+',

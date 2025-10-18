@@ -733,7 +733,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
   }
 
   List<TableRow> _renderList() {
-    List titleList = ['原料名称', '原料分类', '需要量(kg/d)', '成本(元/kg)'];
+    List titleList = ['粗饲料', '需要量(kg/d)', '成本(元)'];
 
     List<Widget> header = [];
     for (String title in titleList) {
@@ -762,8 +762,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
     double totalWeight = 0;
     double totalCost = 0;
 
-    for (var i = 0; i < controller.items.length; i++) {
-      FormulaItemModel model = controller.items[i];
+    for (var i = 0; i < controller.roughages.length; i++) {
+      FormulaItemModel model = controller.roughages[i];
       final weight =
           ((model.weight ?? 0) *
               (controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1));
@@ -789,20 +789,20 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 ),
               ),
             ),
-            Container(
-              height: ScreenAdapter.height(40),
-              alignment: Alignment.center,
-              child: Text(
-                AppDictList.findLabelByCode(controller.ylflList, model.type.toString()),
-                maxLines: 3,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: SaienteColors.blackE5,
-                  fontSize: ScreenAdapter.fontSize(13),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+            // Container(
+            //   height: ScreenAdapter.height(40),
+            //   alignment: Alignment.center,
+            //   child: Text(
+            //     AppDictList.findLabelByCode(controller.ylflList, model.type.toString()),
+            //     maxLines: 3,
+            //     textAlign: TextAlign.center,
+            //     style: TextStyle(
+            //       color: SaienteColors.blackE5,
+            //       fontSize: ScreenAdapter.fontSize(13),
+            //       fontWeight: FontWeight.w500,
+            //     ),
+            //   ),
+            // ),
             Container(
               height: ScreenAdapter.height(40),
               alignment: Alignment.center,
@@ -856,7 +856,163 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
               ),
             ),
           ),
-          SizedBox(),
+          // SizedBox(),
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              Tools.formatNumber(totalWeight.toString()),
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              Tools.formatNumber(totalCost.toString()),
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return list;
+  }
+
+  List<TableRow> _concentratedFeedList() {
+    List titleList = ['精饲料', '需要量(kg/d)', '成本(元)'];
+
+    List<Widget> header = [];
+    for (String title in titleList) {
+      header.add(
+        Container(
+          height: ScreenAdapter.height(58),
+          color: SaienteColors.blueE5EEFF,
+          alignment: Alignment.center,
+          child: Text(
+            title,
+            maxLines: 3,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: SaienteColors.blackE5,
+              fontSize: ScreenAdapter.fontSize(14),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+    }
+
+    List<TableRow> list = [];
+    list.add(TableRow(children: header));
+
+    double totalWeight = 0;
+    double totalCost = 0;
+
+    for (var i = 0; i < controller.energyFeed.length; i++) {
+      FormulaItemModel model = controller.energyFeed[i];
+      final weight =
+          ((model.weight ?? 0) *
+              (controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1));
+      final cost = (model.price ?? 0) * (controller.argument!.cowCount ?? 1);
+
+      totalWeight += weight;
+      totalCost += cost;
+
+      list.add(
+        TableRow(
+          children: [
+            Container(
+              height: ScreenAdapter.height(40),
+              alignment: Alignment.center,
+              child: Text(
+                model.name ?? Constant.placeholder,
+                maxLines: 3,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: SaienteColors.blackE5,
+                  fontSize: ScreenAdapter.fontSize(13),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            // Container(
+            //   height: ScreenAdapter.height(40),
+            //   alignment: Alignment.center,
+            //   child: Text(
+            //     AppDictList.findLabelByCode(controller.ylflList, model.type.toString()),
+            //     maxLines: 3,
+            //     textAlign: TextAlign.center,
+            //     style: TextStyle(
+            //       color: SaienteColors.blackE5,
+            //       fontSize: ScreenAdapter.fontSize(13),
+            //       fontWeight: FontWeight.w500,
+            //     ),
+            //   ),
+            // ),
+            Container(
+              height: ScreenAdapter.height(40),
+              alignment: Alignment.center,
+              child: Text(
+                Tools.formatNumber(
+                  ((model.weight ?? 0) *
+                          (controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1))
+                      .toString(),
+                ),
+                maxLines: 3,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: SaienteColors.blackE5,
+                  fontSize: ScreenAdapter.fontSize(13),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Container(
+              height: ScreenAdapter.height(40),
+              alignment: Alignment.center,
+              child: Text(
+                Tools.formatNumber(cost.toString()),
+                maxLines: 3,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: SaienteColors.blackE5,
+                  fontSize: ScreenAdapter.fontSize(13),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 添加合计行
+    list.add(
+      TableRow(
+        children: [
+          Container(
+            height: ScreenAdapter.height(40),
+            alignment: Alignment.center,
+            child: Text(
+              '合计',
+              style: TextStyle(
+                color: SaienteColors.blackE5,
+                fontSize: ScreenAdapter.fontSize(13),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // SizedBox(),
           Container(
             height: ScreenAdapter.height(40),
             alignment: Alignment.center,
@@ -896,16 +1052,21 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           () => SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
-            child: Table(
-              defaultColumnWidth: FixedColumnWidth(ScreenAdapter.width(125)),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              border: TableBorder.all(color: SaienteColors.separateLine, width: 0.5),
-              // columnWidths: {
-              //   0: FixedColumnWidth(100),
-              //   1: FixedColumnWidth(200),
-              //   2: FixedColumnWidth(200),
-              // },
-              children: _renderList(),
+            child: Column(
+              children: [
+                Table(
+                  defaultColumnWidth: FixedColumnWidth(ScreenAdapter.width(125)),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  border: TableBorder.all(color: SaienteColors.separateLine, width: 0.5),
+                  children: _renderList(),
+                ),
+                Table(
+                  defaultColumnWidth: FixedColumnWidth(ScreenAdapter.width(125)),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  border: TableBorder.all(color: SaienteColors.separateLine, width: 0.5),
+                  children: _concentratedFeedList(),
+                ),
+              ],
             ),
           ),
         ),

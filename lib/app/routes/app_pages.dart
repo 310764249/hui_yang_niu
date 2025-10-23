@@ -3,6 +3,7 @@ import 'package:intellectual_breed/app/modules/chat_room/chat_room_page.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
+import 'package:intellectual_breed/app/modules/feed_preparation/feed_preparation_page.dart';
 import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/bindings/collect_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/view/collect_view.dart';
@@ -405,6 +406,7 @@ class AppPages {
       binding: EventCattleListBinding(),
       middlewares: [LoginMiddleware()],
     ),
+    GetPage(name: _Paths.EVENT_Feed_Preparation, page: () => const FeedPreparationPage()),
     GetPage(
       name: _Paths.MESSAGE_DETAIL,
       page: () => const MessageDetailView(),

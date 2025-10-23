@@ -143,7 +143,11 @@ class RecipeView extends GetView<RecipeController> {
   Widget _recipeListItem(FormulaModel model) {
     return InkWell(
       onTap: () {
-        Get.toNamed(Routes.RECIPE_DETAIL, arguments: model);
+        if (controller.isPick) {
+          Get.back(result: model);
+        } else {
+          Get.toNamed(Routes.RECIPE_DETAIL, arguments: model);
+        }
       },
       child: Container(
         margin: EdgeInsets.only(top: ScreenAdapter.height(10)),
@@ -332,20 +336,23 @@ class RecipeView extends GetView<RecipeController> {
           // 4个按钮
           //_headerView(),
           //SizedBox(height: ScreenAdapter.height(6)),
-          SizedBox(height: ScreenAdapter.height(20)),
-          // 创建配方按钮
-          _createRecipeButton(),
-          SizedBox(height: ScreenAdapter.height(20)),
-          //
-          Text(
-            '  我的配方',
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(20),
-              color: SaienteColors.blackE5,
-              fontWeight: FontWeight.w500,
+          if (!controller.isPick) ...[
+            SizedBox(height: ScreenAdapter.height(20)),
+            // 创建配方按钮
+            _createRecipeButton(),
+            SizedBox(height: ScreenAdapter.height(20)),
+
+            //
+            Text(
+              '  我的配方',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(20),
+                color: SaienteColors.blackE5,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+          ],
           // 我的配方列表
           _recipeList(),
           SizedBox(height: ScreenAdapter.height(5)),
@@ -359,9 +366,9 @@ class RecipeView extends GetView<RecipeController> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          '配方',
-          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+        title: Text(
+          controller.isPick ? '选择配方' : '配方',
+          style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,

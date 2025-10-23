@@ -11,7 +11,10 @@ import '../../../services/Log.dart';
 import '../../../widgets/dict_list.dart';
 
 class RecipeController extends GetxController {
+  final args = Get.arguments;
   HttpsClient httpsClient = HttpsClient();
+
+  bool get isPick => args?['isPick'] ?? false;
 
   //
   int pageIndex = 1;

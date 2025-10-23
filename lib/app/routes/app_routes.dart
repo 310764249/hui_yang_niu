@@ -40,6 +40,7 @@ abstract class Routes {
   static const EVENT_CATTLE_LIST = _Paths.EVENT_CATTLE_LIST;
   static const MESSAGE_DETAIL = _Paths.MESSAGE_DETAIL;
   static const EVENT_LIST = _Paths.EVENT_LIST;
+  static const EVENT_Feed_Preparation = _Paths.EVENT_Feed_Preparation;
   static const ACTION_MESSAGE_LIST = _Paths.ACTION_MESSAGE_LIST;
   static const Production_Guide = _Paths.Production_Guide;
   static const ABOUT_US = _Paths.ABOUT_US;
@@ -155,6 +156,7 @@ abstract class _Paths {
   static const EVENT_CATTLE_LIST = '/event-cattle-list';
   static const MESSAGE_DETAIL = '/message-detail';
   static const EVENT_LIST = '/event-list';
+  static const EVENT_Feed_Preparation = '/event-feed-preparation';
   static const ACTION_MESSAGE_LIST = '/action-message-list';
   static const Production_Guide = '/production_guide';
   static const ABOUT_US = '/about-us';

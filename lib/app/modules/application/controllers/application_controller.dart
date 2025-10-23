@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/statistics.dart';
+import 'package:intellectual_breed/generated/assets.dart';
 
 import '../../../models/common_data.dart';
 import '../../../models/user_resource.dart';
@@ -177,6 +178,7 @@ class ApplicationController extends GetxController {
                 CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
                 CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
                 CommonData(id: 7, name: "盘点", image: AssetsImages.icon8),
+                CommonData(id: 9, name: "饲料调制", image: Assets.imagesIcFeedPreparation),
                 CommonData(id: 8, name: "饲喂", image: AssetsImages.icon9),
               ];
       // 繁殖管理

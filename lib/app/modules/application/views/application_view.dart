@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/event_list/controllers/event_list_controller.dart';
+import 'package:intellectual_breed/generated/assets.dart';
 
 import '../../../../route_utils/business_logger.dart';
 import '../../../models/cattle_list_argu.dart';
@@ -348,6 +349,20 @@ class ApplicationView extends GetView<ApplicationController> {
         // Get.snackbar("提示", "--> ${data.name.replaceAll("\n", "")}",
         //     snackPosition: SnackPosition.BOTTOM);
         switch (data.name) {
+          case '饲料调制':
+            String tag = '基础管理/饲料调制';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
+              Routes.EVENT_LIST,
+              arguments: EventsArgument(
+                '/api/feedpreparation',
+                '饲料调制',
+                Routes.EVENT_Feed_Preparation,
+                detailRouterStr: Routes.EVENT_Feed_Preparation,
+              ),
+            );
+            BusinessLogger.instance.logExit(tag);
+            break;
           case '引种':
             String tag = '基础管理/引种事件';
             BusinessLogger.instance.logEnter(tag);
@@ -901,7 +916,12 @@ class ApplicationView extends GetView<ApplicationController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            LoadAssetImage(data.image ?? AssetsImages.fileManagement),
+            data.image == Assets.imagesIcFeedPreparation
+                ? Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Image.asset(Assets.imagesIcFeedPreparation, width: 35, height: 34),
+                )
+                : LoadAssetImage(data.image ?? AssetsImages.fileManagement),
             SizedBox(height: ScreenAdapter.height(4)),
             Text(
               data.name,

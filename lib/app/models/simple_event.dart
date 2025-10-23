@@ -15,23 +15,28 @@ class SimpleEvent {
   late final String? formulaId; //配方id
   late final String? formulaName; //配方名称
   late final num? dosage; //校正饲喂量
+  late final int? formulaType;
+  late final double? totalWeight;
 
-  SimpleEvent(
-      {required this.id,
-      this.date,
-      required this.created,
-      this.cowCode,
-      this.batchNo,
-      this.cowHouseName,
-      this.executor,
-      this.remark,
-      this.no,
-      required this.rowVersion,
-      required this.data,
-      this.seller,
-      this.formulaId,
-      this.formulaName,
-      this.dosage});
+  SimpleEvent({
+    required this.id,
+    this.date,
+    required this.created,
+    this.cowCode,
+    this.batchNo,
+    this.cowHouseName,
+    this.executor,
+    this.remark,
+    this.no,
+    required this.rowVersion,
+    required this.data,
+    this.seller,
+    this.formulaId,
+    this.formulaName,
+    this.dosage,
+    this.formulaType,
+    this.totalWeight,
+  });
   SimpleEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     date = json['date'];
@@ -48,6 +53,8 @@ class SimpleEvent {
     formulaName = json['formulaName'];
     dosage = json['dosage'];
     data = json;
+    formulaType = json['formulaType'];
+    totalWeight = double.tryParse('${json['totalWeight']}');
   }
 
   Map<String, dynamic> toJson() {

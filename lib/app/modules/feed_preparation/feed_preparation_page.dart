@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pickers/utils/check.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/models/feed_preparation_model.dart';
 import 'package:intellectual_breed/app/models/formula.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/widgets/divider_line.dart';
@@ -23,6 +24,7 @@ class FeedPreparationPage extends StatefulWidget {
 }
 
 class _FeedPreparationPageState extends State<FeedPreparationPage> {
+  final arg = Get.arguments;
   HttpsClient httpsClient = HttpsClient();
 
   //吨位文本控制器
@@ -30,11 +32,20 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
   FormulaModel? pickedFormula;
   List<String> formulaType = ['精饲料', '粗饲料'];
   int? currentFormulaType;
+  FeedPreparationModel? feedPreparationModel;
+
+  String? get detailsId => arg?.id;
+
+  bool get isShowDetail => detailsId != null;
 
   @override
   void initState() {
     super.initState();
-    weightController.text = '1.0';
+    if (isShowDetail) {
+      getDetail();
+    } else {
+      weightController.text = '1.0';
+    }
   }
 
   //验证调制
@@ -59,10 +70,13 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
         '/api/feedpreparation/generate',
         data: {
           'formulaId': pickedFormula?.id,
-          'formulaType': currentFormulaType,
-          'weight': weightController.text,
+          'feedType': currentFormulaType,
+          'totalWeight': weightController.text,
         },
       );
+      setState(() {
+        feedPreparationModel = FeedPreparationModel.fromJson(result);
+      });
       Toast.dismiss();
     } catch (e) {
       debugPrint('feedpreparation:$e');
@@ -75,10 +89,87 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
     }
   }
 
+  //提交
+  void submit() async {
+    Toast.showLoading();
+    try {
+      await httpsClient.post(
+        '/api/feedpreparation',
+        data: {
+          'formulaId': pickedFormula?.id,
+          'feedType': currentFormulaType,
+          'totalWeight': weightController.text,
+        },
+      );
+      Toast.dismiss();
+      Toast.show('提交成功');
+      Get.back(result: true);
+    } catch (e) {
+      Toast.dismiss();
+      if (e is ApiException) {
+        Toast.show(e.message);
+        return;
+      }
+      debugPrint('feedpreparation:$e');
+    }
+  }
+
+  void getDetail() async {
+    try {
+      final response = await httpsClient.get('/api/feedPreparation/$detailsId');
+      setState(() {
+        feedPreparationModel = FeedPreparationModel.fromJson(response);
+        currentFormulaType = feedPreparationModel?.feedType;
+        weightController = TextEditingController(text: '${feedPreparationModel?.totalWeight ?? 0}');
+      });
+    } catch (e) {
+      debugPrint('feedpreparation:$e');
+      if (e is ApiException) {
+        Toast.show(e.message);
+        return;
+      }
+      Toast.show('网络错误');
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('饲料调制'), centerTitle: true, backgroundColor: Colors.white),
+      appBar: AppBar(
+        title: const Text('饲料调制'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        actions: [
+          if (isShowDetail)
+            TextButton(
+              onPressed: () async {
+                Toast.showLoading();
+                try {
+                  await httpsClient.delete(
+                    '/api/feedPreparation',
+                    data: {
+                      "id": detailsId,
+                      // "2025-10-23T16:11:29.936Z"
+                      'rowVersion': arg.rowVersion,
+                    },
+                  );
+                  Toast.dismiss();
+                  Toast.show('删除成功');
+                  Get.back(result: true);
+                } catch (e) {
+                  Toast.dismiss();
+                  if (e is ApiException) {
+                    Toast.show(e.message);
+                    return;
+                  }
+                  Toast.show('网络错误');
+                }
+              },
+              child: const Text('删除', style: TextStyle(color: SaienteColors.appMain)),
+            ),
+        ],
+      ),
       body: Column(
         children: [
           Container(
@@ -95,8 +186,12 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
                 CellButton(
                   isRequired: true,
                   title: '选择配方',
-                  content: pickedFormula?.name ?? '请选择配方',
+                  content:
+                      isShowDetail
+                          ? feedPreparationModel?.formulaName ?? ''
+                          : (pickedFormula?.name ?? '请选择配方'),
                   onPressed: () async {
+                    if (isShowDetail) return;
                     final result = await Get.toNamed(Routes.RECIPE, arguments: {'isPick': true});
                     if (result != null && result is FormulaModel) {
                       setState(() {
@@ -110,6 +205,7 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
                   title: '调制类型',
                   content: currentFormulaType == null ? '' : formulaType[currentFormulaType ?? 0],
                   onPressed: () {
+                    if (isShowDetail) return;
                     Picker.showSinglePicker(
                       context,
                       formulaType,
@@ -141,82 +237,117 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
                       ),
                     ),
                     Expanded(
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              if (weightController.text.isEmpty) {
-                                return;
-                              }
-                              if (double.parse(weightController.text) < 1) {
-                                return;
-                              }
-                              weightController.text = (double.parse(weightController.text) - 1)
-                                  .toStringAsFixed(1);
-                            },
-                            icon: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: SaienteColors.blue2559F3.withAlpha(20),
-                                shape: BoxShape.circle,
+                      child:
+                          isShowDetail
+                              ? Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Center(
+                                  child: Text(
+                                    weightController.text,
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w500,
+                                      color: SaienteColors.blackE5,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              : Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      if (weightController.text.isEmpty) {
+                                        return;
+                                      }
+                                      if (double.parse(weightController.text) < 1) {
+                                        return;
+                                      }
+                                      weightController.text = (double.parse(weightController.text) -
+                                              1)
+                                          .toStringAsFixed(1);
+                                    },
+                                    icon: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: SaienteColors.blue2559F3.withAlpha(20),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Text(
+                                        '-',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: SaienteColors.appMain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      height: 40,
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: ScreenAdapter.width(10),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: SaienteColors.blue4D91F5.withAlpha(50),
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: TextField(
+                                        controller: weightController,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                                        style: const TextStyle(fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                        decoration: const InputDecoration(border: InputBorder.none),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      weightController.text = (double.parse(
+                                                weightController.text.isEmpty
+                                                    ? '0'
+                                                    : weightController.text,
+                                              ) +
+                                              1)
+                                          .toStringAsFixed(1);
+                                    },
+                                    icon: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: SaienteColors.blue2559F3.withAlpha(20),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Text(
+                                        '+',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: SaienteColors.appMain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: const Text(
-                                '-',
-                                style: TextStyle(fontSize: 16, color: SaienteColors.appMain),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(horizontal: ScreenAdapter.width(10)),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: SaienteColors.blue4D91F5.withAlpha(50)),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: TextField(
-                                controller: weightController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                                style: const TextStyle(fontSize: 14),
-                                textAlign: TextAlign.center,
-                                decoration: const InputDecoration(border: InputBorder.none),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              weightController.text = (double.parse(
-                                        weightController.text.isEmpty ? '0' : weightController.text,
-                                      ) +
-                                      1)
-                                  .toStringAsFixed(1);
-                            },
-                            icon: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: SaienteColors.blue2559F3.withAlpha(20),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Text(
-                                '+',
-                                style: TextStyle(fontSize: 16, color: SaienteColors.appMain),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(10),
-            child: MainButton(text: '调制', onPressed: validate),
-          ),
+          if (!isShowDetail)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(10),
+              child: MainButton(text: '调制', onPressed: validate),
+            ),
           Container(
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.fromLTRB(
@@ -235,10 +366,19 @@ class _FeedPreparationPageState extends State<FeedPreparationPage> {
                   ),
                   child: const _TabItem(title: '原料名称', value: '重量（kg）'),
                 ),
-                const _TabItem(title: '燕麦甘草', value: '100'),
+                ...(feedPreparationModel?.rawMaterials ?? []).map(
+                  (e) => _TabItem(title: e.name, value: '${e.weight ?? 0}'),
+                ),
               ],
             ),
           ),
+          if (!isShowDetail)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(10),
+              child: MainButton(text: '提交', onPressed: submit),
+            ),
+          SizedBox(height: ScreenAdapter.height(40)),
         ],
       ),
     );

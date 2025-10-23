@@ -49,7 +49,9 @@ class EventListView extends GetView<EventListController> {
             // 上拉加载更多数据请求
             await controller.searchEventsList(isRefresh: false);
             // 设置状态
-            controller.refreshController.finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
+            controller.refreshController.finishLoad(
+              controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
+            );
           },
           child: ListView.builder(
             itemCount: controller.items.length,
@@ -65,7 +67,12 @@ class EventListView extends GetView<EventListController> {
                 child: Container(
                   // height: ScreenAdapter.height(130),
                   margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
-                  padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+                  padding: EdgeInsets.fromLTRB(
+                    ScreenAdapter.width(10),
+                    0,
+                    ScreenAdapter.width(10),
+                    0,
+                  ),
                   decoration: BoxDecoration(
                     //背景
                     color: Colors.white,
@@ -92,8 +99,11 @@ class EventListView extends GetView<EventListController> {
                           SizedBox(width: ScreenAdapter.width(5)),
                           Text(
                             controller.getItemTitle(model),
-                            style:
-                                TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400, color: Colors.black),
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(14),
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
                           ),
                         ],
                       ),
@@ -101,80 +111,117 @@ class EventListView extends GetView<EventListController> {
                       Row(
                         children: [
                           Expanded(
-                              child: Column(children: [
-                            Text(
-                              controller.argument.title, //,
-                              style: TextStyle(
-                                  color: SaienteColors.blackE5,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(14)),
+                            child: Column(
+                              children: [
+                                Text(
+                                  controller.isFoodAdjust
+                                      ? '${['精饲料', '粗饲料'][model.formulaType ?? 0]}-${model.totalWeight}吨'
+                                      : controller.argument.title, //,
+                                  style: TextStyle(
+                                    color: SaienteColors.blackE5,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                                SizedBox(height: ScreenAdapter.height(3)),
+                                Text(
+                                  '类型',
+                                  style: TextStyle(
+                                    color: SaienteColors.black80,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: ScreenAdapter.height(3)),
-                            Text(
-                              '类型',
-                              style: TextStyle(color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(14)),
-                            )
-                          ])),
+                          ),
                           Container(
                             color: SaienteColors.separateLine,
                             width: ScreenAdapter.width(1),
                             height: ScreenAdapter.height(36),
                           ),
                           Expanded(
-                              child: Column(children: [
-                            Text(
-                              controller.getTimeString(model),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: SaienteColors.blackE5,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(14)),
+                            child: Column(
+                              children: [
+                                Text(
+                                  controller.getTimeString(model),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: SaienteColors.blackE5,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                                SizedBox(height: ScreenAdapter.height(3)),
+                                Text(
+                                  ' 日期',
+                                  style: TextStyle(
+                                    color: SaienteColors.black80,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: ScreenAdapter.height(3)),
-                            Text(
-                              ' 日期',
-                              style: TextStyle(color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(14)),
-                            )
-                          ])),
+                          ),
                           Container(
                             color: SaienteColors.separateLine,
                             width: ScreenAdapter.width(1),
                             height: ScreenAdapter.height(36),
                           ),
                           Expanded(
-                              child: Column(children: [
-                            Text(
-                              controller.getExecutor(model),
-                              style: TextStyle(
-                                  color: SaienteColors.blackE5,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(14)),
+                            child: Column(
+                              children: [
+                                Text(
+                                  controller.getExecutor(model),
+                                  style: TextStyle(
+                                    color: SaienteColors.blackE5,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                                SizedBox(height: ScreenAdapter.height(3)),
+                                Text(
+                                  model.seller == null ? '操作人' : '销售人',
+                                  style: TextStyle(
+                                    color: SaienteColors.black80,
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: ScreenAdapter.height(3)),
-                            Text(
-                              model.seller == null ? '操作人' : '销售人',
-                              style: TextStyle(color: SaienteColors.black80, fontSize: ScreenAdapter.fontSize(14)),
-                            )
-                          ]))
+                          ),
                         ],
                       ),
                       SizedBox(height: ScreenAdapter.height(5)),
-                      SizedBox(
+                      if (!controller.isFoodAdjust)
+                        SizedBox(
                           width: ScreenAdapter.getScreenWidth(),
                           child: Row(
                             children: [
                               Expanded(
                                 child: ElevatedButton(
                                   style: ButtonStyle(
-                                      // 阴影颜色
-                                      shadowColor: MaterialStateProperty.all(Colors.transparent),
-                                      backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                                      foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
+                                    // 阴影颜色
+                                    shadowColor: MaterialStateProperty.all(Colors.transparent),
+                                    backgroundColor: MaterialStateProperty.all(
+                                      SaienteColors.blueE5EEFF,
+                                    ),
+                                    foregroundColor: MaterialStateProperty.all(
+                                      SaienteColors.blue275CF3,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          ScreenAdapter.width(2.5),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   onPressed: () {
-                                    Get.toNamed(controller.argument.routerStr, arguments: model)?.then((value) {
+                                    Get.toNamed(
+                                      controller.argument.routerStr,
+                                      arguments: model,
+                                    )?.then((value) {
                                       // controller.refreshController
                                       //     .callRefresh();
                                       controller.searchEventsList();
@@ -182,22 +229,33 @@ class EventListView extends GetView<EventListController> {
                                   },
                                   child: Text(
                                     '编辑',
-                                    style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: ScreenAdapter.width(10),
-                              ),
+                              SizedBox(width: ScreenAdapter.width(10)),
                               Expanded(
                                 child: ElevatedButton(
                                   style: ButtonStyle(
-                                      // 阴影颜色
-                                      shadowColor: MaterialStateProperty.all(Colors.transparent),
-                                      backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                                      foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
+                                    // 阴影颜色
+                                    shadowColor: MaterialStateProperty.all(Colors.transparent),
+                                    backgroundColor: MaterialStateProperty.all(
+                                      SaienteColors.blueE5EEFF,
+                                    ),
+                                    foregroundColor: MaterialStateProperty.all(
+                                      SaienteColors.blue275CF3,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          ScreenAdapter.width(2.5),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   onPressed: () {
                                     Alert.showConfirm(
                                       '确定删除该事件?',
@@ -209,12 +267,16 @@ class EventListView extends GetView<EventListController> {
                                   },
                                   child: Text(
                                     '删除',
-                                    style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
-                          )),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -242,7 +304,11 @@ class EventListView extends GetView<EventListController> {
             return Container(
               height: ScreenAdapter.height(132),
               margin: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(10),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(0),
+              ),
               decoration: BoxDecoration(
                 //背景
                 color: const Color(0xFFE0E0E0),
@@ -266,32 +332,41 @@ class EventListView extends GetView<EventListController> {
         backgroundColor: Colors.white,
         actions: [
           TextButton(
-              onPressed: () {
-                Get.toNamed(controller.argument.routerStr)?.then((value) {
-                  //print('controller.refreshController.callLoad();');
-                  //controller.refreshController.callRefresh();
-                  controller.searchEventsList();
-                });
-              },
-              child: Text(
-                "新增",
-                style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(16)),
-              ))
+            onPressed: () {
+              Get.toNamed(controller.argument.routerStr)?.then((value) {
+                //print('controller.refreshController.callLoad();');
+                //controller.refreshController.callRefresh();
+                controller.searchEventsList();
+              });
+            },
+            child: Text(
+              "新增",
+              style: TextStyle(
+                color: SaienteColors.blue275CF3,
+                fontSize: ScreenAdapter.fontSize(16),
+              ),
+            ),
+          ),
         ],
       ),
       body: Material(
-          color: SaienteColors.backGrey,
-          child: SafeArea(
-            child: Obx(() => Stack(children: [
-                  //顶部搜索区域
-                  //_topArea(context),
-                  const Positioned(child: EmptyView()),
-                  controller.isLoading.value
-                      ? _loadingView()
-                      //批次筛选列表
-                      : _batchList(),
-                ])),
-          )),
+        color: SaienteColors.backGrey,
+        child: SafeArea(
+          child: Obx(
+            () => Stack(
+              children: [
+                //顶部搜索区域
+                //_topArea(context),
+                const Positioned(child: EmptyView()),
+                controller.isLoading.value
+                    ? _loadingView()
+                    //批次筛选列表
+                    : _batchList(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

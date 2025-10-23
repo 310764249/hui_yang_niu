@@ -50,15 +50,17 @@ class EventListController extends GetxController {
   //接口地址
   // String API = '/api/allot';
 
+  //是否饲料调制
+  bool get isFoodAdjust {
+    return argument.api == '/api/feedpreparation';
+  }
+
   @override
   void onInit() {
     super.onInit();
     argument = Get.arguments;
     //
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
 
     debugPrint("routerStr--${argument.routerStr}   detailRouterStr:${argument.detailRouterStr}");
     searchEventsList();
@@ -80,7 +82,9 @@ class EventListController extends GetxController {
   /// 显示标题盘点
   String getItemTitle(SimpleEvent model) {
     String title = '';
-    if (model.cowCode == null) {
+    if (argument.api == '/api/feedpreparation') {
+      title = model.formulaName ?? '';
+    } else if (model.cowCode == null) {
       if (model.batchNo == null) {
         if (model.no != null) {
           title = '单号-${model.no}';
@@ -131,10 +135,7 @@ class EventListController extends GetxController {
       }
 
       //接口参数
-      Map<String, dynamic> para = {
-        'PageIndex': tempPageIndex,
-        'PageSize': pageSize,
-      };
+      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
       var response = await httpsClient.get(argument.api, queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
@@ -175,10 +176,7 @@ class EventListController extends GetxController {
     Toast.showLoading();
     try {
       //接口参数
-      Map<String, dynamic> para = {
-        'id': event.id,
-        'rowVersion': event.rowVersion,
-      };
+      Map<String, dynamic> para = {'id': event.id, 'rowVersion': event.rowVersion};
       await httpsClient.delete(argument.api, data: para);
       Toast.dismiss();
       Toast.success(msg: '删除成功');

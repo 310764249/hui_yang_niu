@@ -17,6 +17,7 @@ import 'package:intellectual_breed/app/modules/material_management/take_inventor
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/bindings/warehouse_entry_binding.dart';
 import 'package:intellectual_breed/app/modules/material_management/warehouse_entry/view/warehouse_entry_view.dart';
 import 'package:intellectual_breed/app/modules/message/Production_Guide/bindings/production_guide_binding.dart';
+import 'package:intellectual_breed/app/modules/recipe_verify/recipe_verify_bindings.dart';
 
 import '../modules/about_us/bindings/about_us_binding.dart';
 import '../modules/about_us/views/about_us_view.dart';
@@ -767,6 +768,10 @@ class AppPages {
       binding: MaterialRecordsBindings(),
     ),
     GetPage(name: _Paths.MaterialRecordsDetails, page: () => const MaterialRecordsDetails()),
-    GetPage(name: _Paths.RecipeVerifyPage, page: () => const RecipeVerifyPage()),
+    GetPage(
+      name: _Paths.RecipeVerifyPage,
+      page: () => const RecipeVerifyPage(),
+      binding: RecipeVerifyBindings(),
+    ),
   ];
 }

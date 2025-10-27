@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/raw_material.dart';
+import 'package:intellectual_breed/app/modules/recipe_verify/recipe_verify_controller.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
@@ -18,519 +19,378 @@ import '../../services/screenAdapter.dart';
 import '../../widgets/my_card.dart';
 import '../../widgets/picker.dart';
 
-class RecipeVerifyPage extends StatefulWidget {
+class RecipeVerifyPage extends GetView<RecipeVerifyController> {
   const RecipeVerifyPage({super.key});
 
   @override
-  State<RecipeVerifyPage> createState() => _RecipeVerifyPageState();
-}
-
-class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
-  HttpsClient httpsClient = HttpsClient();
-  List gtlxList = [];
-  List gtzlListHB = [];
-  List gtzlListRS = [];
-  List gtzlListYF = [];
-  List rsyfList = [];
-
-  //[{key: 880abf38-9c19-499b-b73e-72ed185838a8, label: 育肥牛, value: 4, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 1, disabled: false, dataType: null, isDeleted: false, children: null},
-  // {key: 862a64f1-3c73-4956-9d04-994c2ca38a16, label: 青年妊娠母牛, value: 2, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 2, disabled: false, dataType: null, isDeleted: false, children: null},
-  // {key: cbfa3876-d9bc-44c8-b264-3868790b4284, label: 妊娠母牛, value: 1, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 3, disabled: false, dataType: null, isDeleted: false, children: null},
-  // {key: 0b5bcfaa-1c7e-41c7-a8c0-1b858e6df59f, label: 哺乳母牛, value: 3, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 4, disabled: false, dataType: null, isDeleted: false, children: null},
-  // {key: f0b7a670-2d63-42e0-8f19-627edaac7859, label: 后备母牛, value: 5, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 5, disabled: false, dataType: null, isDeleted: false, children: null}]
-
-  List<String> get labels => gtlxList.map((item) => item['label'].toString()).toList();
-
-  String get currentLabel => currentItem['label'].toString();
-
-  late Map<String, dynamic> currentItem;
-
-  //显示牛只重量的牛只类型 育肥牛 青年妊娠母牛 后备母牛
-  bool get showNuWeight =>
-      currentItem['value'] == '4' || currentItem['value'] == '2' || currentItem['value'] == '5';
-
-  //显示日增重的牛只类型 育肥牛 后备母牛
-  bool get showNuDailyWeight => currentItem['value'] == '4' || currentItem['value'] == '5';
-
-  //显示妊娠月份的牛只类型 青年妊娠母牛 妊娠母牛
-  bool get showNuPregnancyMonth => currentItem['value'] == '2' || currentItem['value'] == '1';
-
-  //显示哺乳月份的牛只类型 哺乳母牛
-  bool get showNuBreastMonth => currentItem['value'] == '3';
-
-  //当前选择牛只类型的体重
-  List get nuWeight {
-    if (showNuWeight) {
-      //育肥牛
-      if (currentItem['value'] == '4') {
-        return gtzlListYF;
-      }
-      //青年妊娠母牛
-      if (currentItem['value'] == '2') {
-        return gtzlListRS;
-      }
-      //妊娠母牛
-      if (currentItem['value'] == '5') {
-        return gtzlListHB;
-      }
-    }
-    return [];
-  }
-
-  Map<String, dynamic>? currentNuWeight;
-
-  List<String> get nuWeightLabels => nuWeight.map((item) => item['label'].toString()).toList();
-
-  String get nuWeightLabel => currentNuWeight?['label'] ?? '';
-
-  //存栏输入
-  TextEditingController countController = TextEditingController(text: "1");
-
-  //当前选择的日增重
-  String nuDailyWeight = '';
-
-  //妊娠月份labels
-  List<String> get rsyfLabels => rsyfList.map((item) => item['label'].toString()).toList();
-
-  //选择的妊娠月份
-  Map<String, dynamic>? currentRsyf;
-
-  String get rsyfLabel => currentRsyf?['label'] ?? '';
-
-  List<RawMaterial> rawMaterialList = [];
-
-  //添加的饲料
-  List<RawMaterial> addRawMaterialList = [];
-
-  /// 加法
-  double add(double a, double b, {int precision = 2}) {
-    double result = a + b;
-    return double.parse(result.toStringAsFixed(precision));
-  }
-
-  /// 减法
-  double sub(double a, double b, {int precision = 2}) {
-    double result = a - b;
-    return double.parse(result.toStringAsFixed(precision));
-  }
-
-  //验证配方的结果
-  FormulaModel? formulaModel;
-  ValueNotifier<bool> compareExpanded = ValueNotifier(true);
-
-  @override
-  void initState() {
-    super.initState();
-    gtlxList = AppDictList.searchItems('pfmb')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListHB =
-        AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListRS =
-        AppDictList.searchItems('gtzl-qnrs')?.where((item) => !item['isDeleted']).toList() ?? [];
-    gtzlListYF =
-        AppDictList.searchItems('gtzl-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
-    rsyfList = AppDictList.searchItems('rsyf')?.where((item) => !item['isDeleted']).toList() ?? [];
-    debugPrint('gtlxList: $gtlxList');
-    currentItem = gtlxList.first;
-    getRawMaterialList();
-  }
-
-  //获取饲料列表
-  Future<void> getRawMaterialList() async {
-    try {
-      var response = await httpsClient.get("/api/rawmaterial/getall");
-      for (var item in response) {
-        RawMaterial model = RawMaterial.fromJson(item);
-        rawMaterialList.add(model);
-      }
-    } catch (_) {}
-  }
-
-  //验证配方
-  Future<void> verifyRecipe() async {
-    if (showNuWeight) {
-      if (currentNuWeight == null) {
-        Toast.show('请选择牛只重量');
-        return;
-      }
-    }
-    if (showNuDailyWeight) {
-      if (nuDailyWeight.isEmpty) {
-        Toast.show('请选择日增重');
-        return;
-      }
-    }
-    if (showNuPregnancyMonth) {
-      if (currentRsyf == null) {
-        Toast.show('请选择妊娠月份');
-      }
-    }
-    if (countController.text.isEmpty || countController.text == '0') {
-      Toast.show('请输入存栏数');
-      return;
-    }
-    if (addRawMaterialList.isEmpty) {
-      Toast.show('请添加原料');
-      return;
-    }
-    try {
-      var response = await httpsClient.post(
-        "/api/formula/verifyformula",
-        data: {
-          'formulaType': 1,
-          "individualCate": 0,
-          "individualType": currentItem['value'],
-          "weightType": currentNuWeight?['value'],
-          "dailyGainWeight": nuDailyWeight.replaceAll('kg', ''),
-          "calvingMonths": currentRsyf?['value'],
-          "milkGrade": 0,
-          "gestationMonths": currentRsyf?['value'],
-          "roughages":
-              addRawMaterialList.where((e) => e.category == 1).map((e) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
-
-          "energyFeed":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 2).map((e) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
-          //element.category == 2 && element.type == 3
-          "proteinFeed":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 3).map((e) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
-          //element.category == 2 && (element.type == 4 || element.type == 6
-          "additives":
-              addRawMaterialList.where((e) => e.category == 2 && (e.type == 4 || e.type == 6)).map((
-                e,
-              ) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
-          //element.category == 2 && element.type == 5
-          "premix":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 5).map((e) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
-        },
-      );
-      setState(() {
-        formulaModel = FormulaModel.fromJson(response);
-        formulaModel?.cowCount = int.parse(countController.text);
-        formulaModel?.formulaType = 1;
-      });
-    } catch (e) {
-      debugPrint('verifyRecipe error: $e');
-      setState(() {
-        formulaModel = null;
-      });
-      if (e is ApiException) {
-        Toast.show(e.message);
-        return;
-      }
-      Toast.show('验证配方失败');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('验证配方'),
-        centerTitle: true,
-        actions: [
-          if (formulaModel != null)
-            TextButton(
-              onPressed: () {
-                if (ObjectUtil.isNotEmpty(formulaModel)) {
-                  Get.toNamed(Routes.RECIPE_DETAIL, arguments: formulaModel);
-                }
-              },
-              child: const Text('保存配方'),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CellButton(
-                    isRequired: true,
-                    title: '牛只类型',
-                    content: currentLabel,
-                    onPressed: () {
-                      if (gtlxList.isEmpty) {
-                        Toast.show('配方目标类型获取失败');
-                        return;
-                      }
-                      Picker.showSinglePicker(
-                        context,
-                        labels,
-                        selectData: currentItem['label'],
-                        title: '请选择个体类型',
-                        onConfirm: (value, position) {
-                          setState(() {
-                            currentItem = gtlxList[position];
-                            currentNuWeight = null;
-                            currentRsyf = null;
-                            nuDailyWeight = '';
-                            countController.text = '1';
-                          });
-                          debugPrint('当前选择: $currentItem');
-                        },
-                      );
-                    },
-                  ),
-                  if (showNuWeight)
-                    CellButton(
-                      title: '牛只重量',
-                      content: nuWeightLabel,
-                      onPressed: () {
-                        Picker.showSinglePicker(
-                          context,
-                          nuWeightLabels,
-                          selectData: nuWeightLabel,
-                          title: '请选择牛只重量',
-                          onConfirm: (value, position) {
-                            setState(() {
-                              currentNuWeight = nuWeight[position];
-                            });
-                          },
-                        );
-                      },
-                      isRequired: true,
-                    ),
-                  if (showNuDailyWeight)
-                    CellButton(
-                      title: '牛只日增重',
-                      content: nuDailyWeight,
-                      onPressed: () {
-                        if (currentNuWeight == null) {
-                          Toast.show('请选择牛只重量');
-                          return;
-                        }
-                        final Map<int, List<double>> weightRangeMap = {
-                          240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                          280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                          320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                          360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                          520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                          560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                          600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-                          640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-                          760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                          800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                          840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-                        };
-
-                        final weightStr = nuWeightLabel.replaceAll('kg', '');
-                        debugPrint('当前选择: $weightStr');
-                        final weight = int.tryParse(weightStr);
-
-                        if (weight != null && weightRangeMap.containsKey(weight)) {
-                          final range = weightRangeMap[weight]!;
-
-                          // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
-                          final filteredList =
-                              range.map((e) {
-                                return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
-                              }).toList();
-
-                          if (filteredList.isEmpty) {
-                            debugPrint('当前体重无可选日增重区间');
-                            return;
-                          }
-
-                          // 弹出选择器
-                          Picker.showSinglePicker(
-                            context,
-                            filteredList,
-                            selectData: nuDailyWeight,
-                            title: '请选择日增重',
-                            onConfirm: (value, position) {
-                              setState(() {
-                                nuDailyWeight = filteredList[position];
-                              });
-                            },
-                          );
-                        } else {
-                          debugPrint('未找到对应体重的区间范围');
-                        }
-                      },
-                      isRequired: true,
-                    ),
-                  if (showNuPregnancyMonth)
-                    CellButton(
-                      title: '妊娠月份',
-                      isRequired: true,
-                      content: rsyfLabel,
-                      onPressed: () {
-                        Picker.showSinglePicker(
-                          context,
-                          rsyfLabels,
-                          selectData: rsyfLabel,
-                          title: '请选择妊娠月份',
-                          onConfirm: (value, position) {
-                            setState(() {
-                              currentRsyf = rsyfList[position];
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  if (showNuBreastMonth)
-                    CellButton(
-                      title: '哺乳月份',
-                      content: rsyfLabel,
-                      isRequired: true,
-                      onPressed: () {
-                        Picker.showSinglePicker(
-                          context,
-                          rsyfLabels,
-                          selectData: rsyfLabel,
-                          title: '请选择哺乳月份',
-                          onConfirm: (value, position) {
-                            setState(() {
-                              currentRsyf = rsyfList[position];
-                            });
-                          },
-                        );
-                      },
-                    ),
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Text('原料组成（kg）', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            ),
-            ...addRawMaterialList.map((e) {
-              return _RawMaterialInfoItem(
-                rawMaterial: e,
-                onTapDelete: () {
-                  setState(() {
-                    addRawMaterialList.remove(e);
-                  });
-                },
-              );
-            }),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: TextButton(
+    return GetBuilder<RecipeVerifyController>(
+      builder: (controller) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('验证配方'),
+            centerTitle: true,
+            actions: [
+              if (controller.formulaModel != null)
+                TextButton(
                   onPressed: () {
-                    //列表移除已经添加的原料
-                    List<RawMaterial> showRawMaterialLabels = List.from(rawMaterialList);
-                    for (var o in addRawMaterialList) {
-                      showRawMaterialLabels.remove(o);
+                    if (ObjectUtil.isNotEmpty(controller.formulaModel)) {
+                      Get.toNamed(Routes.RECIPE_DETAIL, arguments: controller.formulaModel);
                     }
-                    Picker.showSinglePicker(
-                      context,
-                      showRawMaterialLabels.map((e) => e.name).toList(),
-                      title: '请选择要添加的原料',
-                      onConfirm: (value, position) {
-                        setState(() {
-                          addRawMaterialList.add(showRawMaterialLabels[position]);
-                        });
-                      },
-                    );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: SaienteColors.dark_app_main.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: const Text(
-                      '+添加原料',
-                      style: TextStyle(fontSize: 14, color: SaienteColors.dark_app_main),
-                    ),
-                  ),
+                  child: const Text('保存配方'),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(SaienteColors.appMain),
-                  foregroundColor: MaterialStateProperty.all(Colors.white),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
-                    ),
-                  ),
-                ),
-                onPressed: () {
-                  verifyRecipe();
-                },
-                child: Center(
-                  child: Text(
-                    '验证配方',
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(17),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (formulaModel != null)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: SaienteColors.appMain.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text('配方基本信息')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Expanded(
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              '单头每日成本',
-                              style: TextStyle(
-                                color: SaienteColors.title_color,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '¥ ${formulaModel?.price ?? 0.0}',
-                              style: const TextStyle(
-                                color: SaienteColors.appMain,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                    TextButton(
+                      onPressed: () {
+                        controller.selectHaveFormula(true);
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            controller.isSelectExistFormula
+                                ? Icons.radio_button_checked_outlined
+                                : Icons.circle_outlined,
+                          ),
+                          const Text(
+                            '选择已有配方',
+                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.selectHaveFormula(false);
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            !controller.isSelectExistFormula
+                                ? Icons.radio_button_checked_outlined
+                                : Icons.circle_outlined,
+                          ),
+                          const Text(
+                            '手动输入配方',
+                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            if (formulaModel != null) _compareInfo(),
-          ],
-        ),
-      ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (controller.isSelectExistFormula)
+                        CellButton(
+                          isRequired: true,
+                          title: '选择配方',
+                          content:
+                              controller.formulaModelExist == null
+                                  ? '请选择配方'
+                                  : controller.formulaModelExist?.name ?? '',
+                          onPressed: () async {
+                            final result = await Get.toNamed(
+                              Routes.RECIPE,
+                              arguments: {'isPick': true},
+                            );
+
+                            if (result != null && result is FormulaModel) {
+                              controller.currentFormula(result);
+                            }
+                          },
+                        ),
+                      CellButton(
+                        isRequired: true,
+                        title: '牛只类型',
+                        content: controller.currentLabel,
+                        onPressed: () {
+                          if (controller.gtlxList.isEmpty) {
+                            Toast.show('配方目标类型获取失败');
+                            return;
+                          }
+                          Picker.showSinglePicker(
+                            context,
+                            controller.labels,
+                            selectData: controller.currentItem['label'],
+                            title: '请选择个体类型',
+                            onConfirm: (value, position) {
+                              controller.currentCowType(value, position);
+                            },
+                          );
+                        },
+                      ),
+                      if (controller.showNuWeight)
+                        CellButton(
+                          title: '牛只重量',
+                          content: controller.nuWeightLabel,
+                          onPressed: () {
+                            Picker.showSinglePicker(
+                              context,
+                              controller.nuWeightLabels,
+                              selectData: controller.nuWeightLabel,
+                              title: '请选择牛只重量',
+                              onConfirm: (value, position) {
+                                // setState(() {
+                                //   currentNuWeight = nuWeight[position];
+                                // });
+                                controller.currentWeight(value, position);
+                              },
+                            );
+                          },
+                          isRequired: true,
+                        ),
+                      if (controller.showNuDailyWeight)
+                        CellButton(
+                          title: '牛只日增重',
+                          content: controller.nuDailyWeight,
+                          onPressed: () {
+                            if (controller.currentNuWeight == null) {
+                              Toast.show('请选择牛只重量');
+                              return;
+                            }
+                            final Map<int, List<double>> weightRangeMap = {
+                              240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                              280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                              320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                              360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                              520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                              560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                              600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+                              640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+                              760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                              800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                              840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+                            };
+
+                            final weightStr = controller.nuWeightLabel.replaceAll('kg', '');
+                            debugPrint('当前选择: $weightStr');
+                            final weight = int.tryParse(weightStr);
+
+                            if (weight != null && weightRangeMap.containsKey(weight)) {
+                              final range = weightRangeMap[weight]!;
+
+                              // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
+                              final filteredList =
+                                  range.map((e) {
+                                    return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                                  }).toList();
+
+                              if (filteredList.isEmpty) {
+                                debugPrint('当前体重无可选日增重区间');
+                                return;
+                              }
+
+                              // 弹出选择器
+                              Picker.showSinglePicker(
+                                context,
+                                filteredList,
+                                selectData: controller.nuDailyWeight,
+                                title: '请选择日增重',
+                                onConfirm: (value, position) {
+                                  controller.currentDailyWeight(value, position, filteredList);
+                                },
+                              );
+                            } else {
+                              debugPrint('未找到对应体重的区间范围');
+                            }
+                          },
+                          isRequired: true,
+                        ),
+                      if (controller.showNuPregnancyMonth)
+                        CellButton(
+                          title: '妊娠月份',
+                          isRequired: true,
+                          content: controller.rsyfLabel,
+                          onPressed: () {
+                            Picker.showSinglePicker(
+                              context,
+                              controller.rsyfLabels,
+                              selectData: controller.rsyfLabel,
+                              title: '请选择妊娠月份',
+                              onConfirm: (value, position) {
+                                // setState(() {
+                                //   currentRsyf = rsyfList[position];
+                                // });
+                                controller.currentRsyfVoid(value, position);
+                              },
+                            );
+                          },
+                        ),
+                      if (controller.showNuBreastMonth)
+                        CellButton(
+                          title: '哺乳月份',
+                          content: controller.rsyfLabel,
+                          isRequired: true,
+                          onPressed: () {
+                            Picker.showSinglePicker(
+                              context,
+                              controller.rsyfLabels,
+                              selectData: controller.rsyfLabel,
+                              title: '请选择哺乳月份',
+                              onConfirm: (value, position) {
+                                // setState(() {
+                                //   currentRsyf = rsyfList[position];
+                                // });
+                                controller.currentRsyfVoid(value, position);
+                              },
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Text(
+                    '原料组成（kg）',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ...controller.addRawMaterialList.map((e) {
+                  return _RawMaterialInfoItem(
+                    rawMaterial: e,
+                    onTapDelete: () {
+                      // setState(() {
+                      //   addRawMaterialList.remove(e);
+                      // });
+                      controller.removeRawMaterial(e);
+                    },
+                  );
+                }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      onPressed: () {
+                        //列表移除已经添加的原料
+                        List<RawMaterial> showRawMaterialLabels = List.from(
+                          controller.rawMaterialList,
+                        );
+                        for (var o in controller.addRawMaterialList) {
+                          showRawMaterialLabels.remove(o);
+                        }
+                        Picker.showSinglePicker(
+                          context,
+                          showRawMaterialLabels.map((e) => e.name).toList(),
+                          title: '请选择要添加的原料',
+                          onConfirm: (value, position) {
+                            // setState(() {
+                            //   addRawMaterialList.add(showRawMaterialLabels[position]);
+                            // });
+                            controller.addRawMaterial(showRawMaterialLabels[position]);
+                          },
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: SaienteColors.dark_app_main.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: const Text(
+                          '+添加原料',
+                          style: TextStyle(fontSize: 14, color: SaienteColors.dark_app_main),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(SaienteColors.appMain),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      controller.verifyRecipe();
+                    },
+                    child: Center(
+                      child: Text(
+                        '验证配方',
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(17),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (controller.formulaModel != null)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: SaienteColors.appMain.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  '单头每日成本',
+                                  style: TextStyle(
+                                    color: SaienteColors.title_color,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '¥ ${controller.formulaModel?.price ?? 0.0}',
+                                  style: const TextStyle(
+                                    color: SaienteColors.appMain,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (controller.formulaModel != null) _compareInfo(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -540,7 +400,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
       children: [
         GestureDetector(
           onTap: () {
-            compareExpanded.value = !compareExpanded.value;
+            controller.compareExpanded.value = !controller.compareExpanded.value;
           },
           child: Container(
             padding: const EdgeInsets.all(12),
@@ -559,11 +419,11 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                   style: TextStyle(color: SaienteColors.blue2559F3, fontSize: 14),
                 ),
                 ValueListenableBuilder(
-                  valueListenable: compareExpanded,
+                  valueListenable: controller.compareExpanded,
                   builder: (context, value, child) {
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 400),
-                      transform: Matrix4.rotationZ(compareExpanded.value ? -pi : 0),
+                      transform: Matrix4.rotationZ(controller.compareExpanded.value ? -pi : 0),
                       transformAlignment: Alignment.center,
                       child: const Icon(
                         Icons.keyboard_double_arrow_down,
@@ -577,7 +437,7 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
           ),
         ),
         ValueListenableBuilder(
-          valueListenable: compareExpanded,
+          valueListenable: controller.compareExpanded,
           builder: (context, value, child) {
             return AnimatedContainer(
               height: value ? 130 * 14 : 0,
@@ -593,65 +453,69 @@ class _RecipeVerifyPageState extends State<RecipeVerifyPage> {
                   [
                 _compareCell(
                   '干物质采食量(kg/d)',
-                  formulaModel!.dm.toString(),
-                  formulaModel!.baseDM.toString(),
+                  controller.formulaModel!.dm.toString(),
+                  controller.formulaModel!.baseDM.toString(),
                 ),
                 _compareCell(
                   '粗料比(%)',
-                  formulaModel!.roughagesPercent.toString(),
-                  formulaModel!.baseRoughagesPercent.toString(),
+                  controller.formulaModel!.roughagesPercent.toString(),
+                  controller.formulaModel!.baseRoughagesPercent.toString(),
                 ),
                 _compareCell(
                   '粗蛋白需要量(kg/d)',
-                  formulaModel!.cp.toString(),
-                  formulaModel!.baseCP.toString(),
+                  controller.formulaModel!.cp.toString(),
+                  controller.formulaModel!.baseCP.toString(),
                 ),
                 _compareCell(
                   '瘤胃降解蛋白(kg/d)',
-                  formulaModel!.rdp.toString(),
-                  formulaModel!.baseRDP.toString(),
+                  controller.formulaModel!.rdp.toString(),
+                  controller.formulaModel!.baseRDP.toString(),
                 ),
                 _compareCell(
                   '瘤胃非降解蛋白(kg/d)',
-                  formulaModel!.rup.toString(),
-                  formulaModel!.baseRUP.toString(),
+                  controller.formulaModel!.rup.toString(),
+                  controller.formulaModel!.baseRUP.toString(),
                 ),
                 _compareCell(
                   '代谢蛋白(kg/d)',
-                  formulaModel!.mp.toString(),
-                  formulaModel!.baseMP.toString(),
+                  controller.formulaModel!.mp.toString(),
+                  controller.formulaModel!.baseMP.toString(),
                 ),
                 _compareCell(
                   '代谢赖氨酸(kg/d)',
-                  formulaModel!.mLys.toString(),
-                  formulaModel!.baseMLys.toString(),
+                  controller.formulaModel!.mLys.toString(),
+                  controller.formulaModel!.baseMLys.toString(),
                 ),
                 _compareCell(
                   '代谢蛋氨酸(kg/d)',
-                  formulaModel!.mMet.toString(),
-                  formulaModel!.baseMMet.toString(),
+                  controller.formulaModel!.mMet.toString(),
+                  controller.formulaModel!.baseMMet.toString(),
                 ),
                 _compareCell(
                   '代谢能(Mcal/d)',
-                  formulaModel!.me.toString(),
-                  formulaModel!.baseME.toString(),
+                  controller.formulaModel!.me.toString(),
+                  controller.formulaModel!.baseME.toString(),
                 ),
                 _compareCell(
                   '维持净能(Mcal/d)',
-                  formulaModel!.nEm.toString(),
-                  formulaModel!.baseNEm.toString(),
+                  controller.formulaModel!.nEm.toString(),
+                  controller.formulaModel!.baseNEm.toString(),
                 ),
                 _compareCell(
                   '增重净能(Mcal/d)',
-                  formulaModel!.nEg.toString(),
-                  formulaModel!.baseNEg.toString(),
+                  controller.formulaModel!.nEg.toString(),
+                  controller.formulaModel!.baseNEg.toString(),
                 ),
                 _compareCell(
                   '钙(kg/d)',
-                  formulaModel!.ca.toString(),
-                  formulaModel!.baseCa.toString(),
+                  controller.formulaModel!.ca.toString(),
+                  controller.formulaModel!.baseCa.toString(),
                 ),
-                _compareCell('磷(kg/d)', formulaModel!.p.toString(), formulaModel!.baseP.toString()),
+                _compareCell(
+                  '磷(kg/d)',
+                  controller.formulaModel!.p.toString(),
+                  controller.formulaModel!.baseP.toString(),
+                ),
               ],
             ),
           ),

@@ -22,8 +22,10 @@ class DieCattleController extends GetxController {
   //TODO: Implement DieCattleController
   //传入的参数
   var argument = Get.arguments;
+
   //编辑事件传入
   DeathArgument? event;
+
   //是否是编辑页面
   RxBool isEdit = false.obs;
 
@@ -31,6 +33,7 @@ class DieCattleController extends GetxController {
   TextEditingController countController = TextEditingController();
   TextEditingController columnController = TextEditingController(); //栏位
   TextEditingController remarkController = TextEditingController();
+
   // TextEditingController sourceController = TextEditingController();
   //
   final FocusNode countNode = FocusNode();
@@ -54,16 +57,22 @@ class DieCattleController extends GetxController {
   // "类型"可选项
   List chooseTypeList = [];
   List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
+
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
+
   //当前选中的牛
   late Cattle selectedCow;
+
   //耳号
   final codeString = ''.obs;
+
   //当前选中的批次模型
-  late CowBatch selectedCowBatch;
+  CowBatch? selectedCowBatch;
+
   //批次号
   final batchNumber = ''.obs;
+
   //数量
   final countNum = 0.obs;
 
@@ -75,13 +84,16 @@ class DieCattleController extends GetxController {
 
   //上传图片显示地址
   RxList<String> imgsList = <String>[].obs;
+
   //上传图片ID
   List imgsPathList = [];
 
   //调拨时间
   final timesStr = ''.obs;
+
   //备注
   String remarkStr = '';
+
   //过滤之后的生长阶段，传给筛选页面
   List szjdListFiltered = [];
 
@@ -270,7 +282,8 @@ class DieCattleController extends GetxController {
         return;
       }
       //时间不能小于入场日期
-      if (timesStr.value.isBefore(selectedCowBatch.inArea)) {
+
+      if (selectedCowBatch != null && timesStr.value.isBefore(selectedCowBatch?.inArea)) {
         Toast.show('死亡时间不能早于入场日期');
         return;
       }

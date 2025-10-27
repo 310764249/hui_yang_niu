@@ -20,7 +20,7 @@ class Notice {
   late final bool? isPush; // 是否需要推送
   late final int?
   type; // 业务类型 101：业务通知；102：系统通知；201：未发情；202：发情未配；203：未孕检；204：未产犊；205：未淘汰；401：待查情；402：待配种；403：待孕检；404：待产犊；405：待断奶；406：待淘汰；407：待销售；408：待防疫；409：待保健；901：环境异常；902：设备故障；903：行为异常；
-  late final String? readTime; // 已读时间
+  String? readTime; // 已读时间
   late final String? remark; // 备注
   late final String? tenantId; // 租户
   late final String? created; // 创建时间

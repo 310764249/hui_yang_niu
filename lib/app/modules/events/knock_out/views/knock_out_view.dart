@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/modules/batch_list/controllers/batch_list_controller.dart';
 
 import 'package:intellectual_breed/app/widgets/page_wrapper.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -36,13 +37,15 @@ class KnockOutView extends GetView<KnockOutController> {
           content: controller.codeString.value,
           showArrow: !controller.isEdit.value,
           onPressed: () {
-            Get.toNamed(Routes.CATTLELIST,
-                arguments: CattleListArgument(
-                  goBack: true,
-                  single: true,
-                  szjdList: controller.szjdListFiltered,
-                  isFilterInvalid: true,
-                ))?.then((value) {
+            Get.toNamed(
+              Routes.CATTLELIST,
+              arguments: CattleListArgument(
+                goBack: true,
+                single: true,
+                szjdList: controller.szjdListFiltered,
+                isFilterInvalid: true,
+              ),
+            )?.then((value) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
@@ -71,7 +74,9 @@ class KnockOutView extends GetView<KnockOutController> {
           showArrow: !controller.isEdit.value,
           showBottomLine: true,
           onPressed: () {
-            Get.toNamed(Routes.BATCH_LIST)?.then((value) {
+            Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true))?.then((
+              value,
+            ) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
@@ -101,19 +106,21 @@ class KnockOutView extends GetView<KnockOutController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () {
-            controller.requestCommit();
-          }),
+        text: "提交",
+        onPressed: () {
+          controller.requestCommit();
+        },
+      ),
     );
   }
 
   //操作信息
   Widget _operationInfo(context) {
-    return MyCard(children: [
-      const CardTitle(title: "操作信息"),
-      // 类型
-      RadioButtonGroup(
+    return MyCard(
+      children: [
+        const CardTitle(title: "操作信息"),
+        // 类型
+        RadioButtonGroup(
           isRequired: true,
           title: '类型',
           selectedIndex: controller.chooseTypeIndex.value,
@@ -127,13 +134,12 @@ class KnockOutView extends GetView<KnockOutController> {
             }
             // Toast.show('--> $value');
             controller.updateChooseTypeIndex(value);
-          }),
-      // 类型
-      controller.chooseTypeIndex.value == 0
-          ? _oldCowLayout(context)
-          : _youngCowLayout(context),
-      // 淘汰原因
-      RadioButtonGroup(
+          },
+        ),
+        // 类型
+        controller.chooseTypeIndex.value == 0 ? _oldCowLayout(context) : _youngCowLayout(context),
+        // 淘汰原因
+        RadioButtonGroup(
           isRequired: true,
           title: '淘汰原因',
           selectedIndex: controller.reasonIndex.value,
@@ -141,49 +147,61 @@ class KnockOutView extends GetView<KnockOutController> {
           showBottomLine: true,
           onChanged: (value) {
             controller.updateCurReason(value);
-          }),
-      CellButton(
-        isRequired: true,
-        title: "淘汰时间",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
-            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
-      CellTextArea(
-        isRequired: false,
-        title: "备注信息",
-        hint: "请输入",
-        showBottomLine: false,
-        controller: controller.remarkController,
-        focusNode: controller.remarkNode,
-      ),
-    ]);
+          },
+        ),
+        CellButton(
+          isRequired: true,
+          title: "淘汰时间",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.timesStr.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              onConfirm: (date) {
+                //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+                controller.updateSeldate(
+                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+                );
+              },
+            );
+          },
+        ),
+        CellTextArea(
+          isRequired: false,
+          title: "备注信息",
+          hint: "请输入",
+          showBottomLine: false,
+          controller: controller.remarkController,
+          focusNode: controller.remarkNode,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('淘汰'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('淘汰'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Obx(
+        () => PageWrapper(
+          config: controller.buildConfig(context),
+          child: ListView(
+            children: [
+              //操作信息
+              _operationInfo(context),
+              //提交按钮
+              _commitButton(),
+            ],
+          ),
         ),
-        body: Obx(() => PageWrapper(
-              config: controller.buildConfig(context),
-              child: ListView(children: [
-                //操作信息
-                _operationInfo(context),
-                //提交按钮
-                _commitButton()
-              ]),
-            )));
+      ),
+    );
   }
 }

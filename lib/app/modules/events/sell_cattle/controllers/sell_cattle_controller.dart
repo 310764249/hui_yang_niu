@@ -232,10 +232,14 @@ class SellCattleController extends GetxController {
   // 更新 小计
   void updateTotal() {
     // 小计：单价 x 总量 - 折损
-    double number = double.parse(price) * double.parse(weight) - double.parse(cost);
-    totalStr.value = number.toStringAsFixed(2); // 保留两位小数
-    debugPrint('price:$price--weight:$weight--totalStr: $totalStr');
-    update();
+    try {
+      double number = double.parse(price) * double.parse(weight) - double.parse(cost);
+      totalStr.value = number.toStringAsFixed(2); // 保留两位小数
+      debugPrint('price:$price--weight:$weight--totalStr: $totalStr');
+      update();
+    } catch (e) {
+      print(e);
+    }
   }
 
   // 更新 批次号
@@ -285,7 +289,7 @@ class SellCattleController extends GetxController {
         return;
       }
     }
-/*
+    /*
 
     String price = priceController.text.trim();
     if (ObjectUtil.isEmpty(price)) {
@@ -322,11 +326,9 @@ class SellCattleController extends GetxController {
       Map<String, dynamic> para = {
         'type': chooseTypeIndex.value + 1,
         //必传 integer 类型1：种牛；2：犊牛-育肥牛；
-        if(chooseTypeIndex.value == 0)
-        'cowIds': selectedCow == null ? [] : [selectedCow?.id],
+        if (chooseTypeIndex.value == 0) 'cowIds': selectedCow == null ? [] : [selectedCow?.id],
         // string 牛只编码
-        if(chooseTypeIndex.value != 0)
-        'batchNo': batchNumber.value,
+        if (chooseTypeIndex.value != 0) 'batchNo': batchNumber.value,
         // string 批次号
         'count': countController.text.trim(),
         //必传 integer 数量

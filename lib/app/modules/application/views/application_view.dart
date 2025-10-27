@@ -917,8 +917,10 @@ class ApplicationView extends GetView<ApplicationController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             data.image == Assets.imagesIcFeedPreparation
-                ? Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                ? Container(
+                  height: 38,
+                  width: 38,
+                  padding: const EdgeInsets.only(top: 5, bottom: 4),
                   child: Image.asset(Assets.imagesIcFeedPreparation, width: 35, height: 34),
                 )
                 : LoadAssetImage(data.image ?? AssetsImages.fileManagement),

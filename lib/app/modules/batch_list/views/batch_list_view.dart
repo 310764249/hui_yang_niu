@@ -30,286 +30,298 @@ class BatchListView extends GetView<BatchListController> {
   Widget _batchList() {
     return Expanded(
       // 优先出发isLoading的条件, 如果isLoading是false, 则触发之前的UI加载逻辑
-      child: controller.isLoading.value
-          ? _loadingView()
-          : controller.items.isEmpty
+      child:
+          controller.isLoading.value
+              ? _loadingView()
+              : controller.items.isEmpty
               ? const EmptyView()
               : Padding(
-                  padding: EdgeInsets.all(ScreenAdapter.width(10)),
-                  child: EasyRefresh(
-                    controller: controller.refreshController,
-                    // 指定刷新时的头部组件
-                    header: CustomRefresh.refreshHeader(),
-                    // 指定加载时的底部组件
-                    footer: CustomRefresh.refreshFooter(),
-                    onRefresh: () async {
-                      //
-                      await controller.searchCowBatch();
-                      controller.refreshController.finishRefresh();
-                      controller.refreshController.resetFooter();
-                    },
-                    onLoad: () async {
-                      // 如果没有更多直接返回
-                      if (!controller.hasMore) {
-                        controller.refreshController
-                            .finishLoad(IndicatorResult.noMore);
-                        return;
-                      }
-                      // 上拉加载更多数据请求
-                      await controller.searchCowBatch(isRefresh: false);
-                      // 设置状态
-                      controller.refreshController.finishLoad(controller.hasMore
-                          ? IndicatorResult.success
-                          : IndicatorResult.noMore);
-                    },
-                    child: ListView.builder(
-                      itemCount: controller.items.length,
-                      // physics: const AlwaysScrollableScrollPhysics(
-                      //     parent: BouncingScrollPhysics()),
-                      itemExtent: ScreenAdapter.height(106),//预设高度，省去系统计算高度，优化性能
-                      itemBuilder: (BuildContext context, int index) {
-                        //是否选中
-                        bool isSelected = controller.items[index].isSelected;
-                        return Container(
-                          // height: ScreenAdapter.height(106),
-                          margin:
-                              EdgeInsets.only(bottom: ScreenAdapter.height(10)),
-                          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10),
-                              0, ScreenAdapter.width(10), 0),
-                          decoration: BoxDecoration(
-                            //背景
-                            color: isSelected
-                                ? SaienteColors.blueE5EEFF
-                                : Colors.white,
-                            //设置四周圆角 角度
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(ScreenAdapter.height(10.0))),
-                            //设置四周边框
-                            border: isSelected
-                                ? Border.all(
-                                    width: ScreenAdapter.width(1.0),
-                                    color: SaienteColors.blue275CF3)
-                                : Border.all(
-                                    width: ScreenAdapter.width(1.0),
-                                    color: Colors.transparent),
+                padding: EdgeInsets.all(ScreenAdapter.width(10)),
+                child: EasyRefresh(
+                  controller: controller.refreshController,
+                  // 指定刷新时的头部组件
+                  header: CustomRefresh.refreshHeader(),
+                  // 指定加载时的底部组件
+                  footer: CustomRefresh.refreshFooter(),
+                  onRefresh: () async {
+                    //
+                    await controller.searchCowBatch();
+                    controller.refreshController.finishRefresh();
+                    controller.refreshController.resetFooter();
+                  },
+                  onLoad: () async {
+                    // 如果没有更多直接返回
+                    if (!controller.hasMore) {
+                      controller.refreshController.finishLoad(IndicatorResult.noMore);
+                      return;
+                    }
+                    // 上拉加载更多数据请求
+                    await controller.searchCowBatch(isRefresh: false);
+                    // 设置状态
+                    controller.refreshController.finishLoad(
+                      controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
+                    );
+                  },
+                  child: ListView.builder(
+                    itemCount: controller.items.length,
+                    // physics: const AlwaysScrollableScrollPhysics(
+                    //     parent: BouncingScrollPhysics()),
+                    itemExtent: ScreenAdapter.height(106), //预设高度，省去系统计算高度，优化性能
+                    itemBuilder: (BuildContext context, int index) {
+                      //是否选中
+                      bool isSelected = controller.items[index].isSelected;
+                      return Container(
+                        // height: ScreenAdapter.height(106),
+                        margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
+                        padding: EdgeInsets.fromLTRB(
+                          ScreenAdapter.width(10),
+                          0,
+                          ScreenAdapter.width(10),
+                          0,
+                        ),
+                        decoration: BoxDecoration(
+                          //背景
+                          color: isSelected ? SaienteColors.blueE5EEFF : Colors.white,
+                          //设置四周圆角 角度
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(ScreenAdapter.height(10.0)),
                           ),
-                          child: InkWell(
-                            onTap: () {
-                              //print("点击--$index");
-                              if (controller.argument!.goBack) {
-                                //可以返回，需要选中状态
-                                controller.selectIndex(index);
-                              } else {
-                                //不可返回，直接进入详情
-                                Get.toNamed(Routes.BATCH_DETAIL,
-                                        arguments: controller.items[index])
-                                    ?.then((value) {
-                                  //Log.e(value.toString());
-                                  if (value != null) {
-                                    controller.searchCowBatch();
-                                  }
-                                });
-                              }
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: ScreenAdapter.width(3),
-                                      height: ScreenAdapter.height(13.5),
-                                      decoration: BoxDecoration(
-                                        color: SaienteColors.blue275CF3,
-                                        borderRadius: BorderRadius.circular(
-                                            ScreenAdapter.width(1.5)),
-                                      ),
+                          //设置四周边框
+                          border:
+                              isSelected
+                                  ? Border.all(
+                                    width: ScreenAdapter.width(1.0),
+                                    color: SaienteColors.blue275CF3,
+                                  )
+                                  : Border.all(
+                                    width: ScreenAdapter.width(1.0),
+                                    color: Colors.transparent,
+                                  ),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            //print("点击--$index");
+                            if (controller.argument!.goBack) {
+                              //可以返回，需要选中状态
+                              controller.selectIndex(index);
+                            } else {
+                              //不可返回，直接进入详情
+                              Get.toNamed(
+                                Routes.BATCH_DETAIL,
+                                arguments: controller.items[index],
+                              )?.then((value) {
+                                //Log.e(value.toString());
+                                if (value != null) {
+                                  controller.searchCowBatch();
+                                }
+                              });
+                            }
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: ScreenAdapter.width(3),
+                                    height: ScreenAdapter.height(13.5),
+                                    decoration: BoxDecoration(
+                                      color: SaienteColors.blue275CF3,
+                                      borderRadius: BorderRadius.circular(ScreenAdapter.width(1.5)),
                                     ),
-                                    SizedBox(width: ScreenAdapter.width(5)),
-                                    Text(
-                                      '批次号-',
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(14),
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
+                                  ),
+                                  SizedBox(width: ScreenAdapter.width(5)),
+                                  Text(
+                                    '批次号-',
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
                                     ),
-                                    Text(
-                                      controller.items[index].batchNo ?? '',
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(14),
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
+                                  ),
+                                  Text(
+                                    controller.items[index].batchNo ?? '',
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
                                     ),
-                                    Text(
-                                      '-',
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(14),
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
+                                  ),
+                                  Text(
+                                    '-',
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
                                     ),
-                                    Text(
-                                      AppDictList.findLabelByCode(
-                                          controller.gmList,
-                                          controller.items[index].gender
-                                              .toString()), //
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(14),
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
+                                  ),
+                                  Text(
+                                    AppDictList.findLabelByCode(
+                                      controller.gmList,
+                                      controller.items[index].gender.toString(),
+                                    ), //
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(14),
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
                                     ),
-                                    const Spacer(),
-                                    controller.argument!.goBack
-                                        ? const SizedBox()
-                                        : InkWell(
-                                            onTap: () {
-                                              Alert.showConfirm(
-                                                '确定删除${controller.items[index].batchNo}吗?',
-                                                onConfirm: () {
-                                                  controller.requestDelete(
-                                                      controller.items[index]);
-                                                },
-                                              );
+                                  ),
+                                  const Spacer(),
+                                  controller.argument!.goBack
+                                      ? const SizedBox()
+                                      : InkWell(
+                                        onTap: () {
+                                          Alert.showConfirm(
+                                            '确定删除${controller.items[index].batchNo}吗?',
+                                            onConfirm: () {
+                                              controller.requestDelete(controller.items[index]);
                                             },
-                                            child: const Icon(
-                                              Icons.close_rounded,
-                                              color: SaienteColors.black40,
-                                            ),
-                                          ),
-                                    isSelected
-                                        ? LoadImage(
-                                            AssetsImages.checkedPng,
-                                            width: ScreenAdapter.width(16),
-                                            height: ScreenAdapter.width(16),
-                                          )
-                                        : const SizedBox(),
-                                  ],
-                                ),
-                                SizedBox(height: ScreenAdapter.height(14)),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Column(children: [
-                                      Text(
-                                        AppDictList.findLabelByCode(
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.close_rounded,
+                                          color: SaienteColors.black40,
+                                        ),
+                                      ),
+                                  isSelected
+                                      ? LoadImage(
+                                        AssetsImages.checkedPng,
+                                        width: ScreenAdapter.width(16),
+                                        height: ScreenAdapter.width(16),
+                                      )
+                                      : const SizedBox(),
+                                ],
+                              ),
+                              SizedBox(height: ScreenAdapter.height(14)),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          AppDictList.findLabelByCode(
                                             controller.ssjdList,
-                                            controller.items[index].type
-                                                .toString()), //,
-                                        style: TextStyle(
+                                            controller.items[index].type.toString(),
+                                          ), //,
+                                          style: TextStyle(
                                             color: SaienteColors.blackE5,
                                             fontWeight: FontWeight.w500,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(16)),
-                                      ),
-                                      SizedBox(height: ScreenAdapter.height(3)),
-                                      Text(
-                                        '类型',
-                                        style: TextStyle(
-                                            color: SaienteColors.black80,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(13)),
-                                      )
-                                    ])),
-                                    Container(
-                                      color: SaienteColors.separateLine,
-                                      width: ScreenAdapter.width(1),
-                                      height: ScreenAdapter.height(36),
-                                    ),
-                                    Expanded(
-                                        child: Column(children: [
-                                      Text(
-                                        controller.items[index].cowHouseName ??
-                                            '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            color: SaienteColors.blackE5,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(16)),
-                                      ),
-                                      SizedBox(height: ScreenAdapter.height(3)),
-                                      Text(
-                                        '栋舍',
-                                        style: TextStyle(
-                                            color: SaienteColors.black80,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(13)),
-                                      )
-                                    ])),
-                                    Container(
-                                      color: SaienteColors.separateLine,
-                                      width: ScreenAdapter.width(1),
-                                      height: ScreenAdapter.height(36),
-                                    ),
-                                    Expanded(
-                                        child: Column(children: [
-                                      Text(
-                                        controller.items[index].count
-                                            .toString(),
-                                        style: TextStyle(
-                                            color: SaienteColors.blackE5,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(16)),
-                                      ),
-                                      SizedBox(height: ScreenAdapter.height(3)),
-                                      Text(
-                                        '数量',
-                                        style: TextStyle(
-                                            color: SaienteColors.black80,
-                                            fontSize:
-                                                ScreenAdapter.fontSize(13)),
-                                      )
-                                    ])),
-                                    controller.items[index].type != 3
-                                        ? SizedBox()
-                                        : Container(
-                                            color: SaienteColors.separateLine,
-                                            width: ScreenAdapter.width(1),
-                                            height: ScreenAdapter.height(36),
+                                            fontSize: ScreenAdapter.fontSize(16),
                                           ),
-                                    //引种批次多显示公母数据
-                                    controller.items[index].type != 3
-                                        ? SizedBox()
-                                        : Expanded(
-                                            child: Column(children: [
+                                        ),
+                                        SizedBox(height: ScreenAdapter.height(3)),
+                                        Text(
+                                          '类型',
+                                          style: TextStyle(
+                                            color: SaienteColors.black80,
+                                            fontSize: ScreenAdapter.fontSize(13),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    color: SaienteColors.separateLine,
+                                    width: ScreenAdapter.width(1),
+                                    height: ScreenAdapter.height(36),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          controller.items[index].cowHouseName ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: SaienteColors.blackE5,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenAdapter.fontSize(16),
+                                          ),
+                                        ),
+                                        SizedBox(height: ScreenAdapter.height(3)),
+                                        Text(
+                                          '栋舍',
+                                          style: TextStyle(
+                                            color: SaienteColors.black80,
+                                            fontSize: ScreenAdapter.fontSize(13),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    color: SaienteColors.separateLine,
+                                    width: ScreenAdapter.width(1),
+                                    height: ScreenAdapter.height(36),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          controller.items[index].count.toString(),
+                                          style: TextStyle(
+                                            color: SaienteColors.blackE5,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenAdapter.fontSize(16),
+                                          ),
+                                        ),
+                                        SizedBox(height: ScreenAdapter.height(3)),
+                                        Text(
+                                          '数量',
+                                          style: TextStyle(
+                                            color: SaienteColors.black80,
+                                            fontSize: ScreenAdapter.fontSize(13),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  controller.items[index].type != 3
+                                      ? SizedBox()
+                                      : Container(
+                                        color: SaienteColors.separateLine,
+                                        width: ScreenAdapter.width(1),
+                                        height: ScreenAdapter.height(36),
+                                      ),
+                                  //引种批次多显示公母数据
+                                  controller.items[index].type != 3
+                                      ? SizedBox()
+                                      : Expanded(
+                                        child: Column(
+                                          children: [
                                             Text(
-                                              controller.items[index]
-                                                      .sourceFarm ??
+                                              controller.items[index].sourceFarm ??
                                                   Constant.placeholder, //,
                                               maxLines: 1,
                                               style: TextStyle(
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  color: SaienteColors.blackE5,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          16)),
+                                                overflow: TextOverflow.ellipsis,
+                                                color: SaienteColors.blackE5,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: ScreenAdapter.fontSize(16),
+                                              ),
                                             ),
-                                            SizedBox(
-                                                height:
-                                                    ScreenAdapter.height(3)),
+                                            SizedBox(height: ScreenAdapter.height(3)),
                                             Text(
                                               '来源场',
                                               style: TextStyle(
-                                                  color: SaienteColors.black80,
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          13)),
-                                            )
-                                          ])),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                                color: SaienteColors.black80,
+                                                fontSize: ScreenAdapter.fontSize(13),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                ],
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
+              ),
     );
   }
 
@@ -327,16 +339,16 @@ class BatchListView extends GetView<BatchListController> {
           return Container(
             height: ScreenAdapter.height(106),
             margin: EdgeInsets.fromLTRB(
-                ScreenAdapter.width(10),
-                ScreenAdapter.height(10),
-                ScreenAdapter.width(10),
-                ScreenAdapter.height(0)),
+              ScreenAdapter.width(10),
+              ScreenAdapter.height(10),
+              ScreenAdapter.width(10),
+              ScreenAdapter.height(0),
+            ),
             decoration: BoxDecoration(
               //背景
               color: const Color(0xFFE0E0E0),
               //设置四周圆角 角度
-              borderRadius:
-                  BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
+              borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
             ),
           );
         },
@@ -349,20 +361,15 @@ class BatchListView extends GetView<BatchListController> {
     return Container(
       height: ScreenAdapter.height(60),
       alignment: Alignment.center,
-      padding: EdgeInsets.fromLTRB(
-          ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Container(
         decoration: BoxDecoration(
           color: SaienteColors.gray0D,
           borderRadius: BorderRadius.circular(ScreenAdapter.height(25)),
         ),
         child: TextField(
-          style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(16),
-              color: SaienteColors.black28),
+          style: TextStyle(fontSize: ScreenAdapter.fontSize(16), color: SaienteColors.black28),
           textInputAction: TextInputAction.search,
           onSubmitted: (value) {
             print('onSubmitted-$value');
@@ -377,12 +384,10 @@ class BatchListView extends GetView<BatchListController> {
             border: InputBorder.none, //移除边框
             //contentPadding: EdgeInsets.all(0), //输入文字偏下的问题，移除默认偏移
             hintStyle: TextStyle(
-                fontSize: ScreenAdapter.fontSize(16),
-                color: SaienteColors.black33),
-            prefixIcon: const LoadAssetImage(
-              AssetsImages.searchPng,
+              fontSize: ScreenAdapter.fontSize(16),
               color: SaienteColors.black33,
             ),
+            prefixIcon: const LoadAssetImage(AssetsImages.searchPng, color: SaienteColors.black33),
           ),
         ),
       ),
@@ -394,27 +399,28 @@ class BatchListView extends GetView<BatchListController> {
     return controller.items.isEmpty
         ? const SizedBox()
         : Container(
-            height: ScreenAdapter.height(50),
-            width: ScreenAdapter.getScreenWidth(),
-            padding: EdgeInsets.fromLTRB(
-                ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
-            // color: Colors.amber,(已选择 1 头牛) 确认选择
-            child: MainButton(
-                text: "（已选择${controller.selectItems.length}个批次）确认选择",
-                onPressed: () {
-                  if (controller.selectItems.isEmpty) {
-                    Alert.showConfirm(
-                      '未选择任何批次，确认返回？',
-                      onConfirm: () {
-                        Get.back();
-                      },
-                    );
-                  } else {
-                    // print(controller.argument.routerStr);
-                    // Get.toNamed(controller.argument.routerStr!);
-                    Get.back(result: controller.selectItems);
-                  }
-                }));
+          height: ScreenAdapter.height(50),
+          width: ScreenAdapter.getScreenWidth(),
+          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+          // color: Colors.amber,(已选择 1 头牛) 确认选择
+          child: MainButton(
+            text: "（已选择${controller.selectItems.length}个批次）确认选择",
+            onPressed: () {
+              if (controller.selectItems.isEmpty) {
+                Alert.showConfirm(
+                  '未选择任何批次，确认返回？',
+                  onConfirm: () {
+                    Get.back();
+                  },
+                );
+              } else {
+                // print(controller.argument.routerStr);
+                // Get.toNamed(controller.argument.routerStr!);
+                Get.back(result: controller.selectItems);
+              }
+            },
+          ),
+        );
   }
 
   @override
@@ -427,35 +433,40 @@ class BatchListView extends GetView<BatchListController> {
         backgroundColor: Colors.white,
         actions: [
           TextButton(
-              onPressed: () {
-                Get.toNamed(Routes.NEW_BATCH)?.then((value) {
-                  //Log.e(value.toString());
-                  if (value != null) {
-                    controller.searchCowBatch();
-                  }
-                });
-              },
-              child: Text(
-                "新增批次",
-                style: TextStyle(
-                    color: SaienteColors.blue275CF3,
-                    fontSize: ScreenAdapter.fontSize(16)),
-              ))
+            onPressed: () {
+              Get.toNamed(Routes.NEW_BATCH)?.then((value) {
+                //Log.e(value.toString());
+                if (value != null) {
+                  controller.searchCowBatch();
+                }
+              });
+            },
+            child: Text(
+              "新增批次",
+              style: TextStyle(
+                color: SaienteColors.blue275CF3,
+                fontSize: ScreenAdapter.fontSize(16),
+              ),
+            ),
+          ),
         ],
       ),
       body: Material(
-          color: SaienteColors.backGrey,
-          child: SafeArea(
-            child: Obx(() => Column(children: [
-                  //顶部搜索区域
-                  _topArea(context),
-                  //批次筛选列表
-                  _batchList(),
-                  controller.argument!.goBack
-                      ? _bottomButton()
-                      : const SizedBox()
-                ])),
-          )),
+        color: SaienteColors.backGrey,
+        child: SafeArea(
+          child: Obx(
+            () => Column(
+              children: [
+                //顶部搜索区域
+                _topArea(context),
+                //批次筛选列表
+                _batchList(),
+                controller.argument!.goBack ? _bottomButton() : const SizedBox(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

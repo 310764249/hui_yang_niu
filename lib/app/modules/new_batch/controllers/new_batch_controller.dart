@@ -156,6 +156,7 @@ class NewBatchController extends GetxController {
 
   // 更新类型
   void updatePass(int index) async {
+    debugPrint('更新批次类型：${index} ${typeList[index]['value']}');
     curTypeID = typeList[index]['value'];
     curTypeIDIndex.value = index;
     update();
@@ -262,7 +263,7 @@ class NewBatchController extends GetxController {
         'cowHouseId': selectedHouseID, //必传 string 栋舍
         'batchNo': batchNumber.value, //batchNo
         'type': curTypeID, //类别1：犊牛；2：育肥牛；3：引种牛；
-        'gender': gmCurID, //公母
+        'gender': curTypeID == '6' ? 2 : gmCurID, //公母
         'birth': birthStr.value, //出生日期
         'kind': pzCurID, //品种
         'inArea': timesStr.value, //入场时间

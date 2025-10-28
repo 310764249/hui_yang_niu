@@ -87,11 +87,16 @@ class RecipeVerifyController extends GetxController {
   List<RawMaterial> addRawMaterialList = [];
 
   //添加的精饲料
-  List<RawMaterial> addFeedRawMaterialListYF = [];
+  List<RawMaterial> addFeedRawMaterialList = [];
 
   //是否选择已有配方
   bool isSelectExistFormula = true;
   FormulaModel? formulaModelExist;
+
+  //粗料总重量文本控制器
+  TextEditingController czlzlController = TextEditingController(text: "0.0");
+  //精料总重量文本控制器
+  TextEditingController jzlzlController = TextEditingController(text: "0.0");
 
   /// 加法
   double add(double a, double b, {int precision = 2}) {
@@ -164,6 +169,7 @@ class RecipeVerifyController extends GetxController {
       return;
     }
     try {
+      List<RawMaterial> all = [...addRawMaterialList, ...addFeedRawMaterialList];
       var response = await httpsClient.post(
         "/api/formula/verifyformula",
         data: {
@@ -176,29 +182,27 @@ class RecipeVerifyController extends GetxController {
           "milkGrade": 0,
           "gestationMonths": currentRsyf?['value'],
           "roughages":
-              addRawMaterialList.where((e) => e.category == 1).map((e) {
+              all.where((e) => e.category == 1).map((e) {
                 return {"id": e.id, "weight": e.verifyWeight};
               }).toList(),
 
           "energyFeed":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 2).map((e) {
+              all.where((e) => e.category == 2 && e.type == 2).map((e) {
                 return {"id": e.id, "weight": e.verifyWeight};
               }).toList(),
           //element.category == 2 && element.type == 3
           "proteinFeed":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 3).map((e) {
+              all.where((e) => e.category == 2 && e.type == 3).map((e) {
                 return {"id": e.id, "weight": e.verifyWeight};
               }).toList(),
           //element.category == 2 && (element.type == 4 || element.type == 6
           "additives":
-              addRawMaterialList.where((e) => e.category == 2 && (e.type == 4 || e.type == 6)).map((
-                e,
-              ) {
+              all.where((e) => e.category == 2 && (e.type == 4 || e.type == 6)).map((e) {
                 return {"id": e.id, "weight": e.verifyWeight};
               }).toList(),
           //element.category == 2 && element.type == 5
           "premix":
-              addRawMaterialList.where((e) => e.category == 2 && e.type == 5).map((e) {
+              all.where((e) => e.category == 2 && e.type == 5).map((e) {
                 return {"id": e.id, "weight": e.verifyWeight};
               }).toList(),
         },
@@ -250,18 +254,58 @@ class RecipeVerifyController extends GetxController {
     update();
   }
 
+  void removeFeedRawMaterial(RawMaterial e) {
+    addFeedRawMaterialList.remove(e);
+    checkJLWeight();
+    update();
+  }
+
   void addRawMaterial(RawMaterial showRawMaterialLabel) {
     addRawMaterialList.add(showRawMaterialLabel);
+    checkCLWeight();
     update();
+  }
+
+  void addRawMaterialAll(List<RawMaterial> showRawMaterialLabel) {
+    addRawMaterialList = [...addRawMaterialList, ...showRawMaterialLabel];
+    checkCLWeight();
+    update();
+  }
+
+  void addFeedRawMaterialAll(List<RawMaterial> showRawMaterialLabel) {
+    addFeedRawMaterialList = [...addFeedRawMaterialList, ...showRawMaterialLabel];
+    checkJLWeight();
+    update();
+  }
+
+  //检查粗料总重量，如果重量小于当前输入的重量，则用总重量，反之不动
+  checkCLWeight() {
+    if (getTotalWeight(addRawMaterialList) > (num.tryParse(czlzlController.text) ?? 0.0)) {
+      czlzlController.text = getTotalWeight(addRawMaterialList).toString();
+    }
+  }
+
+  //检查精料总重量，如果重量小于当前输入的重量，则用总重量，反之不动
+  checkJLWeight() {
+    if (getTotalWeight(addFeedRawMaterialList) > (num.tryParse(jzlzlController.text) ?? 0.0)) {
+      jzlzlController.text = getTotalWeight(addFeedRawMaterialList).toString();
+    }
+  }
+
+  num getTotalWeight(List<RawMaterial> list) {
+    num totalWeight = 0.0;
+    for (var item in list) {
+      totalWeight += item.verifyWeight;
+    }
+    return totalWeight;
   }
 
   void selectHaveFormula(bool value) {
     isSelectExistFormula = value;
-    if (!value) {
-      formulaModelExist = null;
-      countController.text = '1';
-      addRawMaterialList.clear();
-    }
+    formulaModelExist = null;
+    countController.text = '1';
+    addRawMaterialList.clear();
+    formulaModel = null;
     update();
   }
 
@@ -293,9 +337,11 @@ class RecipeVerifyController extends GetxController {
       List<RawMaterial> modelList = [];
       for (var item in response) {
         RawMaterial model = RawMaterial.fromJson(item);
+        model.verifyWeight = item['weight'];
         modelList.add(model);
       }
-      addRawMaterialList = modelList;
+      addRawMaterialList = modelList.where((e) => e.isCruseFeed).toList();
+      addFeedRawMaterialList = modelList.where((e) => !e.isCruseFeed).toList();
       update();
     } catch (error) {
       Toast.dismiss();

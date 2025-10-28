@@ -77,26 +77,26 @@ class MessageController extends GetxController {
       Toast.show('牛只编号不能为空');
       return;
     }
-    try {
-      Toast.showLoading();
-      var response = await httpsClient.get("/api/cow/$cowId");
-      cattle = Cattle.fromJson(response);
-      Toast.dismiss();
-      if (ObjectUtil.isNotEmpty(cattle)) {
-        Cattle.redirectToPage(type, cattle!);
-      }
-    } catch (error) {
-      Toast.dismiss();
-      Toast.show(error.toString());
-      if (error is ApiException) {
-        // 处理 API 请求异常情况 code不为 0 的场景
-        Log.d('API Exception: ${error.toString()}');
-        Toast.failure(msg: error.toString());
-      } else {
-        // HTTP 请求异常情况
-        Log.d('Other Exception: $error');
-      }
+    // try {
+    //   Toast.showLoading();
+    var response = await httpsClient.get("/api/cow/$cowId");
+    cattle = Cattle.fromJson(response);
+    Toast.dismiss();
+    if (ObjectUtil.isNotEmpty(cattle)) {
+      Cattle.redirectToPage(type, cattle!);
     }
+    // } catch (error) {
+    //   Toast.dismiss();
+    //   Toast.show(error.toString());
+    //   if (error is ApiException) {
+    //     // 处理 API 请求异常情况 code不为 0 的场景
+    //     Log.d('API Exception: ${error.toString()}');
+    //     Toast.failure(msg: error.toString());
+    //   } else {
+    //     // HTTP 请求异常情况
+    //     Log.d('Other Exception: $error');
+    //   }
+    // }
   }
 
   //请求轮播数据

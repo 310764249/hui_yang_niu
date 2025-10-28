@@ -1,5 +1,6 @@
 class RawMaterial {
   late final String? id; // ID
+  ////原料类型 0: 未知；1: 粗饲料; 2: 能量饲料；3：蛋白饲料；4：添加剂；5：预混料；6：精补料；
   late final int? type; // 原料类型
   late final int? category; // 原料分类
   late final int? individualType; // 饲料类型: 0-不限, 1-公牛, 2-母牛
@@ -28,6 +29,9 @@ class RawMaterial {
   // 验证饲料的种类
   double verifyWeight = 0.1; // 行版本
 
+  //是否粗饲料
+  bool get isCruseFeed => type == 1;
+
   RawMaterial({
     required this.id,
     required this.type,
@@ -54,6 +58,7 @@ class RawMaterial {
     required this.modifiedBy,
     required this.rowVersion,
   });
+
   RawMaterial.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     type = json['type'];

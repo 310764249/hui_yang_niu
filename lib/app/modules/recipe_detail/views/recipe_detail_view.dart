@@ -290,129 +290,67 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                   controller.argument!.dm.toString(),
                   controller.argument!.baseDM.toString(),
                 ),
-
+                _compareCell(
+                  '粗料比(%)',
+                  controller.argument!.roughagesPercent.toString(),
+                  controller.argument!.baseRoughagesPercent.toString(),
+                ),
                 _compareCell(
                   '粗蛋白需要量(kg/d)',
                   controller.argument!.cp.toString(),
                   controller.argument!.baseCP.toString(),
                 ),
-
+                _compareCell(
+                  '瘤胃降解蛋白(kg/d)',
+                  controller.argument!.rdp.toString(),
+                  controller.argument!.baseRDP.toString(),
+                ),
+                _compareCell(
+                  '瘤胃非降解蛋白(kg/d)',
+                  controller.argument!.rup.toString(),
+                  controller.argument!.baseRUP.toString(),
+                ),
                 _compareCell(
                   '代谢蛋白(kg/d)',
                   controller.argument!.mp.toString(),
                   controller.argument!.baseMP.toString(),
                 ),
-
                 _compareCell(
-                  '钙(kg/d)',
-                  controller.argument!.ca.toString(),
-                  controller.argument!.baseCa.toString(),
+                  '代谢赖氨酸(kg/d)',
+                  controller.argument!.mLys.toString(),
+                  controller.argument!.baseMLys.toString(),
                 ),
-
                 _compareCell(
-                  '磷(kg/d)',
-                  controller.argument!.p.toString(),
-                  controller.argument!.baseP.toString(),
+                  '代谢蛋氨酸(kg/d)',
+                  controller.argument!.mMet.toString(),
+                  controller.argument!.baseMMet.toString(),
                 ),
-
                 _compareCell(
                   '代谢能(Mcal/d)',
                   controller.argument!.me.toString(),
                   controller.argument!.baseME.toString(),
                 ),
-
                 _compareCell(
                   '维持净能(Mcal/d)',
                   controller.argument!.nEm.toString(),
                   controller.argument!.baseNEm.toString(),
                 ),
-
                 _compareCell(
                   '增重净能(Mcal/d)',
                   controller.argument!.nEg.toString(),
                   controller.argument!.baseNEg.toString(),
                 ),
+                _compareCell(
+                  '钙(kg/d)',
+                  controller.argument!.ca.toString(),
+                  controller.argument!.baseCa.toString(),
+                ),
+                _compareCell(
+                  '磷(kg/d)',
+                  controller.argument!.p.toString(),
+                  controller.argument!.baseP.toString(),
+                ),
               ],
-              //     [
-              //   _compareCell(
-              //     '干物质采食量(kg/d)',
-              //     controller.argument!.dm.toString(),
-              //     controller.argument!.baseDM.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '粗蛋白需要量(kg/d)',
-              //     controller.argument!.cp.toString(),
-              //     controller.argument!.baseCP.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '瘤胃降解蛋白(kg/d)',
-              //     controller.argument!.rdp.toString(),
-              //     controller.argument!.baseRDP.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '瘤胃非降解蛋白(kg/d)',
-              //     controller.argument!.rup.toString(),
-              //     controller.argument!.baseRUP.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '代谢蛋白(kg/d)',
-              //     controller.argument!.mp.toString(),
-              //     controller.argument!.baseMP.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '代谢赖氨酸(kg/d)',
-              //     controller.argument!.mLys.toString(),
-              //     controller.argument!.baseMLys.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '代谢蛋氨酸(kg/d)',
-              //     controller.argument!.mMet.toString(),
-              //     controller.argument!.baseMMet.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '钙(kg/d)',
-              //     controller.argument!.ca.toString(),
-              //     controller.argument!.baseCa.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '磷(kg/d)',
-              //     controller.argument!.p.toString(),
-              //     controller.argument!.baseP.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '代谢能(Mcal/d)',
-              //     controller.argument!.me.toString(),
-              //     controller.argument!.baseME.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '维持净能(Mcal/d)',
-              //     controller.argument!.nEm.toString(),
-              //     controller.argument!.baseNEm.toString(),
-              //   ),
-              //
-              //   _compareCell(
-              //     '增重净能(Mcal/d)',
-              //     controller.argument!.nEg.toString(),
-              //     controller.argument!.baseNEg.toString(),
-              //   ),
-              //
-              //   _compareCellSingle(
-              //     '干物质占比(%)',
-              //     ((controller.argument!.dm! / controller.argument!.weight!) * 100).toStringAsFixed(
-              //       2,
-              //     ),
-              //   ),
-              // ],
             ),
           ),
         ),

@@ -363,7 +363,7 @@ class RecipeView extends GetView<RecipeController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.args = Get.arguments;
+    controller.args = Get.arguments is Map ? Get.arguments : null;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

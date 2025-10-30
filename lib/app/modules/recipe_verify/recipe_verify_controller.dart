@@ -297,7 +297,7 @@ class RecipeVerifyController extends GetxController {
     for (var item in list) {
       totalWeight += item.verifyWeight;
     }
-    return totalWeight;
+    return double.parse(totalWeight.toStringAsFixed(2));
   }
 
   void selectHaveFormula(bool value) {
@@ -305,7 +305,10 @@ class RecipeVerifyController extends GetxController {
     formulaModelExist = null;
     countController.text = '1';
     addRawMaterialList.clear();
+    addFeedRawMaterialList.clear();
     formulaModel = null;
+    czlzlController.text = '0.0';
+    jzlzlController.text = '0.0';
     update();
   }
 
@@ -342,6 +345,8 @@ class RecipeVerifyController extends GetxController {
       }
       addRawMaterialList = modelList.where((e) => e.isCruseFeed).toList();
       addFeedRawMaterialList = modelList.where((e) => !e.isCruseFeed).toList();
+      czlzlController.text = getTotalWeight(addRawMaterialList).toString();
+      jzlzlController.text = getTotalWeight(addFeedRawMaterialList).toString();
       update();
     } catch (error) {
       Toast.dismiss();

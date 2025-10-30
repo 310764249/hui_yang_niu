@@ -138,7 +138,6 @@ class ActionMessageListController extends GetxController {
       }
     } catch (error) {
       Toast.dismiss();
-      Toast.show(error.toString());
       if (error is ApiException) {
         // 处理 API 请求异常情况 code不为 0 的场景
         Log.d('API Exception: ${error.toString()}');

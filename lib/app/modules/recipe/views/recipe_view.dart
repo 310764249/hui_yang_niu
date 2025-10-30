@@ -23,7 +23,9 @@ class RecipeView extends GetView<RecipeController> {
   @override
   final RecipeController controller = Get.put(RecipeController());
 
-  RecipeView({super.key});
+  RecipeView({super.key, this.isPick = false});
+
+  final bool isPick;
 
   // 4个按钮的item
   Widget _headerItem(String icon, String title, Function() onTap) {
@@ -143,7 +145,7 @@ class RecipeView extends GetView<RecipeController> {
   Widget _recipeListItem(FormulaModel model) {
     return InkWell(
       onTap: () {
-        if (controller.isPick) {
+        if (isPick) {
           Get.back(result: model);
         } else {
           Get.toNamed(Routes.RECIPE_DETAIL, arguments: model);
@@ -336,7 +338,7 @@ class RecipeView extends GetView<RecipeController> {
           // 4个按钮
           //_headerView(),
           //SizedBox(height: ScreenAdapter.height(6)),
-          if (!controller.isPick) ...[
+          if (!isPick) ...[
             SizedBox(height: ScreenAdapter.height(20)),
             // 创建配方按钮
             _createRecipeButton(),
@@ -363,12 +365,12 @@ class RecipeView extends GetView<RecipeController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.args = Get.arguments is Map ? Get.arguments : null;
+    // controller.args = Get.arguments is Map ? Get.arguments : null;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          controller.isPick ? '选择配方' : '配方',
+          isPick ? '选择配方' : '配方',
           style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

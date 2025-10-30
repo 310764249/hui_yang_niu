@@ -11,10 +11,7 @@ import '../../../services/Log.dart';
 import '../../../widgets/dict_list.dart';
 
 class RecipeController extends GetxController {
-  late Map? args;
   HttpsClient httpsClient = HttpsClient();
-
-  bool get isPick => args?['isPick'] ?? false;
 
   //
   int pageIndex = 1;
@@ -50,7 +47,7 @@ class RecipeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    debugPrint('--onReady-- ${args}');
+
     debugPrint('--onReady--');
     BusinessLogger.instance.logEnter('配方设计');
   }

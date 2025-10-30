@@ -69,6 +69,26 @@ class _FeedDetailsInfoViewState extends State<FeedDetailsInfoView> {
     setState(() {}); // 刷新 UI 占比
   }
 
+  /// 子项修改完成回调
+  void onValueChanged(RawMaterial item, double weight, double percent) {
+    // 更新当前 item 的数值
+    item.verifyWeight = weight;
+
+    // 重算所有项的 totalWeight
+    final total = getTotalWeight();
+
+    // 当前用户输入的总重量
+    final inputTotal = double.tryParse(totalWeightController.text.trim()) ?? 0;
+
+    // ✅ 如果单项变大导致 sum > totalWeight → 自动扩大总重量
+    if (total > inputTotal) {
+      totalWeightController.text = total.toStringAsFixed(2);
+    }
+
+    // 通知界面刷新比例显示
+    setState(() {});
+  }
+
   /// ✅ 加减按钮修改
   void updateWeight(double delta) {
     final input = double.tryParse(totalWeightController.text.trim()) ?? 0;
@@ -193,6 +213,7 @@ class _FeedDetailsInfoViewState extends State<FeedDetailsInfoView> {
                 item: item,
                 totalWeight: num.tryParse(totalWeightController.text) ?? getTotalWeight(),
                 onDelete: widget.onDelete,
+                onValueChanged: onValueChanged,
               ),
             ),
           ],
@@ -208,11 +229,15 @@ class FeedItemView extends StatefulWidget {
     required this.item,
     required this.totalWeight,
     required this.onDelete,
+    this.onValueChanged,
   });
 
   final RawMaterial item;
   final num totalWeight;
   final ValueChanged<RawMaterial> onDelete;
+
+  /// ✅ 值编辑完成回调
+  final void Function(RawMaterial item, double weight, double percent)? onValueChanged;
 
   @override
   State<FeedItemView> createState() => _FeedItemViewState();
@@ -222,7 +247,6 @@ class _FeedItemViewState extends State<FeedItemView> {
   TextEditingController weightController = TextEditingController();
   TextEditingController percentController = TextEditingController();
 
-  /// 防止循环触发监听
   bool isChanging = false;
 
   @override
@@ -237,13 +261,12 @@ class _FeedItemViewState extends State<FeedItemView> {
     percentController.addListener(_onPercentChanged);
   }
 
-  /// ✅ 修改重量 → 更新占比
   void _onWeightChanged() {
     if (isChanging) return;
     isChanging = true;
 
     final wStr = weightController.text.trim();
-    if (wStr.isEmpty || wStr == "." || widget.totalWeight <= 0) {
+    if (wStr.isEmpty || wStr == '.' || widget.totalWeight <= 0) {
       isChanging = false;
       return;
     }
@@ -258,25 +281,32 @@ class _FeedItemViewState extends State<FeedItemView> {
     isChanging = false;
   }
 
-  /// ✅ 修改占比 → 更新重量
   void _onPercentChanged() {
     if (isChanging) return;
     isChanging = true;
 
     final pStr = percentController.text.trim();
-    if (pStr.isEmpty || pStr == "." || widget.totalWeight <= 0) {
+    if (pStr.isEmpty || pStr == '.' || widget.totalWeight <= 0) {
       isChanging = false;
       return;
     }
 
     final percent = double.tryParse(pStr) ?? 0;
-    double weight = widget.totalWeight * percent / 100.0;
+    final weight = widget.totalWeight * percent / 100;
 
     widget.item.verifyWeight = weight;
     weightController.text = weight.toStringAsFixed(2);
 
     setState(() {});
     isChanging = false;
+  }
+
+  /// ✅ 公共方法：当编辑结束时回传
+  void _triggerCallback() {
+    final weight = double.tryParse(weightController.text) ?? 0;
+    final percent = double.tryParse(percentController.text) ?? 0;
+
+    widget.onValueChanged?.call(widget.item, weight, percent);
   }
 
   @override
@@ -292,13 +322,15 @@ class _FeedItemViewState extends State<FeedItemView> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: SaienteColors.dark_app_main.withValues(alpha: 0.3), width: 0.4),
+          bottom: BorderSide(color: SaienteColors.dark_app_main.withValues(alpha: 0.3), width: .4),
         ),
       ),
       child: Row(
         children: [
           Expanded(child: Text(widget.item.name ?? '')),
           _divider(),
+
+          /// ✅ 重量输入框
           Expanded(
             child: TextField(
               controller: weightController,
@@ -307,9 +339,15 @@ class _FeedItemViewState extends State<FeedItemView> {
               style: const TextStyle(fontSize: 14),
               textAlign: TextAlign.center,
               decoration: const InputDecoration(border: InputBorder.none),
+
+              /// 🔥 失焦回调
+              onEditingComplete: _triggerCallback,
+              onTapOutside: (_) => _triggerCallback(),
             ),
           ),
           _divider(),
+
+          /// ✅ 占比
           Expanded(
             child: Row(
               children: [
@@ -321,20 +359,23 @@ class _FeedItemViewState extends State<FeedItemView> {
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(border: InputBorder.none),
+
+                    /// 🔥 失焦回调
+                    onEditingComplete: _triggerCallback,
+                    onTapOutside: (_) => _triggerCallback(),
                   ),
                 ),
                 const Text('%'),
               ],
             ),
           ),
+
           SizedBox(
             width: 40,
             child: Padding(
               padding: const EdgeInsets.only(left: 10),
               child: IconButton(
-                onPressed: () {
-                  widget.onDelete(widget.item);
-                },
+                onPressed: () => widget.onDelete(widget.item),
                 icon: const Icon(Icons.delete_forever_sharp, color: SaienteColors.appMain),
               ),
             ),

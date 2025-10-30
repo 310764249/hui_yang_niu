@@ -33,7 +33,7 @@ void main() {
   EventBusUtil();
 
   //初始化推送服务
-  JPushTool.setup();
+  // JPushTool.setup();
 
   // 用flutter_screenutil来自动适配
   runApp(const MainApp());
@@ -73,6 +73,7 @@ class _MainAppState extends State<MainApp> {
       builder: (context, child) {
         return GetMaterialApp(
           title: "慧养牛",
+          smartManagement: SmartManagement.full,
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,

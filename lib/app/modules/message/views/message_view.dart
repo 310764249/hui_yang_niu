@@ -169,7 +169,7 @@ class MessageView extends GetView<MessageController> {
           notice.id!,
           () {
             debugPrint('待换料${notice.toJson()}');
-            if (notice.type == 412 || notice.type == 411) {
+            if (notice.type == 412 || notice.type == 411 || notice.type == 407) {
               //待换料
               // controller.goToChangeCattle(notice);
               Alert.showSure(

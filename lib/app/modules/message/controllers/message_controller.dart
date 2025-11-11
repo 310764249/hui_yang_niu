@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/models/cow_batch.dart';
 import 'package:intellectual_breed/app/models/cow_house.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
 
@@ -80,11 +81,9 @@ class MessageController extends GetxController {
     // try {
     //   Toast.showLoading();
     var response = await httpsClient.get("/api/cow/$cowId");
-    cattle = Cattle.fromJson(response);
+    CowBatch cattle = CowBatch.fromJson(response);
     Toast.dismiss();
-    if (ObjectUtil.isNotEmpty(cattle)) {
-      Cattle.redirectToPage(type, cattle!);
-    }
+    Get.toNamed(Routes.BATCH_DETAIL, arguments: cattle);
     // } catch (error) {
     //   Toast.dismiss();
     //   Toast.show(error.toString());
@@ -172,5 +171,20 @@ class MessageController extends GetxController {
 
   void readMessage(String msgId) {
     httpsClient.get('/api/notice/readnotice/$msgId');
+  }
+
+  void getCattleBatchNoAndGoToEventDetail(int i, String? batchNo) async {
+    if (ObjectUtil.isEmpty(batchNo)) {
+      Toast.show('牛只编号不能为空');
+      return;
+    }
+    // try {
+    //   Toast.showLoading();
+    var response = await httpsClient.get("/api/cowbatch/$batchNo");
+    CowBatch cattle = CowBatch.fromJson(response);
+    Toast.dismiss();
+    // if (ObjectUtil.isNotEmpty(cattle)) {
+    //   Cattle.redirectToPage(i, cattle!);
+    // }
   }
 }

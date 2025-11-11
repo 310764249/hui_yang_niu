@@ -319,6 +319,7 @@ class _FeedItemViewState extends State<FeedItemView> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       decoration: BoxDecoration(
         border: Border(
@@ -327,7 +328,12 @@ class _FeedItemViewState extends State<FeedItemView> {
       ),
       child: Row(
         children: [
-          Expanded(child: Text(widget.item.name ?? '')),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text((widget.item.name ?? ''), maxLines: 1),
+            ),
+          ),
           _divider(),
 
           /// ✅ 重量输入框
@@ -374,9 +380,9 @@ class _FeedItemViewState extends State<FeedItemView> {
             width: 40,
             child: Padding(
               padding: const EdgeInsets.only(left: 10),
-              child: IconButton(
-                onPressed: () => widget.onDelete(widget.item),
-                icon: const Icon(Icons.delete_forever_sharp, color: SaienteColors.appMain),
+              child: InkWell(
+                onTap: () => widget.onDelete(widget.item),
+                child: const Icon(Icons.delete_forever_sharp, color: SaienteColors.appMain),
               ),
             ),
           ),

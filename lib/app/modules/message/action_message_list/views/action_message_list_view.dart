@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../models/notice.dart';
 import '../../../../services/colors.dart';
 import '../../../../services/screenAdapter.dart';
+import '../../../../widgets/alert.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/down_arrow_button.dart';
 import '../../../../widgets/empty_view.dart';
@@ -18,6 +19,7 @@ import '../controllers/action_message_list_controller.dart';
 ///
 class ActionMessageListView extends GetView<ActionMessageListController> {
   const ActionMessageListView({Key? key}) : super(key: key);
+
   //批次筛选列表
   Widget _cattleList() {
     return Expanded(
@@ -61,10 +63,20 @@ class ActionMessageListView extends GetView<ActionMessageListController> {
                         child: InkWell(
                           onTap: () {
                             // 点击事件
-                            controller.getCattleDataAndGoToEventDetail(
-                              controller.items[index].type ?? -1,
-                              controller.items[index].cowId,
-                            );
+                            if (controller.items[index].type == 407) {
+                              Alert.showSure(
+                                '栋舍: ${controller.items[index].cowHouseName}; '
+                                '\n牛只${Notice.getItemTitle(controller.items[index])}(${AppDictList.findLabelByCode(controller.gmList, controller.items[index].gender.toString())});'
+                                '\n事件: ${Notice.getEventNameByCode(controller.items[index].type ?? -1)};'
+                                '${controller.items[index].type == 412 ? '\n\n\t\t\t${controller.items[index].content ?? ''}' : ''}',
+                              );
+                              return;
+                            } else {
+                              controller.getCattleDataAndGoToEventDetail(
+                                controller.items[index].type ?? -1,
+                                controller.items[index].cowId,
+                              );
+                            }
                           },
                           child: Container(
                             height: ScreenAdapter.height(106),

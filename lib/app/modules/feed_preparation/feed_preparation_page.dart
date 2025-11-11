@@ -437,7 +437,7 @@ class _TabItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 alignment: Alignment.center,
                 child: Text(
-                  value,
+                  num.tryParse(value)?.toStringAsFixed(0) ?? value,
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(14),
                     fontWeight: FontWeight.w500,

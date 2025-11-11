@@ -378,7 +378,7 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                                   .where((element) => element.type != 1)
                                   .toList(),
                             );
-                            for (var o in controller.addRawMaterialList) {
+                            for (var o in controller.addFeedRawMaterialList) {
                               showRawMaterialLabels.removeWhere((e) => o.name == e.name);
                             }
                             Alert.showMultiPicker(

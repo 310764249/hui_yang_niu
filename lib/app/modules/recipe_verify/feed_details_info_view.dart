@@ -60,13 +60,13 @@ class _FeedDetailsInfoViewState extends State<FeedDetailsInfoView> {
 
   /// ✅ 输入完成或失焦时调用校验方法
   void validateWeight() {
-    final input = double.tryParse(totalWeightController.text.trim()) ?? 0;
-    final total = getTotalWeight();
-
-    if (input < total) {
-      totalWeightController.text = total.toStringAsFixed(2);
-    }
-    setState(() {}); // 刷新 UI 占比
+    // final input = double.tryParse(totalWeightController.text.trim()) ?? 0;
+    // final total = getTotalWeight();
+    //
+    // if (input < total) {
+    //   totalWeightController.text = total.toStringAsFixed(2);
+    // }
+    // setState(() {}); // 刷新 UI 占比
   }
 
   /// 子项修改完成回调
@@ -211,6 +211,7 @@ class _FeedDetailsInfoViewState extends State<FeedDetailsInfoView> {
               (item) => FeedItemView(
                 key: ValueKey('${item.id}${totalWeightController.text}'),
                 item: item,
+                allItems: widget.list,
                 totalWeight: num.tryParse(totalWeightController.text) ?? getTotalWeight(),
                 onDelete: widget.onDelete,
                 onValueChanged: onValueChanged,
@@ -229,14 +230,14 @@ class FeedItemView extends StatefulWidget {
     required this.item,
     required this.totalWeight,
     required this.onDelete,
+    required this.allItems, // ✅ 新增
     this.onValueChanged,
   });
 
   final RawMaterial item;
   final num totalWeight;
+  final List<RawMaterial> allItems; // ✅ 新增
   final ValueChanged<RawMaterial> onDelete;
-
-  /// ✅ 值编辑完成回调
   final void Function(RawMaterial item, double weight, double percent)? onValueChanged;
 
   @override
@@ -249,6 +250,9 @@ class _FeedItemViewState extends State<FeedItemView> {
 
   bool isChanging = false;
 
+  double lastValidWeight = 0;
+  double lastValidPercent = 0;
+
   @override
   void initState() {
     super.initState();
@@ -257,8 +261,28 @@ class _FeedItemViewState extends State<FeedItemView> {
       2,
     );
 
+    lastValidWeight = widget.item.verifyWeight;
+    lastValidPercent = (widget.item.verifyWeight / widget.totalWeight * 100);
+
     weightController.addListener(_onWeightChanged);
     percentController.addListener(_onPercentChanged);
+  }
+
+  /// ✅ 求其他项重量之和
+  double _sumOtherWeights() {
+    double sum = 0;
+    for (var i in widget.allItems) {
+      if (i != widget.item) {
+        sum += i.verifyWeight;
+      }
+    }
+    return sum;
+  }
+
+  /// ✅ 校验累加不超过总量
+  bool _validateTotalWeight(double newWeight) {
+    final total = _sumOtherWeights() + newWeight;
+    return total <= widget.totalWeight;
   }
 
   void _onWeightChanged() {
@@ -272,10 +296,28 @@ class _FeedItemViewState extends State<FeedItemView> {
     }
 
     final weight = double.tryParse(wStr) ?? 0;
-    widget.item.verifyWeight = weight;
+
+    /// 单项重量不可超过总重量
+    if (weight > widget.totalWeight) {
+      _showError("重量不能超过总量");
+      _restoreLast();
+      return;
+    }
+
+    /// 所有项累加不可超过总重量
+    if (!_validateTotalWeight(weight)) {
+      _showError("所有重量总和不能超过总量");
+      _restoreLast();
+      return;
+    }
 
     final percent = weight / widget.totalWeight * 100;
+
+    widget.item.verifyWeight = weight;
     percentController.text = percent.toStringAsFixed(2);
+
+    lastValidWeight = weight;
+    lastValidPercent = percent;
 
     setState(() {});
     isChanging = false;
@@ -292,20 +334,44 @@ class _FeedItemViewState extends State<FeedItemView> {
     }
 
     final percent = double.tryParse(pStr) ?? 0;
+
+    /// 单项占比不可超过100%
+    if (percent > 100) {
+      _showError("占比不能大于100%");
+      _restoreLast();
+      return;
+    }
+
     final weight = widget.totalWeight * percent / 100;
+
+    /// 所有项累加不可超过总重量
+    if (!_validateTotalWeight(weight)) {
+      _showError("所有重量总和不能超过总量");
+      _restoreLast();
+      return;
+    }
 
     widget.item.verifyWeight = weight;
     weightController.text = weight.toStringAsFixed(2);
+
+    lastValidWeight = weight;
+    lastValidPercent = percent;
 
     setState(() {});
     isChanging = false;
   }
 
-  /// ✅ 公共方法：当编辑结束时回传
+  /// ✅ 恢复到上次合法值
+  void _restoreLast() {
+    weightController.text = lastValidWeight.toStringAsFixed(2);
+    percentController.text = lastValidPercent.toStringAsFixed(2);
+    isChanging = false;
+  }
+
+  /// ✅ 失焦回调触发真实提交
   void _triggerCallback() {
     final weight = double.tryParse(weightController.text) ?? 0;
     final percent = double.tryParse(percentController.text) ?? 0;
-
     widget.onValueChanged?.call(widget.item, weight, percent);
   }
 
@@ -314,6 +380,14 @@ class _FeedItemViewState extends State<FeedItemView> {
     weightController.dispose();
     percentController.dispose();
     super.dispose();
+  }
+
+  /// ✅ 错误提示
+  void _showError(String text) {
+    Toast.show(text);
+    // ScaffoldMessenger.of(
+    //   context,
+    // ).showSnackBar(SnackBar(content: Text(text), duration: const Duration(seconds: 1)));
   }
 
   @override
@@ -345,15 +419,13 @@ class _FeedItemViewState extends State<FeedItemView> {
               style: const TextStyle(fontSize: 14),
               textAlign: TextAlign.center,
               decoration: const InputDecoration(border: InputBorder.none),
-
-              /// 🔥 失焦回调
               onEditingComplete: _triggerCallback,
               onTapOutside: (_) => _triggerCallback(),
             ),
           ),
           _divider(),
 
-          /// ✅ 占比
+          /// ✅ 占比输入框
           Expanded(
             child: Row(
               children: [
@@ -365,8 +437,6 @@ class _FeedItemViewState extends State<FeedItemView> {
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(border: InputBorder.none),
-
-                    /// 🔥 失焦回调
                     onEditingComplete: _triggerCallback,
                     onTapOutside: (_) => _triggerCallback(),
                   ),

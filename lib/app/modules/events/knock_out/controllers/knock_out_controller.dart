@@ -56,10 +56,7 @@ class KnockOutController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '种牛',
-    '犊牛/育肥牛',
-  ];
+  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
   //当前选中的牛
@@ -92,19 +89,16 @@ class KnockOutController extends GetxController {
     super.onInit();
 
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //原因
     reasonList = AppDictList.searchItems('ttyy') ?? [];
     curReasonID = reasonList.isNotEmpty ? reasonList.first['value'] : '';
-    reasonNameList =
-        List<String>.from(reasonList.map((item) => item['label']).toList());
+    reasonNameList = List<String>.from(reasonList.map((item) => item['label']).toList());
 
     //获取生长阶段字典项
     List szjdList = AppDictList.searchItems('szjd') ?? [];
     // 筛选显示
-    szjdListFiltered =
-        AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7']);
+    szjdListFiltered = AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7']);
 
     //首先处理传入参数
     handleArgument();
@@ -144,8 +138,7 @@ class KnockOutController extends GetxController {
       countController.text = event!.count == 0 ? '' : event!.count.toString();
       //填充原因
       curReasonID = event!.cause.toString(); //提交数据
-      reasonIndex.value = AppDictList.findIndexByCode(
-          reasonList, event!.cause.toString()); //显示选中项
+      reasonIndex.value = AppDictList.findIndexByCode(reasonList, event!.cause.toString()); //显示选中项
       //填充时间
       updateSeldate(event!.date);
       //填充备注
@@ -234,6 +227,12 @@ class KnockOutController extends GetxController {
         Toast.show('请输入数量');
         return;
       }
+      //输入的数量不能小于批次 数量
+      if (int.parse(count) > selectedCowBatch.count) {
+        Toast.show('输入的数量不能小于批次数量');
+        return;
+      }
+
       //时间不能小于入场日期
       if (timesStr.value.isBefore(selectedCowBatch.inArea)) {
         Toast.show('淘汰时间不能早于入场日期');
@@ -320,9 +319,7 @@ class KnockOutController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();

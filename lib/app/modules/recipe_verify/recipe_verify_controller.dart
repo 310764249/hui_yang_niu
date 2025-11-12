@@ -239,8 +239,8 @@ class RecipeVerifyController extends GetxController {
     update();
   }
 
-  void currentDailyWeight(value, int position, List<String> filteredList) {
-    nuDailyWeight = filteredList[position];
+  void currentDailyWeight(value, int position) {
+    nuDailyWeight = value;
     update();
   }
 

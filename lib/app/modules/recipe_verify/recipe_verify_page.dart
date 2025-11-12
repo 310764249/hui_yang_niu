@@ -18,6 +18,7 @@ import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../../models/formula.dart';
 import '../../network/httpsClient.dart';
+import '../../services/constant.dart';
 import '../../services/screenAdapter.dart';
 import '../../widgets/my_card.dart';
 import '../../widgets/picker.dart';
@@ -210,7 +211,12 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                                   // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
                                   final filteredList =
                                       range.map((e) {
-                                        return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                                        String value = e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                                        value +=
+                                            Constant.gtKHMap[value] == null
+                                                ? ''
+                                                : '${Constant.gtKHMap[value]}';
+                                        return value;
                                       }).toList();
 
                                   if (filteredList.isEmpty) {
@@ -225,7 +231,11 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                                     selectData: controller.nuDailyWeight,
                                     title: '请选择日增重',
                                     onConfirm: (value, position) {
-                                      controller.currentDailyWeight(value, position, filteredList);
+                                      //去掉kg以及后面的字符串
+                                      int indexKG = value.indexOf('kg');
+                                      String valueKG = value.substring(0, indexKG + 2);
+
+                                      controller.currentDailyWeight(valueKG, position);
                                     },
                                   );
                                 } else {

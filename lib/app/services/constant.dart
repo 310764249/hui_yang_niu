@@ -6,6 +6,16 @@ class Constant {
   /// App运行在Release环境时，inProduction为true；当App运行在Debug和Profile环境时，inProduction为false
   static const bool inProduction = false; //kReleaseMode; ///这个值在自己调试时设置成false, 在发包的时候设置成true
 
+  static Map<String, dynamic> gtKHMap = {
+    '0.6kg': '(0.70)',
+    '0.8kg': '(0.94)',
+    '1kg': '(1.17)',
+    '1.2kg': '(1.41)',
+    '1.4kg': '(1.65)',
+    '1.6kg': '(1.88)',
+    '1.8kg': '(2.11)',
+  };
+
   //auth
   static const String clientId = 'angular.security';
   static const String clientSecret = 'angular.P@ssw0rd_1@3\$5^';

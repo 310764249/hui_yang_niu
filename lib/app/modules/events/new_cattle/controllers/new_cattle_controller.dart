@@ -190,13 +190,15 @@ class NewCattleController extends GetxController {
 
   // 更新胎次逻辑, 在切换[当前状态]和[性别]的时候校验一遍
   void updatePregnancyNum() {
+    debugPrint('-- 更新胎次逻辑  -- ${cattleInfo.currentStage}');
+    debugPrint('-- 获取性别  -- ${Constant.currentStageList[selStage.value].name}');
     switch (cattleInfo.currentStage) {
       case 1 || 2 || 3 || 4:
         if (cattleInfo.currentStage == 3) {
           if (Constant.currentStageList[selStage.value].name == '后备母牛') {
             cattleInfo.gender?.value = 2;
           } else {
-            cattleInfo.gender?.value = 2;
+            cattleInfo.gender?.value = 1;
           }
         }
         //* 前面4中如果是公牛的话就设置[胎次]为空, 母牛根据具体情况设置
@@ -229,6 +231,7 @@ class NewCattleController extends GetxController {
       case 10:
         //后背母牛 后备母牛胎次为0
         cattleInfo.pregnancyNum?.value = '0';
+        cattleInfo.gender?.value = 2;
         break;
       default:
         Toast.show('设置胎次异常');
@@ -405,14 +408,16 @@ class NewCattleController extends GetxController {
     }
 
     //选择牛信息z状态中包含公牛，性别设置为1，反之2
-    if (Constant.currentStageList.any(
-      (e) => e.id == cattleInfo.currentStage && e.name.contains('公牛'),
-    )) {
-      cattleInfo.gender?.value = 1;
-    } else {
-      cattleInfo.gender?.value = 2;
-    }
-
+    // if (Constant.currentStageList.any(
+    //   (e) => e.id == cattleInfo.currentStage && e.name.contains('公牛'),
+    // )) {
+    //   cattleInfo.gender?.value = 1;
+    // } else {
+    //   cattleInfo.gender?.value = 2;
+    // }
+    //
+    // debugPrint('提交参数 性别💰: ${cattleInfo.gender}');
+    // return;
     try {
       String farmId = res['id'];
 

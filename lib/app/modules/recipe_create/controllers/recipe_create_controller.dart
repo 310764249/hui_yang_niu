@@ -14,6 +14,8 @@ import '../../../widgets/toast.dart';
 class RecipeCreateController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
 
+  //0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
+
   // 个体类型
   late List gtlxList;
 

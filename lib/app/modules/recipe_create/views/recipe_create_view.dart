@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/recipe_create/views/select_recipe.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
+import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
 import 'package:intellectual_breed/app/widgets/main_button.dart';
 
@@ -132,6 +133,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           title: '日增重目标',
           content: controller.rzzSelName.value,
           onPressed: () {
+            //0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
             final Map<int, List<double>> weightRangeMap = {
               240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
               280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
@@ -162,7 +164,11 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
               final filteredList =
                   range.map((e) {
-                    return e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                    ////0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
+                    //拼接对应的数值 如 e == 0.6，显示"0.6kg（0.70）"
+                    String value = e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                    value += Constant.gtKHMap[value] == null ? '' : '${Constant.gtKHMap[value]}';
+                    return value;
                   }).toList();
 
               if (filteredList.isEmpty) {
@@ -180,7 +186,10 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                   debugPrint('value: $value, position: $position');
                   // 在原始列表里找对应位置（如果需要的话）
                   int index = filteredList.indexOf(value);
-                  controller.updateRzzSelectedItems(value, index);
+                  //去掉kg以及后面的字符串
+                  int indexKG = value.indexOf('kg');
+                  String valueKG = value.substring(0, indexKG + 2);
+                  controller.updateRzzSelectedItems(valueKG, index);
                 },
               );
             } else {

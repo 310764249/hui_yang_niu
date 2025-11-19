@@ -683,7 +683,17 @@ class CattleDetailView extends GetView<CattleDetailController> {
                   Expanded(
                     child: Text(
                       // 根据type匹配出对应的事件名称
-                      AppDictList.findLabelByCode(controller.czztList, event.type.toString()),
+                      () {
+                        String value = AppDictList.findLabelByCode(
+                          controller.czztList,
+                          event.type.toString(),
+                        );
+                        if (value == '') {
+                          debugPrint('未匹配到事件名称${event.type}');
+                          value = "未知";
+                        }
+                        return value;
+                      }(),
                       maxLines: 2,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,

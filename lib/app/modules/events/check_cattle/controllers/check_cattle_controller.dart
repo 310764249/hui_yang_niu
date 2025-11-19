@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:intellectual_breed/app/models/event_argument.dart';
+import 'package:intellectual_breed/app/services/ex_int.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import '../../../../models/cow_house.dart';
 import '../../../../models/simple_event.dart';
@@ -103,7 +105,8 @@ class CheckCattleController extends GetxController {
       //填充数量
       countController.text = event!.count == 0 ? '' : event!.count.toString();
       //填充时间
-      updateSeldate(event!.date);
+      PDuration date = PDuration.parse(DateTime.parse(event!.date));
+      updateSeldate("${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
       //填充备注
       remarkController.text = event?.remark ?? '';
       //更新
@@ -149,9 +152,7 @@ class CheckCattleController extends GetxController {
     }
 
     if (cowHouseNum.value != realNumber) {
-      Alert.showConfirm(
-        '数量与盘点数量不一致,请完成数量增减事件后再提交!',
-      );
+      Alert.showConfirm('数量与盘点数量不一致,请完成数量增减事件后再提交!');
       return;
     }
     //判断提交类型

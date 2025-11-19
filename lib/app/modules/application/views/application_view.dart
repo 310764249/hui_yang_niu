@@ -345,7 +345,7 @@ class ApplicationView extends GetView<ApplicationController> {
   Widget _managementItem(CommonData data) {
     return Bounceable(
       onTap: () async {
-        print("--> ${data.name.replaceAll("\n", "")}  data：${data.id}");
+        print("--> ${data.name.replaceAll("\n", "")}  data：${data.name}");
         // Get.snackbar("提示", "--> ${data.name.replaceAll("\n", "")}",
         //     snackPosition: SnackPosition.BOTTOM);
         switch (data.name) {
@@ -358,6 +358,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/feedpreparation',
                 '饲料调制',
                 Routes.EVENT_Feed_Preparation,
+                data.name,
                 detailRouterStr: Routes.EVENT_Feed_Preparation,
               ),
             );
@@ -372,6 +373,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/restock',
                 '引种事件',
                 Routes.BUY_IN,
+                data.name,
                 detailRouterStr: Routes.BUY_IN_DETAIL,
               ),
             )?.then((value) {
@@ -388,6 +390,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/selstock',
                 '选种事件',
                 Routes.SELECT_CATTLE,
+                data.name,
                 detailRouterStr: Routes.SELECT_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -404,6 +407,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Allot',
                 '调拨事件',
                 Routes.ALLOT_CATTLE,
+                data.name,
                 detailRouterStr: Routes.ALLOT_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -420,6 +424,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/TurnGroup',
                 '转群事件',
                 Routes.CHANGE_GROUP,
+                data.name,
                 detailRouterStr: Routes.CHANGE_GROUP_DETAIL,
               ),
             )?.then((value) {
@@ -436,6 +441,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/WeedOut',
                 '淘汰事件',
                 Routes.KNOCK_OUT,
+                data.name,
                 detailRouterStr: Routes.KNOCK_OUT_DETAIL,
               ),
             )?.then((value) {
@@ -452,6 +458,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Death',
                 '死亡事件',
                 Routes.DIE_CATTLE,
+                data.name,
                 detailRouterStr: Routes.DIE_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -460,7 +467,7 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '销售':
-            if (data.id == 2) {
+            if (data.name == 2) {
               //效益评估出栏
               String tag = '收支管理/销售事件';
               BusinessLogger.instance.logEnter(tag);
@@ -470,6 +477,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   '/api/sales',
                   '销售',
                   Routes.SALES_ASSESS,
+                  data.name,
                   detailRouterStr: Routes.SALES_ASSESS_DETAIL,
                 ),
               );
@@ -486,6 +494,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Market',
                 '出栏',
                 Routes.SELL_CATTLE,
+                data.name,
                 detailRouterStr: Routes.SELL_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -501,6 +510,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/CowCheck',
                 '盘点事件',
                 Routes.CHECK_CATTLE,
+                data.name,
                 detailRouterStr: Routes.CHECK_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -517,6 +527,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Feed',
                 '饲喂事件',
                 Routes.FEED_CATTLE,
+                data.name,
                 detailRouterStr: Routes.FEED_CATTLE_DETAIL,
               ),
             )?.then((value) {
@@ -533,6 +544,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Semen',
                 '采精事件',
                 Routes.SEMEN,
+                data.name,
                 detailRouterStr: Routes.SEMEN_DETAIL,
               ),
             )?.then((value) {
@@ -549,6 +561,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Rut',
                 '发情事件',
                 Routes.RUT,
+                data.name,
                 detailRouterStr: Routes.RUT_DETAIL,
               ),
             )?.then((value) {
@@ -565,6 +578,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Ban',
                 '禁配事件',
                 Routes.BAN,
+                data.name,
                 detailRouterStr: Routes.BAN_DETAIL,
               ),
             )?.then((value) {
@@ -581,6 +595,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Pick',
                 '解禁事件',
                 Routes.UN_BAN,
+                data.name,
                 detailRouterStr: Routes.UN_BAN_DETAIL,
               ),
             )?.then((value) {
@@ -597,6 +612,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Mating',
                 '配种事件',
                 Routes.MATING,
+                data.name,
                 detailRouterStr: Routes.MATING_DETAIL,
               ),
             )?.then((value) {
@@ -613,6 +629,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Pregcy',
                 '孕检事件',
                 Routes.PREGCY,
+                data.name,
                 detailRouterStr: Routes.PREGCY_DETAIL,
               ),
             )?.then((value) {
@@ -629,6 +646,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/calv',
                 '产犊事件',
                 Routes.CALV,
+                data.name,
                 detailRouterStr: Routes.CALV_DETAIL,
               ),
             )?.then((value) {
@@ -645,6 +663,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Wean',
                 '断奶事件',
                 Routes.WEAN,
+                data.name,
                 detailRouterStr: Routes.WEAN_DETAIL,
               ),
             )?.then((value) {
@@ -661,6 +680,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Antidemic',
                 '防疫事件',
                 Routes.PREVENTION,
+                data.name,
                 detailRouterStr: Routes.PREVENTION_DETAIL,
               ),
             );
@@ -675,6 +695,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/Treatment',
                 '诊疗事件',
                 Routes.TREATMENT,
+                data.name,
                 detailRouterStr: Routes.TREATMENT_DETAIL,
               ),
             );
@@ -690,6 +711,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/HealthCare',
                 '保健事件',
                 Routes.HEALTH_CARE,
+                data.name,
                 detailRouterStr: Routes.HEALTH_CARE_DETAIL,
               ),
             );
@@ -705,6 +727,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/progeny',
                 '后裔登记事件',
                 Routes.DESCENDANTS,
+                data.name,
                 detailRouterStr: Routes.DESCENDANTS_DETAIL,
               ),
             );
@@ -719,6 +742,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/breedmeasure',
                 '选育测定事件',
                 Routes.ASSAY,
+                data.name,
                 detailRouterStr: Routes.ASSAY_DETAIL,
               ),
             );
@@ -733,6 +757,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/inbreedmeasure',
                 '近交测定事件',
                 Routes.INBREEDING,
+                data.name,
                 detailRouterStr: Routes.INBREEDING_DETAILS,
               ),
             );
@@ -747,6 +772,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/bodymeasure',
                 '体尺测定事件',
                 Routes.MEASUREMENT,
+                data.name,
                 detailRouterStr: Routes.MEASUREMENT_DETAIL,
               ),
             );
@@ -761,6 +787,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/surfacemeasure',
                 '品相评估事件',
                 Routes.ASSESSMENT,
+                data.name,
                 detailRouterStr: Routes.ASSESSMENT_DETAIL,
               ),
             );
@@ -775,6 +802,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/characterstats',
                 '性状统计事件',
                 Routes.CHARACTERS,
+                data.name,
                 detailRouterStr: Routes.CHARACTERS_DETAIL,
               ),
             );
@@ -789,6 +817,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/breedvaluestats',
                 '育种值统计事件',
                 Routes.BREED_VALUE,
+                data.name,
                 detailRouterStr: Routes.BREED_VALUE_DETAIL,
               ),
             );
@@ -804,6 +833,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/bodyAssess',
                 '体况评估',
                 Routes.BODY_ASSESS,
+                data.name,
                 detailRouterStr: Routes.BODY_ASSESS_DETAIL,
               ),
             );
@@ -818,6 +848,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/healthAssess',
                 '健康评估',
                 Routes.HEALTH_ASSESS,
+                data.name,
                 detailRouterStr: Routes.HEALTH_ASSESS_DETAIL,
               ),
             );
@@ -832,6 +863,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/environmentAssess',
                 '环境评估',
                 Routes.ENVIRONMENT_ASSESS,
+                data.name,
                 detailRouterStr: Routes.ENVIRONMENT_ASSESS_DETAIL,
               ),
             );
@@ -846,6 +878,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/breedAssess',
                 '繁殖效率评估',
                 Routes.BREED_ASSESS,
+                data.name,
                 detailRouterStr: Routes.BREED_ASSESS_DETAIL,
               ),
             );
@@ -860,6 +893,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/purchase',
                 '采购',
                 Routes.PURCHASE_ASSESS,
+                data.name,
                 detailRouterStr: Routes.PURCHASE_ASSESS_DETAIL,
               ),
             );
@@ -875,6 +909,7 @@ class ApplicationView extends GetView<ApplicationController> {
                 '/api/manualWork',
                 '人工',
                 Routes.MANUAL_ASSESS,
+                data.name,
                 detailRouterStr: Routes.MANUAL_ASSESS_DETAIL,
               ),
             );

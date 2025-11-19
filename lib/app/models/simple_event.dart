@@ -18,6 +18,10 @@ class SimpleEvent {
   late final int? formulaType;
   late final double? totalWeight;
 
+  int? loimia;
+  int? illness;
+  int? type;
+
   SimpleEvent({
     required this.id,
     this.date,
@@ -36,6 +40,9 @@ class SimpleEvent {
     this.dosage,
     this.formulaType,
     this.totalWeight,
+    this.loimia,
+    this.illness,
+    this.type,
   });
   SimpleEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -55,6 +62,9 @@ class SimpleEvent {
     data = json;
     formulaType = json['formulaType'];
     totalWeight = double.tryParse('${json['totalWeight']}');
+    loimia = json['loimia'];
+    illness = json['illness'];
+    type = json['type'];
   }
 
   Map<String, dynamic> toJson() {

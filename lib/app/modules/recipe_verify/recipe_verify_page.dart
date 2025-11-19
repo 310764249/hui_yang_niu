@@ -211,7 +211,7 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                                   // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
                                   final filteredList =
                                       range.map((e) {
-                                        String value = e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                                        String value = '${e}kg';
                                         value +=
                                             Constant.gtKHMap[value] == null
                                                 ? ''
@@ -232,10 +232,10 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                                     title: '请选择日增重',
                                     onConfirm: (value, position) {
                                       //去掉kg以及后面的字符串
-                                      int indexKG = value.indexOf('kg');
-                                      String valueKG = value.substring(0, indexKG + 2);
+                                      // int indexKG = value.indexOf('kg');
+                                      // String valueKG = value.substring(0, indexKG + 2);
 
-                                      controller.currentDailyWeight(valueKG, position);
+                                      controller.currentDailyWeight(value, position);
                                     },
                                   );
                                 } else {

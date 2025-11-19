@@ -659,6 +659,13 @@ class RecipeCreateController extends GetxController {
 
     try {
       Toast.showLoading(msg: "配方生成中...");
+      String? valueKG;
+      try {
+        if (gtzlSelIndex != -1) {
+          int indexKG = rzzSelName.value.indexOf('kg');
+          valueKG = rzzSelName.value.substring(0, indexKG);
+        }
+      } catch (_) {}
 
       //接口参数
       Map<String, dynamic> mapParam = {
@@ -667,7 +674,7 @@ class RecipeCreateController extends GetxController {
         "individualCate": 0, // Hardcode:0
         "individualType": gtlxValue.value, // 配方目标
         "weightType": gtzlSelIndex == -1 ? null : getWeightType(), // 个体重量
-        "dailyGainWeight": rzzSelName.value.replaceAll('kg', ''),
+        "dailyGainWeight": valueKG,
         // gtlxValue.value == 1
         //     ? (rzzSelIndex >= 0 && rzzSelIndex < rzzListHB.length
         //         ? double.parse(rzzListHB[rzzSelIndex]['value'])

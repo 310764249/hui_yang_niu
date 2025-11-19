@@ -25,6 +25,7 @@ class CattleEditController extends GetxController {
   //TODO: Implement CattleEditController
   //传入的参数
   Cattle? argument = Get.arguments;
+
   //输入框
   TextEditingController codeController = TextEditingController();
   TextEditingController eleCodeController = TextEditingController(); //电子耳号
@@ -32,6 +33,7 @@ class CattleEditController extends GetxController {
   TextEditingController sourceController = TextEditingController(); //来源
   TextEditingController columnController = TextEditingController();
   TextEditingController remarkController = TextEditingController();
+
   //
   final FocusNode codeNode = FocusNode();
   final FocusNode eleCodeNode = FocusNode();
@@ -39,6 +41,7 @@ class CattleEditController extends GetxController {
   final FocusNode sourceNode = FocusNode();
   final FocusNode columnNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
+
   //
   KeyboardActionsConfig buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
@@ -57,13 +60,17 @@ class CattleEditController extends GetxController {
 
   //
   HttpsClient httpsClient = HttpsClient();
+
   //时间
   final timesStr = ''.obs;
+
   //出生日期
   final birthStr = ''.obs;
+
   //生长阶段
   late List szjdList;
   late List<String> szjdNameList;
+
   //公牛生长阶段
   late List gSzjdList;
   late List<String> gSzjdNameList;
@@ -91,6 +98,9 @@ class CattleEditController extends GetxController {
   //胎次
   String pregnancyCurID = '';
   RxInt pregnancyNumPosition = 0.obs;
+
+  //上次配种时间
+  late Rx<String?> lastMating = (argument?.lastMating ?? '').obs;
 
   File? cowImg;
 
@@ -287,6 +297,8 @@ class CattleEditController extends GetxController {
           'calvNum': pregnancyCurID, //品种
           'inArea': timesStr.value, //入场时间
           'remark': remarkController.text.trim(), // 备注
+          "lastMating": lastMating.value,
+          if (argument?.growthStage == 5) "operationDate": lastMating.value,
         };
 
         if (cowImg != null) {

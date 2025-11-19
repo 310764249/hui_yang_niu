@@ -152,7 +152,7 @@ class MessageView extends GetView<MessageController> {
             notice.id!,
             () {
               //查看指南
-              Log.d(notice.toJson().toString());
+              Log.d('消息类型' + notice.toJson().toString());
               String openURL = Constant.getCMS(notice.articleType ?? 0, notice.articleId ?? '');
               Log.d(openURL);
               Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
@@ -168,8 +168,11 @@ class MessageView extends GetView<MessageController> {
           notice.created.orEmpty(),
           notice.id!,
           () {
-            debugPrint('待换料${notice.toJson()}');
-            if (notice.type == 412 || notice.type == 411 || notice.type == 407) {
+            debugPrint('消息类型${notice.toJson()}');
+            if (notice.type == 412 ||
+                notice.type == 411 ||
+                notice.type == 407 ||
+                notice.type == 403) {
               //待换料
               // controller.goToChangeCattle(notice);
               Alert.showSure(
@@ -179,8 +182,9 @@ class MessageView extends GetView<MessageController> {
                 '${notice.type == 412 ? '\n\n\t\t\t${notice.content ?? ''}' : ''}',
               );
               return;
+            } else {
+              controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
             }
-            controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
           },
         );
       case 300 || 500:

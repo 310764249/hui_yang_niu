@@ -228,6 +228,32 @@ class CattleEditView extends GetView<CattleEditController> {
           controller: controller.columnController,
           focusNode: controller.columnNode,
         ),
+        if (controller.argument?.growthStage == 5)
+          CellButton(
+            isRequired: true,
+            title: '上一次配种时间',
+            hint: '请选择',
+            content: controller.lastMating.value,
+            onPressed: () {
+              Picker.showDatePicker(
+                context,
+                title: '请选择时间',
+                selectDate: controller.lastMating.value,
+                onConfirm: (date) {
+                  // controller.cattleInfo.pregnancyCheckTime?.value =
+                  //     "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  // 妊娠母牛 - 将[孕检时间]赋值到[操作时间]的字段
+                  if (controller.argument?.growthStage == 5) {
+                    debugPrint(
+                      '===============${date.year}-${date.month?.addZero()}-${date.day?.addZero()} ',
+                    );
+                    controller.lastMating.value =
+                        "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
+                  }
+                },
+              );
+            },
+          ),
         CellTextArea(
           isRequired: false,
           title: "备注信息",

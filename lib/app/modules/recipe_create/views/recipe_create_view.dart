@@ -166,7 +166,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                   range.map((e) {
                     ////0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
                     //拼接对应的数值 如 e == 0.6，显示"0.6kg（0.70）"
-                    String value = e % 1 == 0 ? '${e.toInt()}kg' : '${e}kg';
+                    String value = '${e}kg';
                     value += Constant.gtKHMap[value] == null ? '' : '${Constant.gtKHMap[value]}';
                     return value;
                   }).toList();
@@ -187,9 +187,9 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
                   // 在原始列表里找对应位置（如果需要的话）
                   int index = filteredList.indexOf(value);
                   //去掉kg以及后面的字符串
-                  int indexKG = value.indexOf('kg');
-                  String valueKG = value.substring(0, indexKG + 2);
-                  controller.updateRzzSelectedItems(valueKG, index);
+                  // int indexKG = value.indexOf('kg');
+                  // String valueKG = value.substring(0, indexKG + 2);
+                  controller.updateRzzSelectedItems(value, index);
                 },
               );
             } else {

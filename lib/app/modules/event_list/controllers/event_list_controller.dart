@@ -8,12 +8,15 @@ import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
 import '../../../network/httpsClient.dart';
 import '../../../services/Log.dart';
+import '../../../widgets/dict_list.dart';
 import '../../../widgets/toast.dart';
 
 //页面传参
 class EventsArgument {
   /// 接口
   final String api;
+
+  final String name;
 
   /// 例如 '引种事件'
   final String title;
@@ -24,7 +27,7 @@ class EventsArgument {
   /// 点击跳转详情的路由 例如 '/cattlelist'
   final String? detailRouterStr;
 
-  EventsArgument(this.api, this.title, this.routerStr, {this.detailRouterStr});
+  EventsArgument(this.api, this.title, this.routerStr, this.name, {this.detailRouterStr});
 }
 
 class EventListController extends GetxController {
@@ -32,6 +35,7 @@ class EventListController extends GetxController {
   EventsArgument argument = Get.arguments;
 
   HttpsClient httpsClient = HttpsClient();
+
   //
   int pageIndex = 1;
   int pageSize = 14;
@@ -47,6 +51,7 @@ class EventListController extends GetxController {
 
   //当前列表
   RxList<SimpleEvent> items = <SimpleEvent>[].obs;
+
   //接口地址
   // String API = '/api/allot';
 
@@ -54,6 +59,13 @@ class EventListController extends GetxController {
   bool get isFoodAdjust {
     return argument.api == '/api/feedpreparation';
   }
+
+  //是否防疫
+  bool get isDisease => argument.name == '防疫';
+  //是否诊疗
+  bool get isTreatment => argument.name == '诊疗';
+  //是否保健
+  bool get isHealth => argument.name == '保健';
 
   @override
   void onInit() {
@@ -63,6 +75,7 @@ class EventListController extends GetxController {
     refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
 
     debugPrint("routerStr--${argument.routerStr}   detailRouterStr:${argument.detailRouterStr}");
+    debugPrint("argument--${argument.toString()}");
     searchEventsList();
   }
 
@@ -71,6 +84,13 @@ class EventListController extends GetxController {
     super.onReady();
     debugPrint('onReady');
   }
+
+  //疫病名称
+  late List loimiaList = AppDictList.searchItems('yb') ?? [];
+  //疾病名称
+  late List diseaseList = AppDictList.searchItems('jb') ?? [];
+  //保健类型
+  late List healthList = AppDictList.searchItems('bjlx') ?? [];
 
   @override
   void onClose() {
@@ -194,5 +214,19 @@ class EventListController extends GetxController {
       }
       return Future.value();
     }
+  }
+
+  String getTypeName(SimpleEvent model) {
+    if (isFoodAdjust) return '${['精饲料', '粗饲料'][model.formulaType ?? 0]}-${model.totalWeight}吨';
+    if (isDisease) {
+      return loimiaList.firstWhereOrNull((e) => e['value'] == '${model.loimia}')?['label'] ?? '';
+    }
+    if (isTreatment) {
+      return loimiaList.firstWhereOrNull((e) => e['value'] == '${model.illness}')?['label'] ?? '';
+    }
+    if (isHealth) {
+      return healthList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';
+    }
+    return argument.title;
   }
 }

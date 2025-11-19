@@ -114,9 +114,7 @@ class EventListView extends GetView<EventListController> {
                             child: Column(
                               children: [
                                 Text(
-                                  controller.isFoodAdjust
-                                      ? '${['精饲料', '粗饲料'][model.formulaType ?? 0]}-${model.totalWeight}吨'
-                                      : controller.argument.title, //,
+                                  controller.getTypeName(model), //,
                                   style: TextStyle(
                                     color: SaienteColors.blackE5,
                                     fontWeight: FontWeight.w500,

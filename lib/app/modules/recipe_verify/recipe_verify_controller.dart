@@ -170,6 +170,11 @@ class RecipeVerifyController extends GetxController {
     }
     try {
       List<RawMaterial> all = [...addRawMaterialList, ...addFeedRawMaterialList];
+      String? valueKG;
+      try {
+        int indexKG = nuDailyWeight.indexOf('kg');
+        valueKG = nuDailyWeight.substring(0, indexKG);
+      } catch (_) {}
       var response = await httpsClient.post(
         "/api/formula/verifyformula",
         data: {
@@ -177,7 +182,7 @@ class RecipeVerifyController extends GetxController {
           "individualCate": 0,
           "individualType": currentItem['value'],
           "weightType": currentNuWeight?['value'],
-          "dailyGainWeight": nuDailyWeight.replaceAll('kg', ''),
+          "dailyGainWeight": valueKG,
           "calvingMonths": currentRsyf?['value'],
           "milkGrade": 0,
           "gestationMonths": currentRsyf?['value'],

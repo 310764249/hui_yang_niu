@@ -9,7 +9,7 @@ class Constant {
   static Map<String, dynamic> gtKHMap = {
     '0.6kg': '(0.70)',
     '0.8kg': '(0.94)',
-    '1kg': '(1.17)',
+    '1.0kg': '(1.17)',
     '1.2kg': '(1.41)',
     '1.4kg': '(1.65)',
     '1.6kg': '(1.88)',

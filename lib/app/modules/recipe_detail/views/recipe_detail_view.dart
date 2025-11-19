@@ -38,22 +38,27 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   // 基础信息中的 key：value
   Widget _keyValueView(String title, String value) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: title,
-            style: TextStyle(fontSize: ScreenAdapter.fontSize(14), color: SaienteColors.black80),
-          ),
-          TextSpan(
-            text: value,
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(14),
-              fontWeight: FontWeight.w500,
-              color: SaienteColors.blackE5,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: title,
+              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), color: SaienteColors.black80),
             ),
-          ),
-        ],
+            TextSpan(
+              text: value,
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(14),
+                fontWeight: FontWeight.w500,
+                color: SaienteColors.blackE5,
+              ),
+            ),
+          ],
+        ),
+        maxLines: 1,
       ),
     );
   }
@@ -72,6 +77,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             ScreenAdapter.width(0),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const DividerLine(),
               SizedBox(height: ScreenAdapter.height(10)),
@@ -141,7 +147,11 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                   SizedBox(height: ScreenAdapter.height(10)),
                   _basicRow(
                     '日增重(kg/d)：',
-                    controller.argument!.dailyGainWeight.toString(),
+                    () {
+                      String weight = controller.argument!.dailyGainWeight.toString();
+                      String? label = Constant.gtKHMap['${weight}kg'];
+                      return label == null ? weight : '${weight}kg$label ';
+                    }(),
                     '存栏：',
                     controller.argument!.cowCount.toString(),
                     // '妊娠月份：',
@@ -273,7 +283,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           valueListenable: controller.compareExpanded,
           builder: (context, value, child) {
             return AnimatedContainer(
-              height: value ? 130 * 8 : 0,
+              height: value ? 130 * 12 : 0,
               duration: const Duration(milliseconds: 400),
               child: child!,
             );
@@ -283,8 +293,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: // 13个营养指标展示
-              // 8个营养指标展示
-              [
+                  [
                 _compareCell(
                   '干物质采食量(kg/d)',
                   controller.argument!.dm.toString(),

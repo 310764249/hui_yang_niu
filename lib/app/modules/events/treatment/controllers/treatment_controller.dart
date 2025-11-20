@@ -19,6 +19,7 @@ import '../../../../widgets/toast.dart';
 
 class TreatmentController extends GetxController {
   var argument = Get.arguments;
+
   // 编辑事件传入
   TreatmentEvent? event;
 
@@ -56,20 +57,20 @@ class TreatmentController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '种牛',
-    '犊牛/育肥牛',
-  ];
+  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
 
   // 是否是编辑页面
   RxBool isEdit = false.obs;
+
   //当前选中的牛
   late Cattle selectedCow;
+
   //耳号
   RxString codeString = ''.obs;
 
   /// "类型"选中项: 默认第一项, 0: 种牛(大牛), 1: 犊牛/育肥牛(小牛)
   final typeIndex = 0.obs;
+
   //当前选中的牛
   late Cattle selectedOldCow;
 
@@ -98,17 +99,22 @@ class TreatmentController extends GetxController {
 
   // 单头剂量
   RxDouble dosage = 0.0.obs;
+
   // 头数
   RxInt cattleCount = 0.obs;
+
   //当前选中的批次模型
   late CowBatch selectedLittleCowBatch;
+
   //批次号
   final batchNumber = ''.obs;
+
   //数量
   final countNum = 0.obs;
 
   //诊疗人员
   String treatmentPerson = '';
+
   //备注
   String remarkStr = '';
 
@@ -183,7 +189,8 @@ class TreatmentController extends GetxController {
       treatmentTime.value = event?.date ?? '';
       // 疾病名称
       illnessId = event?.illness ?? -1;
-      illness.value = illnessList.firstWhere((item) => int.parse(item['value']) == event?.illness)['label'];
+      illness.value =
+          illnessList.firstWhere((item) => int.parse(item['value']) == event?.illness)['label'];
       // 诊疗人
       treatmentPersonController.text = event?.treatmentPerson ?? '';
       // 症状
@@ -249,6 +256,17 @@ class TreatmentController extends GetxController {
       // 犊牛 & 育肥牛
       if (ObjectUtil.isEmpty(batchNumber.value)) {
         Toast.show('请选择牛只批次号');
+        return;
+      }
+      if (ObjectUtil.isEmpty(cattleCount.value)) {
+        Toast.show('请输入头数');
+        return;
+      }
+      //不能超过批次带的数量
+      int initCount = isEdit.value ? event!.count! : selectedLittleCowBatch.count;
+
+      if (cattleCount.value > initCount) {
+        Toast.show('头数不能超过批次带的数量');
         return;
       }
     }
@@ -320,7 +338,9 @@ class TreatmentController extends GetxController {
       }
       para = removeNulls(para);
       // print(para);
-      isEdit.value ? await httpsClient.put("/api/treatment", data: para) : await httpsClient.post("/api/treatment", data: para);
+      isEdit.value
+          ? await httpsClient.put("/api/treatment", data: para)
+          : await httpsClient.post("/api/treatment", data: para);
       Toast.dismiss();
       Toast.success(msg: '提交成功');
       Get.back();

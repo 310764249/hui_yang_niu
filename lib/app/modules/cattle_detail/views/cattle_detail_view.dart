@@ -429,6 +429,8 @@ class CattleDetailView extends GetView<CattleDetailController> {
             break;
           case '死亡':
             Get.toNamed(Routes.DIE_CATTLE, arguments: controller.cattle);
+          case '出栏':
+            Get.toNamed(Routes.SELL_CATTLE, arguments: controller.cattle);
             break;
           case '销售':
             Get.toNamed(Routes.SELL_CATTLE, arguments: controller.cattle);

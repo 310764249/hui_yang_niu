@@ -467,22 +467,21 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '销售':
-            if (data.name == 2) {
-              //效益评估出栏
-              String tag = '收支管理/销售事件';
-              BusinessLogger.instance.logEnter(tag);
-              await Get.toNamed(
-                Routes.EVENT_LIST,
-                arguments: EventsArgument(
-                  '/api/sales',
-                  '销售',
-                  Routes.SALES_ASSESS,
-                  data.name,
-                  detailRouterStr: Routes.SALES_ASSESS_DETAIL,
-                ),
-              );
-              BusinessLogger.instance.logExit(tag);
-            }
+
+            //效益评估出栏
+            String tag = '收支管理/销售事件';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(
+              Routes.EVENT_LIST,
+              arguments: EventsArgument(
+                '/api/sales',
+                '销售',
+                Routes.SALES_ASSESS,
+                data.name,
+                detailRouterStr: Routes.SALES_ASSESS_DETAIL,
+              ),
+            );
+            BusinessLogger.instance.logExit(tag);
             break;
           case '出栏':
             //生产管理的出栏

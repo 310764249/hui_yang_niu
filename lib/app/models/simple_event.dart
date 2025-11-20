@@ -21,6 +21,12 @@ class SimpleEvent {
   int? loimia;
   int? illness;
   int? type;
+  int? state;
+  int? ageOfDay;
+  int? calvNum;
+  int? nonpregnantDay;
+  int? weanCalfNum;
+  int? calfNum;
 
   SimpleEvent({
     required this.id,
@@ -43,6 +49,12 @@ class SimpleEvent {
     this.loimia,
     this.illness,
     this.type,
+    this.state,
+    this.ageOfDay,
+    this.calvNum,
+    this.nonpregnantDay,
+    this.weanCalfNum,
+    this.calfNum,
   });
   SimpleEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -65,6 +77,12 @@ class SimpleEvent {
     loimia = json['loimia'];
     illness = json['illness'];
     type = json['type'];
+    state = json['state'];
+    ageOfDay = json['ageOfDay'];
+    calvNum = json['calvNum'];
+    nonpregnantDay = json['nonpregnantDay'];
+    weanCalfNum = json['weanCalfNum'];
+    calfNum = json['calfNum'];
   }
 
   Map<String, dynamic> toJson() {

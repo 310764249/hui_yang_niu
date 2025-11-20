@@ -113,7 +113,9 @@ class WeanController extends GetxController {
     }
     if (argument is Cattle) {
       selectedCow = argument;
+
       updateCodeString(selectedCow.code ?? '');
+      updateBatchNumber(selectedCow.batchNo ?? '');
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑
@@ -309,6 +311,7 @@ class WeanController extends GetxController {
     try {
       var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
+      updateBatchNumber(selectedCow?.batchNo ?? '');
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {

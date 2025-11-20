@@ -229,7 +229,7 @@ class KnockOutController extends GetxController {
       }
       //输入的数量不能小于批次 数量
       if (int.parse(count) > selectedCowBatch.count) {
-        Toast.show('输入的数量不能小于批次数量');
+        Toast.show('输入的数量不能大于批次数量');
         return;
       }
 

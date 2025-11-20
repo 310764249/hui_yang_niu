@@ -34,9 +34,7 @@ class BreedAssessController extends GetxController {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
       nextFocus: true,
-      actions: [
-        KeyboardActionsHelper.getDefaultItem(remarkNode),
-      ],
+      actions: [KeyboardActionsHelper.getDefaultItem(remarkNode)],
     );
   }
 
@@ -137,9 +135,11 @@ class BreedAssessController extends GetxController {
       selectedCow = await getCattleMoreData(event!.cowId!);
       // 评估时间
       assessTime.value = event?.date ?? '';
+      setSelectedCow(selectedCow);
       // 繁殖
       breedAssessId = event?.status ?? -1;
-      breedAssess.value = breedAssessList.firstWhere((item) => int.parse(item['value']) == event?.status)['label'];
+      breedAssess.value =
+          breedAssessList.firstWhere((item) => int.parse(item['value']) == event?.status)['label'];
 
       //填充备注
       remarkController.text = event?.remark ?? '';
@@ -152,9 +152,7 @@ class BreedAssessController extends GetxController {
   //获取牛只详情
   Future<Cattle> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       Cattle model = Cattle.fromJson(response);
       return Future.value(model);
     } catch (error) {
@@ -198,7 +196,7 @@ class BreedAssessController extends GetxController {
           "date": assessTime.value,
           "state": breedAssessId,
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       } else {
         //* 编辑
@@ -210,7 +208,7 @@ class BreedAssessController extends GetxController {
           "date": assessTime.value,
           "state": breedAssessId,
           'executor': UserInfoTool.nickName(),
-          "remark": remarkController.text.trim()
+          "remark": remarkController.text.trim(),
         };
       }
 

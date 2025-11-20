@@ -298,7 +298,7 @@ class CattleEditController extends GetxController {
           'inArea': timesStr.value, //入场时间
           'remark': remarkController.text.trim(), // 备注
           "lastMating": lastMating.value,
-          if (argument?.growthStage == 5) "operationDate": lastMating.value,
+          "operationDate": lastMating.value,
         };
 
         if (cowImg != null) {

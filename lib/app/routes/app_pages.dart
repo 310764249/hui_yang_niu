@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_page.dart';
 import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/breed_assess_binding.dart';

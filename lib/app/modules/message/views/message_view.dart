@@ -169,22 +169,24 @@ class MessageView extends GetView<MessageController> {
           notice.id!,
           () {
             debugPrint('消息类型${notice.toJson()}');
-            if (notice.type == 412 ||
-                notice.type == 411 ||
-                notice.type == 407 ||
-                notice.type == 403) {
-              //待换料
-              // controller.goToChangeCattle(notice);
-              Alert.showSure(
-                '栋舍: ${notice.cowHouseName}; '
-                '\n牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())});'
-                '\n事件: ${Notice.getEventNameByCode(notice.type ?? -1)};'
-                '${notice.type == 412 ? '\n\n\t\t\t${notice.content ?? ''}' : ''}',
-              );
-              return;
-            } else {
-              controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
-            }
+            // if (notice.type == 412 ||
+            //     notice.type == 411 ||
+            //     notice.type == 407 ||
+            //     notice.type == 405 ||
+            //     notice.type == 402 ||
+            //     notice.type == 403) {
+            //待换料
+            // controller.goToChangeCattle(notice);
+            Alert.showSure(
+              '栋舍: ${notice.cowHouseName}; '
+              '\n牛只${Notice.getItemTitle(notice)}(${AppDictList.findLabelByCode(controller.gmList, notice.gender.toString())});'
+              '\n事件: ${Notice.getEventNameByCode(notice.type ?? -1)};'
+              '${notice.type == 412 ? '\n\n\t\t\t${notice.content ?? ''}' : ''}',
+            );
+            //   return;
+            // } else {
+            //   controller.getCattleDataAndGoToEventDetail(notice.type ?? -1, notice.cowId);
+            // }
           },
         );
       case 300 || 500:

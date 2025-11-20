@@ -1,6 +1,8 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/modules/cattlelist/bindings/cattle_list_binding.dart';
+import 'package:intellectual_breed/app/modules/cattlelist/views/cattle_list_view.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../../../../models/cattle.dart';
@@ -16,6 +18,7 @@ import '../../../../widgets/my_card.dart';
 import '../../../../widgets/page_wrapper.dart';
 import '../../../../widgets/picker.dart';
 import '../../../../widgets/radio_button_group.dart';
+import '../../../cattlelist/controllers/cattle_list_controller.dart';
 import '../controllers/mating_controller.dart';
 
 class MatingView extends GetView<MatingController> {
@@ -29,8 +32,10 @@ class MatingView extends GetView<MatingController> {
       hint: "请选择",
       content: controller.bullCode.value,
       onPressed: () {
-        Get.toNamed(
-          Routes.CATTLELIST,
+        Get.delete<CattleListController>(force: true);
+        Get.to(
+          () => CattleListView(key: UniqueKey()),
+          binding: CattleListBinding(),
           arguments: CattleListArgument(
             goBack: true,
             single: true,

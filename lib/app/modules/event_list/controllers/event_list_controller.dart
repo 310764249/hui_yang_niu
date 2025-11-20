@@ -62,10 +62,23 @@ class EventListController extends GetxController {
 
   //是否防疫
   bool get isDisease => argument.name == '防疫';
+
   //是否诊疗
   bool get isTreatment => argument.name == '诊疗';
+
   //是否保健
   bool get isHealth => argument.name == '保健';
+
+  //是否环境评估
+  bool get isEnvironment => argument.name == '环境评估';
+
+  //是否繁殖效率评估
+  bool get isReproductiveEfficiency => argument.name == '繁殖效率评估';
+
+  //是否人工
+  bool get isArtificial => argument.name == '人工';
+  //是否销售
+  bool get isSale => argument.name == '销售';
 
   @override
   void onInit() {
@@ -87,10 +100,23 @@ class EventListController extends GetxController {
 
   //疫病名称
   late List loimiaList = AppDictList.searchItems('yb') ?? [];
+
   //疾病名称
   late List diseaseList = AppDictList.searchItems('jb') ?? [];
+
   //保健类型
   late List healthList = AppDictList.searchItems('bjlx') ?? [];
+
+  //环境评估
+  late List environmentList = AppDictList.searchItems('hjpg') ?? [];
+
+  //繁殖效率评估
+  late List reproductiveEfficiencyList = AppDictList.searchItems('fzpg') ?? [];
+
+  //人工
+  late List artificialList = AppDictList.searchItems('rglx') ?? [];
+  //销售
+  late List saleList = AppDictList.searchItems('xslx') ?? [];
 
   @override
   void onClose() {
@@ -226,6 +252,22 @@ class EventListController extends GetxController {
     }
     if (isHealth) {
       return healthList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';
+    }
+    if (isEnvironment) {
+      return environmentList.firstWhereOrNull((e) => e['value'] == '${model.state}')?['label'] ??
+          '';
+    }
+    if (isReproductiveEfficiency) {
+      return reproductiveEfficiencyList.firstWhereOrNull(
+            (e) => e['value'] == '${model.state}',
+          )?['label'] ??
+          '';
+    }
+    if (isArtificial) {
+      return artificialList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';
+    }
+    if (isSale) {
+      return saleList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';
     }
     return argument.title;
   }

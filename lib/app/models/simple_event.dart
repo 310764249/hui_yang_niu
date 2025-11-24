@@ -75,7 +75,7 @@ class SimpleEvent {
     formulaType = json['formulaType'];
     totalWeight = double.tryParse('${json['totalWeight']}');
     loimia = json['loimia'];
-    illness = json['illness'];
+    illness = int.tryParse('${json['illness']}');
     type = json['type'];
     state = json['state'];
     ageOfDay = json['ageOfDay'];

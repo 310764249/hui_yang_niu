@@ -27,12 +27,12 @@ class CattleEditView extends GetView<CattleEditController> {
         // 生长阶段
         RadioButtonGroup(
           isRequired: true,
-          title: '生长阶段',
+          title: '当前状态',
           selectedIndex: controller.szjdCurIndex.value,
           items: controller.szjdNameList,
           showBottomLine: true,
           onChanged: (index) {
-            controller.updateSZJD(index, 1);
+            // controller.updateSZJD(index, 1);
           },
         ),
         RadioButtonGroup(
@@ -113,32 +113,32 @@ class CattleEditView extends GetView<CattleEditController> {
         ),
 
         // 公母
-        RadioButtonGroup(
-          isRequired: true,
-          title: '公母',
-          selectedIndex: controller.gmCurIndex.value,
-          items: controller.gmNameList,
-          showBottomLine: true,
-          onChanged: (index) {
-            // Toast.show('--> $value');
-            controller.updateGMIndex(index);
-          },
-        ),
+        // RadioButtonGroup(
+        //   isRequired: true,
+        //   title: '公母',
+        //   selectedIndex: controller.gmCurIndex.value,
+        //   items: controller.gmNameList,
+        //   showBottomLine: true,
+        //   onChanged: (index) {
+        //     // Toast.show('--> $value');
+        //     controller.updateGMIndex(index);
+        //   },
+        // ),
 
         // 公母-类型
-        controller.gmCurIndex.value == 0
-            ? // 生长阶段
-            RadioButtonGroup(
-              isRequired: true,
-              title: '生长阶段',
-              selectedIndex: controller.szjdCurIndex.value,
-              items: controller.gSzjdNameList,
-              showBottomLine: true,
-              onChanged: (index) {
-                controller.updateSZJD(index, 0);
-              },
-            )
-            : _cowLayout(context),
+        // controller.gmCurIndex.value == 0
+        //     ? // 生长阶段
+        RadioButtonGroup(
+          isRequired: true,
+          title: '当前状态',
+          selectedIndex: controller.szjdCurIndex.value,
+          items: controller.gSzjdNameList,
+          showBottomLine: true,
+          onChanged: (index) {
+            controller.updateCattleStatus(index);
+          },
+        ),
+        // : _cowLayout(context),
         CellTextField(
           isRequired: false,
           title: '电子耳号',

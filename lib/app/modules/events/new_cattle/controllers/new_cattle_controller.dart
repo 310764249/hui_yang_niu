@@ -19,6 +19,7 @@ import '../../../../services/ex_rxstring.dart';
 import '../../../../services/ex_string.dart';
 import '../../../../services/keyboard_actions_helper.dart';
 import '../../../../services/storage.dart';
+import '../../../../widgets/alert.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
 
@@ -179,13 +180,19 @@ class NewCattleController extends GetxController {
   }
 
   selectCawImage() {
-    final ImagePicker _picker = ImagePicker();
-    _picker.pickImage(source: ImageSource.gallery).then((value) {
-      if (value != null) {
-        cowImg = File(value.path);
-        update();
-      }
-    });
+    Alert.showBottomActionSheet(
+      actions: ['拍摄', '相册'],
+      onTap: (index) {
+        final ImagePicker _picker = ImagePicker();
+        ImageSource source = index == 0 ? ImageSource.camera : ImageSource.gallery;
+        _picker.pickImage(source: source).then((value) {
+          if (value != null) {
+            cowImg = File(value.path);
+            update();
+          }
+        });
+      },
+    );
   }
 
   // 更新胎次逻辑, 在切换[当前状态]和[性别]的时候校验一遍

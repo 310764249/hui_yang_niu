@@ -253,6 +253,76 @@ class Alert {
     );
   }
 
+  /// 底部 Action Sheet
+  static Future<void> showBottomActionSheet({
+    required List<String> actions, // 按钮文字列表
+    required Function(int index) onTap, // 回调 index
+  }) async {
+    SmartDialog.show(
+      alignment: Alignment.bottomCenter,
+      maskColor: Colors.black54,
+      animationType: SmartAnimationType.fade,
+      builder: (_) {
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// 内容区域（动作按钮）
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(actions.length, (index) {
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            SmartDialog.dismiss();
+                            onTap(index);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            alignment: Alignment.center,
+                            child: Text(actions[index], style: const TextStyle(fontSize: 16)),
+                          ),
+                        ),
+                        if (index != actions.length - 1)
+                          Container(height: 1, color: Colors.grey.shade200),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// 取消按钮
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: InkWell(
+                  onTap: () => SmartDialog.dismiss(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    alignment: Alignment.center,
+                    child: const Text("取消", style: TextStyle(fontSize: 16, color: Colors.red)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   /// 显示底部多选 Picker
   /// @param items 显示的列表
   /// @param context 上下文

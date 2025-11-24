@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pickers/utils/check.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intellectual_breed/app/routes/app_pages.dart';
+import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
@@ -112,7 +114,8 @@ class CattleEditController extends GetxController {
     //初始化字典项
     szjdList = List.from(AppDictList.searchItems('szjd') ?? []);
     szjdCurID = szjdList.isNotEmpty ? szjdList.first['value'] : '';
-    szjdNameList = List<String>.from(szjdList.map((item) => item['label']).toList());
+    // szjdNameList = List<String>.from(szjdList.map((item) => item['label']).toList());
+    szjdNameList = List<String>.from(Constant.currentStageList.map((e) => e.name));
     //公牛的生长阶段
     List temp = [];
     for (var element in szjdList) {
@@ -121,7 +124,8 @@ class CattleEditController extends GetxController {
       }
     }
     gSzjdList = temp;
-    gSzjdNameList = List<String>.from(gSzjdList.map((item) => item['label']).toList());
+    // gSzjdNameList = List<String>.from(gSzjdList.map((item) => item['label']).toList());
+    gSzjdNameList = List<String>.from(Constant.currentStageList.map((e) => e.name));
 
     //品种
     pzList = AppDictList.searchItems('pz') ?? [];
@@ -156,12 +160,15 @@ class CattleEditController extends GetxController {
       codeController.text = argument!.code ?? '';
       //
       updateGMIndex(AppDictList.findIndexByCode(gmList, argument!.gender.toString()));
-      if (argument!.gender == 1) {
-        //公
-        updateSZJD(AppDictList.findIndexByCode(gSzjdList, argument!.growthStage.toString()), 0);
-      } else {
-        updateSZJD(AppDictList.findIndexByCode(szjdList, argument!.growthStage.toString()), 1);
-      }
+      // if (argument!.gender == 1) {
+      //   //公
+      //   updateSZJD(AppDictList.findIndexByCode(gSzjdList, argument!.growthStage.toString()), 0);
+      // } else {
+      //   updateSZJD(AppDictList.findIndexByCode(szjdList, argument!.growthStage.toString()), 1);
+      // }
+      updateCattleStatus(
+        Constant.currentStageList.indexWhere((e) => e.id == argument?.growthStage),
+      );
       updatePZ(AppDictList.findIndexByCode(pzList, argument!.kind.toString()));
       updatePregnancy(argument?.calvNum ?? 0);
       //填充电子耳号
@@ -216,16 +223,22 @@ class CattleEditController extends GetxController {
     update();
   }
 
-  //更新生长阶段, type 0 是公牛 1 是母牛
-  void updateSZJD(int index, int type) {
-    szjdCurIndex.value = index;
-    if (type == 0) {
-      szjdCurID = gSzjdList[index]['value'];
-    } else {
-      szjdCurID = szjdList[index]['value'];
-    }
+  //更新牛只状态
+  void updateCattleStatus(int status) {
+    szjdCurIndex.value = status;
     update();
   }
+
+  //更新生长阶段, type 0 是公牛 1 是母牛
+  // void updateSZJD(int index, int type) {
+  //   szjdCurIndex.value = index;
+  //   if (type == 0) {
+  //     szjdCurID = gSzjdList[index]['value'];
+  //   } else {
+  //     szjdCurID = szjdList[index]['value'];
+  //   }
+  //   update();
+  // }
 
   //更新品种
   void updatePZ(int index) {
@@ -292,7 +305,7 @@ class CattleEditController extends GetxController {
           'birth': birthStr.value, //出生日期
           'column': columnController.text.trim(), //栏位
           'gender': gmCurID, //公母
-          'growthStage': szjdCurID, //生长阶段
+          'growthStage': Constant.currentStageList[szjdCurIndex.value].id, //生长阶段
           'kind': pzCurID, //品种
           'calvNum': pregnancyCurID, //品种
           'inArea': timesStr.value, //入场时间
@@ -314,6 +327,8 @@ class CattleEditController extends GetxController {
             print("uploadWithWithTag$e");
             Toast.dismiss();
           }
+        } else {
+          para['img'] = argument?.img;
         }
 
         //print(para);
@@ -337,13 +352,19 @@ class CattleEditController extends GetxController {
   }
 
   selectCawImage() {
-    final ImagePicker _picker = ImagePicker();
-    _picker.pickImage(source: ImageSource.gallery).then((value) {
-      if (value != null) {
-        cowImg = File(value.path);
-        update();
-      }
-    });
+    Alert.showBottomActionSheet(
+      actions: ['拍摄', '相册'],
+      onTap: (index) {
+        final ImagePicker _picker = ImagePicker();
+        ImageSource source = index == 0 ? ImageSource.camera : ImageSource.gallery;
+        _picker.pickImage(source: source).then((value) {
+          if (value != null) {
+            cowImg = File(value.path);
+            update();
+          }
+        });
+      },
+    );
   }
 
   void clearCowImg() {

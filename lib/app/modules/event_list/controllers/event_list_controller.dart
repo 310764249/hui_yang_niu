@@ -79,6 +79,10 @@ class EventListController extends GetxController {
   bool get isArtificial => argument.name == '人工';
   //是否销售
   bool get isSale => argument.name == '销售';
+  //是否体况评估
+  bool get isBodyAssessment => argument.name == '体况评估';
+  //是否健康评估
+  bool get isHealthAssessment => argument.name == '健康评估';
 
   @override
   void onInit() {
@@ -117,6 +121,10 @@ class EventListController extends GetxController {
   late List artificialList = AppDictList.searchItems('rglx') ?? [];
   //销售
   late List saleList = AppDictList.searchItems('xslx') ?? [];
+  //体况
+  late List bodyAssessmentList = AppDictList.searchItems('tkpg') ?? [];
+  //健康评估
+  late List healthAssessmentList = AppDictList.searchItems('jkpg') ?? [];
 
   @override
   void onClose() {
@@ -268,6 +276,16 @@ class EventListController extends GetxController {
     }
     if (isSale) {
       return saleList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';
+    }
+    if (isBodyAssessment) {
+      return bodyAssessmentList.firstWhereOrNull((e) => e['value'] == '${model.state}')?['label'] ??
+          '';
+    }
+    if (isHealthAssessment) {
+      return healthAssessmentList.firstWhereOrNull(
+            (e) => e['value'] == '${model.state}',
+          )?['label'] ??
+          '';
     }
     return argument.title;
   }

@@ -244,19 +244,20 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      Toast.showLoading();
-                      if (await ChatUIKit.instance.isLoginBefore()) {
-                        Toast.dismiss();
-                        Get.toNamed(Routes.CHATROOM);
-                      } else {
-                        await ChatRoomUtils.login();
-                        if (!await ChatUIKit.instance.isLoginBefore()) {
-                          Toast.dismiss();
-                          return;
-                        }
-                        Toast.dismiss();
-                        Get.toNamed(Routes.CHATROOM);
-                      }
+                      Get.toNamed(Routes.INTELLIGENT);
+                      // Toast.showLoading();
+                      // if (await ChatUIKit.instance.isLoginBefore()) {
+                      //   Toast.dismiss();
+                      //   Get.toNamed(Routes.CHATROOM);
+                      // } else {
+                      //   await ChatRoomUtils.login();
+                      //   if (!await ChatUIKit.instance.isLoginBefore()) {
+                      //     Toast.dismiss();
+                      //     return;
+                      //   }
+                      //   Toast.dismiss();
+                      //   Get.toNamed(Routes.CHATROOM);
+                      // }
                     },
                     child: Image.asset(Assets.imagesIcQuestionAnswer, fit: BoxFit.fill),
                   ),

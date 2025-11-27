@@ -116,6 +116,8 @@ abstract class Routes {
   static const MaterialRecords = _Paths.MaterialRecords;
   static const MaterialRecordsDetails = _Paths.MaterialRecordsDetails;
   static const RecipeVerifyPage = _Paths.RecipeVerifyPage;
+
+  static const INTELLIGENT = _Paths.Intelligent;
 }
 
 abstract class _Paths {
@@ -164,6 +166,7 @@ abstract class _Paths {
   static const ABOUT_US = '/about-us';
   static const FEED_BACK = '/feed-back';
   static const NEW_BATCH = '/new-batch';
+  static const Intelligent = '/intelligent';
   static const RUT_DETAIL = '/rut-detail';
   static const SEMEN_DETAIL = '/semen-detail';
   static const WEAN_DETAIL = '/wean-detail';

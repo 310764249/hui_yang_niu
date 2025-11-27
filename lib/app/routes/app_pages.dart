@@ -5,6 +5,7 @@ import 'package:intellectual_breed/app/modules/events/breed_assess/bindings/bree
 import 'package:intellectual_breed/app/modules/events/breed_assess/views/breed_assess_view.dart';
 import 'package:intellectual_breed/app/modules/events_detail/breed_assess_detail/views/breed_assess_detail_view.dart';
 import 'package:intellectual_breed/app/modules/feed_preparation/feed_preparation_page.dart';
+import 'package:intellectual_breed/app/modules/intelligent_q_a/bindings/intelligent_binding.dart';
 import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/bindings/collect_bindings.dart';
 import 'package:intellectual_breed/app/modules/material_management/collect/view/collect_view.dart';
@@ -189,6 +190,7 @@ import '../modules/home/informationDetail/views/information_detail_view.dart';
 import '../modules/home/information_list/bindings/information_list_binding.dart';
 import '../modules/home/information_list/views/information_list_view.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/intelligent_q_a/view/intelligent_page.dart';
 import '../modules/like_article_list/bindings/like_article_list_binding.dart';
 import '../modules/like_article_list/views/like_article_list_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -432,6 +434,11 @@ class AppPages {
     GetPage(name: _Paths.ABOUT_US, page: () => const AboutUsView(), binding: AboutUsBinding()),
     GetPage(name: _Paths.FEED_BACK, page: () => const FeedBackView(), binding: FeedBackBinding()),
     GetPage(name: _Paths.NEW_BATCH, page: () => const NewBatchView(), binding: NewBatchBinding()),
+    GetPage(
+      name: _Paths.Intelligent,
+      page: () => const IntelligentPage(),
+      binding: IntelligentBinding(),
+    ),
     GetPage(
       name: _Paths.RUT_DETAIL,
       page: () => const RutDetailView(),

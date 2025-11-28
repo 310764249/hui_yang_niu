@@ -7,6 +7,7 @@ import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/tools.dart';
 import 'package:intellectual_breed/app/widgets/refresh_header_footer.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
+import 'package:intellectual_breed/generated/assets.dart';
 
 import '../../../models/intelligent_question_history_model.dart';
 import '../../../services/colors.dart';
@@ -171,39 +172,53 @@ class _IntelligentHistoryPageState extends State<IntelligentHistoryPage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  item.title ?? '',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Text(
-                                Tools.formatTime(item.created ?? ''),
-                                style: const TextStyle(fontSize: 12, color: Colors.grey),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  deleteHistory(item.id ?? '', item.rowVersion ?? '');
-                                },
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  size: 20,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(Assets.imagesAppLogo, width: 54),
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            item.title ?? '',
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 14),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item.title ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      Tools.formatTime(item.created ?? ''),
+                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        deleteHistory(item.id ?? '', item.rowVersion ?? '');
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        size: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  item.title ?? '',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

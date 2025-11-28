@@ -40,6 +40,7 @@ class Assets {
   static const String imagesIcFormulaDesign = 'assets/images/ic_formula_design.png';
   static const String imagesIcHomeLabel = 'assets/images/ic_home_label.svg';
   static const String imagesIcIntelligentMonitoring = 'assets/images/ic_intelligent_monitoring.png';
+  static const String imagesIcIntelligentNoData = 'assets/images/ic_intelligent_no_data.jpg';
   static const String imagesIcPriceLiveCattle = 'assets/images/ic_price_live_cattle.png';
   static const String imagesIcProductionManagement = 'assets/images/ic_production_management.png';
   static const String imagesIcQuestionAnswer = 'assets/images/ic_question_answer.png';

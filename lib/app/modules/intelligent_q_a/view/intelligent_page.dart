@@ -64,60 +64,68 @@ class IntelligentPage extends GetView<IntelligentController> {
               Expanded(
                 child: GetBuilder(
                   builder: (IntelligentController controller) {
-                    if (controller.answerList.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GetBuilder<MineController>(
-                                builder: (MineController controller) {
-                                  return Text(
-                                    "HI，${controller.nickName ?? ''}",
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: SaienteColors.blackE5,
-                                      fontSize: ScreenAdapter.fontSize(20),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 40),
-                              Image.asset(
-                                Assets.imagesIcIntelligentNoData,
-                                width: 150,
-                                height: 150,
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                '我是牛小慧，在下方输入你想搜索的肉牛养殖内容吧。',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: SaienteColors.blue4D91F5,
-                                  fontSize: ScreenAdapter.fontSize(16),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    return ListView.separated(
+                    return CustomScrollView(
                       controller: controller.scrollController,
-                      itemBuilder: (context, index) {
-                        final item = controller.answerList[index];
-                        return ChatBubble(
-                          content: item.content ?? '',
-                          isSender: item.role == 'user',
-                        );
-                      },
-                      separatorBuilder: (_, __) {
-                        return const SizedBox(height: 6);
-                      },
-                      itemCount: controller.answerList.length,
+                      slivers:
+                          controller.answerList.isEmpty && controller.isSending == false
+                              ? [
+                                SliverFillRemaining(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          GetBuilder<MineController>(
+                                            builder: (MineController controller) {
+                                              return Text(
+                                                "HI，${controller.nickName ?? ''}",
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  color: SaienteColors.blackE5,
+                                                  fontSize: ScreenAdapter.fontSize(20),
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          const SizedBox(height: 40),
+                                          Image.asset(
+                                            Assets.imagesIcIntelligentNoData,
+                                            width: 150,
+                                            height: 150,
+                                          ),
+                                          const SizedBox(height: 20),
+                                          Text(
+                                            '我是牛小慧，在下方输入你想搜索的肉牛养殖内容吧。',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: SaienteColors.blue4D91F5,
+                                              fontSize: ScreenAdapter.fontSize(16),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]
+                              : [
+                                SliverList(
+                                  delegate: SliverChildBuilderDelegate((c, index) {
+                                    final item = controller.answerList[index];
+                                    return ChatBubble(
+                                      content: item.content ?? '',
+                                      isSender: item.role == 'user',
+                                    );
+                                  }, childCount: controller.answerList.length),
+                                ),
+                                if (controller.isSending)
+                                  const SliverToBoxAdapter(
+                                    child: ChatBubble(content: '思考中...', isSender: false),
+                                  ),
+                              ],
                     );
                   },
                 ),

@@ -10,6 +10,8 @@ class IntelligentController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
   ScrollController scrollController = ScrollController();
 
+  bool isSending = false;
+
   //会话ID
   String? id;
   List<AnswerItemModel> answerList = [];
@@ -19,14 +21,21 @@ class IntelligentController extends GetxController {
   //   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   //   "problem": "string",
   // }
-  void addQuestionAnswer({required String problem}) async {
+  Future addQuestionAnswer({required String problem}) async {
+    isSending = true;
+    update();
+    scrollToBottom();
     String api = '/api/intelligentqa/create';
     try {
       final result = await httpsClient.post(api, data: {"id": id, "Problem": problem});
       AnswerModel answerModel = AnswerModel.fromJson(result);
       id = answerModel.id;
-      getDetail();
+      await getDetail();
+      isSending = false;
+      update();
     } catch (e) {
+      isSending = false;
+      update();
       if (e is ApiException) {
         Toast.show(e.message);
         return;
@@ -35,7 +44,7 @@ class IntelligentController extends GetxController {
   }
 
   //获取详情信息
-  void getDetail() async {
+  Future getDetail() async {
     String api = '/api/intelligentqa/detail';
     try {
       final result = await httpsClient.get(api, queryParameters: {"id": id});

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/tools.dart';
+import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/refresh_header_footer.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/generated/assets.dart';
@@ -176,7 +177,7 @@ class _IntelligentHistoryPageState extends State<IntelligentHistoryPage> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(Assets.imagesAppLogo, width: 54),
+                            child: Image.asset(Assets.imagesAppLogo, width: 48),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -200,7 +201,12 @@ class _IntelligentHistoryPageState extends State<IntelligentHistoryPage> {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        deleteHistory(item.id ?? '', item.rowVersion ?? '');
+                                        Alert.showConfirm(
+                                          '确定要删除吗？',
+                                          onConfirm: () {
+                                            deleteHistory(item.id ?? '', item.rowVersion ?? '');
+                                          },
+                                        );
                                       },
                                       icon: const Icon(
                                         Icons.delete_outline,

@@ -190,6 +190,7 @@ import '../modules/home/informationDetail/views/information_detail_view.dart';
 import '../modules/home/information_list/bindings/information_list_binding.dart';
 import '../modules/home/information_list/views/information_list_view.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/income_management/income_management_page.dart';
 import '../modules/intelligent_q_a/view/intelligent_page.dart';
 import '../modules/like_article_list/bindings/like_article_list_binding.dart';
 import '../modules/like_article_list/views/like_article_list_view.dart';
@@ -781,5 +782,6 @@ class AppPages {
       page: () => const RecipeVerifyPage(),
       binding: RecipeVerifyBindings(),
     ),
+    GetPage(name: _Paths.IncomeManagementPage, page: () => const IncomeManagementPage()),
   ];
 }

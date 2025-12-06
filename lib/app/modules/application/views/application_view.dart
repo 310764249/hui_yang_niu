@@ -943,6 +943,13 @@ class ApplicationView extends GetView<ApplicationController> {
 
             BusinessLogger.instance.logExit(tag);
             break;
+          case '收支管理':
+            String tag = '物资管理/收支管理';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.INCOME_MANAGEMENT);
+
+            BusinessLogger.instance.logExit(tag);
+            break;
           default:
         }
       },
@@ -957,7 +964,7 @@ class ApplicationView extends GetView<ApplicationController> {
                   padding: const EdgeInsets.only(top: 5, bottom: 4),
                   child: Image.asset(Assets.imagesIcFeedPreparation, width: 35, height: 34),
                 )
-                : LoadAssetImage(data.image ?? AssetsImages.fileManagement),
+                : LoadAssetImage(data.image ?? AssetsImages.fileManagement, width: 35, height: 34),
             SizedBox(height: ScreenAdapter.height(4)),
             Text(
               data.name,

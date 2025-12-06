@@ -55,6 +55,8 @@ class IntelligentController extends GetxController {
       scrollToBottom();
       update();
     } catch (e) {
+      isSending = false;
+      update();
       if (e is ApiException) {
         Toast.show(e.message);
         return;

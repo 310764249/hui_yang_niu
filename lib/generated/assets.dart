@@ -39,6 +39,7 @@ class Assets {
   static const String imagesIcFeedPreparation = 'assets/images/ic_feed_preparation.png';
   static const String imagesIcFormulaDesign = 'assets/images/ic_formula_design.png';
   static const String imagesIcHomeLabel = 'assets/images/ic_home_label.svg';
+  static const String imagesIcIncome = 'assets/images/ic_income.png';
   static const String imagesIcIntelligentMonitoring = 'assets/images/ic_intelligent_monitoring.png';
   static const String imagesIcIntelligentNoData = 'assets/images/ic_intelligent_no_data.jpg';
   static const String imagesIcPriceLiveCattle = 'assets/images/ic_price_live_cattle.png';

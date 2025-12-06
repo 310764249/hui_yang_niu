@@ -118,6 +118,8 @@ abstract class Routes {
   static const RecipeVerifyPage = _Paths.RecipeVerifyPage;
 
   static const INTELLIGENT = _Paths.Intelligent;
+  //IncomeManagementPage
+  static const INCOME_MANAGEMENT = _Paths.IncomeManagementPage;
 }
 
 abstract class _Paths {
@@ -237,4 +239,7 @@ abstract class _Paths {
   static const MaterialRecords = '/material-records';
   static const MaterialRecordsDetails = '/material-records-details';
   static const RecipeVerifyPage = '/recipe-verify-page';
+  //IncomeManagementPage
+  static const IncomeManagementPage = '/income-management-page';
+
 }

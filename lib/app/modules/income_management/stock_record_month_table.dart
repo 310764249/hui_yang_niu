@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intellectual_breed/app/services/colors.dart';
 import '../../models/stock_record_month_entity.dart';
 
 class StockRecordMonthTable extends StatelessWidget {
@@ -6,7 +7,7 @@ class StockRecordMonthTable extends StatelessWidget {
 
   const StockRecordMonthTable({super.key, required this.data});
 
-  Color _color(num v) => v > 0 ? Colors.blue : (v < 0 ? Colors.red : Colors.black);
+  Color _color(num v) => v > 0 ? SaienteColors.appMain : (v < 0 ? Colors.red : Colors.black);
 
   String _fmt(num? v, {bool prefix = true}) {
     if (v == null || v == 0) return "-";
@@ -38,7 +39,14 @@ class StockRecordMonthTable extends StatelessWidget {
           ),
           child: const Row(
             children: [
-              Expanded(child: Text("分类/物资", style: TextStyle(fontWeight: FontWeight.bold))),
+              SizedBox(
+                width: 100,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text('分类/物资', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
               Expanded(
                 child: Text(
                   "入库",
@@ -89,6 +97,7 @@ class StockRecordMonthTable extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// 分类名称
+                ///
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
@@ -96,7 +105,7 @@ class StockRecordMonthTable extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      color: Colors.blue,
+                      color: SaienteColors.appMain,
                     ),
                   ),
                 ),
@@ -107,7 +116,15 @@ class StockRecordMonthTable extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
-                        Expanded(child: Text(item.name ?? "-")),
+                        SizedBox(
+                          width: 100,
+                          child: FittedBox(
+                            alignment: Alignment.centerLeft,
+                            fit: BoxFit.scaleDown,
+                            child: Text(item.name ?? "-"),
+                          ),
+                        ),
+
                         Expanded(
                           child: Text(
                             _fmt(item.addNum),

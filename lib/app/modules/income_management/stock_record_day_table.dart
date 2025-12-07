@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intellectual_breed/app/services/colors.dart';
 import '../../models/stock_record_day_entity.dart';
 
 class StockRecordDayTable extends StatelessWidget {
@@ -6,7 +7,7 @@ class StockRecordDayTable extends StatelessWidget {
 
   const StockRecordDayTable({super.key, required this.data});
 
-  Color _color(num v) => v > 0 ? Colors.blue : (v < 0 ? Colors.red : Colors.black);
+  Color _color(num v) => v > 0 ? SaienteColors.appMain : (v < 0 ? Colors.red : Colors.black);
 
   String _fmt(num v, {bool prefix = true}) {
     if (v == 0) return "-";
@@ -39,7 +40,15 @@ class StockRecordDayTable extends StatelessWidget {
           /// 表头行
           const Row(
             children: [
-              Expanded(child: Text("物资名称", style: TextStyle(fontWeight: FontWeight.bold))),
+              SizedBox(
+                width: 100,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text('物资名称', maxLines: 2),
+                ),
+              ),
+
               Expanded(
                 child: Text(
                   "入库",
@@ -79,7 +88,14 @@ class StockRecordDayTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  Expanded(child: Text(e.name)),
+                  SizedBox(
+                    width: 100,
+                    child: FittedBox(
+                      alignment: Alignment.centerLeft,
+                      fit: BoxFit.scaleDown,
+                      child: Text(e.name, maxLines: 2),
+                    ),
+                  ),
 
                   Expanded(
                     child: Text(

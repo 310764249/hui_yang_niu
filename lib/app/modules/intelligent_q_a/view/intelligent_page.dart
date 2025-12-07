@@ -122,9 +122,7 @@ class IntelligentPage extends GetView<IntelligentController> {
                                   }, childCount: controller.answerList.length),
                                 ),
                                 if (controller.isSending)
-                                  const SliverToBoxAdapter(
-                                    child: ChatBubble(content: '思考中...', isSender: false),
-                                  ),
+                                  const SliverToBoxAdapter(child: TypingBubble(isSender: false)),
                               ],
                     );
                   },
@@ -137,6 +135,83 @@ class IntelligentPage extends GetView<IntelligentController> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class TypingBubble extends StatefulWidget {
+  final bool isSender;
+
+  const TypingBubble({super.key, this.isSender = false});
+
+  @override
+  State<TypingBubble> createState() => _TypingBubbleState();
+}
+
+class _TypingBubbleState extends State<TypingBubble> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _dot1;
+  late Animation<double> _dot2;
+  late Animation<double> _dot3;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
+      ..repeat();
+
+    _dot1 = Tween(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6)));
+    _dot2 = Tween(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.2, 0.8)));
+    _dot3 = Tween(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.4, 1.0)));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _dot(Animation<double> animation) {
+    return FadeTransition(
+      opacity: animation,
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 2),
+        child: Text('•', style: TextStyle(fontSize: 18, height: 1.1)),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bubbleColor = widget.isSender ? Colors.blueAccent : Colors.grey[300];
+    final textColor = widget.isSender ? Colors.white : Colors.black87;
+
+    return Align(
+      alignment: widget.isSender ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(color: bubbleColor, borderRadius: BorderRadius.circular(12)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("思考中", style: TextStyle(color: textColor)),
+            const SizedBox(width: 4),
+            _dot(_dot1),
+            _dot(_dot2),
+            _dot(_dot3),
+          ],
         ),
       ),
     );

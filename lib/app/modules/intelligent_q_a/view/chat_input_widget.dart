@@ -50,14 +50,14 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                     ),
                   ),
 
-                  /// 语音按钮（预留）
-                  // GestureDetector(
-                  //   onTap: widget.onVoice,
-                  //   child: const Padding(
-                  //     padding: EdgeInsets.symmetric(horizontal: 4),
-                  //     child: Icon(Icons.mic_none, size: 22),
-                  //   ),
-                  // ),
+                  // 语音按钮（预留）
+                  GestureDetector(
+                    onTap: widget.onVoice,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(Icons.mic_none, size: 22),
+                    ),
+                  ),
                 ],
               ),
             ),

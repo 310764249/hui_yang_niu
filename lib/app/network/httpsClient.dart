@@ -48,9 +48,9 @@ class HttpsClient {
   HttpsClient._internal() {
     dio.options.baseUrl = domain;
     //连接服务器超时时间
-    dio.options.connectTimeout = const Duration(seconds: 10); //10s
+    dio.options.connectTimeout = const Duration(seconds: 60); //10s
     //接收数据的最长时间
-    dio.options.receiveTimeout = const Duration(seconds: 10);
+    dio.options.receiveTimeout = const Duration(seconds: 60);
     dio.interceptors.add(DioLogger());
     //非生产环境，开启日志以及抓包
     if (!Constant.inProduction) {

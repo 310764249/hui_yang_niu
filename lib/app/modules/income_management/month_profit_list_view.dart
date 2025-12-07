@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intellectual_breed/app/services/colors.dart';
 
 import '../../models/manual_work_month_entity.dart';
 
@@ -8,7 +9,7 @@ class MonthProfitListView extends StatelessWidget {
 
   const MonthProfitListView({super.key, required this.data, this.onTap});
 
-  Color _color(double v) => v > 0 ? Colors.blue : Colors.red;
+  Color _color(double v) => v > 0 ? SaienteColors.appMain : Colors.red;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class MonthProfitListView extends StatelessWidget {
               const Spacer(),
               Text(
                 "+${data.income.toStringAsFixed(0)}元",
-                style: const TextStyle(fontSize: 14, color: Colors.blue),
+                style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
               ),
               const SizedBox(width: 12),
               Text(
@@ -61,7 +62,7 @@ class MonthProfitListView extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue,
+                        color: SaienteColors.appMain,
                       ),
                     ),
                     const Spacer(),
@@ -118,7 +119,7 @@ class MonthProfitListView extends StatelessWidget {
                             child: Text(
                               e.income > 0 ? "+${e.income.toStringAsFixed(0)}" : "-",
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.blue),
+                              style: const TextStyle(color: SaienteColors.appMain),
                             ),
                           ),
                           Expanded(

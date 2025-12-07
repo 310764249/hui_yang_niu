@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intellectual_breed/app/services/colors.dart';
 
 class DayProfitItem {
   final String name;
@@ -25,7 +26,7 @@ class SingleDayProfitCard extends StatelessWidget {
     this.onTap,
   });
 
-  Color _amountColor(double v) => v > 0 ? Colors.blue : Colors.red;
+  Color _amountColor(double v) => v > 0 ? SaienteColors.appMain : Colors.red;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class SingleDayProfitCard extends StatelessWidget {
               const Spacer(),
               Text(
                 '${totalIncome > 0 ? '+' : ''}${totalIncome.toStringAsFixed(0)}元',
-                style: const TextStyle(fontSize: 14, color: Colors.blue),
+                style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
               ),
               const SizedBox(width: 12),
               Text(
@@ -105,7 +106,7 @@ class SingleDayProfitCard extends StatelessWidget {
                             ? '-'
                             : '+${e.income!.toStringAsFixed(0)}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.blue),
+                        style: const TextStyle(color: SaienteColors.appMain),
                       ),
                     ),
                     Expanded(

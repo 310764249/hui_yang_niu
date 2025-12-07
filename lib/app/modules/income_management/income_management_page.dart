@@ -48,7 +48,9 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
                       child: ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(
-                            isMaterial ? SaienteColors.appMain : SaienteColors.desc_color,
+                            isMaterial
+                                ? SaienteColors.appMain
+                                : SaienteColors.desc_color.withValues(alpha: 0.6),
                           ),
                           foregroundColor: MaterialStateProperty.all(Colors.white),
                           shape: MaterialStateProperty.all(

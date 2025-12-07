@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
@@ -131,6 +133,9 @@ class IntelligentPage extends GetView<IntelligentController> {
               ChatInputWidget(
                 onSend: (String text) {
                   controller.addQuestionAnswer(problem: text);
+                },
+                onSendVoice: (File file, int duration) {
+                  controller.addVideoQuestionAnswer(problem: file, duration: duration);
                 },
               ),
             ],

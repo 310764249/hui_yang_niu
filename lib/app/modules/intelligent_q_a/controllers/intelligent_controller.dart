@@ -1,10 +1,23 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 import 'package:intellectual_breed/app/models/answer_item_model.dart';
 import 'package:intellectual_breed/app/models/answer_model.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
+import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
+
+import '../../../models/authModel.dart';
+import '../../../services/user_info_tool.dart';
+import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http_parser/http_parser.dart';
+
+import 'package:intellectual_breed/app/services/constant.dart';
 
 class IntelligentController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
@@ -80,5 +93,35 @@ class IntelligentController extends GetxController {
     answerList.clear();
     id = null;
     update();
+  }
+
+  void addVideoQuestionAnswer({required File problem, required int duration}) async {
+    String api = '/api/intelligentqa/createintelligentqa';
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        problem.path,
+        filename: problem.path.split('/').last,
+        contentType: MediaType.parse('audio/aac'),
+      ),
+    });
+    AuthModel authModel = UserInfoTool.auth!;
+    String accessToken = authModel.accessToken;
+    Options options = Options(
+      headers: {'Authorization': 'Bearer $accessToken'},
+      contentType: 'multipart/form-data',
+    );
+
+    Dio dio = Dio();
+
+    Response response = await dio.post(
+      '${Constant.uploadFile}$api',
+      data: formData,
+      options: options,
+      onSendProgress: (progress, total) {
+        print('上传进度: $progress / $total');
+      },
+    );
+
+    print(response.data);
   }
 }

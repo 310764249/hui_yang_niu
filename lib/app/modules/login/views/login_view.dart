@@ -25,10 +25,7 @@ class LoginView extends GetView<LoginController> {
       child: SizedBox(
         height: ScreenAdapter.height(290),
         width: ScreenAdapter.width(375),
-        child: const LoadAssetImage(
-          AssetsImages.loginBackPng,
-          fit: BoxFit.cover,
-        ),
+        child: const LoadAssetImage(AssetsImages.loginBackPng, fit: BoxFit.cover),
       ),
     );
   }
@@ -47,8 +44,11 @@ class LoginView extends GetView<LoginController> {
             print("Close login page");
             Get.back();
           },
-          icon: LoadImage(AssetsImages.loginClosePng,
-              width: ScreenAdapter.width(32), height: ScreenAdapter.width(32)),
+          icon: LoadImage(
+            AssetsImages.loginClosePng,
+            width: ScreenAdapter.width(32),
+            height: ScreenAdapter.width(32),
+          ),
           color: Colors.white,
         ),
       ),
@@ -57,35 +57,33 @@ class LoginView extends GetView<LoginController> {
 
   //账号密码
   Widget _input() {
-    return Column(children: [
-      MainTextField(
-        prefixIcon: const LoadImage(
-          AssetsImages.userInputPng,
+    return Column(
+      children: [
+        MainTextField(
+          prefixIcon: const LoadImage(AssetsImages.userInputPng),
+          hintText: '请输入手机号',
+          maxLength: 11,
+          keyboardType: TextInputType.number,
+          focusNode: controller.telNode,
+          controller: controller.telController,
+          onChanged: (value) {
+            //print('请输入手机号:$value');
+          },
         ),
-        hintText: '请输入手机号',
-        maxLength: 11,
-        keyboardType: TextInputType.number,
-        focusNode: controller.telNode,
-        controller: controller.telController,
-        onChanged: (value) {
-          //print('请输入手机号:$value');
-        },
-      ),
-      SizedBox(height: ScreenAdapter.height(10)),
-      MainTextField(
-        prefixIcon: const LoadImage(
-          AssetsImages.passLockPng,
+        SizedBox(height: ScreenAdapter.height(10)),
+        MainTextField(
+          prefixIcon: const LoadImage(AssetsImages.passLockPng),
+          hintText: '请输入密码',
+          isPassword: true,
+          keyboardType: TextInputType.visiblePassword,
+          focusNode: controller.passNode,
+          controller: controller.passController,
+          onChanged: (value) {
+            //print('请输入密码:$value');
+          },
         ),
-        hintText: '请输入密码',
-        isPassword: true,
-        keyboardType: TextInputType.visiblePassword,
-        focusNode: controller.passNode,
-        controller: controller.passController,
-        onChanged: (value) {
-          //print('请输入密码:$value');
-        },
-      ),
-    ]);
+      ],
+    );
   }
 
   //忘记密码
@@ -93,15 +91,14 @@ class LoginView extends GetView<LoginController> {
     return Container(
       alignment: Alignment.centerRight,
       child: TextButton(
-          onPressed: () {
-            print('忘记密码');
-          },
-          child: Text(
-            '忘记密码?',
-            style: TextStyle(
-                color: SaienteColors.black4D,
-                fontSize: ScreenAdapter.fontSize(14)),
-          )),
+        onPressed: () {
+          print('忘记密码');
+        },
+        child: Text(
+          '忘记密码?',
+          style: TextStyle(color: SaienteColors.black4D, fontSize: ScreenAdapter.fontSize(14)),
+        ),
+      ),
     );
   }
 
@@ -114,20 +111,15 @@ class LoginView extends GetView<LoginController> {
       right: 0,
       bottom: 0,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-            ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
+        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(10), 0, ScreenAdapter.width(10), 0),
         child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           children: [
             //logo
             SizedBox(
               // width: ScreenAdapter.height(146),
               height: ScreenAdapter.height(146),
-              child: const LoadImage(
-                AssetsImages.appLogoClearPng,
-                fit: BoxFit.fitHeight,
-              ),
+              child: const LoadImage(AssetsImages.appLogoClearPng, fit: BoxFit.fitHeight),
             ),
             //账号密码
             _input(),
@@ -142,47 +134,51 @@ class LoginView extends GetView<LoginController> {
                 controller.isAgree.value = isChecked;
               },
               agreeAction: () {
-                print('同意用户协议');
+                // print('同意用户协议');
+                controller.getUserAgreement();
               },
               privacyAction: () {
-                print('同意隐私政策');
+                // print('查看隐私协议');
+                controller.getPrivacyAgreement();
               },
             ),
             SizedBox(height: ScreenAdapter.height(20)),
             MainButton(
-                text: "登录",
-                onPressed: () async {
-                  if (Constant.inProduction) {
-                    if (!GetUtils.isPhoneNumber(
-                            controller.telController.text) &&
-                        controller.telController.text.length != 11) {
-                      Toast.failure(msg: "请输入正确的手机号");
-                      return;
-                    }
+              text: "登录",
+              onPressed: () async {
+                if (Constant.inProduction) {
+                  if (!GetUtils.isPhoneNumber(controller.telController.text) &&
+                      controller.telController.text.length != 11) {
+                    Toast.failure(msg: "请输入正确的手机号");
+                    return;
                   }
+                }
 
-                  if (controller.passController.text.length < 6) {
-                    Toast.failure(msg: "密码长度不能小于6");
-                    return;
-                  }
-                  if (controller.isAgree.value == false) {
-                    Toast.failure(msg: "请同意用户协议");
-                    return;
-                  }
-                  // Toast.show("登录成功");
-                  Toast.showLoading(msg: "登录中");
-                  await controller.requestLogin().then((value) async {
-                    Toast.dismiss();
-                    Toast.success(msg: "登录成功");
-                    await Future.delayed(const Duration(seconds: 1));
-                    Get.back();
-                  }).catchError((err) {
-                    Toast.dismiss();
-                    Toast.failure(msg: err.toString());
-                  });
-                  // await Future.delayed(const Duration(seconds: 2));
-                  // Toast.dismiss();
-                  /*
+                if (controller.passController.text.length < 6) {
+                  Toast.failure(msg: "密码长度不能小于6");
+                  return;
+                }
+                if (controller.isAgree.value == false) {
+                  Toast.failure(msg: "请同意用户协议");
+                  return;
+                }
+                // Toast.show("登录成功");
+                Toast.showLoading(msg: "登录中");
+                await controller
+                    .requestLogin()
+                    .then((value) async {
+                      Toast.dismiss();
+                      Toast.success(msg: "登录成功");
+                      await Future.delayed(const Duration(seconds: 1));
+                      Get.back();
+                    })
+                    .catchError((err) {
+                      Toast.dismiss();
+                      Toast.failure(msg: err.toString());
+                    });
+                // await Future.delayed(const Duration(seconds: 2));
+                // Toast.dismiss();
+                /*
                   Alert.showConfirm(
                     "二级或正文内容长文字",
                     title: '标题文字',
@@ -194,7 +190,8 @@ class LoginView extends GetView<LoginController> {
                     },
                   );
                   */
-                }),
+              },
+            ),
           ],
         ),
       ),

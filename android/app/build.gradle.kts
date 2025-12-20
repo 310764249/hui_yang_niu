@@ -54,7 +54,11 @@ android {
             keyPassword = "Saiente2023"
         }
     }
-
+    packaging {
+        jniLibs {
+            pickFirsts.add("**/libc++_shared.so")
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false

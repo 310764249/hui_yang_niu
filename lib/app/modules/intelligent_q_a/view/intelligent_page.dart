@@ -46,6 +46,9 @@ class IntelligentPage extends GetView<IntelligentController> {
               IconButton(
                 onPressed: () {
                   Get.to(() => const IntelligentHistoryPage())?.then((value) {
+                    if (value == null) {
+                      return;
+                    }
                     controller.id = value;
                     controller.answerList.clear();
                     controller.getDetail();

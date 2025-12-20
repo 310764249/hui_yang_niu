@@ -5,6 +5,7 @@ import 'package:intellectual_breed/app/services/event_bus_util.dart';
 import 'package:intellectual_breed/app/services/user_info_tool.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../models/user_agreement_entity.dart';
 import '../../../models/user_resource.dart';
 import '../../../network/apiException.dart';
 import '../../../network/file_upload.dart';
@@ -13,6 +14,7 @@ import '../../../services/AssetsImages.dart';
 import '../../../services/Log.dart';
 import '../../../services/constant.dart';
 import '../../../services/storage.dart';
+import '../views/user_agreement_page.dart';
 
 class MineController extends GetxController {
   //TODO: Implement MineController
@@ -108,7 +110,10 @@ class MineController extends GetxController {
     headerImg.value = '${Constant.uploadFileUrl}$ID';
     //更新
     //api/user/uploadprofilephoto
-    await httpsClient.post("/api/user/uploadprofilephoto", data: {"id": UserInfoTool.userID(), "avatarUrl": ID});
+    await httpsClient.post(
+      "/api/user/uploadprofilephoto",
+      data: {"id": UserInfoTool.userID(), "avatarUrl": ID},
+    );
     //UserInfoTool.user?.avatarUrl = ID;
     //通知头像更新
     EventBusUtil.fireEvent(UserIconChangeEvent(ID));
@@ -144,10 +149,7 @@ class MineController extends GetxController {
 
   //打电话
   Future<void> launchPhone(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
 
     if (!await launchUrl(launchUri)) {
       throw Exception('Could not launch $launchUri');
@@ -157,9 +159,7 @@ class MineController extends GetxController {
   //获取当前角色点赞数
   void requestDianZhan() async {
     try {
-      var response = await httpsClient.get(
-        "/api/tsan/count",
-      );
+      var response = await httpsClient.get("/api/tsan/count");
       //print(response);
       dianZhanNum.value = response;
       update();
@@ -177,9 +177,7 @@ class MineController extends GetxController {
   //获取当前角色收藏数
   void requestCollection() async {
     try {
-      var response = await httpsClient.get(
-        "/api/favorites/count",
-      );
+      var response = await httpsClient.get("/api/favorites/count");
       //print(response);
       favoritesNum.value = response;
       update();
@@ -204,5 +202,16 @@ class MineController extends GetxController {
     requestDianZhan();
     //收藏数
     requestCollection();
+  }
+
+  void getUserAgreement() async {
+    String api = '/api/article/getdetailbytitle?title=用户协议';
+    try {
+      Map<String, dynamic> data = await httpsClient.get(api);
+      UserAgreementEntity userAgreementEntity = UserAgreementEntity.fromJson(data);
+      Get.to(() => UserAgreementPage(data: userAgreementEntity));
+    } catch (e) {
+      print(e);
+    }
   }
 }

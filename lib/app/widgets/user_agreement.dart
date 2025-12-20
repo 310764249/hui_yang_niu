@@ -49,7 +49,7 @@ class _UserAgreementState extends State<UserAgreement> {
           child: Text(
             "《用户协议》",
             style: TextStyle(
-                color: Color(0xFF2A5DF3), fontSize: ScreenAdapter.fontSize(14)),
+                color: const Color(0xFF2A5DF3), fontSize: ScreenAdapter.fontSize(14)),
           ),
         ),
         const Text("和"),

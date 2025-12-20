@@ -403,7 +403,7 @@ class MineView extends GetView<MineController> {
                     });
                   },
                 ),
-                // _cardItem('养牛总数', controller.cowCount.value),
+                // _cardItem('养牛总数', controller.cowCount.value),y
                 _cardItem('职工总数', controller.employeeCount.value),
               ],
             ),
@@ -474,8 +474,9 @@ class MineView extends GetView<MineController> {
             Get.toNamed(Routes.FEED_BACK);
           }),
           _line(),
-          _actionItem(AssetsImages.lock, '隐私政策', () {
-            Get.snackbar('提示', '隐私政策', snackPosition: SnackPosition.BOTTOM);
+          _actionItem(AssetsImages.lock, '用户协议', () {
+            // Get.snackbar('提示', '隐私政策', snackPosition: SnackPosition.BOTTOM);
+            controller.getUserAgreement();
           }),
           _line(),
           ObxValue<RxBool>(

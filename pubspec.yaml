@@ -59,7 +59,9 @@ dependencies:
   flutter_cache_manager: ^3.3.0
   dio_logger_plus: ^1.2.1
   markdown_widget: ^2.3.2+8
-
+  ezviz_flutter: ^1.2.6
+  flutter_html: ^3.0.0
+  
   em_chat_uikit:
     git:
       url: https://github.com/easemob/easemob-uikit-flutter.git

@@ -6,6 +6,7 @@ import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
+import 'package:intellectual_breed/app/modules/deviceserial/device_serial_page.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/modules/tabs/controllers/tabs_controller.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
@@ -315,7 +316,7 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Toast.show("敬请期待");
+                      Get.to(() => const DeviceSerialPage());
                     },
                     child: Image.asset(Assets.imagesIcIntelligentMonitoring, fit: BoxFit.fill),
                   ),

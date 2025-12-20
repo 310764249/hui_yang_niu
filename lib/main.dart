@@ -1,4 +1,5 @@
 // import 'package:alice/alice.dart';
+import 'package:ezviz_flutter/ezviz_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -36,6 +37,7 @@ void main() {
   // JPushTool.setup();
 
   // 用flutter_screenutil来自动适配
+  EzvizConstants.setRegion(EzvizRegion.china);
   runApp(const MainApp());
 }
 

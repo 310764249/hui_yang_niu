@@ -4,11 +4,13 @@ import 'package:intellectual_breed/app/widgets/dict_list.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../models/authModel.dart';
+import '../../../models/user_agreement_entity.dart';
 import '../../../network/httpsClient.dart';
 import '../../../services/common_service.dart';
 import '../../../services/constant.dart';
 import '../../../services/storage.dart';
 import '../../../services/user_info_tool.dart';
+import '../../mine/views/user_agreement_page.dart';
 
 class LoginController extends GetxController {
   HttpsClient httpsClient = HttpsClient();
@@ -87,5 +89,27 @@ class LoginController extends GetxController {
 
   void checkPZ() {
     print(AppDictList.searchItems("pz"));
+  }
+
+  void getUserAgreement() async {
+    String api = '/api/article/getdetailbytitle?title=用户协议';
+    try {
+      Map<String, dynamic> data = await httpsClient.get(api);
+      UserAgreementEntity userAgreementEntity = UserAgreementEntity.fromJson(data);
+      Get.to(() => UserAgreementPage(data: userAgreementEntity));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void getPrivacyAgreement() async {
+    String api = '/api/article/getdetailbytitle?title=隐私条款';
+    try {
+      Map<String, dynamic> data = await httpsClient.get(api);
+      UserAgreementEntity userAgreementEntity = UserAgreementEntity.fromJson(data);
+      Get.to(() => UserAgreementPage(data: userAgreementEntity));
+    } catch (e) {
+      print(e);
+    }
   }
 }

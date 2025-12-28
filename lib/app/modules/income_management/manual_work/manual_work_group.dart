@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../services/colors.dart';
 import '../../../services/screenAdapter.dart';
+import '../../../widgets/single_select_wrap.dart';
 import 'manual_work_day.dart';
 import 'manual_work_month.dart';
 
@@ -34,79 +35,18 @@ class _ManualWorkGroupState extends State<ManualWorkGroup> with AutomaticKeepAli
     super.build(context);
     return Column(
       children: [
+        const SizedBox(height: 12),
         ValueListenableBuilder(
           valueListenable: _tabIndex,
           builder: (context, value, child) {
             bool isMaterial = value == 0;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: SizedBox(
-                height: 34,
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          isMaterial
-                              ? SaienteColors.appMain
-                              : SaienteColors.desc_color.withValues(alpha: 0.6),
-                        ),
-                        foregroundColor: MaterialStateProperty.all(Colors.white),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(ScreenAdapter.width(2)),
-                          ),
-                        ),
-                      ),
-                      onPressed: () {
-                        _tabIndex.value = 0;
-                        _pageController.animateToPage(
-                          0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Text(
-                        '按日统计',
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(14),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: ScreenAdapter.width(10)),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          isMaterial ? SaienteColors.desc_color : SaienteColors.appMain,
-                        ),
-                        foregroundColor: MaterialStateProperty.all(Colors.white),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(ScreenAdapter.width(2)),
-                          ),
-                        ),
-                      ),
-                      onPressed: () {
-                        _tabIndex.value = 1;
-                        _pageController.animateToPage(
-                          1,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Text(
-                        '按月统计',
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(14),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            return SingleSelectWrap(
+              items: const ['按日统计', "按月统计"],
+              initialIndex: value,
+              onChanged: (value) {
+                _tabIndex.value = value;
+                _pageController.jumpToPage(value);
+              },
             );
           },
         ),

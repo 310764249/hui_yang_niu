@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/income_management/stock_record/stock_record_group.dart';
 
 import '../../services/colors.dart';
@@ -24,6 +25,13 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
   ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   @override
+  void initState() {
+    super.initState();
+    final arg = Get.arguments;
+    currentIndex.value = arg?['type'] == 'income' ? 0 : 1;
+  }
+
+  @override
   void dispose() {
     pageController.dispose();
     currentIndex.dispose();
@@ -33,85 +41,93 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('收支管理'), centerTitle: true),
+      appBar: AppBar(
+        title: ValueListenableBuilder(
+          valueListenable: currentIndex,
+          builder: (context, value, child) {
+            return Text(value == 0 ? '收支统计' : '物资统计');
+          },
+        ),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          ValueListenableBuilder(
-            valueListenable: currentIndex,
-            builder: (context, value, child) {
-              bool isMaterial = value == 0;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            isMaterial
-                                ? SaienteColors.appMain
-                                : SaienteColors.desc_color.withValues(alpha: 0.6),
-                          ),
-                          foregroundColor: MaterialStateProperty.all(Colors.white),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          currentIndex.value = 0;
-                          pageController.animateToPage(
-                            0,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: Text(
-                          '物资统计',
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(17),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: ScreenAdapter.width(10)),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            isMaterial ? SaienteColors.desc_color : SaienteColors.appMain,
-                          ),
-                          foregroundColor: MaterialStateProperty.all(Colors.white),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          currentIndex.value = 1;
-                          pageController.animateToPage(
-                            1,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: Text(
-                          '资金统计',
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(17),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          // ValueListenableBuilder(
+          //   valueListenable: currentIndex,
+          //   builder: (context, value, child) {
+          //     bool isMaterial = value == 0;
+          //     return Padding(
+          //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //       child: Row(
+          //         children: [
+          //           Expanded(
+          //             child: ElevatedButton(
+          //               style: ButtonStyle(
+          //                 backgroundColor: MaterialStateProperty.all(
+          //                   isMaterial
+          //                       ? SaienteColors.appMain
+          //                       : SaienteColors.desc_color.withValues(alpha: 0.6),
+          //                 ),
+          //                 foregroundColor: MaterialStateProperty.all(Colors.white),
+          //                 shape: MaterialStateProperty.all(
+          //                   RoundedRectangleBorder(
+          //                     borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
+          //                   ),
+          //                 ),
+          //               ),
+          //               onPressed: () {
+          //                 currentIndex.value = 0;
+          //                 pageController.animateToPage(
+          //                   0,
+          //                   duration: const Duration(milliseconds: 300),
+          //                   curve: Curves.easeInOut,
+          //                 );
+          //               },
+          //               child: Text(
+          //                 '物资统计',
+          //                 style: TextStyle(
+          //                   fontSize: ScreenAdapter.fontSize(17),
+          //                   fontWeight: FontWeight.w500,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //           SizedBox(width: ScreenAdapter.width(10)),
+          //           Expanded(
+          //             child: ElevatedButton(
+          //               style: ButtonStyle(
+          //                 backgroundColor: MaterialStateProperty.all(
+          //                   isMaterial ? SaienteColors.desc_color : SaienteColors.appMain,
+          //                 ),
+          //                 foregroundColor: MaterialStateProperty.all(Colors.white),
+          //                 shape: MaterialStateProperty.all(
+          //                   RoundedRectangleBorder(
+          //                     borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
+          //                   ),
+          //                 ),
+          //               ),
+          //               onPressed: () {
+          //                 currentIndex.value = 1;
+          //                 pageController.animateToPage(
+          //                   1,
+          //                   duration: const Duration(milliseconds: 300),
+          //                   curve: Curves.easeInOut,
+          //                 );
+          //               },
+          //               child: Text(
+          //                 '资金统计',
+          //                 style: TextStyle(
+          //                   fontSize: ScreenAdapter.fontSize(17),
+          //                   fontWeight: FontWeight.w500,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     );
+          //   },
+          // ),
           Expanded(
             child: PageView(
               physics: const NeverScrollableScrollPhysics(),

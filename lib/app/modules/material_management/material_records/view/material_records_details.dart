@@ -24,10 +24,7 @@ class MaterialRecordsDetails extends StatefulWidget {
   }) async {
     return await Get.toNamed(
       Routes.MaterialRecordsDetails,
-      arguments: {
-        'materialRecordsViewEnum': materialRecordsViewEnum,
-        'id': id,
-      },
+      arguments: {'materialRecordsViewEnum': materialRecordsViewEnum, 'id': id},
     );
   }
 
@@ -147,10 +144,11 @@ class _MaterialRecordsDetailsState extends State<MaterialRecordsDetails> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-      body: ListView(children: [
-        MyCard(
-          children: [
-            ValueListenableBuilder(
+      body: ListView(
+        children: [
+          MyCard(
+            children: [
+              ValueListenableBuilder(
                 valueListenable: nikeNameNotifier,
                 builder: (context, String value, Widget? child) {
                   return CellTextField(
@@ -161,29 +159,30 @@ class _MaterialRecordsDetailsState extends State<MaterialRecordsDetails> {
                     controller: TextEditingController(text: value),
                     editable: true,
                   );
-                }),
-            CellTextField(
-              isRequired: true,
-              title: '物资名称',
-              hint: '请输入',
-              //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-              controller: materialNameController,
-              focusNode: materialNameFocus,
-              editable: true,
-            ),
-            ValueListenableBuilder(
-              valueListenable: wzflSelectNotif,
-              builder: (BuildContext context, Map? value, Widget? child) {
-                return CellButton(
-                  isRequired: true,
-                  title: '物资分类',
-                  hint: value?['key'] ?? "请选择",
-                  showArrow: true,
-                  onPressed: null,
-                );
-              },
-            ),
-            ValueListenableBuilder(
+                },
+              ),
+              CellTextField(
+                isRequired: true,
+                title: '物资名称',
+                hint: '请输入',
+                //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+                controller: materialNameController,
+                focusNode: materialNameFocus,
+                editable: true,
+              ),
+              ValueListenableBuilder(
+                valueListenable: wzflSelectNotif,
+                builder: (BuildContext context, Map? value, Widget? child) {
+                  return CellButton(
+                    isRequired: true,
+                    title: '物资分类',
+                    hint: value?['key'] ?? "请选择",
+                    showArrow: true,
+                    onPressed: null,
+                  );
+                },
+              ),
+              ValueListenableBuilder(
                 valueListenable: wzdwSelectNotif,
                 builder: (context, Map? value, Widget? child) {
                   return CellButton(
@@ -193,8 +192,9 @@ class _MaterialRecordsDetailsState extends State<MaterialRecordsDetails> {
                     showArrow: true,
                     onPressed: null,
                   );
-                }),
-            ValueListenableBuilder(
+                },
+              ),
+              ValueListenableBuilder(
                 valueListenable: canUseCount,
                 builder: (context, String? value, Widget? child) {
                   return CellTextField(
@@ -202,7 +202,6 @@ class _MaterialRecordsDetailsState extends State<MaterialRecordsDetails> {
                     title: '数量${value == null ? '' : ' （剩余${value}）'}',
                     hint: '请输入',
                     editable: true,
-                    keyboardType: TextInputType.number,
                     //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                     controller: counterController,
                     focusNode: counterNameFocus,
@@ -211,19 +210,21 @@ class _MaterialRecordsDetailsState extends State<MaterialRecordsDetails> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                   );
-                }),
-            CellTextArea(
-              isRequired: false,
-              title: "备注信息",
-              hint: "请输入",
-              showBottomLine: false,
-              controller: remakeController,
-              focusNode: remakeNameFocus,
-              editable: false,
-            ),
-          ],
-        ),
-      ]),
+                },
+              ),
+              CellTextArea(
+                isRequired: false,
+                title: "备注信息",
+                hint: "请输入",
+                showBottomLine: false,
+                controller: remakeController,
+                focusNode: remakeNameFocus,
+                editable: false,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

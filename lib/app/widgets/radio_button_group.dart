@@ -44,8 +44,9 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
   void initState() {
     super.initState();
     for (int i = 0; i < widget.items.length; i++) {
-      commonList.add(CommonData(
-          id: i, name: widget.items[i], isSelected: i == widget.selectedIndex));
+      commonList.add(
+        CommonData(id: i, name: widget.items[i], isSelected: i == widget.selectedIndex),
+      );
     }
   }
 
@@ -66,25 +67,32 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
       children: [
         SizedBox(height: ScreenAdapter.height(12)),
         // Title
-        Row(children: [
-          SizedBox(width: ScreenAdapter.width(12)),
-          Text("*",
+        Row(
+          children: [
+            SizedBox(width: ScreenAdapter.width(12)),
+            Text(
+              "*",
               style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(14),
-                  fontWeight: FontWeight.w700,
-                  color: widget.isRequired ? Colors.red : Colors.transparent)),
-          Text(widget.title,
+                fontSize: ScreenAdapter.fontSize(14),
+                fontWeight: FontWeight.w700,
+                color: widget.isRequired ? Colors.red : Colors.transparent,
+              ),
+            ),
+            Text(
+              widget.title,
               style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(14),
-                  fontWeight: FontWeight.w500,
-                  color: SaienteColors.blackE5)),
-        ]),
+                fontSize: ScreenAdapter.fontSize(14),
+                fontWeight: FontWeight.w500,
+                color: SaienteColors.blackE5,
+              ),
+            ),
+          ],
+        ),
         SizedBox(height: ScreenAdapter.height(12)),
         // Radio buttons
         Container(
           width: double.infinity,
-          padding: EdgeInsets.fromLTRB(
-              ScreenAdapter.width(12), 0, ScreenAdapter.width(12), 0),
+          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(12), 0, ScreenAdapter.width(12), 0),
           child: Wrap(
             spacing: ScreenAdapter.width(10),
             runSpacing: ScreenAdapter.width(10),
@@ -105,36 +113,42 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
                   },
                   child: Container(
                     padding: EdgeInsets.fromLTRB(
-                        ScreenAdapter.width(9),
-                        ScreenAdapter.height(9),
-                        ScreenAdapter.width(9),
-                        ScreenAdapter.height(9)),
+                      ScreenAdapter.width(9),
+                      ScreenAdapter.height(9),
+                      ScreenAdapter.width(9),
+                      ScreenAdapter.height(9),
+                    ),
                     decoration: BoxDecoration(
-                        color: commonList[index].isSelected ?? false
-                            ? SaienteColors.blueE5EEFF
-                            : const Color(0xFFF5F7FB),
-                        border: Border.all(
-                            color: commonList[index].isSelected ?? false
+                      color:
+                          commonList[index].isSelected ?? false
+                              ? SaienteColors.blueE5EEFF
+                              : const Color(0xFFF5F7FB),
+                      border: Border.all(
+                        color:
+                            commonList[index].isSelected ?? false
                                 ? SaienteColors.blue275CF3
                                 : Colors.transparent,
-                            width: 0.5),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(ScreenAdapter.width(4)))),
+                        width: 0.5,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.width(4))),
+                    ),
                     child: Text(
                       commonList[index].name,
                       style: TextStyle(
-                          color: commonList[index].isSelected ?? false
-                              ? SaienteColors.blue275CF3
-                              : SaienteColors.blackB2),
+                        color:
+                            commonList[index].isSelected ?? false
+                                ? SaienteColors.blue275CF3
+                                : SaienteColors.blackB2,
+                      ),
                     ),
                   ),
-                )
+                ),
             ],
           ),
         ),
         SizedBox(height: ScreenAdapter.height(12)),
         // Bottom line
-        widget.showBottomLine ?? true ? const DividerLine() : const SizedBox()
+        widget.showBottomLine ?? true ? const DividerLine() : const SizedBox(),
       ],
     );
   }

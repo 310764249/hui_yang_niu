@@ -234,6 +234,7 @@ class ApplicationController extends GetxController {
                 CommonData(id: 2, name: "报废", image: AssetsImages.icon29),
                 // CommonData(id: 3, name: "盘存", image: AssetsImages.icon30),
                 // CommonData(id: 4, name: "物资耗用明细", image: AssetsImages.icon31),
+                CommonData(id: 4, name: "物资统计", image: Assets.imagesIcMaterialStatistics),
               ];
       // 养殖评估
       breedingAssessmentList.value =
@@ -252,6 +253,7 @@ class ApplicationController extends GetxController {
         CommonData(id: 1, name: "人工", image: AssetsImages.icon38),
         CommonData(id: 2, name: "销售", image: AssetsImages.icon7),
         CommonData(id: 3, name: "收支管理", image: Assets.imagesIcIncome),
+
         // CommonData(id: 3, name: "效益分析", image: AssetsImages.icon39),
         // CommonData(id: 4, name: "收支设置", image: AssetsImages.icon40),
       ];

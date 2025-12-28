@@ -467,7 +467,6 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '销售':
-
             //效益评估出栏
             String tag = '收支管理/销售事件';
             BusinessLogger.instance.logEnter(tag);
@@ -944,10 +943,15 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '收支管理':
-            String tag = '物资管理/收支管理';
+            String tag = '物资管理/收支统计';
             BusinessLogger.instance.logEnter(tag);
-            await Get.toNamed(Routes.INCOME_MANAGEMENT);
-
+            await Get.toNamed(Routes.INCOME_MANAGEMENT, arguments: {'type': 'income'});
+            BusinessLogger.instance.logExit(tag);
+            break;
+          case '物资统计':
+            String tag = '物资管理/物资统计';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.INCOME_MANAGEMENT, arguments: {'type': 'expense'});
             BusinessLogger.instance.logExit(tag);
             break;
           default:
@@ -957,12 +961,13 @@ class ApplicationView extends GetView<ApplicationController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            data.image == Assets.imagesIcFeedPreparation
+            data.image == Assets.imagesIcFeedPreparation ||
+                    data.image == Assets.imagesIcMaterialStatistics
                 ? Container(
                   height: 38,
                   width: 38,
                   padding: const EdgeInsets.only(top: 5, bottom: 4),
-                  child: Image.asset(Assets.imagesIcFeedPreparation, width: 35, height: 34),
+                  child: LoadAssetImage(data.image!, width: 35, height: 34),
                 )
                 : LoadAssetImage(data.image ?? AssetsImages.fileManagement, width: 35, height: 34),
             SizedBox(height: ScreenAdapter.height(4)),

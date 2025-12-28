@@ -187,30 +187,31 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-      body: ListView(children: [
-        MyCard(
-          children: [
-            // ValueListenableBuilder(
-            //     valueListenable: nikeNameNotifier,
-            //     builder: (context, String value, Widget? child) {
-            //       return CellTextField(
-            //         isRequired: true,
-            //         title: '操作人',
-            //         hint: '请输入',
-            //         //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-            //         controller: TextEditingController(text: value),
-            //         editable: true,
-            //       );
-            //     }),
-            if (addInventoryEnum == AddInventoryEnum.use || addInventoryEnum == AddInventoryEnum.scrap)
-              CellButton(
-                isRequired: true,
-                title: '选择物资',
-                hint: "请选择",
-                showArrow: true,
-                onPressed: () {
-                  SelectMaterialView.push(context).then(
-                    (value) {
+      body: ListView(
+        children: [
+          MyCard(
+            children: [
+              // ValueListenableBuilder(
+              //     valueListenable: nikeNameNotifier,
+              //     builder: (context, String value, Widget? child) {
+              //       return CellTextField(
+              //         isRequired: true,
+              //         title: '操作人',
+              //         hint: '请输入',
+              //         //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+              //         controller: TextEditingController(text: value),
+              //         editable: true,
+              //       );
+              //     }),
+              if (addInventoryEnum == AddInventoryEnum.use ||
+                  addInventoryEnum == AddInventoryEnum.scrap)
+                CellButton(
+                  isRequired: true,
+                  title: '选择物资',
+                  hint: "请选择",
+                  showArrow: true,
+                  onPressed: () {
+                    SelectMaterialView.push(context).then((value) {
                       if (value != null) {
                         materialId = value.id;
                         wzflSelectNotif.value = wzflList?.firstWhereOrNull(
@@ -223,73 +224,78 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                         canUseCount.value = value.count.toString() ?? '';
                         // selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
                       }
-                    },
+                    });
+                  },
+                ),
+              ValueListenableBuilder(
+                valueListenable: wzflSelectNotif,
+                builder: (BuildContext context, Map? value, Widget? child) {
+                  return CellButton(
+                    isRequired: true,
+                    title: '物资分类',
+                    hint: value?['key'] ?? "请选择",
+                    showArrow: true,
+                    onPressed:
+                        addInventoryEnum != AddInventoryEnum.add
+                            ? null
+                            : () async {
+                              int? selectIndex;
+                              if (wzflList != null) {
+                                selectIndex = await showSelectDialog(
+                                  wzflList!.map((e) => e['key'].toString()).toList(),
+                                );
+                              } else {
+                                MaterialService.getDic('wzfl').then((value) async {
+                                  //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                                  wzflList = value;
+                                  selectIndex = await showSelectDialog(
+                                    wzflList!.map((e) => e['key'].toString()).toList(),
+                                  );
+                                });
+                              }
+                              if (selectIndex != null) {
+                                wzflSelectNotif.value = wzflList?[selectIndex!];
+                              }
+                            },
                   );
                 },
               ),
-            ValueListenableBuilder(
-              valueListenable: wzflSelectNotif,
-              builder: (BuildContext context, Map? value, Widget? child) {
-                return CellButton(
-                  isRequired: true,
-                  title: '物资分类',
-                  hint: value?['key'] ?? "请选择",
-                  showArrow: true,
-                  onPressed: addInventoryEnum != AddInventoryEnum.add
-                      ? null
-                      : () async {
-                          int? selectIndex;
-                          if (wzflList != null) {
-                            selectIndex = await showSelectDialog(wzflList!.map((e) => e['key'].toString()).toList());
-                          } else {
-                            MaterialService.getDic('wzfl').then((value) async {
-                              //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-                              wzflList = value;
-                              selectIndex = await showSelectDialog(wzflList!.map((e) => e['key'].toString()).toList());
-                            });
-                          }
-                          if (selectIndex != null) {
-                            wzflSelectNotif.value = wzflList?[selectIndex!];
-                          }
-                        },
-                );
-              },
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: CellTextField(
-                    isRequired: true,
-                    showDivider: false,
-                    title: '物资名称',
-                    hint: addInventoryEnum == AddInventoryEnum.add ? '请输入' : "请选择",
-                    //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
-                    controller: materialNameController,
-                    focusNode: materialNameFocus,
-                    editable: addInventoryEnum != AddInventoryEnum.add,
+              Row(
+                children: [
+                  Expanded(
+                    child: CellTextField(
+                      isRequired: true,
+                      showDivider: false,
+                      title: '物资名称',
+                      hint: addInventoryEnum == AddInventoryEnum.add ? '请输入' : "请选择",
+                      //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
+                      controller: materialNameController,
+                      focusNode: materialNameFocus,
+                      editable: addInventoryEnum != AddInventoryEnum.add,
+                    ),
                   ),
-                ),
-                addInventoryEnum != AddInventoryEnum.add
-                    ? const SizedBox.shrink()
-                    : TextButton(
-                        onPressed: addInventoryEnum != AddInventoryEnum.add
-                            ? null
-                            : () {
-                                if (wzflSelectNotif.value == null) {
-                                  Toast.show('请选择物资分类');
-                                  return;
-                                }
-                                Toast.showLoading();
-                                MaterialService.getMaterialListWithType(
-                                  wzflSelectNotif.value!['value'].toString(),
-                                  errorCallback: (error) {
+                  addInventoryEnum != AddInventoryEnum.add
+                      ? const SizedBox.shrink()
+                      : TextButton(
+                        onPressed:
+                            addInventoryEnum != AddInventoryEnum.add
+                                ? null
+                                : () {
+                                  if (wzflSelectNotif.value == null) {
+                                    Toast.show('请选择物资分类');
+                                    return;
+                                  }
+                                  Toast.showLoading();
+                                  MaterialService.getMaterialListWithType(
+                                    wzflSelectNotif.value!['value'].toString(),
+                                    errorCallback: (error) {
+                                      Toast.dismiss();
+                                      Toast.failure(msg: error);
+                                    },
+                                  ).then((_value) {
                                     Toast.dismiss();
-                                    Toast.failure(msg: error);
-                                  },
-                                ).then(
-                                  (_value) {
-                                    Toast.dismiss();
-                                    List<String> list = _value?.map((e) => e.name ?? '').toList() ?? [];
+                                    List<String> list =
+                                        _value?.map((e) => e.name ?? '').toList() ?? [];
                                     if (list.isNotEmpty) {
                                       showSelectDialog(list).then((value) {
                                         materialNameController.text = list[value!];
@@ -297,9 +303,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                                         materialId = _value?[value].materialId;
                                       });
                                     }
-                                  },
-                                );
-                              },
+                                  });
+                                },
                         child: Row(
                           children: [
                             Text(
@@ -311,23 +316,24 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                               ),
                             ),
                             Container(
-                                width: ScreenAdapter.width(12),
-                                height: ScreenAdapter.height(12),
-                                margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(4),
-                                  right: ScreenAdapter.width(3),
-                                ),
-                                child: const LoadAssetImage(
-                                  AssetsImages.rightArrow,
-                                  fit: BoxFit.fitHeight,
-                                )),
+                              width: ScreenAdapter.width(12),
+                              height: ScreenAdapter.height(12),
+                              margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(4),
+                                right: ScreenAdapter.width(3),
+                              ),
+                              child: const LoadAssetImage(
+                                AssetsImages.rightArrow,
+                                fit: BoxFit.fitHeight,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-              ],
-            ),
-            const DividerLine(),
-            ValueListenableBuilder(
+                ],
+              ),
+              const DividerLine(),
+              ValueListenableBuilder(
                 valueListenable: wzdwSelectNotif,
                 builder: (context, Map? value, Widget? child) {
                   return CellButton(
@@ -335,26 +341,32 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     title: '物资单位',
                     hint: value?['key'] ?? "请选择",
                     showArrow: true,
-                    onPressed: addInventoryEnum != AddInventoryEnum.add
-                        ? null
-                        : () async {
-                            int? selectIndex;
-                            if (wzdwList != null) {
-                              selectIndex = await showSelectDialog(wzdwList!.map((e) => e['key'].toString()).toList());
-                            } else {
-                              MaterialService.getDic('wzdw').then((value) async {
-                                //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-                                wzdwList = value;
-                                selectIndex = await showSelectDialog(wzdwList!.map((e) => e['key'].toString()).toList());
-                              });
-                            }
-                            if (selectIndex != null) {
-                              wzdwSelectNotif.value = wzdwList?[selectIndex!];
-                            }
-                          },
+                    onPressed:
+                        addInventoryEnum != AddInventoryEnum.add
+                            ? null
+                            : () async {
+                              int? selectIndex;
+                              if (wzdwList != null) {
+                                selectIndex = await showSelectDialog(
+                                  wzdwList!.map((e) => e['key'].toString()).toList(),
+                                );
+                              } else {
+                                MaterialService.getDic('wzdw').then((value) async {
+                                  //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                                  wzdwList = value;
+                                  selectIndex = await showSelectDialog(
+                                    wzdwList!.map((e) => e['key'].toString()).toList(),
+                                  );
+                                });
+                              }
+                              if (selectIndex != null) {
+                                wzdwSelectNotif.value = wzdwList?[selectIndex!];
+                              }
+                            },
                   );
-                }),
-            ValueListenableBuilder(
+                },
+              ),
+              ValueListenableBuilder(
                 valueListenable: canUseCount,
                 builder: (context, String? value, Widget? child) {
                   return CellTextField(
@@ -365,15 +377,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                     controller: counterController,
                     focusNode: counterNameFocus,
-                    inputFormatters: [
-                      //仅数字
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
                   );
-                }),
-            //新增报废和修改报废显示报废原因
-            if (addInventoryEnum == AddInventoryEnum.scrapEdit || addInventoryEnum == AddInventoryEnum.scrap)
-              ValueListenableBuilder(
+                },
+              ),
+              //新增报废和修改报废显示报废原因
+              if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
+                  addInventoryEnum == AddInventoryEnum.scrap)
+                ValueListenableBuilder(
                   valueListenable: bfyySelectNotif,
                   builder: (context, Map? value, Widget? child) {
                     return CellButton(
@@ -383,12 +393,16 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                       onPressed: () async {
                         int? selectIndex;
                         if (bfyyList != null) {
-                          selectIndex = await showSelectDialog(bfyyList!.map((e) => e['key'].toString()).toList());
+                          selectIndex = await showSelectDialog(
+                            bfyyList!.map((e) => e['key'].toString()).toList(),
+                          );
                         } else {
                           MaterialService.getDic('bfyy').then((value) async {
                             //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
                             bfyyList = value;
-                            selectIndex = await showSelectDialog(bfyyList!.map((e) => e['key'].toString()).toList());
+                            selectIndex = await showSelectDialog(
+                              bfyyList!.map((e) => e['key'].toString()).toList(),
+                            );
                           });
                         }
 
@@ -397,85 +411,96 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                         }
                       },
                     );
-                  }),
-            ValueListenableBuilder(
+                  },
+                ),
+              ValueListenableBuilder(
                 valueListenable: selectDateTime,
                 builder: (context, PDuration value, Widget? child) {
                   return CellButton(
-                      isRequired: true,
-                      title: '入库时间',
-                      hint: '请选择',
-                      content: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
-                      onPressed: () {
-                        Picker.showDatePicker(context,
-                            title: '请选择时间',
-                            selectDate: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}", onConfirm: (date) {
+                    isRequired: true,
+                    title: '入库时间',
+                    hint: '请选择',
+                    content: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
+                    onPressed: () {
+                      Picker.showDatePicker(
+                        context,
+                        title: '请选择时间',
+                        selectDate:
+                            "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
+                        onConfirm: (date) {
                           selectDateTime.value = date;
-                        });
-                      });
-                }),
-            CellTextArea(
-              isRequired: false,
-              title: "备注信息",
-              hint: "请输入",
-              showBottomLine: false,
-              controller: remakeController,
-              focusNode: remakeNameFocus,
-              editable: addInventoryEnum != AddInventoryEnum.viewer,
-            ),
-          ],
-        ),
-        Builder(builder: (context) {
-          String text = "";
-          switch (addInventoryEnum) {
-            case AddInventoryEnum.add:
-            case AddInventoryEnum.addEdit:
-            case AddInventoryEnum.useEdit:
-            case AddInventoryEnum.scrapEdit:
-              text = '提交';
-            case AddInventoryEnum.use:
-              text = '领用';
-            case AddInventoryEnum.scrap:
-              text = '报废';
-            case AddInventoryEnum.viewer:
-              return const SizedBox.shrink();
-            case AddInventoryEnum.delete:
-              text = '删除';
-          }
-          return Padding(
-            padding: EdgeInsets.all(ScreenAdapter.width(20)),
-            child: MainButton(
-              text: text,
-              onPressed: () {
-                if (addInventoryEnum == AddInventoryEnum.use) {
-                  //领用物资
-                  useMaterial();
-                  return;
-                }
-                if (addInventoryEnum == AddInventoryEnum.scrap) {
-                  //物资报废
-                  scrapMaterial();
-                  return;
-                }
-                if (addInventoryEnum == AddInventoryEnum.useEdit) {
-                  //编辑领用
-                  editUseMaterial();
-                  return;
-                }
-                if (addInventoryEnum == AddInventoryEnum.scrapEdit) {
-                  //编辑报废
-                  editScrapMaterial();
-                  return;
-                }
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              CellTextArea(
+                isRequired: false,
+                title: "备注信息",
+                hint: "请输入",
+                showBottomLine: false,
+                controller: remakeController,
+                focusNode: remakeNameFocus,
+                editable: addInventoryEnum != AddInventoryEnum.viewer,
+              ),
+            ],
+          ),
+          Builder(
+            builder: (context) {
+              String text = "";
+              switch (addInventoryEnum) {
+                case AddInventoryEnum.add:
+                case AddInventoryEnum.addEdit:
+                case AddInventoryEnum.useEdit:
+                case AddInventoryEnum.scrapEdit:
+                  text = '提交';
+                case AddInventoryEnum.use:
+                  text = '领用';
+                case AddInventoryEnum.scrap:
+                  text = '报废';
+                case AddInventoryEnum.viewer:
+                  return const SizedBox.shrink();
+                case AddInventoryEnum.delete:
+                  text = '删除';
+              }
+              return Padding(
+                padding: EdgeInsets.all(ScreenAdapter.width(20)),
+                child: MainButton(
+                  text: text,
+                  onPressed: () {
+                    if (addInventoryEnum == AddInventoryEnum.use) {
+                      //领用物资
+                      useMaterial();
+                      return;
+                    }
+                    if (addInventoryEnum == AddInventoryEnum.scrap) {
+                      //物资报废
+                      scrapMaterial();
+                      return;
+                    }
+                    if (addInventoryEnum == AddInventoryEnum.useEdit) {
+                      //编辑领用
+                      editUseMaterial();
+                      return;
+                    }
+                    if (addInventoryEnum == AddInventoryEnum.scrapEdit) {
+                      //编辑报废
+                      editScrapMaterial();
+                      return;
+                    }
 
-                if (addInventoryEnum == AddInventoryEnum.addEdit || addInventoryEnum == AddInventoryEnum.add) {
-                  submitData();
-                }
-              },
-            ),
-          );
-        }),
-      ]),
+                    if (addInventoryEnum == AddInventoryEnum.addEdit ||
+                        addInventoryEnum == AddInventoryEnum.add) {
+                      submitData();
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -581,14 +606,16 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       wzdwList = value;
     });
 
-    if (addInventoryEnum == AddInventoryEnum.scrapEdit || addInventoryEnum == AddInventoryEnum.scrap) {
+    if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
+        addInventoryEnum == AddInventoryEnum.scrap) {
       //请求报废原因
       await MaterialService.getDic('bfyy').then((value) {
         bfyyList = value;
       });
     }
     // 领用编辑和报废编辑回显当时的操作数量
-    if (addInventoryEnum == AddInventoryEnum.useEdit || addInventoryEnum == AddInventoryEnum.scrapEdit) {
+    if (addInventoryEnum == AddInventoryEnum.useEdit ||
+        addInventoryEnum == AddInventoryEnum.scrapEdit) {
       counterController.text = makeCount ?? '';
     }
     if (materialId != null) {
@@ -685,10 +712,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "remark": remakeController.text,
         };
         Log.d('data: $data');
-        await httpsClient.post(
-          '/api/stockrecord/putin',
-          data: data,
-        );
+        await httpsClient.post('/api/stockrecord/putin', data: data);
       }
       if (addInventoryEnum == AddInventoryEnum.addEdit) {
         Map data = {
@@ -697,15 +721,12 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "count": counterController.text,
           "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
-          "rowVersion": rowVersion
+          "rowVersion": rowVersion,
         };
 
         Log.d('data: $data');
 
-        await httpsClient.put(
-          '/api/stockrecord/putin',
-          data: data,
-        );
+        await httpsClient.put('/api/stockrecord/putin', data: data);
       }
 
       Toast.dismiss();

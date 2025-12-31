@@ -256,7 +256,7 @@ class EventListController extends GetxController {
       return loimiaList.firstWhereOrNull((e) => e['value'] == '${model.loimia}')?['label'] ?? '';
     }
     if (isTreatment) {
-      return loimiaList.firstWhereOrNull((e) => e['value'] == '${model.illness}')?['label'] ?? '';
+      return diseaseList.firstWhereOrNull((e) => e['value'] == '${model.illness}')?['label'] ?? '';
     }
     if (isHealth) {
       return healthList.firstWhereOrNull((e) => e['value'] == '${model.type}')?['label'] ?? '';

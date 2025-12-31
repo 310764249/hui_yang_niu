@@ -27,6 +27,8 @@ class _DeviceSerialPlayerPageState extends State<DeviceSerialPlayerPage> {
             appKey: widget.detailsEntity.appKey,
             accessToken: widget.detailsEntity.token,
             region: EzvizRegion.china, // Optional: per-instance region
+            compactControls: true,
+            showControls: true,
           ),
         ),
       ),

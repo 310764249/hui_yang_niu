@@ -36,7 +36,7 @@ class NewCattleController extends GetxController {
   TextEditingController calvingNumController = TextEditingController();
   TextEditingController cattleNumOfBatchController = TextEditingController();
   TextEditingController remarkController = TextEditingController();
-
+  TextEditingController eleCodeController = TextEditingController(); //电子耳号
   //
   final FocusNode earNumNode = FocusNode();
   final FocusNode sourceFarmNode = FocusNode();
@@ -44,6 +44,7 @@ class NewCattleController extends GetxController {
   final FocusNode calvingNumNode = FocusNode();
   final FocusNode cattleNumOfBatchNode = FocusNode();
   final FocusNode remarkNode = FocusNode();
+  final FocusNode eleCodeNode = FocusNode();
 
   KeyboardActionsConfig buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
@@ -488,6 +489,8 @@ class NewCattleController extends GetxController {
             Toast.dismiss();
           }
         }
+        //'eleCode': eleCodeController.text.trim(),
+        mapParam['eleCode'] = eleCodeController.text.trim();
         debugPrint('提交参数: $mapParam');
         await httpsClient.post("/api/cow", data: mapParam);
       }

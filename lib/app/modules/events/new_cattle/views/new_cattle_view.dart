@@ -46,6 +46,13 @@ class NewCattleView extends GetView<NewCattleController> {
           focusNode: controller.earNumNode,
           onChanged: (value) => {controller.cattleInfo.earNum = value},
         ),
+        CellTextField(
+          isRequired: false,
+          title: '电子耳号',
+          hint: "请输入",
+          controller: controller.eleCodeController,
+          focusNode: controller.eleCodeNode,
+        ),
         controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10
             ? CellButton(
               isRequired: false,

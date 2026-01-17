@@ -1,32 +1,31 @@
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:intellectual_breed/app/models/smart_weight_model.dart';
 import 'package:intellectual_breed/app/modules/deviceserial/smart_temp_line_chart.dart';
+import 'package:intellectual_breed/app/network/httpsClient.dart';
+import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../models/cattle.dart';
 import '../../models/page_info.dart';
 import '../../models/smart_ear_tag_model.dart';
 import '../../network/apiException.dart';
-import '../../network/httpsClient.dart';
 import '../../routes/app_pages.dart';
 import '../../services/Log.dart';
 import '../../services/colors.dart';
 import '../../services/screenAdapter.dart';
 import '../../widgets/empty_view.dart';
 import '../../widgets/refresh_header_footer.dart';
-import '../../widgets/toast.dart';
 
-class IntelligentEarTagView extends StatefulWidget {
-  const IntelligentEarTagView({super.key});
+class IntelligentWeighingView extends StatefulWidget {
+  const IntelligentWeighingView({super.key});
 
   @override
-  State<IntelligentEarTagView> createState() => _IntelligentEarTagViewState();
+  State<IntelligentWeighingView> createState() => _IntelligentWeighingViewState();
 }
 
-class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
+class _IntelligentWeighingViewState extends State<IntelligentWeighingView>
     with AutomaticKeepAliveClientMixin {
   HttpsClient httpsClient = HttpsClient();
 
@@ -42,7 +41,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
 
   //刷新控件
   late EasyRefreshController refreshController;
-  List<SmartEarTagModel> items = [];
+  List<SmartWeightModel> items = [];
 
   @override
   void initState() {
@@ -64,15 +63,18 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
 
       //接口参数
       Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
-      var response = await httpsClient.get('/api/intelligenteartag', queryParameters: para);
+      var response = await httpsClient.get(
+        '/api/intelligenteartag/getweightlist',
+        queryParameters: para,
+      );
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
       List mapList = model.list;
-      List<SmartEarTagModel> modelList = [];
+      List<SmartWeightModel> modelList = [];
 
       for (var item in mapList) {
-        SmartEarTagModel model = SmartEarTagModel.fromJson(item);
+        SmartWeightModel model = SmartWeightModel.fromJson(item);
         modelList.add(model);
       }
 
@@ -155,7 +157,14 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                     showDialog(
                       context: context,
                       builder: (_) {
-                        return SmartTempLineChart(records: model.tempRecordList, unit: '℃');
+                        return SmartTempLineChart(
+                          records:
+                              model.weightRecordList.map((e) {
+                                TempRecord record = TempRecord(value: e.value, date: e.date);
+                                return record;
+                              }).toList(),
+                          unit: 'kg',
+                        );
                       },
                     );
                   },
@@ -200,10 +209,10 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
   @override
   bool get wantKeepAlive => true;
 
-  void onTapEarTag(SmartEarTagModel model) async {
+  void onTapEarTag(SmartWeightModel model) async {
     Toast.showLoading();
     try {
-      var response = await httpsClient.get("/api/cow/${model.id}");
+      var response = await httpsClient.get("/api/cow/${model.code}");
       var selectedCow = Cattle.fromJson(response);
       Get.toNamed(Routes.CATTLE_DETAIL, arguments: selectedCow);
     } catch (error) {
@@ -223,7 +232,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
 class _ItemView extends StatelessWidget {
   const _ItemView({super.key, required this.model, this.onTapMore, this.onTapEarTag});
 
-  final SmartEarTagModel model;
+  final SmartWeightModel model;
   final VoidCallback? onTapMore;
 
   //点击耳号
@@ -266,10 +275,10 @@ class _ItemView extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Text('当前体温：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              const Text('当前体重：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               Expanded(
                 child: Text(
-                  model.tempRecordList.isEmpty ? '暂无数据' : model.tempRecordList.last.dateString,
+                  model.weightRecordList.isEmpty ? '暂无数据' : model.weightRecordList.last.dateString,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),
@@ -277,7 +286,7 @@ class _ItemView extends StatelessWidget {
           ),
           TextButton(
             onPressed: onTapMore,
-            child: const Text('查看历史体温', style: TextStyle(color: SaienteColors.blue275CF3)),
+            child: const Text('查看历史体重', style: TextStyle(color: SaienteColors.blue275CF3)),
           ),
         ],
       ),

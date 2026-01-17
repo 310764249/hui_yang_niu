@@ -6,6 +6,7 @@ import 'package:ezviz_flutter/widgets/ezviz_simple_player.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/device_serial_entity.dart';
+import 'package:intellectual_breed/app/modules/deviceserial/intelligent_weighing_view.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/AssetsImages.dart';
@@ -49,7 +50,7 @@ class _DeviceSerialPageState extends State<DeviceSerialPage> {
             valueListenable: _tabIndex,
             builder: (context, value, child) {
               return SingleSelectWrap(
-                items: const ['智能监控', "智能耳标"],
+                items: const ['监控', "耳标", "称重"],
                 initialIndex: value,
                 onChanged: (value) {
                   _tabIndex.value = value;
@@ -63,7 +64,11 @@ class _DeviceSerialPageState extends State<DeviceSerialPage> {
             child: PageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
-              children: const [IntelligentMonitoringView(), IntelligentEarTagView()],
+              children: const [
+                IntelligentMonitoringView(),
+                IntelligentEarTagView(),
+                IntelligentWeighingView(),
+              ],
             ),
           ),
         ],

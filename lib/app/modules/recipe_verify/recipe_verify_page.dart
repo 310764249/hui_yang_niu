@@ -290,7 +290,7 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: Text(
-                        '原料组成（kg）',
+                        '原料组成（kg/d）',
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                     ),

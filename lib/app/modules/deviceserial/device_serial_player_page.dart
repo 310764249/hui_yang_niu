@@ -173,12 +173,13 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 控制环
+          // 圆环触控
           GestureDetector(
             onPanStart: (d) => _onTouch(d.localPosition),
             onPanUpdate: (d) => _onTouch(d.localPosition),
             onPanEnd: (_) => _stopPTZ(),
             onPanCancel: _stopPTZ,
+            behavior: HitTestBehavior.opaque,
             child: CustomPaint(
               size: Size(widget.size, widget.size),
               painter: _PTZPainter(
@@ -207,7 +208,7 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
               child: Icon(Icons.center_focus_strong, color: widget.arrowColor, size: innerRadius),
             ),
           ),
-          // 方向箭头
+          // 四个箭头图标
           ..._buildArrows(),
         ],
       ),
@@ -235,20 +236,29 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
         Positioned(
           left: outerRadius + positions[i].dx - 15,
           top: outerRadius + positions[i].dy - 15,
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color:
-                  _activeDirection == directions[i]
-                      ? widget.activeColor
-                      : Colors.white.withOpacity(0.8),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icons[i],
-              color: _activeDirection == directions[i] ? Colors.white : widget.arrowColor,
-              size: 18,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTapDown: (_) {
+              _stopPTZ();
+              _startPTZ(directions[i]);
+            },
+            onTapUp: (_) => _stopPTZ(),
+            onTapCancel: _stopPTZ,
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color:
+                    _activeDirection == directions[i]
+                        ? widget.activeColor
+                        : Colors.white.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icons[i],
+                color: _activeDirection == directions[i] ? Colors.white : widget.arrowColor,
+                size: 18,
+              ),
             ),
           ),
         ),
@@ -261,11 +271,10 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
     final center = Offset(outerRadius, outerRadius);
     final distance = (pos - center).distance;
 
-    // 只在环上操作
     if (distance > innerRadius && distance <= outerRadius) {
       final dir = _getDirection(pos, center);
       if (dir != _activeDirection) {
-        _stopPTZ(); // 停掉之前的方向
+        _stopPTZ();
         _startPTZ(dir);
       }
     } else {
@@ -286,7 +295,7 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
     _activeDirection = direction;
     setState(() {});
 
-    // 立即发送一次 Start 指令
+    // 立即发一次Start
     EzvizManager.shared().controlPTZ(
       widget.deviceSerial,
       widget.cameraId,
@@ -295,7 +304,7 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
       widget.speed,
     );
 
-    // 每 250ms 再发送一次，保证云台持续响应
+    // 定时持续发送
     _ptzTimer = Timer.periodic(Duration(milliseconds: 250), (_) {
       EzvizManager.shared().controlPTZ(
         widget.deviceSerial,
@@ -339,7 +348,7 @@ class _EzvizPTZControllerWidgetState extends State<EzvizPTZControllerWidget> {
   }
 }
 
-/// 绘制控制环和高亮区域
+/// 绘制圆环和高亮方向
 class _PTZPainter extends CustomPainter {
   final double outerRadius;
   final double innerRadius;
@@ -360,7 +369,7 @@ class _PTZPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()..style = PaintingStyle.fill;
 
-    // 背景
+    // 背景圆环
     paint.color = backgroundColor;
     canvas.drawCircle(center, outerRadius, paint);
 
@@ -371,7 +380,7 @@ class _PTZPainter extends CustomPainter {
       ..strokeWidth = 2;
     canvas.drawCircle(center, outerRadius, paint);
 
-    // 内圆透明区
+    // 内圆透明
     paint
       ..color = Colors.transparent
       ..style = PaintingStyle.fill;
@@ -393,7 +402,7 @@ class _PTZPainter extends CustomPainter {
         false,
       );
       path.close();
-      // 内圆挖空
+
       final innerPath = Path()..addOval(Rect.fromCircle(center: center, radius: innerRadius));
       final finalPath = Path.combine(PathOperation.difference, path, innerPath);
       canvas.drawPath(finalPath, paint);

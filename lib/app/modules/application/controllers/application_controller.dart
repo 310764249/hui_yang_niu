@@ -158,8 +158,10 @@ class ApplicationController extends GetxController {
 
       // 是否散户
       bool isRetailer = resourceModel.farmerType == 3;
-      //是否家庭农场
+      //是否家庭农场 暂时那个角色都不显示
       bool isHomeFarm = resourceModel.farmerType == 2;
+      //是否规模场
+      bool isScaleFarm = resourceModel.farmerType == 1;
 
       // 生产管理
       productionManagementList.value =
@@ -173,7 +175,7 @@ class ApplicationController extends GetxController {
                 // CommonData(id: 0, name: "引种", image: AssetsImages.icon1),
                 // CommonData(id: 1, name: "选种", image: AssetsImages.icon2),
                 if (!isHomeFarm) CommonData(id: 2, name: "调拨", image: AssetsImages.icon3),
-                if (!isHomeFarm) CommonData(id: 3, name: "转群", image: AssetsImages.icon4),
+                /*if (!isHomeFarm) */ CommonData(id: 3, name: "转群", image: AssetsImages.icon4),
                 CommonData(id: 4, name: "淘汰", image: AssetsImages.icon5),
                 CommonData(id: 5, name: "死亡", image: AssetsImages.icon6),
                 CommonData(id: 6, name: "出栏", image: AssetsImages.icon7),
@@ -204,7 +206,7 @@ class ApplicationController extends GetxController {
       // 育种管理 【家庭农场】去掉大功能育种管理，其他不变
 
       breedingManagementList.value =
-          isHomeFarm || isRetailer
+          /*isHomeFarm || isRetailer 暂时都不显示育种管理*/ true
               ? []
               : [
                 CommonData(id: 0, name: "后裔登记", image: AssetsImages.icon18),
@@ -238,7 +240,7 @@ class ApplicationController extends GetxController {
               ];
       // 养殖评估
       breedingAssessmentList.value =
-          isRetailer
+          !isScaleFarm
               ? []
               : [
                 CommonData(id: 0, name: "体况评估", image: AssetsImages.icon32),

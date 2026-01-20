@@ -1,5 +1,6 @@
 /// 智能称重设备模型
 class SmartWeightModel {
+  final String id;
   final String cId;
   final String code;
   final String eleCode;
@@ -8,6 +9,7 @@ class SmartWeightModel {
   final List<WeightRecord> weightRecordList;
 
   SmartWeightModel({
+    required this.id,
     required this.cId,
     required this.code,
     required this.eleCode,
@@ -18,6 +20,7 @@ class SmartWeightModel {
 
   factory SmartWeightModel.fromJson(Map<String, dynamic> json) {
     return SmartWeightModel(
+      id: json['id'] as String,
       cId: json['cId'] as String,
       code: json['code'] as String,
       eleCode: json['eleCode'] as String,
@@ -32,6 +35,7 @@ class SmartWeightModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'cId': cId,
       'code': code,
       'eleCode': eleCode,
@@ -62,6 +66,6 @@ class WeightRecord {
 
   //23.00kg(23日05时05分)
   String get dateString {
-    return '${value.toStringAsFixed(2)}kg(${date.year}年${date.month}月${date.day}日${date.hour}时${date.minute}分)';
+    return '${value.toStringAsFixed(2)}kg(${date.month}月${date.day}日${date.hour}时${date.minute}分)';
   }
 }

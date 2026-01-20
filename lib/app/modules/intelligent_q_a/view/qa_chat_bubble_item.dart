@@ -40,14 +40,11 @@ class ChatBubble extends StatelessWidget {
                   data: content,
                   config: MarkdownConfig(
                     configs: const [
-                      PConfig(textStyle: TextStyle(fontSize: 10)),
+                      PConfig(textStyle: TextStyle(fontSize: 15)),
                       H1Config(style: TextStyle(fontSize: 16)),
-                      H2Config(style: TextStyle(fontSize: 14)),
-                      H3Config(style: TextStyle(fontSize: 12)),
-                      H4Config(style: TextStyle(fontSize: 10)),
-                      H5Config(style: TextStyle(fontSize: 8)),
-                      H6Config(style: TextStyle(fontSize: 8)),
-                      CodeConfig(style: TextStyle(fontSize: 8)),
+                      H2Config(style: TextStyle(fontSize: 16)),
+                      H3Config(style: TextStyle(fontSize: 16)),
+                      H4Config(style: TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

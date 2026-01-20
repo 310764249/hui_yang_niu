@@ -212,7 +212,7 @@ class _IntelligentWeighingViewState extends State<IntelligentWeighingView>
   void onTapEarTag(SmartWeightModel model) async {
     Toast.showLoading();
     try {
-      var response = await httpsClient.get("/api/cow/${model.code}");
+      var response = await httpsClient.get("/api/cow/${model.id}");
       var selectedCow = Cattle.fromJson(response);
       Get.toNamed(Routes.CATTLE_DETAIL, arguments: selectedCow);
     } catch (error) {

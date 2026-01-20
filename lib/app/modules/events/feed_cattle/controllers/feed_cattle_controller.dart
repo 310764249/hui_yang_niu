@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -214,9 +212,10 @@ class FeedCattleController extends GetxController {
     tempId = selectFormulaModel?.id;
     Toast.showLoading();
     try {
-      var response = await httpsClient.get("/api/formulaItems/getAll", queryParameters: {
-        "formulaId": (event?.formulaId ?? selectFormulaModel?.id),
-      });
+      var response = await httpsClient.get(
+        "/api/formulaItems/getAll",
+        queryParameters: {"formulaId": (event?.formulaId ?? selectFormulaModel?.id)},
+      );
       Toast.dismiss();
       modelList.clear();
       for (var item in response) {

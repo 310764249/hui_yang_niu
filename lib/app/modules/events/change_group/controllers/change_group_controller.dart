@@ -56,10 +56,7 @@ class ChangeGroupController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = [
-    '种牛',
-    '犊牛/育肥牛',
-  ];
+  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
   //当前选中的牛
@@ -90,8 +87,7 @@ class ChangeGroupController extends GetxController {
   void onInit() async {
     super.onInit();
     //初始化为当前日期
-    timesStr.value =
-        DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
+    timesStr.value = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo_d);
     //栋舍列表
     houseList = await CommonService().requestCowHouse();
     //获取栋舍列表名称用于 Picker 显示
@@ -99,8 +95,7 @@ class ChangeGroupController extends GetxController {
     //获取生长阶段字典项
     List szjdList = AppDictList.searchItems('szjd') ?? [];
     // 筛选显示
-    szjdListFiltered =
-        AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
+    szjdListFiltered = AppDictList.findMapByCode(szjdList, ['3', '4', '5', '6', '7', '8']);
 
     //处理传入参数
     handleArgument();
@@ -266,7 +261,7 @@ class ChangeGroupController extends GetxController {
     try {
       //接口参数
       Map<String, dynamic> para = {
-        'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
+        'cowIds': codeString.value.isEmpty ? '' : [selectedCow.id], // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
         //'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
@@ -301,7 +296,7 @@ class ChangeGroupController extends GetxController {
       Map<String, dynamic> para = {
         'id': event!.id, //事件 ID
         'rowVersion': event!.rowVersion, //事件行版本
-        'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
+        'cowIds': codeString.value.isEmpty ? '' : [selectedCow.id], // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
         //'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
@@ -331,9 +326,7 @@ class ChangeGroupController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       selectedCow = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();

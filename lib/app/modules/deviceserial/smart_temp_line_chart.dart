@@ -86,13 +86,14 @@ class SmartTempLineChart extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '${date.month.toString().padLeft(2, '0')}月${date.day.toString().padLeft(2, '0')}',
+                            '${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}',
                             style: const TextStyle(fontSize: 9),
                           ),
-                          Text(
-                            '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}',
-                            style: const TextStyle(fontSize: 9),
-                          ),
+                          if (unit == '℃')
+                            Text(
+                              '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}',
+                              style: const TextStyle(fontSize: 9),
+                            ),
                         ],
                       ),
                     );

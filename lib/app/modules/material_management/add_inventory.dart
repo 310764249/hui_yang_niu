@@ -373,7 +373,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     isRequired: true,
                     title: '数量${value == null ? '' : ' （剩余$value）'}',
                     hint: '请输入',
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                     controller: counterController,
                     focusNode: counterNameFocus,

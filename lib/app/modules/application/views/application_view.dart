@@ -961,15 +961,24 @@ class ApplicationView extends GetView<ApplicationController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            data.image == Assets.imagesIcFeedPreparation ||
-                    data.image == Assets.imagesIcMaterialStatistics
+            data.image == Assets.imagesIcFeedPreparation
                 ? Container(
-                  height: 38,
-                  width: 38,
+                  //物资管理图标异常处理
+                  height: 36,
+                  width: 36,
                   padding: const EdgeInsets.only(top: 5, bottom: 4),
                   child: LoadAssetImage(data.image!, width: 35, height: 34),
                 )
-                : LoadAssetImage(data.image ?? AssetsImages.fileManagement, width: 35, height: 34),
+                : data.image == Assets.imagesIcMaterialStatistics ||
+                    data.image == Assets.imagesIcIncome
+                ? Container(
+                  //物资管理图标异常处理
+                  height: data.image == Assets.imagesIcIncome ? 34 : 30,
+                  width: data.image == Assets.imagesIcIncome ? 34 : 30,
+                  padding: const EdgeInsets.only(top: 5, bottom: 4),
+                  child: LoadAssetImage(data.image!, width: 35, height: 34),
+                )
+                : LoadAssetImage(data.image ?? AssetsImages.fileManagement, width: 35, height: 35),
             SizedBox(height: ScreenAdapter.height(4)),
             Text(
               data.name,

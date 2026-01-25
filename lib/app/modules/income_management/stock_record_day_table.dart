@@ -18,7 +18,7 @@ class StockRecordDayTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -33,7 +33,7 @@ class StockRecordDayTable extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Text(
               data.date,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
 
@@ -53,28 +53,28 @@ class StockRecordDayTable extends StatelessWidget {
                 child: Text(
                   "入库",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
               Expanded(
                 child: Text(
                   "出库",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
               Expanded(
                 child: Text(
                   "库存",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
               Expanded(
                 child: Text(
                   "单位",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
             ],
@@ -93,7 +93,7 @@ class StockRecordDayTable extends StatelessWidget {
                     child: FittedBox(
                       alignment: Alignment.centerLeft,
                       fit: BoxFit.scaleDown,
-                      child: Text(e.name, maxLines: 2),
+                      child: Text(e.name, maxLines: 2, style: const TextStyle(fontSize: 14)),
                     ),
                   ),
 
@@ -101,7 +101,7 @@ class StockRecordDayTable extends StatelessWidget {
                     child: Text(
                       _fmt(e.addNum),
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: _color(e.addNum)),
+                      style: TextStyle(color: _color(e.addNum), fontSize: 14),
                     ),
                   ),
 
@@ -109,15 +109,25 @@ class StockRecordDayTable extends StatelessWidget {
                     child: Text(
                       _fmt(-e.outboundNum), // 出库为负数展示
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: _color(-e.outboundNum)),
+                      style: TextStyle(color: _color(-e.outboundNum), fontSize: 14),
                     ),
                   ),
 
                   Expanded(
-                    child: Text(_fmt(e.currentNum, prefix: false), textAlign: TextAlign.center),
+                    child: Text(
+                      _fmt(e.currentNum, prefix: false),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14),
+                    ),
                   ),
 
-                  Expanded(child: Text(e.unitName, textAlign: TextAlign.center)),
+                  Expanded(
+                    child: Text(
+                      e.unitName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
                 ],
               ),
             );

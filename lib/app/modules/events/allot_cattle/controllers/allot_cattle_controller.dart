@@ -24,14 +24,18 @@ class AllotCattleController extends GetxController {
   //TODO: Implement AllotCattleController
   //传入的参数
   var argument = Get.arguments;
+
   //编辑事件传入
   AllotEvent? event;
+
   //是否是编辑页面
   RxBool isEdit = false.obs;
+
   //输入框
   TextEditingController countController = TextEditingController();
   TextEditingController columnController = TextEditingController(); //栏位
   TextEditingController remarkController = TextEditingController();
+
   // TextEditingController sourceController = TextEditingController();
   //
   final FocusNode countNode = FocusNode();
@@ -55,23 +59,30 @@ class AllotCattleController extends GetxController {
   // "类型"可选项
   List chooseTypeList = [];
   List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
+
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
+
   //当前选中的牛
   late Cattle selectedCow;
   //耳号
   final codeString = ''.obs;
+
   //当前选中的批次模型
   late CowBatch selectedCowBatch;
+
   //批次号
   final batchNumber = ''.obs;
+
   //数量
   final countNum = 0.obs;
+
   // "接收场"可选项
   List<Farm> farmList = <Farm>[];
   List<String> farmNameList = [];
   String selectedFarmID = ''; //选中的接收场 ID 提交数据使用
   RxString curFarm = ''.obs;
+
   // "栋舍"可选项
   List<CowHouse> houseList = <CowHouse>[];
   List houseNameList = [];
@@ -80,6 +91,7 @@ class AllotCattleController extends GetxController {
 
   //调拨时间
   final timesStr = ''.obs;
+
   //备注
   String remarkStr = '';
 

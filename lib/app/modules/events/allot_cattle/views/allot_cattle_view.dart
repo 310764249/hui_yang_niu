@@ -37,12 +37,14 @@ class AllotCattleView extends GetView<AllotCattleController> {
           content: controller.codeString.value,
           showArrow: !controller.isEdit.value,
           onPressed: () {
-            Get.toNamed(Routes.CATTLELIST,
-                arguments: CattleListArgument(
-                  goBack: true,
-                  single: true,
-                  szjdList: controller.szjdListFiltered,
-                ))?.then((value) {
+            Get.toNamed(
+              Routes.CATTLELIST,
+              arguments: CattleListArgument(
+                goBack: true,
+                single: false,
+                szjdList: controller.szjdListFiltered,
+              ),
+            )?.then((value) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
@@ -52,6 +54,10 @@ class AllotCattleView extends GetView<AllotCattleController> {
               controller.selectedCow = list.first;
               //更新耳号显示
               controller.updateCodeString(list.first.code ?? '');
+              // //保存选中的牛只模型
+              // controller.selectedCow = list;
+              // //更新耳号显示
+              // controller.updateCodeString(list.map((e)=>e.code??'').join(','));
             });
           },
         ),
@@ -71,10 +77,9 @@ class AllotCattleView extends GetView<AllotCattleController> {
           showArrow: !controller.isEdit.value,
           showBottomLine: true,
           onPressed: () {
-            Get.toNamed(Routes.BATCH_LIST,
-                arguments: BatchListArgument(
-                  goBack: true,
-                ))?.then((value) {
+            Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true))?.then((
+              value,
+            ) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
@@ -107,10 +112,11 @@ class AllotCattleView extends GetView<AllotCattleController> {
 
   //操作信息
   Widget _operationInfo(context) {
-    return MyCard(children: [
-      const CardTitle(title: "操作信息"),
-      // 类型
-      RadioButtonGroup(
+    return MyCard(
+      children: [
+        const CardTitle(title: "操作信息"),
+        // 类型
+        RadioButtonGroup(
           isRequired: true,
           title: '类型',
           selectedIndex: controller.chooseTypeIndex.value,
@@ -124,71 +130,84 @@ class AllotCattleView extends GetView<AllotCattleController> {
             }
             // Toast.show('--> $value');
             controller.updateChooseTypeIndex(value);
-          }),
-      // 类型
-      controller.chooseTypeIndex.value == 0
-          ? _oldCowLayout(context)
-          : _youngCowLayout(context),
-      CellButton(
-        isRequired: true,
-        title: "接收场",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.curFarm.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.farmNameList,
-              title: '请选择接收场', onConfirm: (value, p) {
-            controller.updateCurFarmIndex(value, p);
-          });
-        },
-      ),
-      //
-      CellButton(
-        isRequired: true,
-        title: "接收栋舍",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.selectedHouseName.value,
-        onPressed: () {
-          Picker.showSinglePicker(context, controller.houseNameList,
-              title: '请选择栋舍', onConfirm: (value, p) {
-            controller.updateCurCowHouse(value, p);
-          });
-        },
-      ),
-      CellTextField(
-        isRequired: false,
-        title: "接收栏位",
-        hint: "请输入",
-        controller: controller.columnController,
-        focusNode: controller.columnNode,
-        onChanged: (value) {
-          //print(value);
-        },
-      ),
-      CellButton(
-        isRequired: true,
-        title: "调拨时间",
-        hint: "请选择",
-        showBottomLine: true,
-        content: controller.timesStr.value,
-        onPressed: () {
-          Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
-            //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-            controller.updateSeldate(
-                "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-          });
-        },
-      ),
-      CellTextArea(
-        isRequired: false,
-        title: "备注信息",
-        hint: "请输入",
-        showBottomLine: false,
-        controller: controller.remarkController,
-        focusNode: controller.remarkNode,
-      ),
-    ]);
+          },
+        ),
+        // 类型
+        controller.chooseTypeIndex.value == 0 ? _oldCowLayout(context) : _youngCowLayout(context),
+        CellButton(
+          isRequired: true,
+          title: "接收场",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.curFarm.value,
+          onPressed: () {
+            Picker.showSinglePicker(
+              context,
+              controller.farmNameList,
+              title: '请选择接收场',
+              onConfirm: (value, p) {
+                controller.updateCurFarmIndex(value, p);
+              },
+            );
+          },
+        ),
+        //
+        CellButton(
+          isRequired: true,
+          title: "接收栋舍",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.selectedHouseName.value,
+          onPressed: () {
+            Picker.showSinglePicker(
+              context,
+              controller.houseNameList,
+              title: '请选择栋舍',
+              onConfirm: (value, p) {
+                controller.updateCurCowHouse(value, p);
+              },
+            );
+          },
+        ),
+        CellTextField(
+          isRequired: false,
+          title: "接收栏位",
+          hint: "请输入",
+          controller: controller.columnController,
+          focusNode: controller.columnNode,
+          onChanged: (value) {
+            //print(value);
+          },
+        ),
+        CellButton(
+          isRequired: true,
+          title: "调拨时间",
+          hint: "请选择",
+          showBottomLine: true,
+          content: controller.timesStr.value,
+          onPressed: () {
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              onConfirm: (date) {
+                //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+                controller.updateSeldate(
+                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+                );
+              },
+            );
+          },
+        ),
+        CellTextArea(
+          isRequired: false,
+          title: "备注信息",
+          hint: "请输入",
+          showBottomLine: false,
+          controller: controller.remarkController,
+          focusNode: controller.remarkNode,
+        ),
+      ],
+    );
   }
 
   //提交按钮
@@ -196,30 +215,36 @@ class AllotCattleView extends GetView<AllotCattleController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () {
-            controller.requestCommit();
-          }),
+        text: "提交",
+        onPressed: () {
+          controller.requestCommit();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('调拨'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('调拨'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Obx(
+        () => PageWrapper(
+          config: controller.buildConfig(context),
+          child: ListView(
+            children: [
+              //操作信息
+              _operationInfo(context),
+              //提交按钮
+              _commitButton(),
+            ],
+          ),
         ),
-        body: Obx(() => PageWrapper(
-              config: controller.buildConfig(context),
-              child: ListView(children: [
-                //操作信息
-                _operationInfo(context),
-                //提交按钮
-                _commitButton()
-              ]),
-            )));
+      ),
+    );
   }
 }

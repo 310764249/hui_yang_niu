@@ -427,15 +427,33 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
               Toast.show('预混料类型获取失败');
               return;
             }
-            Picker.showSinglePicker(
-              context,
+            //换位多选输入，可以取消，现在单选无法取消
+            SelectRecipe.showMultiPicker(
               controller.yhlNameList,
-              selectData: controller.yhlSelName.value,
-              title: '请选择预混料',
-              onConfirm: (value, position) {
-                controller.updateYhlSelectedItems(value, position);
+              context,
+              maxSelectionCount: 1,
+              isShowProportion: false,
+              itemsSelected: controller.yhlSelIndex == -1 ? null : [(controller.yhlSelIndex, null)],
+              onConfirm: (selected) {
+                debugPrint('selected: $selected');
+                if (ObjectUtil.isEmptyList(selected)) {
+                  controller.updateYhlSelectedItems(Object(), -1);
+                  return;
+                } else {
+                  String value = controller.yhlNameList[selected.first.$1];
+                  controller.updateYhlSelectedItems(value, selected.first.$1);
+                }
               },
             );
+            // Picker.showSinglePicker(
+            //   context,
+            //   controller.yhlNameList,
+            //   selectData: controller.yhlSelName.value,
+            //   title: '请选择预混料',
+            //   onConfirm: (value, position) {
+            //     controller.updateYhlSelectedItems(value, position);
+            //   },
+            // );
           },
         ),
       ],

@@ -247,6 +247,11 @@ class RecipeCreateController extends GetxController {
 
   // 更新个体类型
   void updateYhlSelectedItems(value, int position) {
+    if (position == -1) {
+      yhlSelIndex = position;
+      yhlSelName.value = '';
+      return;
+    }
     yhlSelIndex = position;
     yhlSelName.value = yhlNameList[position];
     update();

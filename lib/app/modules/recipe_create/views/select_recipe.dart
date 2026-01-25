@@ -14,6 +14,7 @@ class SelectRecipe {
     String? title = "请选择",
     String? cancel = "取消",
     String? confirm = "确定",
+    bool isShowProportion = true,
     int? maxSelectionCount,
     List<(int index, int? lowlimit)>? itemsSelected,
     VoidCallback? onCancel,
@@ -31,107 +32,111 @@ class SelectRecipe {
           width: double.infinity,
           height: height,
           color: Colors.white,
-          child: Column(children: [
-            Container(
-              height: 50,
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      SmartDialog.dismiss();
-                      onCancel?.call();
-                    },
-                    child: Text(
-                      cancel!,
+          child: Column(
+            children: [
+              Container(
+                height: 50,
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        SmartDialog.dismiss();
+                        onCancel?.call();
+                      },
+                      child: Text(
+                        cancel!,
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w500,
+                          color: SaienteColors.tab_unselected,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      title!,
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(18),
                         fontWeight: FontWeight.w500,
-                        color: SaienteColors.tab_unselected,
+                        color: SaienteColors.search_color,
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    title!,
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(18),
-                      fontWeight: FontWeight.w500,
-                      color: SaienteColors.search_color,
-                    ),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      SmartDialog.dismiss();
-                      onConfirm?.call(selectedIndex);
-                    },
-                    child: Text(
-                      confirm!,
-                      style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(18),
-                        fontWeight: FontWeight.w500,
-                        color: SaienteColors.blue4D91F5,
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        SmartDialog.dismiss();
+                        onConfirm?.call(selectedIndex);
+                      },
+                      child: Text(
+                        confirm!,
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w500,
+                          color: SaienteColors.blue4D91F5,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const DividerLine(color: SaienteColors.separateLine),
-            Container(
-              width: double.infinity,
-              height: 200,
-              alignment: Alignment.topCenter,
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final exist = selectedIndex.firstWhere(
-                      (e) => e.$1 == index,
-                      orElse: () => (-1, null),
-                    );
-                    return _MultiItem(
-                      title: items[index],
-                      isChecked: exist.$1 != -1,
-                      initialLowLimit: exist.$2,
-                      onCheckChanged: (newCheck) {
-                        final exists = selectedIndex.any((e) => e.$1 == index);
-                        if (newCheck) {
-                          if (!exists) {
-                            if (maxSelectionCount != null && selectedIndex.length >= maxSelectionCount) {
-                              Toast.show("最多选择$maxSelectionCount项");
-                              return false;
-                            }
-                            selectedIndex.add((index, null));
-                          }
-                        } else {
-                          selectedIndex.removeWhere((e) => e.$1 == index);
-                        }
-                        return true;
-                      },
-                      onLowLimitSelected: (lowLimit) {
-                        final idx = selectedIndex.indexWhere((e) => e.$1 == index);
-                        if (idx != -1) {
-                          int countWithLow = selectedIndex.where((e) => e.$2 != null).length;
-                          bool alreadyHad = selectedIndex[idx].$2 != null;
-                          if (lowLimit != null && !alreadyHad && countWithLow >= 2) {
-                            Toast.show("最多有两种饲料可选择占比");
-                            return false;
-                          }
-                          selectedIndex[idx] = (index, lowLimit);
-                          return true;
-                        }
-                        return false;
-                      },
-                    );
-                  },
+                  ],
                 ),
               ),
-            ),
-          ]),
+              const DividerLine(color: SaienteColors.separateLine),
+              Container(
+                width: double.infinity,
+                height: 200,
+                alignment: Alignment.topCenter,
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final exist = selectedIndex.firstWhere(
+                        (e) => e.$1 == index,
+                        orElse: () => (-1, null),
+                      );
+                      return _MultiItem(
+                        title: items[index],
+                        showProportion: isShowProportion,
+                        isChecked: exist.$1 != -1,
+                        initialLowLimit: exist.$2,
+                        onCheckChanged: (newCheck) {
+                          final exists = selectedIndex.any((e) => e.$1 == index);
+                          if (newCheck) {
+                            if (!exists) {
+                              if (maxSelectionCount != null &&
+                                  selectedIndex.length >= maxSelectionCount) {
+                                Toast.show("最多选择$maxSelectionCount项");
+                                return false;
+                              }
+                              selectedIndex.add((index, null));
+                            }
+                          } else {
+                            selectedIndex.removeWhere((e) => e.$1 == index);
+                          }
+                          return true;
+                        },
+                        onLowLimitSelected: (lowLimit) {
+                          final idx = selectedIndex.indexWhere((e) => e.$1 == index);
+                          if (idx != -1) {
+                            int countWithLow = selectedIndex.where((e) => e.$2 != null).length;
+                            bool alreadyHad = selectedIndex[idx].$2 != null;
+                            if (lowLimit != null && !alreadyHad && countWithLow >= 2) {
+                              Toast.show("最多有两种饲料可选择占比");
+                              return false;
+                            }
+                            selectedIndex[idx] = (index, lowLimit);
+                            return true;
+                          }
+                          return false;
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -142,6 +147,7 @@ class _MultiItem extends StatefulWidget {
   final String title;
   final bool isChecked;
   final int? initialLowLimit;
+  final bool showProportion;
   final bool Function(bool check)? onCheckChanged;
   final bool Function(int? lowLimit)? onLowLimitSelected;
 
@@ -152,6 +158,7 @@ class _MultiItem extends StatefulWidget {
     this.initialLowLimit,
     this.onCheckChanged,
     this.onLowLimitSelected,
+    this.showProportion = true,
   });
 
   @override
@@ -207,10 +214,7 @@ class _MultiItemState extends State<_MultiItem> {
         padding: const EdgeInsets.symmetric(horizontal: 30),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              width: ScreenAdapter.height(0.5),
-              color: SaienteColors.separateLine,
-            ),
+            bottom: BorderSide(width: ScreenAdapter.height(0.5), color: SaienteColors.separateLine),
           ),
         ),
         child: Row(
@@ -222,44 +226,51 @@ class _MultiItemState extends State<_MultiItem> {
                 color: check ? SaienteColors.blue4D91F5 : SaienteColors.tab_unselected,
               ),
             ),
-            Expanded(
-              child: check
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      reverse: true,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: lowLimitList.map((e) {
-                          bool isSelected = e == selectLowLimit;
-                          return Container(
-                            width: 42,
-                            height: 26,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            child: OutlinedButton(
-                              onPressed: () => toggleLowLimit(e),
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: isSelected ? SaienteColors.blue4D91F5 : Colors.white,
-                                side: isSelected ? BorderSide.none : null,
-                              ),
-                              child: Text(
-                                "$e%",
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(12),
-                                  color: isSelected ? Colors.white : SaienteColors.tab_unselected,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    )
-                  : const SizedBox(),
-            ),
+            if (widget.showProportion)
+              Expanded(
+                child:
+                    check
+                        ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          reverse: true,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children:
+                                lowLimitList.map((e) {
+                                  bool isSelected = e == selectLowLimit;
+                                  return Container(
+                                    width: 42,
+                                    height: 26,
+                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    child: OutlinedButton(
+                                      onPressed: () => toggleLowLimit(e),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        backgroundColor:
+                                            isSelected ? SaienteColors.blue4D91F5 : Colors.white,
+                                        side: isSelected ? BorderSide.none : null,
+                                      ),
+                                      child: Text(
+                                        "$e%",
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(12),
+                                          color:
+                                              isSelected
+                                                  ? Colors.white
+                                                  : SaienteColors.tab_unselected,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                        )
+                        : const SizedBox(),
+              )
+            else
+              const Spacer(),
             const SizedBox(width: 20),
-            Image.asset(
-              check ? AssetsImages.checkedPng : AssetsImages.uncheckedPng,
-            ),
+            Image.asset(check ? AssetsImages.checkedPng : AssetsImages.uncheckedPng),
           ],
         ),
       ),

@@ -686,10 +686,16 @@ class CattleDetailView extends GetView<CattleDetailController> {
                     child: Text(
                       // 根据type匹配出对应的事件名称
                       () {
-                        String value = AppDictList.findLabelByCode(
-                          controller.czztList,
-                          event.type.toString(),
-                        );
+                        String value = '';
+                        if (event.type == 24) {
+                          value = event.content ?? '';
+                        } else {
+                          value = AppDictList.findLabelByCode(
+                            controller.czztList,
+                            event.type.toString(),
+                          );
+                        }
+
                         if (value == '') {
                           debugPrint('未匹配到事件名称${event.type}');
                           value = "未知";

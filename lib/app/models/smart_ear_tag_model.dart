@@ -4,8 +4,8 @@ class SmartEarTagModel {
   final String cId;
   final String code;
   final String eleCode;
-  final int temp;
-  final int batt;
+  final double temp;
+  final double batt;
   final String envGps;
   final DateTime updateTime;
   final List<TempRecord> tempRecordList;
@@ -30,8 +30,11 @@ class SmartEarTagModel {
       cId: json['cId'] ?? '',
       code: json['code'] ?? '',
       eleCode: json['eleCode'] ?? '',
-      temp: json['temp'] ?? 0,
-      batt: json['batt'] ?? 0,
+
+      /// ✅ 关键修复点
+      temp: (json['temp'] as num?)?.toDouble() ?? 0.0,
+      batt: (json['batt'] as num?)?.toDouble() ?? 0.0,
+
       envGps: json['env_Gps'] ?? '',
       updateTime: DateTime.parse(json['updateTime']),
       tempRecordList:

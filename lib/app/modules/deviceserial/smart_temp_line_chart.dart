@@ -6,7 +6,7 @@ class SmartTempLineChart extends StatelessWidget {
   /// 温度记录
   final List<TempRecord> records;
 
-  /// Y 轴单位（必传，如 ℃）
+  /// Y 轴单位（如 ℃）
   final String unit;
 
   /// 动画时长
@@ -26,8 +26,13 @@ class SmartTempLineChart extends StatelessWidget {
     }
 
     final spots = _buildSpots();
-    final minY = records.map((e) => e.value).reduce((a, b) => a < b ? a : b);
-    final maxY = records.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+
+    final minValue = records.map((e) => e.value).reduce((a, b) => a < b ? a : b);
+    final maxValue = records.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+
+    /// 给 Y 轴上下各留一点空间
+    final minY = minValue.toDouble() - 2;
+    final maxY = maxValue.toDouble() + 2;
 
     return Dialog(
       child: Container(
@@ -35,12 +40,12 @@ class SmartTempLineChart extends StatelessWidget {
         height: 260,
         child: LineChart(
           LineChartData(
-            /// ✅ 关键：左右各留半格，防止最后一列被挤压
+            /// X 轴左右各留半格，避免首尾点被裁
             minX: -0.5,
             maxX: spots.length - 0.5,
 
-            minY: minY.toDouble() - 2,
-            maxY: maxY.toDouble() + 2,
+            minY: minY,
+            maxY: maxY,
 
             lineBarsData: [
               LineChartBarData(
@@ -66,7 +71,7 @@ class SmartTempLineChart extends StatelessWidget {
               rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
 
-              /// X 轴：日期 + 时间（换行）
+              /// X 轴：日期 + 时间
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
@@ -101,18 +106,24 @@ class SmartTempLineChart extends StatelessWidget {
                 ),
               ),
 
-              /// Y 轴：数值 + 单位
+              /// ✅ Y 轴：隐藏首尾刻度，解决挤压问题
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 42,
                   getTitlesWidget: (value, meta) {
+                    /// 关键：不显示最小值和最大值
+                    if (value == meta.min || value == meta.max) {
+                      return const SizedBox.shrink();
+                    }
+
                     return Text('${value.toInt()}$unit', style: const TextStyle(fontSize: 10));
                   },
                 ),
               ),
             ),
           ),
+          duration: animationDuration,
         ),
       ),
     );
@@ -126,7 +137,7 @@ class SmartTempLineChart extends StatelessWidget {
     );
   }
 
-  /// 根据数据量自动计算 X 轴间隔
+  /// 根据数据量自动计算 X 轴刻度间隔
   double _calcInterval() {
     if (records.length <= 6) return 1;
     if (records.length <= 12) return 2;

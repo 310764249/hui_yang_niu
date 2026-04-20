@@ -1,5 +1,5 @@
 name: intellectual_breed
-version: 1.2.1+41
+version: 1.2.3+43
 publish_to: none
 description: Intellectual breed flutter project
 environment:
@@ -32,8 +32,8 @@ dependencies:
   #推送
   jpush_flutter: ^3.3.2 # https://github.com/jpush/jpush-flutter-plugin/tree/dev-2.x
   #百度地图 https://lbsyun.baidu.com/faq/api?title=flutter/loc/create-project/
-  flutter_baidu_mapapi_map: ^3.9.5
-  flutter_bmflocation: ^3.8.0
+  flutter_baidu_mapapi_map: ^3.9.9+1
+  flutter_bmflocation: 3.8.0
   flutter_baidu_mapapi_search: ^3.9.5
   #树形图
   graphview: 1.2.0
@@ -62,11 +62,11 @@ dependencies:
   ezviz_flutter: ^1.2.6
   flutter_html: ^3.0.0
   fl_chart: ^1.1.1
-  
-  em_chat_uikit:
-    git:
-      url: https://github.com/easemob/easemob-uikit-flutter.git
-      ref: 2.3.0
+  em_chat_uikit: ^2.3.0
+#  em_chat_uikit:
+#    git:
+#      url: https://github.com/easemob/easemob-uikit-flutter.git
+#      ref: 2.3.0
 
 dependency_overrides:
   web: any
@@ -90,3 +90,15 @@ flutter:
   #   - family: userIcon #指定一个字体名 根据自己的需求定义
   #     fonts:
   #       - asset: assets/fonts/userIconfont.ttf
+flutter_assets_generator:
+  output_dir: generated/
+  output_filename: assets
+  class_name: Assets
+  auto_detection: true
+  # Automatically add missing dependencies (rive, flutter_svg, lottie) default: true
+  auto_add_dependencies: true
+  # Options: robust (default), legacy (old style)
+  style: legacy
+  package_parameter_enabled: false
+  named_with_parent: true
+  path_ignore: [ ]

@@ -44,13 +44,16 @@ class _IntelligentMonitoringViewState extends State<IntelligentMonitoringView>
 
   getPlayData(DeviceSerialEntity serial) async {
     Toast.showLoading();
-    String api = '/api/deviceserial/getaddress?code=${serial.code}';
+    String api = '/api/deviceserial/getaddress';
     try {
-      var response = await httpsClient.get(api);
+      var response = await httpsClient.get(
+        api,
+        queryParameters: {'code': serial.code, 'channelNo': serial.channelNo},
+      );
       Toast.dismiss();
       DeviceSerialDetailsEntity details = DeviceSerialDetailsEntity.fromJson(response);
 
-      Get.to(() => DeviceSerialPlayerPage(detailsEntity: details));
+      Get.to(() => DeviceSerialPlayerPage(detailsEntity: details, channelNo: serial.channelNo));
     } catch (e) {
       Toast.dismiss();
       if (e is ApiException) {
@@ -80,6 +83,7 @@ class _IntelligentMonitoringViewState extends State<IntelligentMonitoringView>
                 itemBuilder: (_, index) {
                   final item = deviceSerial[index];
                   return DevicePreviewCard(
+                    key: ValueKey(index),
                     item: item,
                     onPlay: (value) {
                       getPlayData(value);

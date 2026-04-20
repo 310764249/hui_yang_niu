@@ -6,6 +6,7 @@ class DeviceSerialEntity {
   final int liveStock;
   final int status;
   final String stateName;
+  final int channelNo;
 
   DeviceSerialEntity({
     required this.code,
@@ -15,6 +16,7 @@ class DeviceSerialEntity {
     required this.liveStock,
     required this.status,
     required this.stateName,
+    required this.channelNo,
   });
 
   factory DeviceSerialEntity.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class DeviceSerialEntity {
       liveStock: json['liveStock'] ?? 0,
       status: json['status'] ?? 0,
       stateName: json['stateName'] ?? '',
+      channelNo: json['channelNo'] ?? '',
     );
   }
 
@@ -38,6 +41,7 @@ class DeviceSerialEntity {
       'liveStock': liveStock,
       'status': status,
       'stateName': stateName,
+      'channelNo': channelNo,
     };
   }
 }

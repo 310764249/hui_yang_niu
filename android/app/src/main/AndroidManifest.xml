@@ -33,7 +33,7 @@
         android:label="慧养牛"
         android:usesCleartextTraffic="true"
         tools:replace="android:label"
-        android:name=".MyApplication"
+        android:name="${applicationName}"
         >
         <!-- 在这里设置android端ak-->
         <meta-data

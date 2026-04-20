@@ -7,9 +7,10 @@ import 'package:ezviz_flutter/widgets/ezviz_simple_player.dart';
 import '../../models/device_serial_details_entity.dart';
 
 class DeviceSerialPlayerPage extends StatefulWidget {
-  const DeviceSerialPlayerPage({super.key, required this.detailsEntity});
+  const DeviceSerialPlayerPage({super.key, required this.detailsEntity, required this.channelNo});
 
   final DeviceSerialDetailsEntity detailsEntity;
+  final int channelNo;
 
   @override
   State<DeviceSerialPlayerPage> createState() => _DeviceSerialPlayerPageState();
@@ -30,7 +31,7 @@ class _DeviceSerialPlayerPageState extends State<DeviceSerialPlayerPage> {
               alignment: Alignment.center,
               child: EzvizSimplePlayer(
                 deviceSerial: widget.detailsEntity.code,
-                channelNo: 1,
+                channelNo: widget.channelNo,
                 config: EzvizPlayerConfig(
                   appKey: widget.detailsEntity.appKey,
                   accessToken: widget.detailsEntity.token,

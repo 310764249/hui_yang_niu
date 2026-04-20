@@ -29,6 +29,15 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+
+
     defaultConfig {
         applicationId = "com.saiente.intellectualbreed"
         minSdk = 24

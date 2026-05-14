@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/page_wrapper.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -34,24 +35,42 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
           title: '耳号',
           hint: "请选择",
           content: controller.codeString.value,
-          showArrow: !controller.isEdit.value,
+          showArrow: true,
           onPressed: () {
-            Get.toNamed(Routes.CATTLELIST,
+            if (controller.isEdit.value) {
+              Alert.showBottomActionSheet(
+                actions: (controller.event!.cowCodeStr ?? '').split(',').toList(),
+                onTap: (int index) {
+                  debugPrint('index: $index');
+                  String code = (controller.event!.cowIds ?? '').split(',')[index];
+                  controller.getCattleMoreData(
+                    code,
+                    callback: (Cattle p1) {
+                      Get.toNamed(Routes.CATTLE_DETAIL, arguments: p1);
+                    },
+                  );
+                },
+              );
+            } else {
+              Get.toNamed(
+                Routes.CATTLELIST,
                 arguments: CattleListArgument(
                   goBack: true,
-                  single: true,
+                  single: false,
                   szjdList: controller.szjdListFiltered,
-                ))?.then((value) {
-              if (ObjectUtil.isEmpty(value)) {
-                return;
-              }
-              //拿到牛只数组，默认 single: true, 单选
-              List<Cattle> list = value as List<Cattle>;
-              //保存选中的牛只模型
-              controller.selectedCow = list.first;
-              //更新耳号显示
-              controller.updateCodeString(list.first.code ?? '');
-            });
+                ),
+              )?.then((value) {
+                if (ObjectUtil.isEmpty(value)) {
+                  return;
+                }
+                //拿到牛只数组，默认 single: true, 单选
+                List<Cattle> list = value as List<Cattle>;
+                //保存选中的牛只模型
+                controller.selectedCow = list;
+                //更新耳号显示
+                controller.updateCodeString(list.map((e) => e.code).join(','));
+              });
+            }
           },
         ),
       ],
@@ -70,10 +89,9 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
           showArrow: !controller.isEdit.value,
           showBottomLine: true,
           onPressed: () {
-            Get.toNamed(Routes.BATCH_LIST,
-                arguments: BatchListArgument(
-                  goBack: true,
-                ))?.then((value) {
+            Get.toNamed(Routes.BATCH_LIST, arguments: BatchListArgument(goBack: true))?.then((
+              value,
+            ) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
@@ -106,24 +124,23 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
         const CardTitle(title: "操作信息"),
         // 类型
         RadioButtonGroup(
-            isRequired: true,
-            title: '类型',
-            selectedIndex: controller.chooseTypeIndex.value,
-            items: controller.chooseTypeNameList,
-            showBottomLine: true,
-            onChanged: (value) {
-              if (controller.isEdit.value) {
-                //编辑页面选择种牛的场景吗，无法切换到批次号列表
-                Toast.show('事件编辑时无法切换类型');
-                return;
-              }
-              // Toast.show('--> $value');
-              controller.updateChooseTypeIndex(value);
-            }),
+          isRequired: true,
+          title: '类型',
+          selectedIndex: controller.chooseTypeIndex.value,
+          items: controller.chooseTypeNameList,
+          showBottomLine: true,
+          onChanged: (value) {
+            if (controller.isEdit.value) {
+              //编辑页面选择种牛的场景吗，无法切换到批次号列表
+              Toast.show('事件编辑时无法切换类型');
+              return;
+            }
+            // Toast.show('--> $value');
+            controller.updateChooseTypeIndex(value);
+          },
+        ),
         // 类型
-        controller.chooseTypeIndex.value == 0
-            ? _oldCowLayout(context)
-            : _youngCowLayout(context),
+        controller.chooseTypeIndex.value == 0 ? _oldCowLayout(context) : _youngCowLayout(context),
         //
         CellButton(
           isRequired: true,
@@ -132,10 +149,14 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
           showBottomLine: true,
           content: controller.selectedHouseName.value,
           onPressed: () {
-            Picker.showSinglePicker(context, controller.houseNameList,
-                title: '请选择栋舍', onConfirm: (value, p) {
-              controller.updateCurCowHouse(value, p);
-            });
+            Picker.showSinglePicker(
+              context,
+              controller.houseNameList,
+              title: '请选择栋舍',
+              onConfirm: (value, p) {
+                controller.updateCurCowHouse(value, p);
+              },
+            );
           },
         ),
         CellTextField(
@@ -155,11 +176,16 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
           showBottomLine: true,
           content: controller.timesStr.value,
           onPressed: () {
-            Picker.showDatePicker(context, title: '请选择时间', onConfirm: (date) {
-              //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
-              controller.updateSeldate(
-                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}");
-            });
+            Picker.showDatePicker(
+              context,
+              title: '请选择时间',
+              onConfirm: (date) {
+                //print('longer >>> 返回数据： ${date.year}-${date.month}-${date.day}');
+                controller.updateSeldate(
+                  "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+                );
+              },
+            );
           },
         ),
         CellTextArea(
@@ -179,30 +205,36 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () {
-            controller.requestCommit();
-          }),
+        text: "提交",
+        onPressed: () {
+          controller.requestCommit();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('转群'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('转群'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Obx(
+        () => PageWrapper(
+          config: controller.buildConfig(context),
+          child: ListView(
+            children: [
+              //操作信息
+              _operationInfo(context),
+              //提交按钮
+              _commitButton(),
+            ],
+          ),
         ),
-        body: Obx(() => PageWrapper(
-              config: controller.buildConfig(context),
-              child: ListView(children: [
-                //操作信息
-                _operationInfo(context),
-                //提交按钮
-                _commitButton()
-              ]),
-            )));
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:common_utils/common_utils.dart';
+import 'package:em_chat_uikit/chat_uikit.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +61,7 @@ class ChangeGroupController extends GetxController {
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
   //当前选中的牛
-  late Cattle selectedCow;
+  late List<Cattle> selectedCow = <Cattle>[];
   //耳号
   final codeString = ''.obs;
   //当前选中的批次模型
@@ -112,7 +113,7 @@ class ChangeGroupController extends GetxController {
     Toast.showLoading();
     if (argument is Cattle) {
       selectedCow = argument;
-      updateCodeString(selectedCow.code ?? '');
+      // updateCodeString(selectedCow.code ?? '');
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑
@@ -120,9 +121,9 @@ class ChangeGroupController extends GetxController {
       //填充耳号/批次号
       if (ObjectUtil.isEmpty(event?.batchNo)) {
         updateChooseTypeIndex(0);
-        updateCodeString(event?.cowCode ?? '');
+        updateCodeString(event?.cowCodeStr ?? '');
         //获取牛只详情
-        await getCattleMoreData(event!.cowId!);
+        // await getCattleMoreData(event!.cowId!);
       } else if (ObjectUtil.isEmpty(event?.cowCode)) {
         updateChooseTypeIndex(1);
         updateBatchNumber(event?.batchNo ?? '');
@@ -210,15 +211,19 @@ class ChangeGroupController extends GetxController {
         Toast.show('耳号未获取,请点击耳号选择');
         return;
       }
-      //时间不能小于入场日期
-      if (timesStr.value.isBefore(selectedCow.inArea)) {
-        Toast.show('转群时间不能早于入场日期');
-        return;
-      }
-      //时间不能小于出生日期
-      if (timesStr.value.isBefore(selectedCow.birth)) {
-        Toast.show('转群时间不能早于出生日期');
-        return;
+
+      for (var item in selectedCow) {
+        String name = item.code ?? '';
+        //时间不能小于入场日期
+        if (timesStr.value.isBefore(item.inArea)) {
+          Toast.show('耳号为：$name 的转群时间不能早于入场日期');
+          return;
+        }
+        //时间不能小于出生日期
+        if (timesStr.value.isBefore(item.birth)) {
+          Toast.show('耳号为：$name 的转群时间不能早于出生日期');
+          return;
+        }
       }
     } else {
       //育肥牛
@@ -261,7 +266,8 @@ class ChangeGroupController extends GetxController {
     try {
       //接口参数
       Map<String, dynamic> para = {
-        'cowIds': codeString.value.isEmpty ? '' : [selectedCow.id], // string 牛只编码
+        'cowIds':
+            codeString.value.isEmpty ? '' : selectedCow.map((e) => e.id).toList(), // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
         //'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
@@ -296,7 +302,8 @@ class ChangeGroupController extends GetxController {
       Map<String, dynamic> para = {
         'id': event!.id, //事件 ID
         'rowVersion': event!.rowVersion, //事件行版本
-        'cowIds': codeString.value.isEmpty ? '' : [selectedCow.id], // string 牛只编码
+        'cowIds':
+            codeString.value.isEmpty ? '' : selectedCow.map((e) => e.id).toList(), // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
         //'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
@@ -324,10 +331,11 @@ class ChangeGroupController extends GetxController {
   }
 
   //获取牛只详情
-  Future<void> getCattleMoreData(String cowId) async {
+  Future<void> getCattleMoreData(String cowId, {Function(Cattle)? callback}) async {
     try {
       var response = await httpsClient.get("/api/cow/$cowId");
-      selectedCow = Cattle.fromJson(response);
+      // selectedCow = Cattle.fromJson(response);
+      callback?.call(Cattle.fromJson(response));
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {

@@ -1,4 +1,5 @@
 import 'package:common_utils/common_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/cow_batch.dart';
 import 'package:intellectual_breed/app/services/AssetsImages.dart';
@@ -53,6 +54,7 @@ class ChangeGroupDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    debugPrint('时间列表进来的详情页面${argument.data}');
     szjdList = AppDictList.searchItems('szjd') ?? [];
     pzList = AppDictList.searchItems('pz') ?? [];
     pclbList = AppDictList.searchItems('pclb') ?? [];
@@ -71,7 +73,7 @@ class ChangeGroupDetailController extends GetxController {
     super.onClose();
   }
 
-//处理传入参数
+  //处理传入参数
   //一类是事件列表时传入件对应的传入模型 SimpleEvent
   //二类是 牛只档案生产记录传入的
   void handleArgument() async {
@@ -85,10 +87,11 @@ class ChangeGroupDetailController extends GetxController {
     }
     if (argument is SimpleEvent) {
       //时间列表进来的详情页面，传入的是 SimpleEvent
+
       event = ChangeGroupEvent.fromJson(argument.data);
       if (event!.cowCode != null) {
         //获取牛只详情
-        await getCattleMoreData(event!.cowId);
+        // await getCattleMoreData(event?.cowId ?? '');
         //处理头部显示的数据
         handleCattleHeader();
       } else if (event!.batchNo != null) {
@@ -101,7 +104,7 @@ class ChangeGroupDetailController extends GetxController {
       //生产记录传入的只有耳号
       CattleEvent cattleEvent = argument;
       //获取牛只详情
-      await getCattleMoreData(cattleEvent.cowId!);
+      // await getCattleMoreData(cattleEvent.cowId!);
       //处理头部显示的数据
       handleCattleHeader();
       //请求事件详情
@@ -118,8 +121,7 @@ class ChangeGroupDetailController extends GetxController {
     code = cattle!.code ?? '';
     genderCode = cattle!.gender.toString();
     gender = AppDictList.findLabelByCode(gmList, genderCode);
-    szjd =
-        AppDictList.findLabelByCode(szjdList, cattle!.growthStage.toString());
+    szjd = AppDictList.findLabelByCode(szjdList, cattle!.growthStage.toString());
     pz = AppDictList.findLabelByCode(pzList, cattle!.kind.toString());
     cowHouseName = cattle!.cowHouseName ?? Constant.placeholder;
     ageOfDay = cattle!.ageOfDay.toString();
@@ -144,12 +146,11 @@ class ChangeGroupDetailController extends GetxController {
   }
 
   //获取牛只详情
-  Future<void> getCattleMoreData(String cowId) async {
+  Future<void> getCattleMoreData(String cowId, {Function(Cattle)? callback}) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
-      cattle = Cattle.fromJson(response);
+      var response = await httpsClient.get("/api/cow/$cowId");
+      callback?.call(Cattle.fromJson(response));
+      // cattle = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {
@@ -187,9 +188,7 @@ class ChangeGroupDetailController extends GetxController {
   //获取事件详情
   Future<void> getCattleEvent(String businessId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/turngroup/$businessId",
-      );
+      var response = await httpsClient.get("/api/turngroup/$businessId");
       event = ChangeGroupEvent.fromJson(response);
     } catch (error) {
       Toast.dismiss();

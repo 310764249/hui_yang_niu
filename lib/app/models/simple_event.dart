@@ -4,6 +4,8 @@ class SimpleEvent {
   late final String? date; //时间
   late final String created; //时间
   late final String? cowCode; //耳号
+  late final String? cowIds; //耳号
+  late final String? cowCodeStr; //耳号
   late final String? batchNo; //批次号
   late final String? cowHouseName; //栋舍名称
   late final String? executor; //操作人
@@ -55,6 +57,8 @@ class SimpleEvent {
     this.nonpregnantDay,
     this.weanCalfNum,
     this.calfNum,
+    this.cowIds,
+    this.cowCodeStr,
   });
   SimpleEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -83,6 +87,8 @@ class SimpleEvent {
     nonpregnantDay = json['nonpregnantDay'];
     weanCalfNum = json['weanCalfNum'];
     calfNum = json['calfNum'];
+    cowIds = json['cowIds'];
+    cowCodeStr = json['cowCodeStr'];
   }
 
   Map<String, dynamic> toJson() {

@@ -1287,7 +1287,8 @@ class PreventionEvent {
   late final String id; //ID
   late final String date; //防疫时间
   late final int loimia; //疫病 1：口蹄疫、2：牛布氏杆菌病、3：牛病毒性腹泻、4：牛副伤寒、5：牛巴氏杆菌病、6：牛传染性胸膜肺炎、7：魏氏梭菌病、8：牛传染性鼻气管炎
-  late final int vaccine; //疫苗 1：口蹄疫疫苗、2：牛布氏杆菌病疫苗、3：牛病毒性腹泻疫苗、4：牛副伤寒灭活菌苗、5：牛巴氏杆菌病灭活菌苗、6：牛传染性胸膜肺炎疫苗、7：魏氏梭菌病疫苗、8：牛传染性鼻气管炎
+  late final int
+  vaccine; //疫苗 1：口蹄疫疫苗、2：牛布氏杆菌病疫苗、3：牛病毒性腹泻疫苗、4：牛副伤寒灭活菌苗、5：牛巴氏杆菌病灭活菌苗、6：牛传染性胸膜肺炎疫苗、7：魏氏梭菌病疫苗、8：牛传染性鼻气管炎
   late final String? cowId; //牛只编码
   late final String? cowCode; //耳号
   late final String? batchNo; //批次号
@@ -1639,12 +1640,12 @@ class ChangeGroupEvent {
   late final String id; //ID
   late final String date; //转群时间
   late final int type; //类型1：种牛；2：犊牛-育肥牛；
-  late final String cowId; //牛只编码
+  late final String? cowId; //牛只编码
   late final String? cowCode; //耳号
   late final String? cowEleCode; //电子耳号
   late final String? batchNo; //批次号
   late final int count; //数量
-  late final String outCowHouseId; //转出栋舍
+  late final String? outCowHouseId; //转出栋舍
   late final String? outCowHouseName; //转出栋舍名称
   late final String? outColumn; //转出栏位
   late final String inCowHouseId; //转入栋舍
@@ -1658,6 +1659,8 @@ class ChangeGroupEvent {
   late final String? modified; //修改时间
   late final String? modifiedBy; //修改人
   late final String rowVersion; //行版本
+  late final String? cowIds; //耳号
+  late final String? cowCodeStr; //耳号
 
   ChangeGroupEvent({
     required this.id,
@@ -1682,6 +1685,8 @@ class ChangeGroupEvent {
     this.modified,
     this.modifiedBy,
     required this.rowVersion,
+    this.cowIds,
+    this.cowCodeStr,
   });
   ChangeGroupEvent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -1706,6 +1711,8 @@ class ChangeGroupEvent {
     modified = json['modified'];
     modifiedBy = json['modifiedBy'];
     rowVersion = json['rowVersion'];
+    cowIds = json['cowIds'];
+    cowCodeStr = json['cowCodeStr'];
   }
 
   Map<String, dynamic> toJson() {
@@ -1743,7 +1750,8 @@ class TreatmentEvent {
   late final String? cowCode; //耳号
   late final String? batchNo; //批次号
   late final String date; //诊疗时间
-  late final int illness; //疾病名称 1：口蹄疫、2：病毒性腹泻、3：疟疾、4：高热呼吸道病毒性病害（BHV-1）、5：传染性鼻气管炎、6：瘤胃酸中毒、7：钙缺乏症、8：肺炎、9：产后子宫炎
+  late final int
+  illness; //疾病名称 1：口蹄疫、2：病毒性腹泻、3：疟疾、4：高热呼吸道病毒性病害（BHV-1）、5：传染性鼻气管炎、6：瘤胃酸中毒、7：钙缺乏症、8：肺炎、9：产后子宫炎
   late final int? count; //事件的头数
   late final String? symptom; //症状
   late final String? treatmentPerson; //诊疗人

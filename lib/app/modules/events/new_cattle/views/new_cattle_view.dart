@@ -300,21 +300,23 @@ class NewCattleView extends GetView<NewCattleController> {
   Widget _youngCattleLayout(BuildContext context, bool isBabyCalf) {
     return Column(
       children: [
-        // _genderSelectionLayout(),
+        _genderSelectionLayout(),
         // 批次号不可编辑
-        // if (controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10)
-        //   CellButton(
-        //     isRequired: true,
-        //     title: '批次号（自动生成）',
-        //     content:
-        //         controller.cattleInfo.currentStage == 1 ? controller.tempBatchNumAuto1.value : controller.tempBatchNumAuto2.value,
-        //     // 区分犊牛和育肥牛
-        //     showArrow: false,
-        //     onPressed: () {
-        //       // 如果页面初始化批次号获取失败的话, 需要再次点击生成[批次号(自动生成)]
-        //       controller.retrieveBatchNumAutoIfNeeded();
-        //     },
-        //   ),
+        if (controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10)
+          CellButton(
+            isRequired: true,
+            title: '批次号（自动生成）',
+            content:
+                controller.cattleInfo.currentStage == 1
+                    ? controller.tempBatchNumAuto1.value
+                    : controller.tempBatchNumAuto2.value,
+            // 区分犊牛和育肥牛
+            showArrow: false,
+            onPressed: () {
+              // 如果页面初始化批次号获取失败的话, 需要再次点击生成[批次号(自动生成)]
+              controller.retrieveBatchNumAutoIfNeeded();
+            },
+          ),
         CellTextField(
           isRequired: true,
           title: '批次号下牛犊数量',
@@ -580,10 +582,11 @@ class NewCattleView extends GetView<NewCattleController> {
 
           // // 犊牛
           // if (controller.cattleInfo.currentStage == 1) _youngCattleLayout(context, true),
-          // // 育肥牛
+          //  育肥牛
           // if (controller.cattleInfo.currentStage == 2) _youngCattleLayout(context, false),
           // 后备牛
-          if (controller.cattleInfo.currentStage == 3) _reserveCattleLayout(context),
+          if (controller.cattleInfo.currentStage == 3 || controller.cattleInfo.currentStage == 2)
+            _reserveCattleLayout(context),
           // // 种牛
           // if (controller.cattleInfo.currentStage == 4) _breedingCattleLayout(context),
           // 妊娠母牛

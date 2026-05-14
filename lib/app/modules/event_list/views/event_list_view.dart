@@ -97,12 +97,16 @@ class EventListView extends GetView<EventListController> {
                             ),
                           ),
                           SizedBox(width: ScreenAdapter.width(5)),
-                          Text(
-                            controller.getItemTitle(model),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(14),
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
+                          Expanded(
+                            child: Text(
+                              controller.getItemTitle(model),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(14),
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ],

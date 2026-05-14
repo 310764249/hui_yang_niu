@@ -1,3 +1,4 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -135,6 +136,7 @@ class EventListController extends GetxController {
 
   /// 显示标题盘点
   String getItemTitle(SimpleEvent model) {
+    debugPrint('getItemTitle${model.cowCodeStr}');
     String title = '';
     if (argument.api == '/api/feedpreparation') {
       title = model.formulaName ?? '';
@@ -144,6 +146,8 @@ class EventListController extends GetxController {
           title = '单号-${model.no}';
         } else if (model.cowHouseName != null) {
           title = '栋舍-${model.cowHouseName}';
+        } else if (model.cowCodeStr != null) {
+          title = '耳号-${model.cowCodeStr}';
         }
       } else {
         title = '批次号-${model.batchNo}';

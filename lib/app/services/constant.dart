@@ -102,7 +102,7 @@ class Constant {
   //1:犊牛;2:育肥牛;3:后备牛;4:种牛;5:妊娠母牛;6:哺乳母牛;7:空怀母牛;8:已淘汰;9:已销售;10:已死亡;11:选育牛
   static List<CommonData> currentStageList = [
     // CommonData(id: 1, name: '犊牛'), // Calf
-    // CommonData(id: 2, name: '育肥牛'), // Young cattle
+
     // CommonData(id: 3, name: '后备牛'), // Reserve cattle
     // CommonData(id: 4, name: '种牛'), // Breeding cattle
     CommonData(id: 5, name: '妊娠母牛'), // Pregnant cow
@@ -111,6 +111,7 @@ class Constant {
     CommonData(id: 3, name: '后备公牛'), // Reserve bull
     CommonData(id: 4, name: '种公牛'), // Breeding bull
     CommonData(id: 3, name: '后备母牛'), // Reserve bull
+    CommonData(id: 2, name: '育肥牛'), // Young cattle
   ];
 
   // "胎次"可选项

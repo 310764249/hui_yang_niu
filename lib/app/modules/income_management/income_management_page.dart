@@ -14,7 +14,7 @@ class IncomeManagementPage extends StatefulWidget {
 }
 
 class _IncomeManagementPageState extends State<IncomeManagementPage> {
-  PageController pageController = PageController();
+  late PageController pageController;
 
   // 库存按日统计
   // /api/stockrecord/daystatistics?PageIndex=1&PageSize=10
@@ -29,6 +29,7 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
     super.initState();
     final arg = Get.arguments;
     currentIndex.value = arg?['type'] == 'income' ? 0 : 1;
+    pageController = PageController(initialPage: currentIndex.value);
   }
 
   @override
@@ -40,6 +41,7 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('arg: ${Get.arguments}');
     return Scaffold(
       appBar: AppBar(
         title: ValueListenableBuilder(
@@ -132,7 +134,7 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
             child: PageView(
               physics: const NeverScrollableScrollPhysics(),
               controller: pageController,
-              children: const [StockRecordGroup(), ManualWorkGroup()],
+              children: const [ManualWorkGroup(), StockRecordGroup()],
             ),
           ),
         ],

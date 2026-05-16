@@ -55,6 +55,7 @@ class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepA
         Expanded(
           child: PageView(
             controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
             children: const [StockRecordDayView(), StockRecordMonth()],
           ),
         ),

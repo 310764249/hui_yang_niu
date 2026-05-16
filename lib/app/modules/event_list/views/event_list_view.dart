@@ -200,45 +200,46 @@ class EventListView extends GetView<EventListController> {
                           width: ScreenAdapter.getScreenWidth(),
                           child: Row(
                             children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  style: ButtonStyle(
-                                    // 阴影颜色
-                                    shadowColor: MaterialStateProperty.all(Colors.transparent),
-                                    backgroundColor: MaterialStateProperty.all(
-                                      SaienteColors.blueE5EEFF,
-                                    ),
-                                    foregroundColor: MaterialStateProperty.all(
-                                      SaienteColors.blue275CF3,
-                                    ),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          ScreenAdapter.width(2.5),
+                              if (!controller.isShowEdit)
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                      // 阴影颜色
+                                      shadowColor: MaterialStateProperty.all(Colors.transparent),
+                                      backgroundColor: MaterialStateProperty.all(
+                                        SaienteColors.blueE5EEFF,
+                                      ),
+                                      foregroundColor: MaterialStateProperty.all(
+                                        SaienteColors.blue275CF3,
+                                      ),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            ScreenAdapter.width(2.5),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    Get.toNamed(
-                                      controller.argument.routerStr,
-                                      arguments: model,
-                                    )?.then((value) {
-                                      // controller.refreshController
-                                      //     .callRefresh();
-                                      controller.searchEventsList();
-                                    });
-                                  },
-                                  child: Text(
-                                    '编辑',
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(14),
-                                      fontWeight: FontWeight.w400,
+                                    onPressed: () {
+                                      Get.toNamed(
+                                        controller.argument.routerStr,
+                                        arguments: model,
+                                      )?.then((value) {
+                                        // controller.refreshController
+                                        //     .callRefresh();
+                                        controller.searchEventsList();
+                                      });
+                                    },
+                                    child: Text(
+                                      '编辑',
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(14),
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: ScreenAdapter.width(10)),
+                              if (!controller.isShowEdit) SizedBox(width: ScreenAdapter.width(10)),
                               Expanded(
                                 child: ElevatedButton(
                                   style: ButtonStyle(

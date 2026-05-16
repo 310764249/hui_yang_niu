@@ -57,7 +57,7 @@ class ChangeGroupController extends GetxController {
 
   // "类型"可选项
   List chooseTypeList = [];
-  List<String> chooseTypeNameList = ['种牛', '犊牛/育肥牛'];
+  List<String> chooseTypeNameList = ['个体', '批量'];
   // "类型"选中项: 默认第一项
   final chooseTypeIndex = 0.obs;
   //当前选中的牛

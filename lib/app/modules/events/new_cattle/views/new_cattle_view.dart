@@ -37,23 +37,9 @@ class NewCattleView extends GetView<NewCattleController> {
   Widget _commonLayout(BuildContext context) {
     return Column(
       children: [
-        CellTextField(
-          isRequired: true,
-          title: '耳号',
-          hint: '请输入',
-          content: controller.cattleInfo.earNum,
-          controller: controller.earNumController,
-          focusNode: controller.earNumNode,
-          onChanged: (value) => {controller.cattleInfo.earNum = value},
-        ),
-        CellTextField(
-          isRequired: false,
-          title: '电子耳号',
-          hint: "请输入",
-          controller: controller.eleCodeController,
-          focusNode: controller.eleCodeNode,
-        ),
-        controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10
+        controller.cattleInfo.currentStage == 2 ||
+                controller.cattleInfo.currentStage == 8 ||
+                controller.cattleInfo.currentStage == 10
             ? CellButton(
               isRequired: false,
               title: '批次（批次牛只必传）',
@@ -89,13 +75,18 @@ class NewCattleView extends GetView<NewCattleController> {
               content: controller.cattleInfo.batchNum?.value,
               onPressed: () {
                 //1：犊牛；2：育肥牛；3：引种牛；4：选育牛；5：后备公牛；6：后备母牛
+                int? type;
+                if (controller.cattleInfo.currentStage == 8) {
+                  type = 8;
+                } else if (controller.cattleInfo.currentStage == 2) {
+                  type = 2;
+                } else {
+                  type = 6;
+                }
 
                 Get.toNamed(
                   Routes.BATCH_LIST,
-                  arguments: BatchListArgument(
-                    goBack: true,
-                    type: controller.cattleInfo.currentStage == 8 ? 5 : 6,
-                  ),
+                  arguments: BatchListArgument(goBack: true, type: type),
                 )?.then((value) {
                   if (ObjectUtil.isEmpty(value)) {
                     return;
@@ -108,6 +99,23 @@ class NewCattleView extends GetView<NewCattleController> {
               },
             )
             : const SizedBox.shrink(),
+        CellTextField(
+          isRequired: true,
+          title: '耳号',
+          hint: '请输入',
+          content: controller.cattleInfo.earNum,
+          controller: controller.earNumController,
+          focusNode: controller.earNumNode,
+          onChanged: (value) => {controller.cattleInfo.earNum = value},
+        ),
+        CellTextField(
+          isRequired: false,
+          title: '电子耳号',
+          hint: "请输入",
+          controller: controller.eleCodeController,
+          focusNode: controller.eleCodeNode,
+        ),
+
         CellTextField(
           isRequired: false,
           title: '来源场',
@@ -298,87 +306,7 @@ class NewCattleView extends GetView<NewCattleController> {
 
   // 犊牛 & 育肥牛
   Widget _youngCattleLayout(BuildContext context, bool isBabyCalf) {
-    return Column(
-      children: [
-        _genderSelectionLayout(),
-        // 批次号不可编辑
-        if (controller.cattleInfo.currentStage == 8 || controller.cattleInfo.currentStage == 10)
-          CellButton(
-            isRequired: true,
-            title: '批次号（自动生成）',
-            content:
-                controller.cattleInfo.currentStage == 1
-                    ? controller.tempBatchNumAuto1.value
-                    : controller.tempBatchNumAuto2.value,
-            // 区分犊牛和育肥牛
-            showArrow: false,
-            onPressed: () {
-              // 如果页面初始化批次号获取失败的话, 需要再次点击生成[批次号(自动生成)]
-              controller.retrieveBatchNumAutoIfNeeded();
-            },
-          ),
-        CellTextField(
-          isRequired: true,
-          title: '批次号下牛犊数量',
-          hint: '请输入',
-          keyboardType: TextInputType.number,
-          content: controller.cattleInfo.cattleNumOfBatch,
-          controller: controller.cattleNumOfBatchController,
-          focusNode: controller.cattleNumOfBatchNode,
-          onChanged: (value) => {controller.cattleInfo.cattleNumOfBatch = value},
-        ),
-        // 育肥牛有来源场和入场时间, 犊牛没有
-        isBabyCalf
-            ? const SizedBox()
-            : CellTextField(
-              isRequired: false,
-              title: '来源场',
-              hint: '请输入',
-              content: controller.cattleInfo.sourceFarm?.value,
-              controller: controller.sourceFarmController,
-              focusNode: controller.sourceFarmNode,
-              onChanged: (value) => {controller.cattleInfo.sourceFarm?.value = value},
-            ),
-        isBabyCalf
-            ? const SizedBox()
-            : CellButton(
-              isRequired: false,
-              title: '入场时间',
-              hint: '请选择',
-              content: controller.cattleInfo.inDate?.value,
-              onPressed: () {
-                Picker.showDatePicker(
-                  context,
-                  title: '请选择时间',
-                  selectDate: controller.cattleInfo.inDate?.value,
-                  onConfirm: (date) {
-                    controller.cattleInfo.inDate?.value =
-                        "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                  },
-                );
-              },
-            ),
-        CellButton(
-          isRequired: true,
-          title: '出生年月',
-          hint: '请选择',
-          content: controller.cattleInfo.birthDate?.value,
-          onPressed: () {
-            Picker.showDatePicker(
-              context,
-              title: '请选择时间',
-              selectDate: controller.cattleInfo.birthDate?.value,
-              onConfirm: (date) {
-                controller.cattleInfo.birthDate?.value =
-                    "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-              },
-            );
-          },
-        ),
-        _breedSelectionLayout(context),
-        _shedSelectionLayout(context),
-      ],
-    );
+    return Column(children: [_commonLayout(context), _commonCowLayout(context)]);
   }
 
   // 后备牛
@@ -583,10 +511,9 @@ class NewCattleView extends GetView<NewCattleController> {
           // // 犊牛
           // if (controller.cattleInfo.currentStage == 1) _youngCattleLayout(context, true),
           //  育肥牛
-          // if (controller.cattleInfo.currentStage == 2) _youngCattleLayout(context, false),
+          if (controller.cattleInfo.currentStage == 2) _youngCattleLayout(context, false),
           // 后备牛
-          if (controller.cattleInfo.currentStage == 3 || controller.cattleInfo.currentStage == 2)
-            _reserveCattleLayout(context),
+          if (controller.cattleInfo.currentStage == 3) _reserveCattleLayout(context),
           // // 种牛
           // if (controller.cattleInfo.currentStage == 4) _breedingCattleLayout(context),
           // 妊娠母牛

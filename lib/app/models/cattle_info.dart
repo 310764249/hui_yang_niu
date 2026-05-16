@@ -184,7 +184,7 @@ class CattleInfo {
         debugPrint('${info.shedId.isRxStringNotBlank().orFalse()} - shedId - ');
         debugPrint('${info.operationDate.isRxStringNotBlank().orFalse()} - operationDate -');
 
-        bool b1 = (info.gender?.value == 1 || info.gender?.value == 2);
+        bool b1 = (info.gender?.value == 1 || info.gender?.value == 2 || info.gender?.value == 3);
         bool b2 = info.cattleNumOfBatch.isNotBlank().orFalse();
         bool b3 = info.birthDate.isRxStringNotBlank().orFalse();
         bool b4 = info.breed.isRxStringNotBlank().orFalse();

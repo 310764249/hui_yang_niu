@@ -61,6 +61,11 @@ class EventListController extends GetxController {
     return argument.api == '/api/feedpreparation';
   }
 
+  //是否展示编辑按钮
+  bool get isShowEdit {
+    return argument.api == '/api/feedpreparation' || argument.name == '转群';
+  }
+
   //是否防疫
   bool get isDisease => argument.name == '防疫';
 

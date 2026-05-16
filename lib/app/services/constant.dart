@@ -109,8 +109,8 @@ class Constant {
     CommonData(id: 6, name: '哺乳母牛'), // Milking cow
     CommonData(id: 7, name: '空怀母牛'), // Empty cow
     CommonData(id: 3, name: '后备公牛'), // Reserve bull
-    CommonData(id: 4, name: '种公牛'), // Breeding bull
     CommonData(id: 3, name: '后备母牛'), // Reserve bull
+    CommonData(id: 4, name: '种公牛'), // Breeding bull
     CommonData(id: 2, name: '育肥牛'), // Young cattle
   ];
 

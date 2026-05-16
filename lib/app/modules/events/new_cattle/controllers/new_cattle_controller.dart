@@ -343,7 +343,12 @@ class NewCattleController extends GetxController {
     // 出生时间
     cattleInfo.birthDate?.value = batchCattle.birth.orEmpty();
     // 公母
-    cattleInfo.gender?.value = batchCattle.gender;
+    if (cattleInfo.currentStage == 2) {
+      cattleInfo.gender?.value = 3;
+    } else {
+      cattleInfo.gender?.value = batchCattle.gender;
+    }
+
     // tempGenderPosition.value = batchCattle.gender == 1 ? 0 : 1; // 设置性别
     // 品种
     cattleInfo.breed?.value = batchCattle.kind.toString();
@@ -354,6 +359,7 @@ class NewCattleController extends GetxController {
     // 栏位
     cattleInfo.field?.value = batchCattle.column.orEmpty();
     fieldController.text = batchCattle.column.orEmpty();
+    cattleInfo.cattleNumOfBatch = '${batchCattle.count ?? 0}';
 
     // 批次选完之后设置胎次
     if (batchCattle.gender == 2) {
@@ -433,7 +439,7 @@ class NewCattleController extends GetxController {
 
       //接口参数
       Map<String, dynamic> mapParam;
-      if (cattleInfo.currentStage == 1 || cattleInfo.currentStage == 2) {
+      if (cattleInfo.currentStage == 1) {
         // 犊牛 & 育肥牛
         mapParam = {
           "farmId": farmId.trim(),

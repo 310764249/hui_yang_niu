@@ -53,6 +53,7 @@ class _ManualWorkGroupState extends State<ManualWorkGroup> with AutomaticKeepAli
         Expanded(
           child: PageView(
             controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
             children: const [ManualWorkDay(), ManualWorkMonth()],
           ),
         ),

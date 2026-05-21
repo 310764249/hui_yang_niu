@@ -34,11 +34,11 @@ class SmartTempLineChart extends StatelessWidget {
 
     final maxValue = records.map((e) => e.value.toDouble()).reduce((a, b) => a > b ? a : b);
 
-    /// 避免只有一个值导致上下重叠
+    /// Y轴上下留白
     double minY = minValue - 2;
     double maxY = maxValue + 2;
 
-    /// 如果最大最小一样，再额外撑开
+    /// 防止最大最小一样
     if (minY == maxY) {
       minY -= 1;
       maxY += 1;
@@ -51,9 +51,9 @@ class SmartTempLineChart extends StatelessWidget {
         child: LineChart(
           duration: animationDuration,
           LineChartData(
-            /// 单点时必须拉开 X 轴范围
-            minX: isSinglePoint ? 0 : -0.5,
-            maxX: isSinglePoint ? 1 : spots.length - 0.5,
+            /// 单点时给左右留空间
+            minX: -0.5,
+            maxX: isSinglePoint ? 0.5 : spots.length - 0.5,
 
             minY: minY,
             maxY: maxY,
@@ -64,9 +64,11 @@ class SmartTempLineChart extends StatelessWidget {
               show: true,
               drawVerticalLine: true,
               horizontalInterval: ((maxY - minY) / 5).clamp(1, 999),
+
               getDrawingHorizontalLine: (value) {
                 return FlLine(color: Colors.grey.shade200, strokeWidth: 1);
               },
+
               getDrawingVerticalLine: (value) {
                 return FlLine(color: Colors.grey.shade100, strokeWidth: 1);
               },
@@ -78,7 +80,7 @@ class SmartTempLineChart extends StatelessWidget {
               LineChartBarData(
                 spots: spots,
 
-                /// 单个点不要曲线
+                /// 单点不使用曲线
                 isCurved: spots.length > 1,
 
                 barWidth: 3,
@@ -87,7 +89,7 @@ class SmartTempLineChart extends StatelessWidget {
 
                 isStrokeCapRound: true,
 
-                /// 单个点一定要显示
+                /// 点
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, percent, barData, index) {
@@ -100,6 +102,7 @@ class SmartTempLineChart extends StatelessWidget {
                   },
                 ),
 
+                /// 渐变区域
                 belowBarData: BarAreaData(
                   show: true,
                   gradient: LinearGradient(
@@ -116,25 +119,29 @@ class SmartTempLineChart extends StatelessWidget {
 
             titlesData: FlTitlesData(
               topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
               rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
 
               /// X轴
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+
                   reservedSize: 42,
+
                   interval: _calcInterval(),
+
                   getTitlesWidget: (value, meta) {
                     int index;
 
-                    /// 单点特殊处理
+                    /// 单点处理
                     if (isSinglePoint) {
-                      index = 0;
-
-                      /// 只在中间显示一次
-                      if (value != 0.5) {
+                      /// 只显示中间这个
+                      if (value != 0) {
                         return const SizedBox.shrink();
                       }
+
+                      index = 0;
                     } else {
                       index = value.round();
 
@@ -147,16 +154,22 @@ class SmartTempLineChart extends StatelessWidget {
 
                     return Padding(
                       padding: const EdgeInsets.only(top: 6),
+
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+
                         children: [
+                          /// 日期
                           Text(
-                            '${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}',
+                            '${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
                             style: const TextStyle(fontSize: 9),
                           ),
 
-                          /// 温度才显示时间
-                          if (unit == '℃')
+                          // if (unit != '℃')
+                          //   Text('${date.year}', style: const TextStyle(fontSize: 9)),
+
+                          /// 有时间才显示时间
+                          if (!(date.hour == 0 && date.minute == 0))
                             Text(
                               '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}',
                               style: const TextStyle(fontSize: 9),
@@ -172,11 +185,13 @@ class SmartTempLineChart extends StatelessWidget {
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+
                   reservedSize: 46,
+
                   interval: ((maxY - minY) / 5).clamp(1, 999),
 
                   getTitlesWidget: (value, meta) {
-                    /// 不显示首尾，避免挤压
+                    /// 不显示首尾
                     if (value == meta.min || value == meta.max) {
                       return const SizedBox.shrink();
                     }
@@ -197,9 +212,9 @@ class SmartTempLineChart extends StatelessWidget {
 
   /// 构建折线点
   List<FlSpot> _buildSpots() {
-    /// 单点特殊处理
+    /// 单点
     if (records.length == 1) {
-      return [FlSpot(0.5, records.first.value.toDouble())];
+      return [FlSpot(0, records.first.value.toDouble())];
     }
 
     return List.generate(records.length, (index) {
@@ -209,9 +224,17 @@ class SmartTempLineChart extends StatelessWidget {
 
   /// X轴间隔
   double _calcInterval() {
-    if (records.length <= 1) return 1;
-    if (records.length <= 6) return 1;
-    if (records.length <= 12) return 2;
+    if (records.length <= 1) {
+      return 1;
+    }
+
+    if (records.length <= 6) {
+      return 1;
+    }
+
+    if (records.length <= 12) {
+      return 2;
+    }
 
     return (records.length / 6).ceilToDouble();
   }

@@ -245,7 +245,7 @@ class CattleListController extends GetxController {
 
   Future<void> searchCowList({bool isRefresh = true}) async {
     /// 直接使用 value
-    growthStage = selectedStateValues;
+    growthStage = [...selectedStateValues, '2'];
 
     kind = selectedTypeIndex == 0 ? 0 : int.parse(typeList[selectedTypeIndex]['value']);
 

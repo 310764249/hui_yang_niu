@@ -269,7 +269,7 @@ class _ItemView extends StatelessWidget {
               const Text('当前体温：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               Expanded(
                 child: Text(
-                  model.tempRecordList.isEmpty ? '暂无数据' : model.tempRecordList.last.dateString,
+                  model.tempRecordList.isEmpty ? '暂无数据' : model.tempRecordList.last.dateString('℃'),
                   style: const TextStyle(fontSize: 14),
                 ),
               ),

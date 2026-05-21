@@ -78,7 +78,7 @@ class TempRecord {
   }
 
   //23.00kg(23日05时05分)
-  String get dateString {
-    return '${value.toStringAsFixed(2)}kg(${date.month}月${date.day}日${date.hour}时${date.minute}分)';
+  String dateString(String unit) {
+    return '${value.toStringAsFixed(2)}$unit(${date.month}月${date.day}日${date.hour}时${date.minute}分)';
   }
 }

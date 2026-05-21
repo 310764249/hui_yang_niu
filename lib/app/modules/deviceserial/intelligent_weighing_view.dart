@@ -159,10 +159,11 @@ class _IntelligentWeighingViewState extends State<IntelligentWeighingView>
                       builder: (_) {
                         return SmartTempLineChart(
                           records:
-                              model.weightRecordList.map((e) {
+                              model.weightRecordList?.map((e) {
                                 TempRecord record = TempRecord(value: e.value, date: e.date);
                                 return record;
-                              }).toList(),
+                              }).toList() ??
+                              [],
                           unit: 'kg',
                         );
                       },
@@ -278,7 +279,9 @@ class _ItemView extends StatelessWidget {
               const Text('当前体重：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               Expanded(
                 child: Text(
-                  model.weightRecordList.isEmpty ? '暂无数据' : model.weightRecordList.last.dateString,
+                  (model.weightRecordList ?? []).isEmpty
+                      ? '暂无数据'
+                      : (model.weightRecordList ?? []).last.dateString,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),

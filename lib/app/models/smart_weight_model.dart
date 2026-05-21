@@ -1,12 +1,12 @@
 /// 智能称重设备模型
 class SmartWeightModel {
   final String id;
-  final String cId;
+  final String? cId;
   final String code;
   final String eleCode;
   final double weight;
   final DateTime updateTime;
-  final List<WeightRecord> weightRecordList;
+  final List<WeightRecord>? weightRecordList;
 
   SmartWeightModel({
     required this.id,
@@ -21,7 +21,7 @@ class SmartWeightModel {
   factory SmartWeightModel.fromJson(Map<String, dynamic> json) {
     return SmartWeightModel(
       id: json['id'] as String,
-      cId: json['cId'] as String,
+      cId: json['cId'] as String?,
       code: json['code'] as String,
       eleCode: json['eleCode'] as String,
       weight: (json['weight'] as num).toDouble(),
@@ -41,7 +41,7 @@ class SmartWeightModel {
       'eleCode': eleCode,
       'weight': weight,
       'updateTime': updateTime.toIso8601String(),
-      'weightRecordList': weightRecordList.map((e) => e.toJson()).toList(),
+      'weightRecordList': weightRecordList?.map((e) => e.toJson()).toList(),
     };
   }
 }

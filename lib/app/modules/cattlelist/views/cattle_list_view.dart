@@ -80,17 +80,34 @@ class CattleListView extends GetView<CattleListController> {
                 Alert.showMultiPicker(
                   controller.stateNameList,
                   context,
-                  itemsSelected: List.from(controller.selectedStateIndex),
+
+                  /// value 转 index
+                  itemsSelected:
+                      controller.selectedStateValues
+                          .map((value) {
+                            return controller.stateList.indexWhere(
+                              (e) => e['value'].toString() == value.toString(),
+                            );
+                          })
+                          .where((e) => e != -1)
+                          .toList(),
+
                   onConfirm: (selected) {
                     if (ObjectUtil.isEmptyList(selected)) {
                       Toast.failure(msg: '请至少选择一种类型');
-                      // print('请至少选择一种类型');
                       return;
                     }
-                    Log.d('onConfirm' + selected.toString());
-                    //这里是数组类型
-                    controller.selectedStateIndex = selected;
+
+                    Log.d('onConfirm: $selected');
+
+                    /// index 转 value
+                    controller.selectedStateValues =
+                        selected.map<String>((index) {
+                          return controller.stateList[index]['value'].toString();
+                        }).toList();
+
                     controller.startLoading();
+
                     controller.searchCowList();
                   },
                 );

@@ -86,9 +86,16 @@ class CattleListController extends GetxController {
   RxString selectedSexName = '全部公母'.obs;
 
   //状态列表
+  /// 状态列表
   List stateList = [];
+
+  /// 状态名称列表（给 Picker 显示）
   List stateNameList = [];
-  List selectedStateIndex = [];
+
+  /// 已选中的状态 value（重点：不再存 index）
+  List<String> selectedStateValues = [];
+
+  /// 显示文本
   RxString selectedStateName = '类型'.obs;
 
   //栋舍列表
@@ -104,45 +111,48 @@ class CattleListController extends GetxController {
   void onInit() async {
     super.onInit();
 
-    //初始化下拉刷新控制器
     refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
-    //
-    if (argument != null) {
-      //
-      //获取生长阶段字典项
-      List szjdList = AppDictList.searchItems('szjd') ?? [];
-      //有传值就使用传值，否则使用默认值
-      stateList.addAll(argument.szjdList ?? szjdList);
-      stateNameList.addAll(stateList.map((item) => item['label']).toList());
-      print(stateNameList);
-      selectedStateIndex = List.generate(stateList.length, (index) => index);
-    }
 
-    //栋舍列表
+    /// 获取状态字典
+    List szjdList = AppDictList.searchItems('szjd') ?? [];
+
+    /// 使用传入状态或者默认状态
+    stateList.addAll(argument.szjdList ?? szjdList);
+
+    /// 名称列表
+    stateNameList.addAll(stateList.map((item) => item['label']).toList());
+
+    /// 默认全选（直接存 value）
+    selectedStateValues = stateList.map<String>((e) => e['value'].toString()).toList();
+
+    /// 栋舍列表
     houseList = await CommonService().requestCowHouse();
-    //获取栋舍列表名称用于 Picker 显示
+
     houseNameList.addAll(houseList.map((item) => item.name).toList());
 
-    //获取品种字典项
+    /// 品种字典
     List pzList = AppDictList.searchItems('pz') ?? [];
+
     typeList.addAll(pzList);
+
     typeNameList.addAll(typeList.map((item) => item['label']).toList());
-    //print(typeNameList);
-    //获取公母字典项
+
+    /// 公母字典
     if (ObjectUtil.isEmpty(argument?.gmList)) {
-      //print(argument.gmList);
       List gmList = AppDictList.searchItems('gm') ?? [];
+
       sexList.addAll(gmList);
+
       sexNameList.addAll(sexList.map((item) => item['label']).toList());
     } else {
       sexList = argument!.gmList!;
-      //print(sexList);
+
       sexNameList.addAll(sexList.map((item) => item['label']).toList());
+
       selectedSexName.value = sexNameList.first;
     }
-    //print(sexNameList);
 
-    //请求数据
+    /// 请求数据
     searchCowList();
   }
 
@@ -233,80 +243,82 @@ class CattleListController extends GetxController {
     }
   }
 
-  //请求牛只列表数据
   Future<void> searchCowList({bool isRefresh = true}) async {
-    //把选中的 index 转化为字典项里面的具体 value
-
-    List stateValues = [];
-    if (selectedStateIndex.isNotEmpty) {
-      //把选择的 index 转为接口需要的 value
-      for (int index in selectedStateIndex) {
-        String value = stateList[index]['value'];
-        stateValues.add(value);
-      }
-      growthStage = stateValues;
-    } else {
-      growthStage = [];
-    }
+    /// 直接使用 value
+    growthStage = selectedStateValues;
 
     kind = selectedTypeIndex == 0 ? 0 : int.parse(typeList[selectedTypeIndex]['value']);
+
     if (ObjectUtil.isEmpty(argument?.gmList)) {
       sex = selectedSexIndex == 0 ? 0 : int.parse(sexList[selectedSexIndex]['value']);
     } else {
       sex = int.parse(sexList[selectedSexIndex]['value']);
     }
+
     cowHouseId = selectedHouseIndex == -1 ? '' : houseList[selectedHouseIndex].id;
-    // Toast.showLoading();
+
     try {
-      //使用临时的页码，防止请求失败
       int tempPageIndex = pageIndex;
+
       if (isRefresh) {
         tempPageIndex = pageIndex = 1;
       } else {
         tempPageIndex++;
       }
-      //接口参数
+
       Map<String, dynamic> para = {
         'Code': cowCode,
         'CowHouseId': cowHouseId,
+
+        /// 修复后的状态参数
         'GrowthStages': growthStage,
+
         'IsFilterInvalid': true,
+
         'Kind': kind == 0 ? '' : kind,
+
         'Gender': sex == 0 ? '' : sex,
+
         'PageIndex': tempPageIndex,
+
         'PageSize': pageSize,
       };
+
+      print('请求参数: $para');
+
       var response = await httpsClient.get("/api/cow", queryParameters: para);
+
       print(jsonEncode(response));
+
       PageInfo model = PageInfo.fromJson(response);
-      // print(model.itemsCount);
 
       List mapList = model.list;
+
       List<Cattle> modelList = [];
+
       for (var item in mapList) {
         Cattle model = Cattle.fromJson(item);
         modelList.add(model);
       }
-      //更新页面数据
+
       if (isRefresh) {
-        items.value = modelList; //下拉刷新
+        items.value = modelList;
       } else {
-        pageIndex++; //上拉加载请求成功后,真实的页码+1
-        items.addAll(modelList); //上拉加载
+        pageIndex++;
+        items.addAll(modelList);
       }
-      //是否可以加载更多
+
       hasMore = items.length < model.itemsCount;
+
       isLoading.value = false;
+
       update();
-      // Toast.dismiss();
     } catch (error) {
       isLoading.value = false;
-      // Toast.dismiss();
+
       if (error is ApiException) {
-        // 处理 API 请求异常情况 code不为 0 的场景
         Log.d('API Exception: ${error.toString()}');
       } else {
-        // HTTP 请求异常情况
         Log.d('Other Exception: $error');
       }
     }

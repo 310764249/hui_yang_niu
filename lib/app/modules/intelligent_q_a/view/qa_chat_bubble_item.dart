@@ -35,12 +35,12 @@ class ChatBubble extends StatelessWidget {
                 maxWidth: MediaQuery.of(context).size.width * 0.75, // 自动收缩
               ),
               child: DefaultTextStyle(
-                style: TextStyle(color: isSender ? Colors.white : Colors.black87, fontSize: 12),
+                style: TextStyle(color: isSender ? Colors.white : Colors.black87, fontSize: 16),
                 child: MarkdownBlock(
                   data: content,
                   config: MarkdownConfig(
                     configs: const [
-                      PConfig(textStyle: TextStyle(fontSize: 15)),
+                      PConfig(textStyle: TextStyle(fontSize: 16)),
                       H1Config(style: TextStyle(fontSize: 16)),
                       H2Config(style: TextStyle(fontSize: 16)),
                       H3Config(style: TextStyle(fontSize: 16)),

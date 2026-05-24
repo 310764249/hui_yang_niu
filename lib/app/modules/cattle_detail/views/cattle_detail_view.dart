@@ -876,7 +876,7 @@ class CattleDetailView extends GetView<CattleDetailController> {
                   },
                   tabs:
                       List<Widget>.generate(
-                        3,
+                        2,
                         (int index) => Tab(
                           child: Text(
                             controller.tabTitles[index],

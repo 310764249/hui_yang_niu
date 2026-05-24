@@ -3,8 +3,14 @@ import 'package:intellectual_breed/app/services/colors.dart';
 
 class DayProfitItem {
   final String name;
+
+  /// 入库
   final double? income;
+
+  /// 出库
   final double? payment;
+
+  /// 当前库存
   final double profit;
 
   DayProfitItem({required this.name, this.income, this.payment, required this.profit});
@@ -12,9 +18,15 @@ class DayProfitItem {
 
 class SingleDayProfitCard extends StatelessWidget {
   final String date;
+
+  /// 总入库
   final double totalIncome;
+
+  /// 总出库
   final double totalPayment;
+
   final List<DayProfitItem> list;
+
   final void Function(DayProfitItem item)? onTap;
 
   const SingleDayProfitCard({
@@ -25,8 +37,6 @@ class SingleDayProfitCard extends StatelessWidget {
     required this.list,
     this.onTap,
   });
-
-  Color _amountColor(double v) => v > 0 ? SaienteColors.appMain : Colors.red;
 
   @override
   Widget build(BuildContext context) {
@@ -41,18 +51,22 @@ class SingleDayProfitCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// 顶部标题 + 总收入/支出
+          /// 顶部日期 + 总库存统计
           Row(
             children: [
               Text(date, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
               const Spacer(),
+
               Text(
-                '${totalIncome > 0 ? '+' : ''}${totalIncome.toStringAsFixed(0)}元',
+                '入库 ${totalIncome.toStringAsFixed(0)}',
                 style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
               ),
+
               const SizedBox(width: 12),
+
               Text(
-                '${totalPayment > 0 ? '-' : ''}${totalPayment.abs().toStringAsFixed(0)}元',
+                '出库 ${totalPayment.toStringAsFixed(0)}',
                 style: const TextStyle(fontSize: 14, color: Colors.red),
               ),
             ],
@@ -66,23 +80,23 @@ class SingleDayProfitCard extends StatelessWidget {
               Expanded(child: Text('物资名称', style: TextStyle(fontWeight: FontWeight.bold))),
               Expanded(
                 child: Text(
-                  '收入（元）',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  '入库',
                   textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 child: Text(
-                  '支出（元）',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  '出库',
                   textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 child: Text(
-                  '盈利',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  '当前库存',
                   textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -99,32 +113,36 @@ class SingleDayProfitCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Row(
                   children: [
+                    /// 名称
                     Expanded(child: Text(e.name)),
+
+                    /// 入库
                     Expanded(
                       child: Text(
-                        e.income == null || e.income == 0
-                            ? '-'
-                            : '+${e.income!.toStringAsFixed(0)}',
+                        e.income == null || e.income == 0 ? '-' : e.income!.toStringAsFixed(0),
                         textAlign: TextAlign.center,
                         style: const TextStyle(color: SaienteColors.appMain),
                       ),
                     ),
+
+                    /// 出库
                     Expanded(
                       child: Text(
-                        e.payment == null || e.payment == 0
-                            ? '-'
-                            : '-${e.payment!.abs().toStringAsFixed(0)}',
+                        e.payment == null || e.payment == 0 ? '-' : e.payment!.toStringAsFixed(0),
                         textAlign: TextAlign.center,
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
+
+                    /// 当前库存
                     Expanded(
                       child: Text(
-                        e.profit > 0
-                            ? '+${e.profit.toStringAsFixed(0)}'
-                            : e.profit.toStringAsFixed(0),
+                        e.profit.toStringAsFixed(0),
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: _amountColor(e.profit)),
+                        style: const TextStyle(
+                          color: SaienteColors.appMain,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],

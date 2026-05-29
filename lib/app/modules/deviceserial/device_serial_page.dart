@@ -18,6 +18,7 @@ import 'package:intellectual_breed/generated/assets.dart';
 import '../../models/device_serial_details_entity.dart';
 import '../../widgets/refresh_header_footer.dart';
 import '../../widgets/single_select_wrap.dart';
+import 'abnormal_list_view.dart';
 import 'device_serial_player_page.dart';
 import 'intelligent_ear_tag_view.dart';
 import 'intelligent_monitoring_view.dart';
@@ -50,7 +51,7 @@ class _DeviceSerialPageState extends State<DeviceSerialPage> {
             valueListenable: _tabIndex,
             builder: (context, value, child) {
               return SingleSelectWrap(
-                items: const ['监控', "耳标", "称重"],
+                items: const ['监控', "耳标", "异常"],
                 initialIndex: value,
                 onChanged: (value) {
                   _tabIndex.value = value;
@@ -67,7 +68,7 @@ class _DeviceSerialPageState extends State<DeviceSerialPage> {
               children: const [
                 IntelligentMonitoringView(),
                 IntelligentEarTagView(),
-                IntelligentWeighingView(),
+                AbnormalListView(),
               ],
             ),
           ),

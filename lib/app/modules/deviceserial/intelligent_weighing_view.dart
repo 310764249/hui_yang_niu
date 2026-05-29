@@ -160,7 +160,7 @@ class _IntelligentWeighingViewState extends State<IntelligentWeighingView>
                         return SmartTempLineChart(
                           records:
                               model.weightRecordList?.map((e) {
-                                TempRecord record = TempRecord(value: e.value, date: e.date);
+                                WeightRecord record = WeightRecord(value: e.value, date: e.date);
                                 return record;
                               }).toList() ??
                               [],

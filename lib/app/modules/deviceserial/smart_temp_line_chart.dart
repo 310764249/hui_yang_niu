@@ -2,9 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/models/smart_ear_tag_model.dart';
 
+import '../../models/smart_weight_model.dart';
+
 class SmartTempLineChart extends StatelessWidget {
   /// 数据记录
-  final List<TempRecord> records;
+  final List<WeightRecord> records;
 
   /// 单位（如 ℃ / kg）
   final String unit;

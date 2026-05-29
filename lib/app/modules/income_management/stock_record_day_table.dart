@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import '../../models/stock_record_day_entity.dart';
+import '../material_management/add_inventory.dart';
 
 class StockRecordDayTable extends StatelessWidget {
   final StockRecordDayEntity data;
@@ -84,51 +85,62 @@ class StockRecordDayTable extends StatelessWidget {
 
           /// 行数据渲染
           ...data.list.map((e) {
-            return Container(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 100,
-                    child: FittedBox(
-                      alignment: Alignment.centerLeft,
-                      fit: BoxFit.scaleDown,
-                      child: Text(e.name, maxLines: 2, style: const TextStyle(fontSize: 14)),
+            return GestureDetector(
+              onTap: () {
+                // AddInventoryView.push(
+                //   context,
+                //   id: item.id,
+                //   materialId: item.materialId,
+                //   addInventoryEnum: AddInventoryEnum.viewer,
+                //   remark: item.remark,
+                // );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: Text(e.name, maxLines: 2, style: const TextStyle(fontSize: 14)),
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Text(
-                      _fmt(e.addNum),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: _color(e.addNum), fontSize: 14),
+                    Expanded(
+                      child: Text(
+                        _fmt(e.addNum),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: _color(e.addNum), fontSize: 14),
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Text(
-                      _fmt(-e.outboundNum), // 出库为负数展示
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: _color(-e.outboundNum), fontSize: 14),
+                    Expanded(
+                      child: Text(
+                        _fmt(-e.outboundNum), // 出库为负数展示
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: _color(-e.outboundNum), fontSize: 14),
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Text(
-                      _fmt(e.currentNum, prefix: false),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 14),
+                    Expanded(
+                      child: Text(
+                        _fmt(e.currentNum, prefix: false),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: Text(
-                      e.unitName,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 14),
+                    Expanded(
+                      child: Text(
+                        e.unitName,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }),

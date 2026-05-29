@@ -9,6 +9,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../models/cattle.dart';
 import '../../models/page_info.dart';
 import '../../models/smart_ear_tag_model.dart';
+import '../../models/smart_weight_model.dart';
 import '../../network/apiException.dart';
 import '../../network/httpsClient.dart';
 import '../../routes/app_pages.dart';
@@ -152,10 +153,25 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                   model: model,
                   onTapEarTag: () => onTapEarTag(model),
                   onTapMore: () {
+                    if (model.tempRecordList == null || model.tempRecordList!.isEmpty) {
+                      Toast.show('暂无数据');
+                      return;
+                    }
                     showDialog(
                       context: context,
                       builder: (_) {
-                        return SmartTempLineChart(records: model.tempRecordList, unit: '℃');
+                        return SmartTempLineChart(
+                          records:
+                              (model.tempRecordList ?? []).map((e) {
+                                WeightRecord record = WeightRecord(
+                                  value: e.value ?? 0.0,
+                                  date: e.date ?? DateTime.now(),
+                                );
+                                return record;
+                              }).toList() ??
+                              [],
+                          unit: '℃',
+                        );
                       },
                     );
                   },
@@ -226,61 +242,250 @@ class _ItemView extends StatelessWidget {
   final SmartEarTagModel model;
   final VoidCallback? onTapMore;
 
-  //点击耳号
+  // 点击耳号
   final VoidCallback? onTapEarTag;
 
   @override
   Widget build(BuildContext context) {
+    final tempList = model.tempRecordList ?? [];
+    final weightList = model.weightRecordList ?? [];
+    final stepList = model.siteRecoreList ?? [];
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              const Text('场内耳号：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Expanded(
-                child: GestureDetector(
-                  onTap: onTapEarTag,
-                  child: Text(
-                    model.code,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      decoration: TextDecoration.underline,
-                      color: SaienteColors.blue275CF3,
-                    ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: const [BoxShadow(color: Color(0x11000000), blurRadius: 6, offset: Offset(0, 2))],
+      ),
+      child: DefaultTextStyle(
+        style: const TextStyle(fontSize: 15, color: Colors.black87),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// 场内耳号
+            _buildRow(
+              title: '场内耳号：',
+              valueWidget: GestureDetector(
+                onTap: onTapEarTag,
+                child: Text(
+                  _text(model.code),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: SaienteColors.blue275CF3,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Text('电子耳号：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Expanded(child: Text(model.eleCode, style: const TextStyle(fontSize: 14))),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Text('当前体温：', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Expanded(
-                child: Text(
-                  model.tempRecordList.isEmpty ? '暂无数据' : model.tempRecordList.last.dateString('℃'),
-                  style: const TextStyle(fontSize: 14),
+            ),
+
+            const SizedBox(height: 6),
+
+            /// 电子耳号
+            _buildRow(title: '电子耳号：', value: model.eleCode),
+
+            const SizedBox(height: 6),
+
+            /// 当前体温
+            Row(
+              children: [
+                Expanded(
+                  child: _buildRow(
+                    title: '当前体温：',
+                    valueWidget:
+                        tempList.isEmpty
+                            ? const Text(
+                              '--',
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                            )
+                            : RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${tempList.last.value?.toStringAsFixed(1) ?? '--'}℃',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' (${tempList.last.date?.month ?? '--'}月'
+                                        '${tempList.last.date?.day ?? '--'}日 '
+                                        '${tempList.last.date?.hour ?? '--'}时'
+                                        '${tempList.last.date?.minute ?? '--'}分)',
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                  ),
+                                ],
+                              ),
+                            ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          TextButton(
-            onPressed: onTapMore,
-            child: const Text('查看历史体温', style: TextStyle(color: SaienteColors.blue275CF3)),
-          ),
-        ],
+                if (tempList.isNotEmpty)
+                  GestureDetector(
+                    onTap: onTapMore,
+                    child: const Text(
+                      '历史体温',
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            /// 最新体重
+            Row(
+              children: [
+                Expanded(
+                  child: _buildRow(
+                    title: '最新体重：',
+                    valueWidget:
+                        weightList.isEmpty
+                            ? const Text(
+                              '--',
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                            )
+                            : RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${weightList.last.value?.toStringAsFixed(1) ?? '--'}kg',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' (${weightList.last.date?.month ?? '--'}月'
+                                        '${weightList.last.date?.day ?? '--'}日 '
+                                        '${weightList.last.date?.hour ?? '--'}时'
+                                        '${weightList.last.date?.minute ?? '--'}分)',
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                  ),
+                                ],
+                              ),
+                            ),
+                  ),
+                ),
+                if (weightList.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) {
+                          return SmartTempLineChart(
+                            records:
+                                (model.weightRecordList ?? []).map((e) {
+                                  return WeightRecord(
+                                    value: e.value ?? 0.0,
+                                    date: e.date ?? DateTime.now(),
+                                  );
+                                }).toList(),
+                            unit: 'kg',
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      '历史体重',
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            /// 当日步数（只显示日期）
+            Row(
+              children: [
+                Expanded(
+                  child: _buildRow(
+                    title: '当日步数：',
+                    valueWidget:
+                        stepList.isEmpty
+                            ? const Text(
+                              '--',
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                            )
+                            : RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${stepList.last.value?.toInt() ?? '--'}步',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' (${stepList.last.date?.month ?? '--'}月'
+                                        '${stepList.last.date?.day ?? '--'}日)',
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                  ),
+                                ],
+                              ),
+                            ),
+                  ),
+                ),
+                if (stepList.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) {
+                          return SmartTempLineChart(
+                            records:
+                                (model.siteRecoreList ?? []).map((e) {
+                                  return WeightRecord(
+                                    value: e.value ?? 0.0,
+                                    date: e.date ?? DateTime.now(),
+                                  );
+                                }).toList(),
+                            unit: '步',
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      '历史步数',
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            /// 环境数据
+            _buildRow(title: '环境数据：', value: '${_text(model.envTemp)}℃  ${_text(model.envHumi)}%'),
+
+            const SizedBox(height: 6),
+
+            /// 实时位置
+            _buildRow(title: '实时位置：', value: _text(model.envGps)),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildRow({required String title, String? value, Widget? valueWidget}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+
+        Expanded(child: valueWidget ?? Text(_text(value), style: const TextStyle(fontSize: 15))),
+      ],
+    );
+  }
+
+  /// 空值统一处理
+  String _text(dynamic value) {
+    if (value == null) return '--';
+
+    final str = value.toString().trim();
+
+    if (str.isEmpty || str == 'null') {
+      return '--';
+    }
+
+    return str;
   }
 }

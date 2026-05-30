@@ -17,6 +17,8 @@ enum MaterialRecordsViewEnum {
   materialRecords,
   //报废记录
   scrapRecords,
+  //物资明细
+  stockRecordDetails,
 }
 
 extension MaterialRecordsViewEnumExtension on MaterialRecordsViewEnum {
@@ -26,6 +28,8 @@ extension MaterialRecordsViewEnumExtension on MaterialRecordsViewEnum {
         return 2;
       case MaterialRecordsViewEnum.scrapRecords:
         return 3;
+      case MaterialRecordsViewEnum.stockRecordDetails:
+        return '';
     }
   }
 
@@ -35,6 +39,8 @@ extension MaterialRecordsViewEnumExtension on MaterialRecordsViewEnum {
         return "领用记录";
       case MaterialRecordsViewEnum.scrapRecords:
         return "报废记录";
+      case MaterialRecordsViewEnum.stockRecordDetails:
+        return "物资明细";
     }
   }
 
@@ -44,6 +50,8 @@ extension MaterialRecordsViewEnumExtension on MaterialRecordsViewEnum {
         return "领用详情";
       case MaterialRecordsViewEnum.scrapRecords:
         return "报废详情";
+      case MaterialRecordsViewEnum.stockRecordDetails:
+        return "物资明细";
     }
   }
 }

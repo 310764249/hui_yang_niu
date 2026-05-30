@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 
 import '../../models/manual_work_month_entity.dart';
@@ -10,6 +12,32 @@ class MonthProfitListView extends StatelessWidget {
   const MonthProfitListView({super.key, required this.data, this.onTap});
 
   Color _color(double v) => v > 0 ? SaienteColors.appMain : Colors.red;
+
+  void _openDetail(String categoryName, List<String> ids, {bool isIncome = false}) {
+    if (ids.isEmpty) {
+      return;
+    }
+    String id = ids.first;
+    if (categoryName.contains('人工') || categoryName.contains('工资')) {
+      Get.toNamed(Routes.MANUAL_ASSESS_DETAIL, arguments: id);
+    } else if (categoryName.contains('销售')) {
+      Get.toNamed(Routes.SALES_ASSESS_DETAIL, arguments: id);
+    } else if (categoryName.contains('采购')) {
+      Get.toNamed(Routes.PURCHASE_ASSESS_DETAIL, arguments: id);
+    } else if (isIncome) {
+      Get.toNamed(Routes.SALES_ASSESS_DETAIL, arguments: id);
+    } else {
+      Get.toNamed(Routes.PURCHASE_ASSESS_DETAIL, arguments: id);
+    }
+  }
+
+  List<String> _allIncomeIds() {
+    return data.categoryList.expand((e) => e.incomeIdList).toList();
+  }
+
+  List<String> _allPayIds() {
+    return data.categoryList.expand((e) => e.payIdList).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +54,22 @@ class MonthProfitListView extends StatelessWidget {
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              Text(
-                "+${data.income.toStringAsFixed(0)}元",
-                style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
+              GestureDetector(
+                onTap: () => _openDetail('销售', _allIncomeIds(), isIncome: true),
+                behavior: HitTestBehavior.translucent,
+                child: Text(
+                  "+${data.income.toStringAsFixed(0)}元",
+                  style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
+                ),
               ),
               const SizedBox(width: 12),
-              Text(
-                "-${data.payment.toStringAsFixed(0)}元",
-                style: const TextStyle(fontSize: 14, color: Colors.red),
+              GestureDetector(
+                onTap: () => _openDetail('采购', _allPayIds()),
+                behavior: HitTestBehavior.translucent,
+                child: Text(
+                  "-${data.payment.toStringAsFixed(0)}元",
+                  style: const TextStyle(fontSize: 14, color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -66,9 +102,13 @@ class MonthProfitListView extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      "${category.payment > 0 ? '-' : ''}${category.payment.abs().toStringAsFixed(0)}元",
-                      style: TextStyle(fontSize: 13, color: _color(-category.payment)),
+                    GestureDetector(
+                      onTap: () => _openDetail(category.categoryName, category.payIdList),
+                      behavior: HitTestBehavior.translucent,
+                      child: Text(
+                        "${category.payment > 0 ? '-' : ''}${category.payment.abs().toStringAsFixed(0)}元",
+                        style: TextStyle(fontSize: 13, color: _color(-category.payment)),
+                      ),
                     ),
                   ],
                 ),
@@ -116,17 +156,32 @@ class MonthProfitListView extends StatelessWidget {
                         children: [
                           Expanded(child: Text(e.name)),
                           Expanded(
-                            child: Text(
-                              e.income > 0 ? "+${e.income.toStringAsFixed(0)}" : "-",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: SaienteColors.appMain),
+                            child: GestureDetector(
+                              onTap: () => _openDetail(
+                                category.categoryName,
+                                e.incomeIdList.isEmpty ? category.incomeIdList : e.incomeIdList,
+                                isIncome: true,
+                              ),
+                              behavior: HitTestBehavior.translucent,
+                              child: Text(
+                                e.income > 0 ? "+${e.income.toStringAsFixed(0)}" : "-",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: SaienteColors.appMain),
+                              ),
                             ),
                           ),
                           Expanded(
-                            child: Text(
-                              e.payment > 0 ? "-${e.payment.toStringAsFixed(0)}" : "-",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red),
+                            child: GestureDetector(
+                              onTap: () => _openDetail(
+                                category.categoryName,
+                                e.payIdList.isEmpty ? category.payIdList : e.payIdList,
+                              ),
+                              behavior: HitTestBehavior.translucent,
+                              child: Text(
+                                e.payment > 0 ? "-${e.payment.toStringAsFixed(0)}" : "-",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.red),
+                              ),
                             ),
                           ),
                           Expanded(

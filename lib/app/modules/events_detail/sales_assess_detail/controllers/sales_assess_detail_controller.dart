@@ -76,6 +76,8 @@ class SalesAssessDetailController extends GetxController {
       CattleEvent cattleEvent = argument;
       await getCattleMoreData(cattleEvent.cowId!);
       await getCattleEvent(cattleEvent.busiId);
+    } else if (argument is String) {
+      await getEvent(argument);
     }
     update();
     Toast.dismiss();
@@ -117,6 +119,22 @@ class SalesAssessDetailController extends GetxController {
         Toast.failure(msg: error.toString());
       } else {
         // HTTP 请求异常情况
+        Log.d('Other Exception: $error');
+      }
+    }
+  }
+
+  //获取事件详情
+  Future<void> getEvent(String id) async {
+    try {
+      var response = await httpsClient.get("/api/sales/$id");
+      event = SalesAssessEvent.fromJson(response);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        Log.d('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
         Log.d('Other Exception: $error');
       }
     }

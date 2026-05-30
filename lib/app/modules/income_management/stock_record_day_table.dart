@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import '../../models/stock_record_day_entity.dart';
 import '../material_management/add_inventory.dart';
+import '../material_management/material_records/view/material_records_details.dart';
+import '../material_management/material_records/view/material_records_view.dart';
 
 class StockRecordDayTable extends StatelessWidget {
   final StockRecordDayEntity data;
@@ -14,6 +16,17 @@ class StockRecordDayTable extends StatelessWidget {
     if (v == 0) return "-";
     if (!prefix) return v.toString();
     return v > 0 ? "+$v" : v.toString();
+  }
+
+  void _openRecordDetail(BuildContext context, List<String> ids) {
+    if (ids.isEmpty) {
+      return;
+    }
+    MaterialRecordsDetails.push(
+      context,
+      materialRecordsViewEnum: MaterialRecordsViewEnum.stockRecordDetails,
+      id: ids.first,
+    );
   }
 
   @override
@@ -109,26 +122,44 @@ class StockRecordDayTable extends StatelessWidget {
                     ),
 
                     Expanded(
-                      child: Text(
-                        _fmt(e.addNum),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: _color(e.addNum), fontSize: 14),
+                      child: GestureDetector(
+                        onTap: () => _openRecordDetail(context, e.addIdList),
+                        behavior: HitTestBehavior.translucent,
+                        child: Text(
+                          _fmt(e.addNum),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: _color(e.addNum), fontSize: 14),
+                        ),
                       ),
                     ),
 
                     Expanded(
-                      child: Text(
-                        _fmt(-e.outboundNum), // 出库为负数展示
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: _color(-e.outboundNum), fontSize: 14),
+                      child: GestureDetector(
+                        onTap: () => _openRecordDetail(context, e.outboundIdList),
+                        behavior: HitTestBehavior.translucent,
+                        child: Text(
+                          _fmt(-e.outboundNum), // 出库为负数展示
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: _color(-e.outboundNum), fontSize: 14),
+                        ),
                       ),
                     ),
 
                     Expanded(
-                      child: Text(
-                        _fmt(e.currentNum, prefix: false),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14),
+                      child: GestureDetector(
+                        onTap: () {
+                          AddInventoryView.push(
+                            context,
+                            addInventoryEnum: AddInventoryEnum.viewer,
+                            materialId: e.materialId.isEmpty ? e.id : e.materialId,
+                          );
+                        },
+                        behavior: HitTestBehavior.translucent,
+                        child: Text(
+                          _fmt(e.currentNum, prefix: false),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 14),
+                        ),
                       ),
                     ),
 

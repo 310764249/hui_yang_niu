@@ -141,6 +141,8 @@ class _ManualWorkDayState extends State<ManualWorkDay> with AutomaticKeepAliveCl
                         profit: e.profit,
                         income: e.income,
                         payment: e.payment,
+                        incomeIdList: e.incomeIdList,
+                        payIdList: e.payIdList,
                       ),
                     )
                     .toList(),

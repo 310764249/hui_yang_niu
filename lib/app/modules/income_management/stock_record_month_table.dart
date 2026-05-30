@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intellectual_breed/app/modules/material_management/add_inventory.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_details.dart';
+import 'package:intellectual_breed/app/modules/material_management/material_records/view/material_records_view.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import '../../models/stock_record_month_entity.dart';
 
@@ -13,6 +16,17 @@ class StockRecordMonthTable extends StatelessWidget {
     if (v == null || v == 0) return "-";
     if (!prefix) return v.toString();
     return v > 0 ? "+$v" : v.toString();
+  }
+
+  void _openRecordDetail(BuildContext context, List<String>? ids) {
+    if (ids == null || ids.isEmpty) {
+      return;
+    }
+    MaterialRecordsDetails.push(
+      context,
+      materialRecordsViewEnum: MaterialRecordsViewEnum.stockRecordDetails,
+      id: ids.first,
+    );
   }
 
   @override
@@ -126,23 +140,41 @@ class StockRecordMonthTable extends StatelessWidget {
                         ),
 
                         Expanded(
-                          child: Text(
-                            _fmt(item.addNum),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: _color(item.addNum ?? 0)),
+                          child: GestureDetector(
+                            onTap: () => _openRecordDetail(context, item.addIdList),
+                            behavior: HitTestBehavior.translucent,
+                            child: Text(
+                              _fmt(item.addNum),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: _color(item.addNum ?? 0)),
+                            ),
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            _fmt(-(item.outboundNum ?? 0)), // 出库显示为负数
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: _color(-(item.outboundNum ?? 0))),
+                          child: GestureDetector(
+                            onTap: () => _openRecordDetail(context, item.outboundIdList),
+                            behavior: HitTestBehavior.translucent,
+                            child: Text(
+                              _fmt(-(item.outboundNum ?? 0)), // 出库显示为负数
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: _color(-(item.outboundNum ?? 0))),
+                            ),
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            _fmt(item.currentNum, prefix: false),
-                            textAlign: TextAlign.center,
+                          child: GestureDetector(
+                            onTap: () {
+                              AddInventoryView.push(
+                                context,
+                                addInventoryEnum: AddInventoryEnum.viewer,
+                                materialId: item.materialId ?? item.id,
+                              );
+                            },
+                            behavior: HitTestBehavior.translucent,
+                            child: Text(
+                              _fmt(item.currentNum, prefix: false),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                         Expanded(child: Text(item.unitName ?? "-", textAlign: TextAlign.center)),

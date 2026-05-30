@@ -28,12 +28,16 @@ class MonthCategoryEntity {
   final String categoryName;
   final double income; // 类别内收入汇总
   final double payment; // 类别内支出汇总
+  final List<String> incomeIdList;
+  final List<String> payIdList;
   final List<MonthCategoryDetailEntity> list;
 
   MonthCategoryEntity({
     required this.categoryName,
     required this.income,
     required this.payment,
+    required this.incomeIdList,
+    required this.payIdList,
     required this.list,
   });
 
@@ -42,6 +46,8 @@ class MonthCategoryEntity {
       categoryName: json['categoryName'] ?? '',
       income: (json['income'] ?? 0).toDouble(),
       payment: (json['payment'] ?? 0).toDouble(),
+      incomeIdList: _parseIdList(json['incomeIdList']),
+      payIdList: _parseIdList(json['payIdList']),
       list:
           (json['list'] as List<dynamic>? ?? [])
               .map((e) => MonthCategoryDetailEntity.fromJson(e))
@@ -55,12 +61,16 @@ class MonthCategoryDetailEntity {
   final double income;
   final double payment;
   final double profit;
+  final List<String> incomeIdList;
+  final List<String> payIdList;
 
   MonthCategoryDetailEntity({
     required this.name,
     required this.income,
     required this.payment,
     required this.profit,
+    required this.incomeIdList,
+    required this.payIdList,
   });
 
   factory MonthCategoryDetailEntity.fromJson(Map<String, dynamic> json) {
@@ -69,6 +79,18 @@ class MonthCategoryDetailEntity {
       income: (json['income'] ?? 0).toDouble(),
       payment: (json['payment'] ?? 0).toDouble(),
       profit: (json['profit'] ?? 0).toDouble(),
+      incomeIdList: _parseIdList(json['incomeIdList']),
+      payIdList: _parseIdList(json['payIdList']),
     );
   }
+}
+
+List<String> _parseIdList(dynamic value) {
+  if (value is List) {
+    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+  }
+  if (value is String && value.isNotEmpty) {
+    return value.split(',').where((e) => e.isNotEmpty).toList();
+  }
+  return [];
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intellectual_breed/app/routes/app_pages.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 
 class DayProfitItem {
@@ -12,8 +14,17 @@ class DayProfitItem {
 
   /// 当前库存
   final double profit;
+  final List<String> incomeIdList;
+  final List<String> payIdList;
 
-  DayProfitItem({required this.name, this.income, this.payment, required this.profit});
+  DayProfitItem({
+    required this.name,
+    this.income,
+    this.payment,
+    required this.profit,
+    this.incomeIdList = const [],
+    this.payIdList = const [],
+  });
 }
 
 class SingleDayProfitCard extends StatelessWidget {
@@ -38,6 +49,32 @@ class SingleDayProfitCard extends StatelessWidget {
     this.onTap,
   });
 
+  void _openDetail(DayProfitItem item, List<String> ids, {bool isIncome = false}) {
+    if (ids.isEmpty) {
+      return;
+    }
+    String id = ids.first;
+    if (item.name.contains('人工') || item.name.contains('工资')) {
+      Get.toNamed(Routes.MANUAL_ASSESS_DETAIL, arguments: id);
+    } else if (item.name.contains('销售')) {
+      Get.toNamed(Routes.SALES_ASSESS_DETAIL, arguments: id);
+    } else if (item.name.contains('采购')) {
+      Get.toNamed(Routes.PURCHASE_ASSESS_DETAIL, arguments: id);
+    } else if (isIncome) {
+      Get.toNamed(Routes.SALES_ASSESS_DETAIL, arguments: id);
+    } else {
+      Get.toNamed(Routes.PURCHASE_ASSESS_DETAIL, arguments: id);
+    }
+  }
+
+  List<String> _allIncomeIds() {
+    return list.expand((e) => e.incomeIdList).toList();
+  }
+
+  List<String> _allPayIds() {
+    return list.expand((e) => e.payIdList).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -56,14 +93,47 @@ class SingleDayProfitCard extends StatelessWidget {
             children: [
               Text(date, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Expanded(
-                child: Text(
-                  '${totalIncome.toStringAsFixed(0)} - ${totalPayment.toStringAsFixed(0)} = ${(totalIncome - totalPayment).toStringAsFixed(0)}',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: SaienteColors.appMain,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _openDetail(
+                        DayProfitItem(name: '销售', profit: 0),
+                        _allIncomeIds(),
+                        isIncome: true,
+                      ),
+                      behavior: HitTestBehavior.translucent,
+                      child: Text(
+                        totalIncome.toStringAsFixed(0),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: SaienteColors.appMain,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const Text(' - '),
+                    GestureDetector(
+                      onTap: () => _openDetail(DayProfitItem(name: '采购', profit: 0), _allPayIds()),
+                      behavior: HitTestBehavior.translucent,
+                      child: Text(
+                        totalPayment.toStringAsFixed(0),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      ' = ${(totalIncome - totalPayment).toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: SaienteColors.appMain,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -129,19 +199,27 @@ class SingleDayProfitCard extends StatelessWidget {
 
                     /// 入库
                     Expanded(
-                      child: Text(
-                        e.income == null || e.income == 0 ? '-' : e.income!.toStringAsFixed(0),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: SaienteColors.appMain),
+                      child: GestureDetector(
+                        onTap: () => _openDetail(e, e.incomeIdList, isIncome: true),
+                        behavior: HitTestBehavior.translucent,
+                        child: Text(
+                          e.income == null || e.income == 0 ? '-' : e.income!.toStringAsFixed(0),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: SaienteColors.appMain),
+                        ),
                       ),
                     ),
 
                     /// 出库
                     Expanded(
-                      child: Text(
-                        e.payment == null || e.payment == 0 ? '-' : e.payment!.toStringAsFixed(0),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red),
+                      child: GestureDetector(
+                        onTap: () => _openDetail(e, e.payIdList),
+                        behavior: HitTestBehavior.translucent,
+                        child: Text(
+                          e.payment == null || e.payment == 0 ? '-' : e.payment!.toStringAsFixed(0),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ),
                     ),
 

@@ -45,12 +45,16 @@ class ManualworkDetailEntity {
   final double income;
   final double payment;
   final double profit;
+  final List<String> incomeIdList;
+  final List<String> payIdList;
 
   ManualworkDetailEntity({
     required this.name,
     required this.income,
     required this.payment,
     required this.profit,
+    required this.incomeIdList,
+    required this.payIdList,
   });
 
   factory ManualworkDetailEntity.fromJson(Map<String, dynamic> json) {
@@ -59,13 +63,32 @@ class ManualworkDetailEntity {
       income: (json['income'] ?? 0).toDouble(),
       payment: (json['payment'] ?? 0).toDouble(),
       profit: (json['profit'] ?? 0).toDouble(),
+      incomeIdList: _parseIdList(json['incomeIdList']),
+      payIdList: _parseIdList(json['payIdList']),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'name': name, 'income': income, 'payment': payment, 'profit': profit};
+    return {
+      'name': name,
+      'income': income,
+      'payment': payment,
+      'profit': profit,
+      'incomeIdList': incomeIdList,
+      'payIdList': payIdList,
+    };
   }
 
   @override
   String toString() => jsonEncode(toJson());
+}
+
+List<String> _parseIdList(dynamic value) {
+  if (value is List) {
+    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+  }
+  if (value is String && value.isNotEmpty) {
+    return value.split(',').where((e) => e.isNotEmpty).toList();
+  }
+  return [];
 }

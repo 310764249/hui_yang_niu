@@ -41,31 +41,63 @@ class StockRecordCategoryEntity {
 
 /// 单条物资数据：如 牛ASD、精液BHG等
 class StockRecordItemEntity {
+  String? id;
+  String? materialId;
   String? name;
   String? unitName;
   num? addNum;
   num? outboundNum;
   num? currentNum;
+  List<String>? addIdList;
+  List<String>? outboundIdList;
 
-  StockRecordItemEntity({this.name, this.unitName, this.addNum, this.outboundNum, this.currentNum});
+  StockRecordItemEntity({
+    this.id,
+    this.materialId,
+    this.name,
+    this.unitName,
+    this.addNum,
+    this.outboundNum,
+    this.currentNum,
+    this.addIdList,
+    this.outboundIdList,
+  });
 
   factory StockRecordItemEntity.fromJson(Map<String, dynamic> json) {
     return StockRecordItemEntity(
+      id: json['id']?.toString(),
+      materialId: json['materialId']?.toString(),
       name: json['name']?.toString(),
       unitName: json['unitName']?.toString(),
       addNum: json['addNum'],
       outboundNum: json['outboundNum'],
       currentNum: json['currentNum'],
+      addIdList: _parseIdList(json['addIdList'] ?? json['putinIdList'] ?? json['incomeIdList']),
+      outboundIdList: _parseIdList(json['outboundIdList'] ?? json['receiveIdList'] ?? json['payIdList']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'materialId': materialId,
       'name': name,
       'unitName': unitName,
       'addNum': addNum,
       'outboundNum': outboundNum,
       'currentNum': currentNum,
+      'addIdList': addIdList,
+      'outboundIdList': outboundIdList,
     };
   }
+}
+
+List<String> _parseIdList(dynamic value) {
+  if (value is List) {
+    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+  }
+  if (value is String && value.isNotEmpty) {
+    return value.split(',').where((e) => e.isNotEmpty).toList();
+  }
+  return [];
 }

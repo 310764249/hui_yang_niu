@@ -49,6 +49,8 @@ class PurchaseAssessDetailController extends GetxController {
     if (argument is SimpleEvent) {
       //时间列表进来的详情页面，传入的是 SimpleEvent
       event = PurchaseEvent.fromJson(argument.data);
+    } else if (argument is String) {
+      await getEvent(argument);
     }
     update();
     Toast.dismiss();
@@ -75,4 +77,19 @@ class PurchaseAssessDetailController extends GetxController {
     }
   }
 
+  //获取事件详情
+  Future<void> getEvent(String id) async {
+    try {
+      var response = await httpsClient.get("/api/purchase/$id");
+      event = PurchaseEvent.fromJson(response);
+    } catch (error) {
+      Toast.dismiss();
+      if (error is ApiException) {
+        Log.d('API Exception: ${error.toString()}');
+        Toast.failure(msg: error.toString());
+      } else {
+        Log.d('Other Exception: $error');
+      }
+    }
+  }
 }

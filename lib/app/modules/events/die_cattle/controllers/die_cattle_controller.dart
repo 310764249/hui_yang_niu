@@ -62,7 +62,7 @@ class DieCattleController extends GetxController {
   final chooseTypeIndex = 0.obs;
 
   //当前选中的牛
-  late Cattle selectedCow;
+  List<Cattle> selectedCow = <Cattle>[];
 
   //耳号
   final codeString = ''.obs;
@@ -126,8 +126,8 @@ class DieCattleController extends GetxController {
     Toast.showLoading();
     if (argument is Cattle) {
       //任务事件
-      selectedCow = argument;
-      updateCodeString(selectedCow.code ?? '');
+      selectedCow = [argument];
+      updateCodeString(argument.code ?? '');
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑
@@ -261,14 +261,17 @@ class DieCattleController extends GetxController {
         return;
       }
       //时间不能小于入场日期
-      if (timesStr.value.isBefore(selectedCow.inArea)) {
-        Toast.show('死亡时间不能早于入场日期');
-        return;
-      }
-      //时间不能小于出生日期
-      if (timesStr.value.isBefore(selectedCow.birth)) {
-        Toast.show('死亡时间不能早于出生日期');
-        return;
+      for (var item in selectedCow) {
+        String name = item.code ?? '';
+        if (timesStr.value.isBefore(item.inArea)) {
+          Toast.show('耳号为：$name 的死亡时间不能早于入场日期');
+          return;
+        }
+        //时间不能小于出生日期
+        if (timesStr.value.isBefore(item.birth)) {
+          Toast.show('耳号为：$name 的死亡时间不能早于出生日期');
+          return;
+        }
       }
     } else {
       //育肥牛
@@ -306,9 +309,11 @@ class DieCattleController extends GetxController {
       //接口参数
       Map<String, dynamic> para = {
         'type': chooseTypeIndex.value + 1, //必传 integer 类型1：种牛；2：犊牛-育肥牛；
-        'cowId': codeString.value.isEmpty ? '' : selectedCow.id, // string 牛只编码
+        'cowIds':
+            codeString.value.isEmpty ? <String>[] : selectedCow.map((e) => e.id).toList(),
         'batchNo': batchNumber.value, // string 批次号
-        'count': countController.text.trim(), //必传 integer 数量
+        'count':
+            chooseTypeIndex.value == 0 ? selectedCow.length : countController.text.trim(), //必传 integer 数量
         'cause': int.parse(curReasonID), //必传 integer 死亡原因
         'executor': UserInfoTool.nickName(), // string 鉴定人
         'attach':
@@ -383,7 +388,7 @@ class DieCattleController extends GetxController {
   Future<void> getCattleMoreData(String cowId) async {
     try {
       var response = await httpsClient.get("/api/cow/$cowId");
-      selectedCow = Cattle.fromJson(response);
+      selectedCow = [Cattle.fromJson(response)];
     } catch (error) {
       Toast.dismiss();
       if (error is ApiException) {

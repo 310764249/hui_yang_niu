@@ -112,7 +112,7 @@ class ChangeGroupController extends GetxController {
     }
     Toast.showLoading();
     if (argument is Cattle) {
-      selectedCow = argument;
+      selectedCow = [argument];
       // updateCodeString(selectedCow.code ?? '');
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
@@ -231,11 +231,15 @@ class ChangeGroupController extends GetxController {
         Toast.show('批次号未获取,请点击批次号选择');
         return;
       }
-      // String count = countController.text.trim();
-      // if (ObjectUtil.isEmpty(count)) {
-      //   Toast.show('请输入数量');
-      //   return;
-      // }
+      String count = countController.text.trim();
+      if (ObjectUtil.isEmpty(count)) {
+        Toast.show('请输入数量');
+        return;
+      }
+      if (int.parse(count) > selectedCowBatch.count) {
+        Toast.show('数量不能超过批次带的数量');
+        return;
+      }
       //时间不能小于入场日期
       if (timesStr.value.isBefore(selectedCowBatch.inArea)) {
         Toast.show('转群时间不能早于入场日期');
@@ -269,7 +273,8 @@ class ChangeGroupController extends GetxController {
         'cowIds':
             codeString.value.isEmpty ? '' : selectedCow.map((e) => e.id).toList(), // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
-        //'count': countController.text.trim(), // integer 数量
+        if (chooseTypeIndex.value == 1) 'cowBatchId': selectedCowBatch.id, // 批次ID
+        if (chooseTypeIndex.value == 1) 'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
         'inColumn': columnController.text.trim(), // string 转入栏位
         'executor': UserInfoTool.nickName(), //转群人
@@ -305,7 +310,8 @@ class ChangeGroupController extends GetxController {
         'cowIds':
             codeString.value.isEmpty ? '' : selectedCow.map((e) => e.id).toList(), // string 牛只编码
         'batchNo': batchNumber.value, //必传 string 批次号
-        //'count': countController.text.trim(), // integer 数量
+        if (chooseTypeIndex.value == 1) 'cowBatchId': selectedCowBatch.id, // 批次ID
+        if (chooseTypeIndex.value == 1) 'count': countController.text.trim(), // integer 数量
         'inCowHouseId': selectedHouseID, //必传 string 转入栋舍
         'inColumn': columnController.text.trim(), // string 转入栏位
         'executor': UserInfoTool.nickName(), //转群人

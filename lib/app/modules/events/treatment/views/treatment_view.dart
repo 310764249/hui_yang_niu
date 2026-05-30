@@ -40,17 +40,17 @@ class TreatmentView extends GetView<TreatmentController> {
             Get.toNamed(Routes.CATTLELIST,
                 arguments: CattleListArgument(
                   goBack: true,
-                  single: true,
+                  single: false,
                 ))?.then((value) {
               if (ObjectUtil.isEmpty(value)) {
                 return;
               }
-              //拿到牛只数组，默认 single: true, 单选
+              //拿到牛只数组
               List<Cattle> list = value as List<Cattle>;
               //保存选中的牛只模型
-              controller.selectedOldCow = list.first;
+              controller.selectedOldCow = list;
               //更新耳号显示
-              controller.updateCodeString(list.first.code ?? '');
+              controller.updateCodeString(list.map((e) => e.code).join(','));
               debugPrint('----------> value: $value');
               // controller.updateCowHouse(list.first);
               // 种牛

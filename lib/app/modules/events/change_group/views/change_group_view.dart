@@ -101,18 +101,19 @@ class ChangeGroupView extends GetView<ChangeGroupController> {
               controller.selectedCowBatch = list.first;
               //更新批次号数字显示
               controller.updateBatchNumber(list.first.batchNo ?? '');
+              controller.countController.text = list.first.count.toString();
             });
           },
         ),
 
-        // CellTextField(
-        //   isRequired: true,
-        //   title: '数量',
-        //   hint: "请输入数量",
-        //   keyboardType: TextInputType.number,
-        //   controller: controller.countController,
-        //   focusNode: controller.countNode,
-        // ),
+        CellTextField(
+          isRequired: true,
+          title: '数量',
+          hint: "请输入数量",
+          keyboardType: TextInputType.number,
+          controller: controller.countController,
+          focusNode: controller.countNode,
+        ),
       ],
     );
   }

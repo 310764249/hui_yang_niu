@@ -63,7 +63,7 @@ class TreatmentController extends GetxController {
   RxBool isEdit = false.obs;
 
   //当前选中的牛
-  late Cattle selectedCow;
+  List<Cattle> selectedCow = <Cattle>[];
 
   //耳号
   RxString codeString = ''.obs;
@@ -72,7 +72,7 @@ class TreatmentController extends GetxController {
   final typeIndex = 0.obs;
 
   //当前选中的牛
-  late Cattle selectedOldCow;
+  List<Cattle> selectedOldCow = <Cattle>[];
 
   // 诊疗时间
   final treatmentTime = ''.obs;
@@ -158,8 +158,9 @@ class TreatmentController extends GetxController {
       return;
     }
     if (argument is Cattle) {
-      selectedCow = argument;
-      updateCodeString(selectedCow.code ?? '');
+      selectedCow = [argument];
+      selectedOldCow = [argument];
+      updateCodeString(argument.code ?? '');
     } else if (argument is SimpleEvent) {
       Log.i('-- 防疫编辑event: $argument');
       isEdit.value = true;
@@ -307,10 +308,10 @@ class TreatmentController extends GetxController {
         para = {
           "date": treatmentTime.value,
           "cowHouseId": typeIndex.value == 0 ? oldCowHouseId : littleCowHouseId, // 栋舍参数可有可无
-          "cowId": typeIndex.value == 0 ? selectedOldCow.id : null, // 犊牛只有批次号,没有cowId
+          "cowIds": typeIndex.value == 0 ? selectedOldCow.map((e) => e.id).toList() : null,
           "batchNo": typeIndex.value == 1 ? batchNumber.value : null,
           "illness": illnessId,
-          "count": typeIndex.value == 0 ? 1 : cattleCount.value,
+          "count": typeIndex.value == 0 ? selectedOldCow.length : cattleCount.value,
           "symptom": symptom.value,
           "pharmacy": pharmacy.value,
           "dosage": dosage.value,

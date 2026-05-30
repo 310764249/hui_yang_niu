@@ -55,20 +55,26 @@ class SingleDayProfitCard extends StatelessWidget {
           Row(
             children: [
               Text(date, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-              const Spacer(),
-
-              Text(
-                '入库 ${totalIncome.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
+              Expanded(
+                child: Text(
+                  '${totalIncome.toStringAsFixed(0)} - ${totalPayment.toStringAsFixed(0)} = ${(totalIncome - totalPayment).toStringAsFixed(0)}',
+                  textAlign: TextAlign.right,
+                ),
               ),
 
-              const SizedBox(width: 12),
-
-              Text(
-                '出库 ${totalPayment.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 14, color: Colors.red),
-              ),
+              // const Spacer(),
+              //
+              // Text(
+              //   '入库 ${totalIncome.toStringAsFixed(0)}',
+              //   style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
+              // ),
+              //
+              // const SizedBox(width: 12),
+              //
+              // Text(
+              //   '出库 ${totalPayment.toStringAsFixed(0)}',
+              //   style: const TextStyle(fontSize: 14, color: Colors.red),
+              // ),
             ],
           ),
 

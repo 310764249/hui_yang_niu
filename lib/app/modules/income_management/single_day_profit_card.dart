@@ -59,6 +59,11 @@ class SingleDayProfitCard extends StatelessWidget {
                 child: Text(
                   '${totalIncome.toStringAsFixed(0)} - ${totalPayment.toStringAsFixed(0)} = ${(totalIncome - totalPayment).toStringAsFixed(0)}',
                   textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: SaienteColors.appMain,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
 

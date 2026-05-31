@@ -29,6 +29,21 @@ class StockRecordDayTable extends StatelessWidget {
     );
   }
 
+  void _openMaterialDetail(BuildContext context, StockRecordItemEntity item) {
+    final materialId = item.materialId.isNotEmpty ? item.materialId : item.id;
+    if (materialId.isEmpty) {
+      return;
+    }
+    AddInventoryView.push(
+      context,
+      addInventoryEnum: AddInventoryEnum.viewer,
+      materialId: materialId,
+      materialName: item.materialName.isNotEmpty ? item.materialName : item.name,
+      unitName: item.unitName,
+      countText: item.currentNum.toString(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,15 +114,7 @@ class StockRecordDayTable extends StatelessWidget {
           /// 行数据渲染
           ...data.list.map((e) {
             return GestureDetector(
-              onTap: () {
-                // AddInventoryView.push(
-                //   context,
-                //   id: item.id,
-                //   materialId: item.materialId,
-                //   addInventoryEnum: AddInventoryEnum.viewer,
-                //   remark: item.remark,
-                // );
-              },
+              onTap: () => _openMaterialDetail(context, e),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Row(
@@ -147,13 +154,7 @@ class StockRecordDayTable extends StatelessWidget {
 
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          AddInventoryView.push(
-                            context,
-                            addInventoryEnum: AddInventoryEnum.viewer,
-                            materialId: e.materialId.isEmpty ? e.id : e.materialId,
-                          );
-                        },
+                        onTap: () => _openMaterialDetail(context, e),
                         behavior: HitTestBehavior.translucent,
                         child: Text(
                           _fmt(e.currentNum, prefix: false),

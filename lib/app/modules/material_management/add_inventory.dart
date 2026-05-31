@@ -79,6 +79,9 @@ class AddInventoryView extends StatefulWidget {
     AddInventoryEnum addInventoryEnum = AddInventoryEnum.add,
     String? id,
     String? materialId,
+    String? materialName,
+    String? unitName,
+    String? countText,
     String? makeCount,
     String? reason,
     String? remark,
@@ -89,6 +92,9 @@ class AddInventoryView extends StatefulWidget {
         'addInventoryEnum': addInventoryEnum,
         'id': id,
         'materialId': materialId,
+        'materialName': materialName,
+        'unitName': unitName,
+        'countText': countText,
         'makeCount': makeCount,
         'reason': reason,
         'rowVersion': rowVersion,
@@ -140,6 +146,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //物资id
   String? id;
   String? materialId;
+  String? materialName;
+  String? unitName;
+  String? countText;
 
   //报废或者领用数量
   String? makeCount;
@@ -582,6 +591,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     Map argument = Get.arguments;
     id = argument['id'];
     materialId = argument['materialId'];
+    materialName = argument['materialName'];
+    unitName = argument['unitName'];
+    countText = argument['countText'];
     addInventoryEnum = argument['addInventoryEnum'];
     makeCount = argument['makeCount'];
     reasonId = argument['reason'];
@@ -605,6 +617,20 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       //{key: 其他, value: 8, sort: 8, isDeleted: false, dataType: null}
       wzdwList = value;
     });
+
+    if ((materialName ?? '').isNotEmpty) {
+      materialNameController.text = materialName!;
+    }
+    if ((unitName ?? '').isNotEmpty) {
+      wzdwSelectNotif.value = {'key': unitName};
+    }
+    if ((countText ?? '').isNotEmpty &&
+        addInventoryEnum != AddInventoryEnum.use &&
+        addInventoryEnum != AddInventoryEnum.scrap &&
+        addInventoryEnum != AddInventoryEnum.useEdit &&
+        addInventoryEnum != AddInventoryEnum.scrapEdit) {
+      counterController.text = countText!;
+    }
 
     if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
         addInventoryEnum == AddInventoryEnum.scrap) {
@@ -631,20 +657,29 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       Log.d('resp: $resp');
       Toast.dismiss();
       materialItemModel = MaterialItemModel.fromJson(resp);
-      materialNameController.text = materialItemModel?.name ?? '';
+      materialNameController.text =
+          materialItemModel?.name ??
+          materialItemModel?.materialName ??
+          materialNameController.text;
       wzflSelectNotif.value = wzflList?.firstWhereOrNull(
         (e) => num.parse(e['value']).toString() == materialItemModel?.category.toString(),
       );
-      wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
-        (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
-      );
+      wzdwSelectNotif.value =
+          wzdwList?.firstWhereOrNull(
+            (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
+          ) ??
+          wzdwSelectNotif.value;
       if (addInventoryEnum != AddInventoryEnum.use &&
           addInventoryEnum != AddInventoryEnum.scrap &&
           addInventoryEnum != AddInventoryEnum.useEdit &&
           addInventoryEnum != AddInventoryEnum.scrapEdit) {
-        counterController.text = materialItemModel?.count.toString() ?? '';
+        counterController.text =
+            materialItemModel?.count?.toString() ??
+            materialItemModel?.currentCount?.toString() ??
+            counterController.text;
       } else {
-        canUseCount.value = materialItemModel?.count.toString() ?? '';
+        canUseCount.value =
+            materialItemModel?.count?.toString() ?? materialItemModel?.currentCount?.toString() ?? '';
       }
 
       if (addInventoryEnum == AddInventoryEnum.addEdit ||

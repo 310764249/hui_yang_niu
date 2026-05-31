@@ -20,6 +20,7 @@ class StockRecordGroup extends StatefulWidget {
 class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepAliveClientMixin {
   final PageController _pageController = PageController();
   List<MaterialItemModel> stockList = [];
+  List? unitList;
 
   //人工按日统计
   // /api/manualwork/daystatistics
@@ -32,7 +33,18 @@ class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepA
   @override
   void initState() {
     super.initState();
+    getUnitList();
     getStockList();
+  }
+
+  void getUnitList() async {
+    final list = await MaterialService.getDic('wzdw');
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      unitList = list;
+    });
   }
 
   void getStockList() async {
@@ -113,12 +125,16 @@ class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepA
               itemBuilder: (context, index) {
                 final item = stockList[index];
                 final count = item.count ?? item.currentCount ?? 0;
+                final unitText = _unitText(item.unit);
                 return GestureDetector(
                   onTap: () {
                     AddInventoryView.push(
                       context,
                       addInventoryEnum: AddInventoryEnum.viewer,
                       materialId: item.id ?? item.materialId,
+                      materialName: item.name ?? item.materialName,
+                      unitName: unitText,
+                      countText: count.toString(),
                     );
                   },
                   child: Container(
@@ -132,7 +148,7 @@ class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepA
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.name ?? item.materialName ?? '',
+                          _displayName(item.name ?? item.materialName ?? '', unitText),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 13),
@@ -156,5 +172,24 @@ class _StockRecordGroupState extends State<StockRecordGroup> with AutomaticKeepA
         ],
       ),
     );
+  }
+
+  String _displayName(String name, String unitText) {
+    if (name.isEmpty || unitText.isEmpty) {
+      return name;
+    }
+    return '$name($unitText)';
+  }
+
+  String _unitText(num? unit) {
+    final target = unit?.toString();
+    if (target == null || target.isEmpty) {
+      return '';
+    }
+    final match = unitList?.firstWhere(
+      (e) => e['value'].toString() == target,
+      orElse: () => <String, dynamic>{},
+    );
+    return (match?['key'] ?? '').toString();
   }
 }

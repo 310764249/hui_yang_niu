@@ -22,6 +22,7 @@ class StockRecordDayEntity {
 class StockRecordItemEntity {
   final String id;
   final String materialId;
+  final String materialName;
   final String name; // 物资名称，例如：牛ASD
   final String unitName; // 单位，例如：个
   final int addNum; // 入库数量
@@ -33,6 +34,7 @@ class StockRecordItemEntity {
   StockRecordItemEntity({
     required this.id,
     required this.materialId,
+    required this.materialName,
     required this.name,
     required this.unitName,
     required this.addNum,
@@ -45,14 +47,26 @@ class StockRecordItemEntity {
   factory StockRecordItemEntity.fromJson(Map<String, dynamic> json) {
     return StockRecordItemEntity(
       id: json['id'] ?? '',
-      materialId: json['materialId'] ?? '',
-      name: json['name'] ?? '',
-      unitName: json['unitName'] ?? '',
+      materialId:
+          (json['materialId'] ??
+                  json['mId'] ??
+                  json['itemId'] ??
+                  json['rawMaterialId'] ??
+                  json['goodsId'] ??
+                  '')
+              .toString(),
+      materialName: (json['materialName'] ?? '').toString(),
+      name: (json['name'] ?? json['materialName'] ?? '').toString(),
+      unitName: (json['unitName'] ?? json['unitText'] ?? json['unitNameStr'] ?? '').toString(),
       addNum: (json['addNum'] ?? 0).toInt(),
       outboundNum: (json['outboundNum'] ?? 0).toInt(),
       currentNum: (json['currentNum'] ?? 0).toInt(),
-      addIdList: _parseIdList(json['addIdList'] ?? json['putinIdList'] ?? json['incomeIdList']),
-      outboundIdList: _parseIdList(json['outboundIdList'] ?? json['receiveIdList'] ?? json['payIdList']),
+      addIdList: _parseIdList(
+        json['addIdList'] ?? json['putinIdList'] ?? json['incomeIdList'] ?? json['idList'],
+      ),
+      outboundIdList: _parseIdList(
+        json['outboundIdList'] ?? json['receiveIdList'] ?? json['payIdList'] ?? json['idList'],
+      ),
     );
   }
 
@@ -60,6 +74,7 @@ class StockRecordItemEntity {
     return {
       "id": id,
       "materialId": materialId,
+      "materialName": materialName,
       "name": name,
       "unitName": unitName,
       "addNum": addNum,
@@ -73,10 +88,16 @@ class StockRecordItemEntity {
 
 List<String> _parseIdList(dynamic value) {
   if (value is List) {
-    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+    return value
+        .where((e) => e != null && e.toString().trim().isNotEmpty)
+        .map((e) => e.toString().trim())
+        .toList();
+  }
+  if (value is num) {
+    return [value.toString()];
   }
   if (value is String && value.isNotEmpty) {
-    return value.split(',').where((e) => e.isNotEmpty).toList();
+    return value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
   }
   return [];
 }

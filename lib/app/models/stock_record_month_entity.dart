@@ -43,6 +43,7 @@ class StockRecordCategoryEntity {
 class StockRecordItemEntity {
   String? id;
   String? materialId;
+  String? materialName;
   String? name;
   String? unitName;
   num? addNum;
@@ -54,6 +55,7 @@ class StockRecordItemEntity {
   StockRecordItemEntity({
     this.id,
     this.materialId,
+    this.materialName,
     this.name,
     this.unitName,
     this.addNum,
@@ -66,14 +68,25 @@ class StockRecordItemEntity {
   factory StockRecordItemEntity.fromJson(Map<String, dynamic> json) {
     return StockRecordItemEntity(
       id: json['id']?.toString(),
-      materialId: json['materialId']?.toString(),
-      name: json['name']?.toString(),
-      unitName: json['unitName']?.toString(),
+      materialId:
+          (json['materialId'] ??
+                  json['mId'] ??
+                  json['itemId'] ??
+                  json['rawMaterialId'] ??
+                  json['goodsId'])
+              ?.toString(),
+      materialName: json['materialName']?.toString(),
+      name: (json['name'] ?? json['materialName'])?.toString(),
+      unitName: (json['unitName'] ?? json['unitText'] ?? json['unitNameStr'])?.toString(),
       addNum: json['addNum'],
       outboundNum: json['outboundNum'],
       currentNum: json['currentNum'],
-      addIdList: _parseIdList(json['addIdList'] ?? json['putinIdList'] ?? json['incomeIdList']),
-      outboundIdList: _parseIdList(json['outboundIdList'] ?? json['receiveIdList'] ?? json['payIdList']),
+      addIdList: _parseIdList(
+        json['addIdList'] ?? json['putinIdList'] ?? json['incomeIdList'] ?? json['idList'],
+      ),
+      outboundIdList: _parseIdList(
+        json['outboundIdList'] ?? json['receiveIdList'] ?? json['payIdList'] ?? json['idList'],
+      ),
     );
   }
 
@@ -81,6 +94,7 @@ class StockRecordItemEntity {
     return {
       'id': id,
       'materialId': materialId,
+      'materialName': materialName,
       'name': name,
       'unitName': unitName,
       'addNum': addNum,
@@ -94,10 +108,16 @@ class StockRecordItemEntity {
 
 List<String> _parseIdList(dynamic value) {
   if (value is List) {
-    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+    return value
+        .where((e) => e != null && e.toString().trim().isNotEmpty)
+        .map((e) => e.toString().trim())
+        .toList();
+  }
+  if (value is num) {
+    return [value.toString()];
   }
   if (value is String && value.isNotEmpty) {
-    return value.split(',').where((e) => e.isNotEmpty).toList();
+    return value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
   }
   return [];
 }

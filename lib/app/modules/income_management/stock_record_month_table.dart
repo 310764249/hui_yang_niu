@@ -29,6 +29,21 @@ class StockRecordMonthTable extends StatelessWidget {
     );
   }
 
+  void _openMaterialDetail(BuildContext context, StockRecordItemEntity item) {
+    final materialId = (item.materialId?.isNotEmpty ?? false) ? item.materialId! : (item.id ?? '');
+    if (materialId.isEmpty) {
+      return;
+    }
+    AddInventoryView.push(
+      context,
+      addInventoryEnum: AddInventoryEnum.viewer,
+      materialId: materialId,
+      materialName: (item.materialName?.isNotEmpty ?? false) ? item.materialName : item.name,
+      unitName: item.unitName,
+      countText: item.currentNum?.toString(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -126,9 +141,11 @@ class StockRecordMonthTable extends StatelessWidget {
 
                 /// 物资明细
                 ...?category.list?.map((item) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
+                  return GestureDetector(
+                    onTap: () => _openMaterialDetail(context, item),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
                       children: [
                         SizedBox(
                           width: 100,
@@ -163,13 +180,7 @@ class StockRecordMonthTable extends StatelessWidget {
                         ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () {
-                              AddInventoryView.push(
-                                context,
-                                addInventoryEnum: AddInventoryEnum.viewer,
-                                materialId: item.materialId ?? item.id,
-                              );
-                            },
+                            onTap: () => _openMaterialDetail(context, item),
                             behavior: HitTestBehavior.translucent,
                             child: Text(
                               _fmt(item.currentNum, prefix: false),
@@ -179,6 +190,7 @@ class StockRecordMonthTable extends StatelessWidget {
                         ),
                         Expanded(child: Text(item.unitName ?? "-", textAlign: TextAlign.center)),
                       ],
+                    ),
                     ),
                   );
                 }),

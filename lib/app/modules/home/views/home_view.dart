@@ -537,7 +537,7 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
                 Text(
-                  '热门文章',
+                  '最新文章',
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(20),
                     color: SaienteColors.blackE5,
@@ -583,11 +583,13 @@ class HomeView extends GetView<HomeController> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (BuildContext context, int index) {
                 Article model = controller.wordItems[index];
+                // Article model = controller.videoItems[index];
                 return InformationItem(
-                  image: '${Constant.uploadFileUrl}${model.coverImg}',
+                  image: '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
                   title: model.title ?? '',
                   userIcon: AssetsImages.avatar,
                   userName: model.publisher ?? '',
+                  isVideo: model.type == 4,
                   onPressed: () {
                     String openURL = Constant.getCMS(model.type, model.id);
                     Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);

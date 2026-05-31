@@ -109,7 +109,7 @@ class HomeController extends GetxController {
   Future<void> requestArticle() async {
     //接口参数
     Map<String, dynamic> para1 = {
-      'Type': 1, //类型 1：图文；2：图片；3：文字；4：视频；5：音频；
+      // 'Type': 1, //类型 1：图文；2：图片；3：文字；4：视频；5：音频；
       'Classify': 'zthj', //业务分类 1: 专题合集[zthj]；99:使用指南[syzn]
       'PageIndex': 1,
       'PageSize': 10,

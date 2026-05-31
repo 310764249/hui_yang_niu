@@ -20,6 +20,7 @@ class SmartEarTagModel {
   final List<SmartEarTagRecordModel>? tempRecordList;
 
   final int? siteRecordNum;
+  final DateTime? siteDay;
   final List<SmartEarTagRecordModel>? siteRecoreList;
 
   final double? weight;
@@ -46,6 +47,7 @@ class SmartEarTagModel {
     this.tempRecordNum,
     this.tempRecordList,
     this.siteRecordNum,
+    this.siteDay,
     this.siteRecoreList,
     this.weight,
     this.weightRecordNum,
@@ -76,6 +78,7 @@ class SmartEarTagModel {
               ?.map((e) => SmartEarTagRecordModel.fromJson(e))
               .toList(),
       siteRecordNum: json['siteRecordNum'],
+      siteDay: _parseFlexibleDate(json['siteDay']),
       siteRecoreList:
           (json['siteRecoreList'] as List?)
               ?.map((e) => SmartEarTagRecordModel.fromJson(e))
@@ -110,6 +113,7 @@ class SmartEarTagModel {
       'tempRecordNum': tempRecordNum,
       'tempRecordList': tempRecordList?.map((e) => e.toJson()).toList(),
       'siteRecordNum': siteRecordNum,
+      'siteDay': siteDay?.toIso8601String(),
       'siteRecoreList': siteRecoreList?.map((e) => e.toJson()).toList(),
       'weight': weight,
       'weightRecordNum': weightRecordNum,
@@ -125,7 +129,13 @@ class SmartEarTagRecordModel {
   final String? monthStr;
   final String? day;
 
-  SmartEarTagRecordModel({this.value, this.date, this.dateStr, this.monthStr, this.day});
+  SmartEarTagRecordModel({
+    this.value,
+    this.date,
+    this.dateStr,
+    this.monthStr,
+    this.day,
+  });
 
   factory SmartEarTagRecordModel.fromJson(Map<String, dynamic> json) {
     return SmartEarTagRecordModel(
@@ -139,7 +149,8 @@ class SmartEarTagRecordModel {
   //23.00kg(23日05时05分)
   String dateString(String unit) {
     final resolved = resolvedDate;
-    final label = resolved == null ? '--' : _formatDate(resolved, showTime: true);
+    final label =
+        resolved == null ? '--' : _formatDate(resolved, showTime: true);
     return '${value?.toStringAsFixed(2)}$unit($label)';
   }
 
@@ -180,6 +191,10 @@ class SmartEarTagRecordModel {
     }
 
     return '--';
+  }
+
+  String displayDateFrom(DateTime date, {bool showTime = true}) {
+    return _formatDate(date, showTime: showTime);
   }
 
   Map<String, dynamic> toJson() {
@@ -227,7 +242,9 @@ DateTime? _parseFlexibleDate(dynamic value) {
     return direct;
   }
 
-  final monthDayMatch = RegExp(r'^(\d{1,2})[-月](\d{1,2})').firstMatch(normalized);
+  final monthDayMatch = RegExp(
+    r'^(\d{1,2})[-月](\d{1,2})',
+  ).firstMatch(normalized);
   if (monthDayMatch != null) {
     final month = int.tryParse(monthDayMatch.group(1)!);
     final day = int.tryParse(monthDayMatch.group(2)!);

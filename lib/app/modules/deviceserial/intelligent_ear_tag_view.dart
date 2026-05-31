@@ -547,7 +547,7 @@ class _ItemView extends StatelessWidget {
                                   ),
                                   TextSpan(
                                     text:
-                                        ' (${latestStep.displayDate(showTime: false)})',
+                                        ' (${_stepDisplayDate(model, latestStep)})',
                                     style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.black45,
@@ -569,7 +569,7 @@ class _ItemView extends StatelessWidget {
                                 stepList.map((e) {
                                   return WeightRecord(
                                     value: e.value ?? 0.0,
-                                    date: e.resolvedDate ?? DateTime.now(),
+                                    date: _stepRecordDate(model, e),
                                   );
                                 }).toList(),
                             unit: '步',
@@ -668,16 +668,49 @@ class _ItemView extends StatelessWidget {
     final sorted = _sortedRecords(records);
     final Map<String, SmartEarTagRecordModel> dailyRecords = {};
     for (final record in sorted) {
-      final resolvedDate = record.resolvedDate;
+      final resolvedDate = _normalizeStepDate(record.resolvedDate);
       final key =
           resolvedDate == null
               ? record.displayDate(showTime: false)
               : '${resolvedDate.year}-${resolvedDate.month}-${resolvedDate.day}';
       final current = dailyRecords[key];
       if (current == null || (record.value ?? 0) >= (current.value ?? 0)) {
-        dailyRecords[key] = record;
+        dailyRecords[key] = SmartEarTagRecordModel(
+          value: record.value,
+          date: resolvedDate,
+          dateStr: record.dateStr,
+          monthStr: record.monthStr,
+          day: record.day,
+        );
       }
     }
     return dailyRecords.values.toList();
+  }
+
+  String _stepDisplayDate(
+    SmartEarTagModel model,
+    SmartEarTagRecordModel latestStep,
+  ) {
+    final siteDay = model.siteDay;
+    if (siteDay != null) {
+      return latestStep.displayDateFrom(siteDay, showTime: false);
+    }
+    return latestStep.displayDate(showTime: false);
+  }
+
+  DateTime _stepRecordDate(
+    SmartEarTagModel model,
+    SmartEarTagRecordModel record,
+  ) {
+    return _normalizeStepDate(record.resolvedDate) ??
+        _normalizeStepDate(model.siteDay) ??
+        DateTime.now();
+  }
+
+  DateTime? _normalizeStepDate(DateTime? value) {
+    if (value == null) {
+      return null;
+    }
+    return DateTime(value.year, value.month, value.day);
   }
 }

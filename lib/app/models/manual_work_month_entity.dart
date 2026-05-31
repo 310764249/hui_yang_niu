@@ -46,8 +46,32 @@ class MonthCategoryEntity {
       categoryName: json['categoryName'] ?? '',
       income: (json['income'] ?? 0).toDouble(),
       payment: (json['payment'] ?? 0).toDouble(),
-      incomeIdList: _parseIdList(json['incomeIdList']),
-      payIdList: _parseIdList(json['payIdList']),
+      incomeIdList: _parseIdList(
+        json['incomeIdList'] ??
+            json['salesIdList'] ??
+            json['businessIdList'] ??
+            json['busiIdList'] ??
+            json['detailIdList'] ??
+            json['ids'] ??
+            json['idList'] ??
+            json['incomeIds'] ??
+            json['incomeId'] ??
+            json['salesId'],
+      ),
+      payIdList: _parseIdList(
+        json['payIdList'] ??
+            json['purchaseIdList'] ??
+            json['manualIdList'] ??
+            json['businessIdList'] ??
+            json['busiIdList'] ??
+            json['detailIdList'] ??
+            json['ids'] ??
+            json['idList'] ??
+            json['paymentIds'] ??
+            json['payId'] ??
+            json['purchaseId'] ??
+            json['manualId'],
+      ),
       list:
           (json['list'] as List<dynamic>? ?? [])
               .map((e) => MonthCategoryDetailEntity.fromJson(e))
@@ -79,18 +103,72 @@ class MonthCategoryDetailEntity {
       income: (json['income'] ?? 0).toDouble(),
       payment: (json['payment'] ?? 0).toDouble(),
       profit: (json['profit'] ?? 0).toDouble(),
-      incomeIdList: _parseIdList(json['incomeIdList']),
-      payIdList: _parseIdList(json['payIdList']),
+      incomeIdList: _parseIdList(
+        json['incomeIdList'] ??
+            json['salesIdList'] ??
+            json['businessIdList'] ??
+            json['busiIdList'] ??
+            json['detailIdList'] ??
+            json['ids'] ??
+            json['idList'] ??
+            json['incomeIds'] ??
+            json['incomeId'] ??
+            json['salesId'],
+      ),
+      payIdList: _parseIdList(
+        json['payIdList'] ??
+            json['purchaseIdList'] ??
+            json['manualIdList'] ??
+            json['businessIdList'] ??
+            json['busiIdList'] ??
+            json['detailIdList'] ??
+            json['ids'] ??
+            json['idList'] ??
+            json['paymentIds'] ??
+            json['payId'] ??
+            json['purchaseId'] ??
+            json['manualId'],
+      ),
     );
   }
 }
 
 List<String> _parseIdList(dynamic value) {
   if (value is List) {
-    return value.where((e) => e != null && e.toString().isNotEmpty).map((e) => e.toString()).toList();
+    return value
+        .map(_normalizeSingleId)
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
+  if (value is Map) {
+    final id = _normalizeSingleId(value);
+    return id.isEmpty ? [] : [id];
+  }
+  if (value is num) {
+    return [value.toString()];
   }
   if (value is String && value.isNotEmpty) {
-    return value.split(',').where((e) => e.isNotEmpty).toList();
+    return value
+        .split(RegExp(r'[,，;；\s]+'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
   }
   return [];
+}
+
+String _normalizeSingleId(dynamic value) {
+  if (value == null) {
+    return '';
+  }
+  if (value is Map) {
+    final dynamic id =
+        value['id'] ??
+        value['businessId'] ??
+        value['busiId'] ??
+        value['detailId'] ??
+        value['value'];
+    return id?.toString().trim() ?? '';
+  }
+  return value.toString().trim();
 }

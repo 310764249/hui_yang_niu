@@ -11,7 +11,17 @@ class MonthProfitListView extends StatelessWidget {
 
   const MonthProfitListView({super.key, required this.data, this.onTap});
 
-  Color _color(double v) => v > 0 ? SaienteColors.appMain : Colors.red;
+  Color _color(double v) => v > 0 ? SaienteColors.appMain : (v < 0 ? Colors.red : Colors.black87);
+  String _money(double value, {bool signed = false}) {
+    if (value == 0) {
+      return signed ? '+0' : '0';
+    }
+    final abs = value.abs().toStringAsFixed(0);
+    if (!signed) {
+      return value < 0 ? '-$abs' : abs;
+    }
+    return value > 0 ? '+$abs' : '-$abs';
+  }
 
   void _openDetail(String categoryName, List<String> ids, {bool isIncome = false}) {
     if (ids.isEmpty) {
@@ -28,6 +38,26 @@ class MonthProfitListView extends StatelessWidget {
       Get.toNamed(Routes.SALES_ASSESS_DETAIL, arguments: id);
     } else {
       Get.toNamed(Routes.PURCHASE_ASSESS_DETAIL, arguments: id);
+    }
+  }
+
+  void _openItemDetail(String categoryName, MonthCategoryDetailEntity item) {
+    if (item.incomeIdList.isNotEmpty) {
+      _openDetail(categoryName, item.incomeIdList, isIncome: true);
+      return;
+    }
+    if (item.payIdList.isNotEmpty) {
+      _openDetail(categoryName, item.payIdList);
+    }
+  }
+
+  void _openCategoryDetail(MonthCategoryEntity category) {
+    if (category.incomeIdList.isNotEmpty) {
+      _openDetail(category.categoryName, category.incomeIdList, isIncome: true);
+      return;
+    }
+    if (category.payIdList.isNotEmpty) {
+      _openDetail(category.categoryName, category.payIdList);
     }
   }
 
@@ -58,7 +88,7 @@ class MonthProfitListView extends StatelessWidget {
                 onTap: () => _openDetail('销售', _allIncomeIds(), isIncome: true),
                 behavior: HitTestBehavior.translucent,
                 child: Text(
-                  "+${data.income.toStringAsFixed(0)}元",
+                  "${_money(data.income, signed: true)}元",
                   style: const TextStyle(fontSize: 14, color: SaienteColors.appMain),
                 ),
               ),
@@ -67,8 +97,17 @@ class MonthProfitListView extends StatelessWidget {
                 onTap: () => _openDetail('采购', _allPayIds()),
                 behavior: HitTestBehavior.translucent,
                 child: Text(
-                  "-${data.payment.toStringAsFixed(0)}元",
+                  "${_money(-data.payment, signed: true)}元",
                   style: const TextStyle(fontSize: 14, color: Colors.red),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "= ${_money(data.income - data.payment, signed: true)}元",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _color(data.income - data.payment),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -103,11 +142,16 @@ class MonthProfitListView extends StatelessWidget {
                     ),
                     const Spacer(),
                     GestureDetector(
-                      onTap: () => _openDetail(category.categoryName, category.payIdList),
+                      onTap: () => _openCategoryDetail(category),
                       behavior: HitTestBehavior.translucent,
                       child: Text(
-                        "${category.payment > 0 ? '-' : ''}${category.payment.abs().toStringAsFixed(0)}元",
-                        style: TextStyle(fontSize: 13, color: _color(-category.payment)),
+                        '${_money(category.income, signed: true)}  '
+                        '${_money(-category.payment, signed: true)}'
+                        ' = ${_money(category.income - category.payment, signed: true)}元',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: _color(category.income - category.payment),
+                        ),
                       ),
                     ),
                   ],
@@ -148,13 +192,25 @@ class MonthProfitListView extends StatelessWidget {
                 /// 三级明细
                 ...category.list.map((e) {
                   return GestureDetector(
-                    onTap: () => onTap?.call(e),
+                    onTap: () {
+                      if (onTap != null) {
+                        onTap!.call(e);
+                        return;
+                      }
+                      _openItemDetail(category.categoryName, e);
+                    },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(
                         children: [
-                          Expanded(child: Text(e.name)),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _openItemDetail(category.categoryName, e),
+                              behavior: HitTestBehavior.translucent,
+                              child: Text(e.name),
+                            ),
+                          ),
                           Expanded(
                             child: GestureDetector(
                               onTap: () => _openDetail(

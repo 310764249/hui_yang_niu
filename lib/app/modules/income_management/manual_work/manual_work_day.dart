@@ -138,6 +138,7 @@ class _ManualWorkDayState extends State<ManualWorkDay> with AutomaticKeepAliveCl
                     .map(
                       (e) => DayProfitItem(
                         name: e.name,
+                        categoryName: e.name,
                         profit: e.profit,
                         income: e.income,
                         payment: e.payment,

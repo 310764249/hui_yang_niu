@@ -63,7 +63,7 @@ class AbnormalItemModel {
       lose: json['lose'],
       low: json['low'],
       envGps: json['env_Gps'],
-      updateTime: json['updateTime'] != null ? DateTime.tryParse(json['updateTime']) : null,
+      updateTime: _parseFlexibleDate(json['updateTime']),
       updateTimeStr: json['updateTimeStr'],
     );
   }
@@ -83,4 +83,42 @@ class AbnormalItemModel {
       'updateTimeStr': updateTimeStr,
     };
   }
+}
+
+DateTime? _parseFlexibleDate(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+
+  if (value is DateTime) {
+    return _sanitizeDate(value);
+  }
+
+  if (value is num) {
+    final timestamp = value.toInt();
+    final parsed =
+        timestamp > 100000000000
+            ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+            : DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return _sanitizeDate(parsed);
+  }
+
+  final raw = value.toString().trim();
+  if (raw.isEmpty || raw == 'null') {
+    return null;
+  }
+
+  final timestamp = int.tryParse(raw);
+  if (timestamp != null) {
+    return _parseFlexibleDate(timestamp);
+  }
+
+  return _sanitizeDate(DateTime.tryParse(raw.replaceAll('/', '-')));
+}
+
+DateTime? _sanitizeDate(DateTime? value) {
+  if (value == null || value.year <= 1) {
+    return null;
+  }
+  return value.isUtc ? value.toLocal() : value;
 }

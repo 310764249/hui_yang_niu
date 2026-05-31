@@ -1,5 +1,3 @@
-import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/widgets/empty_view.dart';
@@ -27,7 +25,7 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
         this.abnormalListEntity = abnormalListEntity;
       });
     } catch (e) {
-      print(e);
+      debugPrint('$e');
     }
   }
 
@@ -128,19 +126,19 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
             child: Row(
               children: [
-                _buildFilterItem(title: '全部', index: 0),
-
-                const SizedBox(width: 10),
-
-                _buildFilterItem(title: '体温异常', index: 1),
-
-                const SizedBox(width: 10),
-
-                _buildFilterItem(title: '环境异常', index: 2),
-
-                const SizedBox(width: 10),
-
-                _buildFilterItem(title: '耳标丢失', index: 3),
+                Expanded(child: _buildFilterItem(title: '全部', index: 0)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildFilterDotItem(color: Colors.red, label: '体温异常', index: 1),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildFilterDotItem(color: const Color(0xFF8BC34A), label: '环境异常', index: 2),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildFilterDotItem(color: const Color(0xFFE6B31E), label: '耳标丢失', index: 3),
+                ),
               ],
             ),
           ),
@@ -281,12 +279,64 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
 
           border: Border.all(color: selected ? const Color(0xFF3D6DCC) : const Color(0xFFE5E7EB)),
         ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: selected ? Colors.white : const Color(0xFF666666),
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              maxLines: 1,
+              style: TextStyle(
+                color: selected ? Colors.white : const Color(0xFF666666),
+                fontSize: 13,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterDotItem({required Color color, required String label, required int index}) {
+    final bool selected = selectedType == index;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedType = index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? color.withValues(alpha: 0.12) : const Color(0xFFF4F6FA),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: selected ? color : const Color(0xFFE5E7EB), width: selected ? 2 : 1),
+        ),
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: selected ? color : const Color(0xFF666666),
+                    fontSize: 13,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -305,7 +355,7 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
             color: color,
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: color.withOpacity(0.25), blurRadius: 8, offset: const Offset(0, 3)),
+              BoxShadow(color: color.withValues(alpha: 0.25), blurRadius: 8, offset: const Offset(0, 3)),
             ],
           ),
           child: Text(
@@ -345,7 +395,10 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
   String _timeText(AbnormalItemModel item) {
     final time = item.updateTime;
 
-    if (time == null) return '--';
+    if (time == null) {
+      final raw = item.updateTimeStr?.trim();
+      return raw == null || raw.isEmpty ? '--' : raw;
+    }
 
     String two(int v) => v.toString().padLeft(2, '0');
 

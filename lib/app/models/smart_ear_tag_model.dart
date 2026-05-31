@@ -69,7 +69,7 @@ class SmartEarTagModel {
       envTemp: json['env_Temp'],
       envHumi: json['env_Humi'],
       envGps: json['env_Gps'],
-      updateTime: json['updateTime'] != null ? DateTime.tryParse(json['updateTime']) : null,
+      updateTime: _parseFlexibleDate(json['updateTime']),
       tempRecordNum: json['tempRecordNum'],
       tempRecordList:
           (json['tempRecordList'] as List?)
@@ -130,7 +130,7 @@ class SmartEarTagRecordModel {
   factory SmartEarTagRecordModel.fromJson(Map<String, dynamic> json) {
     return SmartEarTagRecordModel(
       value: (json['value'] as num?)?.toDouble(),
-      date: json['date'] != null ? DateTime.tryParse(json['date']) : null,
+      date: _parseFlexibleDate(json['date']),
       dateStr: json['dateStr'],
       monthStr: json['monthStr'],
       day: json['day'],
@@ -138,7 +138,48 @@ class SmartEarTagRecordModel {
   }
   //23.00kg(23日05时05分)
   String dateString(String unit) {
-    return '${value?.toStringAsFixed(2)}$unit(${date?.month}月${date?.day}日${date?.hour}时${date?.minute}分)';
+    final resolved = resolvedDate;
+    final label = resolved == null ? '--' : _formatDate(resolved, showTime: true);
+    return '${value?.toStringAsFixed(2)}$unit($label)';
+  }
+
+  DateTime? get resolvedDate {
+    if (date != null) {
+      return date;
+    }
+
+    final parsedDateStr = _parseFlexibleDate(dateStr);
+    if (parsedDateStr != null) {
+      return parsedDateStr;
+    }
+
+    final monthValue = _extractDatePart(monthStr);
+    final dayValue = _extractDatePart(day);
+    if (monthValue != null && dayValue != null) {
+      return DateTime(2000, monthValue, dayValue);
+    }
+
+    return null;
+  }
+
+  String displayDate({bool showTime = true}) {
+    final resolved = resolvedDate;
+    if (resolved != null) {
+      return _formatDate(resolved, showTime: showTime);
+    }
+
+    final rawDate = dateStr?.trim();
+    if (rawDate != null && rawDate.isNotEmpty) {
+      return rawDate;
+    }
+
+    final rawMonth = monthStr?.trim();
+    final rawDay = day?.trim();
+    if ((rawMonth?.isNotEmpty ?? false) && (rawDay?.isNotEmpty ?? false)) {
+      return '$rawMonth$rawDay';
+    }
+
+    return '--';
   }
 
   Map<String, dynamic> toJson() {
@@ -150,4 +191,77 @@ class SmartEarTagRecordModel {
       'day': day,
     };
   }
+}
+
+DateTime? _parseFlexibleDate(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+
+  if (value is DateTime) {
+    return _sanitizeDate(value);
+  }
+
+  if (value is num) {
+    final timestamp = value.toInt();
+    final parsed =
+        timestamp > 100000000000
+            ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+            : DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return _sanitizeDate(parsed);
+  }
+
+  final raw = value.toString().trim();
+  if (raw.isEmpty || raw == 'null') {
+    return null;
+  }
+
+  final timestamp = int.tryParse(raw);
+  if (timestamp != null) {
+    return _parseFlexibleDate(timestamp);
+  }
+
+  final normalized = raw.replaceAll('/', '-').replaceAll('.', '-');
+  final direct = _sanitizeDate(DateTime.tryParse(normalized));
+  if (direct != null) {
+    return direct;
+  }
+
+  final monthDayMatch = RegExp(r'^(\d{1,2})[-月](\d{1,2})').firstMatch(normalized);
+  if (monthDayMatch != null) {
+    final month = int.tryParse(monthDayMatch.group(1)!);
+    final day = int.tryParse(monthDayMatch.group(2)!);
+    if (month != null && day != null) {
+      return DateTime(DateTime.now().year, month, day);
+    }
+  }
+
+  return null;
+}
+
+DateTime? _sanitizeDate(DateTime? value) {
+  if (value == null || value.year <= 1) {
+    return null;
+  }
+  return value.isUtc ? value.toLocal() : value;
+}
+
+int? _extractDatePart(String? value) {
+  if (value == null) {
+    return null;
+  }
+  final match = RegExp(r'\d+').firstMatch(value);
+  return match == null ? null : int.tryParse(match.group(0)!);
+}
+
+String _formatDate(DateTime date, {bool showTime = true}) {
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  if (!showTime) {
+    return '$month月$day日';
+  }
+
+  final hour = date.hour.toString().padLeft(2, '0');
+  final minute = date.minute.toString().padLeft(2, '0');
+  return '$month月$day日 $hour时$minute分';
 }

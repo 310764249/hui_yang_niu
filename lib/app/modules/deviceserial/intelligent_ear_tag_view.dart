@@ -1,8 +1,6 @@
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:intellectual_breed/app/modules/deviceserial/smart_temp_line_chart.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -48,7 +46,10 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
   @override
   void initState() {
     super.initState();
-    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
+    refreshController = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
     getData();
   }
 
@@ -64,8 +65,14 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
       }
 
       //接口参数
-      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
-      var response = await httpsClient.get('/api/intelligenteartag', queryParameters: para);
+      Map<String, dynamic> para = {
+        'PageIndex': tempPageIndex,
+        'PageSize': pageSize,
+      };
+      var response = await httpsClient.get(
+        '/api/intelligenteartag',
+        queryParameters: para,
+      );
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -153,7 +160,22 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                   model: model,
                   onTapEarTag: () => onTapEarTag(model),
                   onTapMore: () {
-                    if (model.tempRecordList == null || model.tempRecordList!.isEmpty) {
+                    if (model.tempRecordList == null ||
+                        model.tempRecordList!.isEmpty) {
+                      Toast.show('暂无数据');
+                      return;
+                    }
+                    final tempRecords =
+                        (model.tempRecordList ?? [])
+                            .where((e) => e.resolvedDate != null)
+                            .map((e) {
+                              return WeightRecord(
+                                value: e.value ?? 0.0,
+                                date: e.resolvedDate!,
+                              );
+                            })
+                            .toList();
+                    if (tempRecords.isEmpty) {
                       Toast.show('暂无数据');
                       return;
                     }
@@ -161,15 +183,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                       context: context,
                       builder: (_) {
                         return SmartTempLineChart(
-                          records:
-                              (model.tempRecordList ?? []).map((e) {
-                                WeightRecord record = WeightRecord(
-                                  value: e.value ?? 0.0,
-                                  date: e.date ?? DateTime.now(),
-                                );
-                                return record;
-                              }).toList() ??
-                              [],
+                          records: tempRecords,
                           unit: '℃',
                         );
                       },
@@ -205,7 +219,9 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
               //背景
               color: const Color(0xFFE0E0E0),
               //设置四周圆角 角度
-              borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
+              borderRadius: BorderRadius.all(
+                Radius.circular(ScreenAdapter.height(10.0)),
+              ),
             ),
           );
         },
@@ -217,27 +233,110 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
   bool get wantKeepAlive => true;
 
   void onTapEarTag(SmartEarTagModel model) async {
+    final candidateIds = _buildCandidateIds([model.id, model.cId]);
+    final candidateCodes = _buildCandidateIds([model.code, model.eleCode]);
+    if (candidateIds.isEmpty && candidateCodes.isEmpty) {
+      Toast.show('暂无牛只信息');
+      return;
+    }
+
     Toast.showLoading();
-    try {
-      var response = await httpsClient.get("/api/cow/${model.id}");
-      var selectedCow = Cattle.fromJson(response);
-      Get.toNamed(Routes.CATTLE_DETAIL, arguments: selectedCow);
-    } catch (error) {
-      Toast.dismiss();
-      if (error is ApiException) {
-        // 处理 API 请求异常情况 code不为 0 的场景
-        Log.d('API Exception: ${error.toString()}');
-        Toast.failure(msg: error.toString());
-      } else {
-        // HTTP 请求异常情况
-        Log.d('Other Exception: $error');
+
+    Cattle? selectedCow;
+    for (final cowId in candidateIds) {
+      selectedCow = await _requestCattleDetail(cowId);
+      if (selectedCow != null) {
+        break;
       }
     }
+
+    if (selectedCow == null) {
+      for (final cowCode in candidateCodes) {
+        selectedCow = await _requestCattleByCode(cowCode);
+        if (selectedCow != null) {
+          break;
+        }
+      }
+    }
+
+    Toast.dismiss();
+
+    if (selectedCow == null) {
+      Toast.failure(msg: '未找到对应牛只档案');
+      return;
+    }
+
+    Get.toNamed(Routes.CATTLE_DETAIL, arguments: selectedCow);
+  }
+
+  Future<Cattle?> _requestCattleDetail(String cowId) async {
+    try {
+      final response = await httpsClient.get("/api/cow/$cowId");
+      return Cattle.fromJson(response);
+    } catch (error) {
+      if (error is ApiException) {
+        Log.d('API Exception when loading cow $cowId: ${error.toString()}');
+      } else {
+        Log.d('Other Exception when loading cow $cowId: $error');
+      }
+      return null;
+    }
+  }
+
+  Future<Cattle?> _requestCattleByCode(String cowCode) async {
+    try {
+      final response = await httpsClient.get(
+        "/api/cow",
+        queryParameters: {'Code': cowCode, 'PageIndex': 1, 'PageSize': 10},
+      );
+      final pageInfo = PageInfo.fromJson(response);
+      if (pageInfo.list.isEmpty) {
+        return null;
+      }
+
+      final cattleList =
+          pageInfo.list
+              .map((item) => Cattle.fromJson(item as Map<String, dynamic>))
+              .toList();
+
+      for (final cattle in cattleList) {
+        if (cattle.code?.trim() == cowCode ||
+            cattle.eleCode?.trim() == cowCode) {
+          return cattle;
+        }
+      }
+
+      return cattleList.first;
+    } catch (error) {
+      if (error is ApiException) {
+        Log.d(
+          'API Exception when loading cow by code $cowCode: ${error.toString()}',
+        );
+      } else {
+        Log.d('Other Exception when loading cow by code $cowCode: $error');
+      }
+      return null;
+    }
+  }
+
+  List<String> _buildCandidateIds(List<String?> ids) {
+    final seen = <String>{};
+    final result = <String>[];
+
+    for (final rawId in ids) {
+      final cowId = rawId?.trim();
+      if (cowId == null || cowId.isEmpty || !seen.add(cowId)) {
+        continue;
+      }
+      result.add(cowId);
+    }
+
+    return result;
   }
 }
 
 class _ItemView extends StatelessWidget {
-  const _ItemView({super.key, required this.model, this.onTapMore, this.onTapEarTag});
+  const _ItemView({required this.model, this.onTapMore, this.onTapEarTag});
 
   final SmartEarTagModel model;
   final VoidCallback? onTapMore;
@@ -247,9 +346,12 @@ class _ItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tempList = model.tempRecordList ?? [];
-    final weightList = model.weightRecordList ?? [];
-    final stepList = model.siteRecoreList ?? [];
+    final tempList = _sortedRecords(model.tempRecordList ?? []);
+    final weightList = _sortedRecords(model.weightRecordList ?? []);
+    final stepList = _buildDailyStepRecords(model.siteRecoreList ?? []);
+    final latestTemp = tempList.isEmpty ? null : tempList.last;
+    final latestWeight = weightList.isEmpty ? null : weightList.last;
+    final latestStep = stepList.isEmpty ? null : stepList.last;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -257,7 +359,13 @@ class _ItemView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: const [BoxShadow(color: Color(0x11000000), blurRadius: 6, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x11000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: DefaultTextStyle(
         style: const TextStyle(fontSize: 15, color: Colors.black87),
@@ -294,25 +402,31 @@ class _ItemView extends StatelessWidget {
                   child: _buildRow(
                     title: '当前体温：',
                     valueWidget:
-                        tempList.isEmpty
+                        latestTemp == null
                             ? const Text(
                               '--',
-                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${tempList.last.value?.toStringAsFixed(1) ?? '--'}℃',
-                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                    text:
+                                        '${latestTemp.value?.toStringAsFixed(1) ?? '--'}℃',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ' (${tempList.last.date?.month ?? '--'}月'
-                                        '${tempList.last.date?.day ?? '--'}日 '
-                                        '${tempList.last.date?.hour ?? '--'}时'
-                                        '${tempList.last.date?.minute ?? '--'}分)',
-                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                    text: ' (${latestTemp.displayDate()})',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -324,7 +438,10 @@ class _ItemView extends StatelessWidget {
                     onTap: onTapMore,
                     child: const Text(
                       '历史体温',
-                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                      style: TextStyle(
+                        color: SaienteColors.blue275CF3,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
               ],
@@ -339,25 +456,31 @@ class _ItemView extends StatelessWidget {
                   child: _buildRow(
                     title: '最新体重：',
                     valueWidget:
-                        weightList.isEmpty
+                        latestWeight == null
                             ? const Text(
                               '--',
-                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${weightList.last.value?.toStringAsFixed(1) ?? '--'}kg',
-                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                    text:
+                                        '${latestWeight.value?.toStringAsFixed(1) ?? '--'}kg',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ' (${weightList.last.date?.month ?? '--'}月'
-                                        '${weightList.last.date?.day ?? '--'}日 '
-                                        '${weightList.last.date?.hour ?? '--'}时'
-                                        '${weightList.last.date?.minute ?? '--'}分)',
-                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                    text: ' (${latestWeight.displayDate()})',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -372,10 +495,10 @@ class _ItemView extends StatelessWidget {
                         builder: (_) {
                           return SmartTempLineChart(
                             records:
-                                (model.weightRecordList ?? []).map((e) {
+                                weightList.map((e) {
                                   return WeightRecord(
                                     value: e.value ?? 0.0,
-                                    date: e.date ?? DateTime.now(),
+                                    date: e.resolvedDate ?? DateTime.now(),
                                   );
                                 }).toList(),
                             unit: 'kg',
@@ -385,7 +508,10 @@ class _ItemView extends StatelessWidget {
                     },
                     child: const Text(
                       '历史体重',
-                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                      style: TextStyle(
+                        color: SaienteColors.blue275CF3,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
               ],
@@ -400,23 +526,32 @@ class _ItemView extends StatelessWidget {
                   child: _buildRow(
                     title: '当日步数：',
                     valueWidget:
-                        stepList.isEmpty
+                        latestStep == null
                             ? const Text(
                               '--',
-                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${stepList.last.value?.toInt() ?? '--'}步',
-                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                                    text:
+                                        '${latestStep.value?.toInt() ?? '--'}步',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   TextSpan(
                                     text:
-                                        ' (${stepList.last.date?.month ?? '--'}月'
-                                        '${stepList.last.date?.day ?? '--'}日)',
-                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                        ' (${latestStep.displayDate(showTime: false)})',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -431,10 +566,10 @@ class _ItemView extends StatelessWidget {
                         builder: (_) {
                           return SmartTempLineChart(
                             records:
-                                (model.siteRecoreList ?? []).map((e) {
+                                stepList.map((e) {
                                   return WeightRecord(
                                     value: e.value ?? 0.0,
-                                    date: e.date ?? DateTime.now(),
+                                    date: e.resolvedDate ?? DateTime.now(),
                                   );
                                 }).toList(),
                             unit: '步',
@@ -444,7 +579,10 @@ class _ItemView extends StatelessWidget {
                     },
                     child: const Text(
                       '历史步数',
-                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
+                      style: TextStyle(
+                        color: SaienteColors.blue275CF3,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
               ],
@@ -453,7 +591,10 @@ class _ItemView extends StatelessWidget {
             const SizedBox(height: 6),
 
             /// 环境数据
-            _buildRow(title: '环境数据：', value: '${_text(model.envTemp)}℃  ${_text(model.envHumi)}%'),
+            _buildRow(
+              title: '环境数据：',
+              value: '${_text(model.envTemp)}℃  ${_text(model.envHumi)}%',
+            ),
 
             const SizedBox(height: 6),
 
@@ -465,13 +606,24 @@ class _ItemView extends StatelessWidget {
     );
   }
 
-  Widget _buildRow({required String title, String? value, Widget? valueWidget}) {
+  Widget _buildRow({
+    required String title,
+    String? value,
+    Widget? valueWidget,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
 
-        Expanded(child: valueWidget ?? Text(_text(value), style: const TextStyle(fontSize: 15))),
+        Expanded(
+          child:
+              valueWidget ??
+              Text(_text(value), style: const TextStyle(fontSize: 15)),
+        ),
       ],
     );
   }
@@ -487,5 +639,45 @@ class _ItemView extends StatelessWidget {
     }
 
     return str;
+  }
+
+  List<SmartEarTagRecordModel> _sortedRecords(
+    List<SmartEarTagRecordModel> records,
+  ) {
+    final copied = [...records];
+    copied.sort((a, b) {
+      final left = a.resolvedDate;
+      final right = b.resolvedDate;
+      if (left == null && right == null) {
+        return 0;
+      }
+      if (left == null) {
+        return -1;
+      }
+      if (right == null) {
+        return 1;
+      }
+      return left.compareTo(right);
+    });
+    return copied;
+  }
+
+  List<SmartEarTagRecordModel> _buildDailyStepRecords(
+    List<SmartEarTagRecordModel> records,
+  ) {
+    final sorted = _sortedRecords(records);
+    final Map<String, SmartEarTagRecordModel> dailyRecords = {};
+    for (final record in sorted) {
+      final resolvedDate = record.resolvedDate;
+      final key =
+          resolvedDate == null
+              ? record.displayDate(showTime: false)
+              : '${resolvedDate.year}-${resolvedDate.month}-${resolvedDate.day}';
+      final current = dailyRecords[key];
+      if (current == null || (record.value ?? 0) >= (current.value ?? 0)) {
+        dailyRecords[key] = record;
+      }
+    }
+    return dailyRecords.values.toList();
   }
 }

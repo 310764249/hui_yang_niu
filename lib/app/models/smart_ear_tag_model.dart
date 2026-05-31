@@ -164,9 +164,14 @@ class SmartEarTagRecordModel {
       return parsedDateStr;
     }
 
+    final parsedDay = _parseFlexibleDate(day);
+    if (parsedDay != null) {
+      return parsedDay;
+    }
+
     final monthValue = _extractDatePart(monthStr);
     final dayValue = _extractDatePart(day);
-    if (monthValue != null && dayValue != null) {
+    if (monthValue != null && dayValue != null && dayValue <= 31) {
       return DateTime(2000, monthValue, dayValue);
     }
 

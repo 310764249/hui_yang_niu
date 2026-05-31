@@ -11,7 +11,8 @@ class AbnormalListView extends StatefulWidget {
   State<AbnormalListView> createState() => _AbnormalListViewState();
 }
 
-class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepAliveClientMixin {
+class _AbnormalListViewState extends State<AbnormalListView>
+    with AutomaticKeepAliveClientMixin {
   HttpsClient httpsClient = HttpsClient();
 
   AbnormalListEntity? abnormalListEntity;
@@ -20,7 +21,9 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
     String api = '/api/intelligenteartag/getabnormallist';
     var response = await httpsClient.get(api);
     try {
-      AbnormalListEntity abnormalListEntity = AbnormalListEntity.fromJson(response);
+      AbnormalListEntity abnormalListEntity = AbnormalListEntity.fromJson(
+        response,
+      );
       setState(() {
         this.abnormalListEntity = abnormalListEntity;
       });
@@ -34,8 +37,13 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
 
   /// 0=全部 1=体温异常 2=环境异常 3=耳标丢失
   List<AbnormalItemModel> get filterList {
-    final List<AbnormalItemModel> list = [...(abnormalListEntity?.list ?? <AbnormalItemModel>[])]
-      ..sort((a, b) => (b.updateTime ?? DateTime(2000)).compareTo(a.updateTime ?? DateTime(2000)));
+    final List<AbnormalItemModel> list = [
+      ...(abnormalListEntity?.list ?? <AbnormalItemModel>[]),
+    ]..sort(
+      (a, b) => (b.updateTime ?? DateTime(2000)).compareTo(
+        a.updateTime ?? DateTime(2000),
+      ),
+    );
 
     switch (selectedType) {
       case 1:
@@ -87,7 +95,11 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: const [
-          BoxShadow(color: Color(0x12000000), blurRadius: 10, offset: Offset(0, 2)),
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -129,15 +141,27 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                 Expanded(child: _buildFilterItem(title: '全部', index: 0)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildFilterDotItem(color: Colors.red, label: '体温异常', index: 1),
+                  child: _buildFilterDotItem(
+                    color: Colors.red,
+                    label: '体温异常',
+                    index: 1,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildFilterDotItem(color: const Color(0xFF8BC34A), label: '环境异常', index: 2),
+                  child: _buildFilterDotItem(
+                    color: const Color(0xFF8BC34A),
+                    label: '环境异常',
+                    index: 2,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildFilterDotItem(color: const Color(0xFFE6B31E), label: '耳标丢失', index: 3),
+                  child: _buildFilterDotItem(
+                    color: const Color(0xFFE6B31E),
+                    label: '耳标丢失',
+                    index: 3,
+                  ),
                 ),
               ],
             ),
@@ -153,28 +177,52 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                 Expanded(
                   flex: 2,
                   child: Center(
-                    child: Text('类型', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    child: Text(
+                      '类型',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
 
                 Expanded(
                   flex: 3,
                   child: Center(
-                    child: Text('耳号', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    child: Text(
+                      '耳号',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
 
                 Expanded(
                   flex: 4,
                   child: Center(
-                    child: Text('位置', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    child: Text(
+                      '位置',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
 
                 Expanded(
                   flex: 4,
                   child: Center(
-                    child: Text('时间', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    child: Text(
+                      '时间',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -183,13 +231,18 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
 
           /// 数据
           if (list.isEmpty)
-            const Padding(padding: EdgeInsets.symmetric(vertical: 50), child: EmptyView())
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 50),
+              child: EmptyView(),
+            )
           else
             Expanded(
               child: ListView.separated(
                 itemCount: list.length,
 
-                separatorBuilder: (_, __) => Container(height: 1, color: const Color(0xFFF5F5F5)),
+                separatorBuilder:
+                    (_, __) =>
+                        Container(height: 1, color: const Color(0xFFF5F5F5)),
                 itemBuilder: (context, index) {
                   final item = list[index];
 
@@ -218,8 +271,11 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                           flex: 3,
                           child: Center(
                             child: Text(
-                              _text(item.code),
-                              style: const TextStyle(fontSize: 14, color: Colors.black87),
+                              _text(item.eleCode ?? item.code),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                         ),
@@ -232,7 +288,10 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                               _text(item.envGps),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 13, color: Colors.black54),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
                         ),
@@ -244,7 +303,10 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                             child: Text(
                               _timeText(item),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 13, color: Colors.black54),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
                         ),
@@ -277,7 +339,9 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
 
           borderRadius: BorderRadius.circular(10),
 
-          border: Border.all(color: selected ? const Color(0xFF3D6DCC) : const Color(0xFFE5E7EB)),
+          border: Border.all(
+            color: selected ? const Color(0xFF3D6DCC) : const Color(0xFFE5E7EB),
+          ),
         ),
         child: Center(
           child: FittedBox(
@@ -297,7 +361,11 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
     );
   }
 
-  Widget _buildFilterDotItem({required Color color, required String label, required int index}) {
+  Widget _buildFilterDotItem({
+    required Color color,
+    required String label,
+    required int index,
+  }) {
     final bool selected = selectedType == index;
 
     return GestureDetector(
@@ -310,9 +378,15 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.12) : const Color(0xFFF4F6FA),
+          color:
+              selected
+                  ? color.withValues(alpha: 0.12)
+                  : const Color(0xFFF4F6FA),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selected ? color : const Color(0xFFE5E7EB), width: selected ? 2 : 1),
+          border: Border.all(
+            color: selected ? color : const Color(0xFFE5E7EB),
+            width: selected ? 2 : 1,
+          ),
         ),
         child: Center(
           child: FittedBox(
@@ -323,7 +397,10 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
                 Container(
                   width: 12,
                   height: 12,
-                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -344,7 +421,11 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
   }
 
   /// 顶部统计
-  Widget _buildTopItem({required Color color, required int count, required String title}) {
+  Widget _buildTopItem({
+    required Color color,
+    required int count,
+    required String title,
+  }) {
     return Column(
       children: [
         Container(
@@ -355,12 +436,20 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
             color: color,
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: color.withValues(alpha: 0.25), blurRadius: 8, offset: const Offset(0, 3)),
+              BoxShadow(
+                color: color.withValues(alpha: 0.25),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
             ],
           ),
           child: Text(
             '$count',
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
 
@@ -368,7 +457,11 @@ class _AbnormalListViewState extends State<AbnormalListView> with AutomaticKeepA
 
         Text(
           title,
-          style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black87,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );

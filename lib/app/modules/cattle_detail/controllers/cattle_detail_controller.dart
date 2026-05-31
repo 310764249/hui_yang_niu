@@ -27,7 +27,11 @@ class CattleDetailController extends GetxController {
   // 当前TabIndex, 0:基本信息, 1:生产记录
   RxInt currentIndex = 0.obs;
 
-  List<String> tabTitles = ['基本信息', '生产记录', '育种信息'];
+  List<String> tabTitles = [
+    '基本信息',
+    '生产记录',
+    // '育种信息',
+  ];
 
   // 更新顶部tab index
   void updatePageIndex(int index) {
@@ -112,14 +116,13 @@ class CattleDetailController extends GetxController {
   Future<void> getCattleCardData() async {
     try {
       //接口参数
-      Map<String, dynamic> mapParam = {
-        "cowId": cattle.id,
-      };
+      Map<String, dynamic> mapParam = {"cowId": cattle.id};
       debugPrint('-----> $mapParam');
 
       var response = await httpsClient.get(
-          "/api/dashboard/statistics/cow/statistics",
-          queryParameters: mapParam);
+        "/api/dashboard/statistics/cow/statistics",
+        queryParameters: mapParam,
+      );
 
       Cattle cattleModel = Cattle.fromJson(response);
 
@@ -129,50 +132,62 @@ class CattleDetailController extends GetxController {
       if (cattle.gender == 1) {
         bullColorSectionList.value = [
           CommonData(
-              id: 0,
-              name: '采精次数',
-              value: ObjectUtil.isNotEmpty(cattleModel.semenCount)
-                  ? cattleModel.semenCount.toString().orEmpty()
-                  : Constant.placeholder,
-              unit: '次'),
+            id: 0,
+            name: '采精次数',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.semenCount)
+                    ? cattleModel.semenCount.toString().orEmpty()
+                    : Constant.placeholder,
+            unit: '次',
+          ),
           CommonData(
-              id: 1,
-              name: '采精合格次数',
-              value: ObjectUtil.isNotEmpty(cattleModel.qualifiedCount)
-                  ? cattleModel.qualifiedCount.toString()
-                  : Constant.placeholder,
-              unit: '次'),
+            id: 1,
+            name: '采精合格次数',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.qualifiedCount)
+                    ? cattleModel.qualifiedCount.toString()
+                    : Constant.placeholder,
+            unit: '次',
+          ),
           CommonData(
-              id: 2,
-              name: '采精合格率',
-              value: ObjectUtil.isNotEmpty(cattleModel.qualifiedRate)
-                  ? cattleModel.qualifiedRate.toString().replaceAll('%', '')
-                  : Constant.placeholder,
-              unit: '%'),
+            id: 2,
+            name: '采精合格率',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.qualifiedRate)
+                    ? cattleModel.qualifiedRate.toString().replaceAll('%', '')
+                    : Constant.placeholder,
+            unit: '%',
+          ),
           CommonData(
-              id: 3,
-              name: '上次采精',
-              value: ObjectUtil.isNotEmpty(cattleModel.lastSemenDate)
-                  ? cattleModel.lastSemenDate
-                      .toString() // .replaceFirst('-', '\n')
-                  : Constant.placeholder),
+            id: 3,
+            name: '上次采精',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.lastSemenDate)
+                    ? cattleModel.lastSemenDate
+                        .toString() // .replaceFirst('-', '\n')
+                    : Constant.placeholder,
+          ),
         ];
       } else {
         cowColorSectionList.value = [
           CommonData(
-              id: 0,
-              name: '已产胎次',
-              value: cattle.calvNum.toString().orEmpty().isEmpty
-                  ? Constant.placeholder
-                  : cattle.calvNum.toString().orEmpty(),
-              unit: '次'),
+            id: 0,
+            name: '已产胎次',
+            value:
+                cattle.calvNum.toString().orEmpty().isEmpty
+                    ? Constant.placeholder
+                    : cattle.calvNum.toString().orEmpty(),
+            unit: '次',
+          ),
           CommonData(
-              id: 1,
-              name: '初生重',
-              value: ObjectUtil.isNotEmpty(cattleModel.birthWeight)
-                  ? cattleModel.birthWeight.toString()
-                  : Constant.placeholder,
-              unit: '千克'),
+            id: 1,
+            name: '初生重',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.birthWeight)
+                    ? cattleModel.birthWeight.toString()
+                    : Constant.placeholder,
+            unit: '千克',
+          ),
           // CommonData(
           //     id: 2,
           //     name: '窝均活仔2',
@@ -181,38 +196,50 @@ class CattleDetailController extends GetxController {
           //         : Constant.placeholder,
           //     unit: '头'),
           CommonData(
-              id: 3,
-              name: '上次配种',
-              value: ObjectUtil.isNotEmpty(cattleModel.lastMating)
-                  ? cattleModel.lastMating.toString()
-                  : Constant.placeholder),
+            id: 3,
+            name: '上次配种',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.lastMating)
+                    ? cattleModel.lastMating.toString()
+                    : Constant.placeholder,
+          ),
           CommonData(
-              id: 4,
-              name: '上次孕检',
-              value: ObjectUtil.isNotEmpty(cattleModel.lastPregcy)
-                  ? cattleModel.lastPregcy.toString() //.replaceFirst('-', '\n')
-                  : Constant.placeholder),
+            id: 4,
+            name: '上次孕检',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.lastPregcy)
+                    ? cattleModel.lastPregcy
+                        .toString() //.replaceFirst('-', '\n')
+                    : Constant.placeholder,
+          ),
           CommonData(
-              id: 5,
-              name: '上次产犊',
-              value: ObjectUtil.isNotEmpty(cattleModel.lastCalv)
-                  ? cattleModel.lastCalv.toString() //.replaceFirst('-', '\n')
-                  : Constant.placeholder),
+            id: 5,
+            name: '上次产犊',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.lastCalv)
+                    ? cattleModel.lastCalv
+                        .toString() //.replaceFirst('-', '\n')
+                    : Constant.placeholder,
+          ),
           CommonData(
-              id: 6,
-              name: '空怀天数',
-              value: ObjectUtil.isNotEmpty(cattleModel.nonantCount)
-                  ? cattleModel.nonantCount.toString()
-                  : Constant.placeholder,
-              unit: '天'),
+            id: 6,
+            name: '空怀天数',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.nonantCount)
+                    ? cattleModel.nonantCount.toString()
+                    : Constant.placeholder,
+            unit: '天',
+          ),
           CommonData(
-              id: 7,
-              name: '是否禁配',
-              value: ObjectUtil.isNotEmpty(cattleModel.lastSemenDate)
-                  ? cattleModel.isBan ?? false
-                      ? '是'
-                      : '否'
-                  : Constant.placeholder),
+            id: 7,
+            name: '是否禁配',
+            value:
+                ObjectUtil.isNotEmpty(cattleModel.lastSemenDate)
+                    ? cattleModel.isBan ?? false
+                        ? '是'
+                        : '否'
+                    : Constant.placeholder,
+          ),
         ];
       }
       update();
@@ -258,8 +285,10 @@ class CattleDetailController extends GetxController {
         'PageIndex': tempPageIndex,
         'PageSize': pageSize,
       };
-      var response =
-          await httpsClient.get("/api/cowhistory", queryParameters: para);
+      var response = await httpsClient.get(
+        "/api/cowhistory",
+        queryParameters: para,
+      );
       debugPrint('-----> ${response.toString()}');
 
       PageInfo model = PageInfo.fromJson(response);

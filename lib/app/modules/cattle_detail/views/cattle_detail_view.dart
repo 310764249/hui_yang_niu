@@ -19,8 +19,6 @@ import '../../../widgets/dict_list.dart';
 import '../../../widgets/divider_line.dart';
 import '../../../widgets/empty_view.dart';
 import '../../../widgets/refresh_header_footer.dart';
-import '../breeding_info/controllers/breeding_info_controller.dart';
-import '../breeding_info/views/breeding_info_view.dart';
 import '../controllers/cattle_detail_controller.dart';
 import '../widget/action_item_header.dart';
 
@@ -47,7 +45,12 @@ class CattleDetailView extends GetView<CattleDetailController> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
+        padding: EdgeInsets.fromLTRB(
+          ScreenAdapter.width(8),
+          0,
+          ScreenAdapter.width(8),
+          0,
+        ),
         child: Text(
           labelText,
           overflow: TextOverflow.ellipsis,
@@ -67,7 +70,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
         children: [
           TextSpan(
             text: title,
-            style: TextStyle(fontSize: ScreenAdapter.fontSize(13), color: SaienteColors.black80),
+            style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(13),
+              color: SaienteColors.black80,
+            ),
           ),
           TextSpan(
             text: value,
@@ -85,7 +91,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
   // 色块
   Widget _colorItem(String title, String value, {String? unit = ''}) {
     return Container(
-      color: controller.genderType.value == 2 ? SaienteColors.redFFE9E9 : SaienteColors.blueE5EEFF,
+      color:
+          controller.genderType.value == 2
+              ? SaienteColors.redFFE9E9
+              : SaienteColors.blueE5EEFF,
       margin: EdgeInsets.fromLTRB(
         ScreenAdapter.width(4),
         ScreenAdapter.height(4),
@@ -129,7 +138,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
             ),
             Text(
               title,
-              style: TextStyle(color: SaienteColors.blackB2, fontSize: ScreenAdapter.fontSize(13)),
+              style: TextStyle(
+                color: SaienteColors.blackB2,
+                fontSize: ScreenAdapter.fontSize(13),
+              ),
             ),
           ],
         ),
@@ -231,7 +243,9 @@ class CattleDetailView extends GetView<CattleDetailController> {
                 child:
                     controller.cattle.img == null
                         ? LoadAssetImage(
-                          controller.genderType.value == 2 ? AssetsImages.cow : AssetsImages.bull,
+                          controller.genderType.value == 2
+                              ? AssetsImages.cow
+                              : AssetsImages.bull,
                         )
                         : GestureDetector(
                           onTap: () {
@@ -316,7 +330,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
                         ),
                       ),
                       SizedBox(height: ScreenAdapter.height(6)),
-                      _keyValueView('日   龄: ', '${controller.cattle.ageOfDay.toString()}天'),
+                      _keyValueView(
+                        '日   龄: ',
+                        '${controller.cattle.ageOfDay.toString()}天',
+                      ),
                     ],
                   ),
                 ),
@@ -358,7 +375,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
         ScreenAdapter.width(10),
         ScreenAdapter.height(0),
       ),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: Obx(
@@ -543,7 +563,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
         ScreenAdapter.width(10),
         ScreenAdapter.height(10),
       ),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: ListView(
@@ -560,7 +583,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
             ),
             // 繁殖管理
             controller.genderType.value == 2
-                ? _managementView("繁殖管理", controller.reproductiveManagementList4Cow)
+                ? _managementView(
+                  "繁殖管理",
+                  controller.reproductiveManagementList4Cow,
+                )
                 : const SizedBox(),
             // _managementView(
             //     "繁殖管理",
@@ -613,7 +639,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
   Widget _eventItem(CattleEvent event, int position, int totalLength) {
     return Container(
       color: SaienteColors.backGrey,
-      padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
+      padding: EdgeInsets.only(
+        top: ScreenAdapter.height(5),
+        bottom: ScreenAdapter.height(5),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -744,14 +773,18 @@ class CattleDetailView extends GetView<CattleDetailController> {
                   onLoad: () async {
                     // 如果没有更多直接返回
                     if (!controller.hasMore) {
-                      controller.refreshController.finishLoad(IndicatorResult.noMore);
+                      controller.refreshController.finishLoad(
+                        IndicatorResult.noMore,
+                      );
                       return;
                     }
                     // 上拉加载更多数据请求
                     await controller.getCattleEventListData(isRefresh: false);
                     // 设置状态
                     controller.refreshController.finishLoad(
-                      controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore,
+                      controller.hasMore
+                          ? IndicatorResult.success
+                          : IndicatorResult.noMore,
                     );
                   },
                   child: ListView.builder(
@@ -861,7 +894,8 @@ class CattleDetailView extends GetView<CattleDetailController> {
 
   Widget _content() {
     return DefaultTabController(
-      length: 3,
+      // 暂时隐藏第 3 个标签，后续需要时把 length 改回 3 即可。
+      length: 2,
       child: Column(
         children: [
           Padding(
@@ -928,8 +962,8 @@ class CattleDetailView extends GetView<CattleDetailController> {
                 _cattleInfo(),
                 // 生产记录
                 _eventList(),
-                // 生产记录
-                const BreedingInfoView(),
+                // 暂时隐藏第 3 个标签页
+                // const BreedingInfoView(),
               ],
             ),
           ),
@@ -940,17 +974,16 @@ class CattleDetailView extends GetView<CattleDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    //引入育种详情信息页面
-    BreedingInfoController vc = BreedingInfoController();
-    vc.cattle = controller.cattle;
-    Get.put(vc);
-    //
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text(
           '牛只档案',
-          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
@@ -962,7 +995,10 @@ class CattleDetailView extends GetView<CattleDetailController> {
                 return;
               }
               //跳转编辑页面
-              Get.toNamed(Routes.CATTLE_EDIT, arguments: controller.cattle)?.then((value) {
+              Get.toNamed(
+                Routes.CATTLE_EDIT,
+                arguments: controller.cattle,
+              )?.then((value) {
                 if (value != null && value == 1) {
                   //执行跳转  回到上级页面，1 表示更新成功，需要继续返回
                   Get.back(result: value);

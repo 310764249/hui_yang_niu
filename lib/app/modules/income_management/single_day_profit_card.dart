@@ -336,24 +336,24 @@ class SingleDayProfitCard extends StatelessWidget {
           /// 表头
           const Row(
             children: [
-              Expanded(child: Text('物资名称', style: TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(child: Text('项目名称', style: TextStyle(fontWeight: FontWeight.bold))),
               Expanded(
                 child: Text(
-                  '入库',
+                  '收入',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 child: Text(
-                  '出库',
+                  '支出',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 child: Text(
-                  '当前库存',
+                  '盈利',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),

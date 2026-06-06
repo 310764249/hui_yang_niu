@@ -162,7 +162,7 @@ class MonthProfitListView extends StatelessWidget {
                 /// 表头
                 const Row(
                   children: [
-                    Expanded(child: Text("物资名称", style: TextStyle(fontWeight: FontWeight.bold))),
+                    Expanded(child: Text("项目名称", style: TextStyle(fontWeight: FontWeight.bold))),
                     Expanded(
                       child: Text(
                         "收入（元）",

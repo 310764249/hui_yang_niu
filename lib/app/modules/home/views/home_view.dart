@@ -548,7 +548,7 @@ class HomeView extends GetView<HomeController> {
             ),
             TextButton(
               onPressed: () {
-                Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 2, 'type': 0});
+                Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 0});
               },
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(const EdgeInsets.all(0)),

@@ -46,10 +46,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
   @override
   void initState() {
     super.initState();
-    refreshController = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
+    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
     getData();
   }
 
@@ -65,14 +62,8 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
       }
 
       //接口参数
-      Map<String, dynamic> para = {
-        'PageIndex': tempPageIndex,
-        'PageSize': pageSize,
-      };
-      var response = await httpsClient.get(
-        '/api/intelligenteartag',
-        queryParameters: para,
-      );
+      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
+      var response = await httpsClient.get('/api/intelligenteartag', queryParameters: para);
 
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -160,21 +151,14 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                   model: model,
                   onTapEarTag: () => onTapEarTag(model),
                   onTapMore: () {
-                    if (model.tempRecordList == null ||
-                        model.tempRecordList!.isEmpty) {
+                    if (model.tempRecordList == null || model.tempRecordList!.isEmpty) {
                       Toast.show('暂无数据');
                       return;
                     }
                     final tempRecords =
-                        (model.tempRecordList ?? [])
-                            .where((e) => e.resolvedDate != null)
-                            .map((e) {
-                              return WeightRecord(
-                                value: e.value ?? 0.0,
-                                date: e.resolvedDate!,
-                              );
-                            })
-                            .toList();
+                        (model.tempRecordList ?? []).where((e) => e.resolvedDate != null).map((e) {
+                          return WeightRecord(value: e.value ?? 0.0, date: e.resolvedDate!);
+                        }).toList();
                     if (tempRecords.isEmpty) {
                       Toast.show('暂无数据');
                       return;
@@ -182,10 +166,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
                     showDialog(
                       context: context,
                       builder: (_) {
-                        return SmartTempLineChart(
-                          records: tempRecords,
-                          unit: '℃',
-                        );
+                        return SmartTempLineChart(records: tempRecords, unit: '℃');
                       },
                     );
                   },
@@ -219,9 +200,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
               //背景
               color: const Color(0xFFE0E0E0),
               //设置四周圆角 角度
-              borderRadius: BorderRadius.all(
-                Radius.circular(ScreenAdapter.height(10.0)),
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
             ),
           );
         },
@@ -295,13 +274,10 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
       }
 
       final cattleList =
-          pageInfo.list
-              .map((item) => Cattle.fromJson(item as Map<String, dynamic>))
-              .toList();
+          pageInfo.list.map((item) => Cattle.fromJson(item as Map<String, dynamic>)).toList();
 
       for (final cattle in cattleList) {
-        if (cattle.code?.trim() == cowCode ||
-            cattle.eleCode?.trim() == cowCode) {
+        if (cattle.code?.trim() == cowCode || cattle.eleCode?.trim() == cowCode) {
           return cattle;
         }
       }
@@ -309,9 +285,7 @@ class _IntelligentEarTagViewState extends State<IntelligentEarTagView>
       return cattleList.first;
     } catch (error) {
       if (error is ApiException) {
-        Log.d(
-          'API Exception when loading cow by code $cowCode: ${error.toString()}',
-        );
+        Log.d('API Exception when loading cow by code $cowCode: ${error.toString()}');
       } else {
         Log.d('Other Exception when loading cow by code $cowCode: $error');
       }
@@ -359,13 +333,7 @@ class _ItemView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x11000000),
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
+        boxShadow: const [BoxShadow(color: Color(0x11000000), blurRadius: 6, offset: Offset(0, 2))],
       ),
       child: DefaultTextStyle(
         style: const TextStyle(fontSize: 15, color: Colors.black87),
@@ -405,28 +373,18 @@ class _ItemView extends StatelessWidget {
                         latestTemp == null
                             ? const Text(
                               '--',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black54,
-                              ),
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text:
-                                        '${latestTemp.value?.toStringAsFixed(1) ?? '--'}℃',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black87,
-                                    ),
+                                    text: '${latestTemp.value?.toStringAsFixed(1) ?? '--'}℃',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
                                   ),
                                   TextSpan(
                                     text: ' (${latestTemp.displayDate()})',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black45,
-                                    ),
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
                                   ),
                                 ],
                               ),
@@ -438,10 +396,7 @@ class _ItemView extends StatelessWidget {
                     onTap: onTapMore,
                     child: const Text(
                       '历史体温',
-                      style: TextStyle(
-                        color: SaienteColors.blue275CF3,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
                     ),
                   ),
               ],
@@ -459,28 +414,18 @@ class _ItemView extends StatelessWidget {
                         latestWeight == null
                             ? const Text(
                               '--',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black54,
-                              ),
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text:
-                                        '${latestWeight.value?.toStringAsFixed(1) ?? '--'}kg',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black87,
-                                    ),
+                                    text: '${latestWeight.value?.toStringAsFixed(1) ?? '--'}kg',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
                                   ),
                                   TextSpan(
                                     text: ' (${latestWeight.displayDate()})',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black45,
-                                    ),
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
                                   ),
                                 ],
                               ),
@@ -508,10 +453,7 @@ class _ItemView extends StatelessWidget {
                     },
                     child: const Text(
                       '历史体重',
-                      style: TextStyle(
-                        color: SaienteColors.blue275CF3,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
                     ),
                   ),
               ],
@@ -529,29 +471,18 @@ class _ItemView extends StatelessWidget {
                         latestStep == null
                             ? const Text(
                               '--',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black54,
-                              ),
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
                             )
                             : RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text:
-                                        '${latestStep.value?.toInt() ?? '--'}步',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black87,
-                                    ),
+                                    text: '${latestStep.value?.toInt() ?? '--'}步',
+                                    style: const TextStyle(fontSize: 15, color: Colors.black87),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ' (${_stepDisplayDate(model, latestStep)})',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black45,
-                                    ),
+                                    text: ' (${_stepDisplayDate(model, latestStep)})',
+                                    style: const TextStyle(fontSize: 12, color: Colors.black45),
                                   ),
                                 ],
                               ),
@@ -579,10 +510,7 @@ class _ItemView extends StatelessWidget {
                     },
                     child: const Text(
                       '历史步数',
-                      style: TextStyle(
-                        color: SaienteColors.blue275CF3,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: SaienteColors.blue275CF3, fontSize: 15),
                     ),
                   ),
               ],
@@ -591,10 +519,7 @@ class _ItemView extends StatelessWidget {
             const SizedBox(height: 6),
 
             /// 环境数据
-            _buildRow(
-              title: '环境数据：',
-              value: '${_text(model.envTemp)}℃  ${_text(model.envHumi)}%',
-            ),
+            _buildRow(title: '环境数据：', value: '${_text(model.envTemp)}℃  ${_text(model.envHumi)}%'),
 
             const SizedBox(height: 6),
 
@@ -606,24 +531,13 @@ class _ItemView extends StatelessWidget {
     );
   }
 
-  Widget _buildRow({
-    required String title,
-    String? value,
-    Widget? valueWidget,
-  }) {
+  Widget _buildRow({required String title, String? value, Widget? valueWidget}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-        ),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
 
-        Expanded(
-          child:
-              valueWidget ??
-              Text(_text(value), style: const TextStyle(fontSize: 15)),
-        ),
+        Expanded(child: valueWidget ?? Text(_text(value), style: const TextStyle(fontSize: 15))),
       ],
     );
   }
@@ -641,9 +555,7 @@ class _ItemView extends StatelessWidget {
     return str;
   }
 
-  List<SmartEarTagRecordModel> _sortedRecords(
-    List<SmartEarTagRecordModel> records,
-  ) {
+  List<SmartEarTagRecordModel> _sortedRecords(List<SmartEarTagRecordModel> records) {
     final copied = [...records];
     copied.sort((a, b) {
       final left = a.resolvedDate;
@@ -662,9 +574,7 @@ class _ItemView extends StatelessWidget {
     return copied;
   }
 
-  List<SmartEarTagRecordModel> _buildDailyStepRecords(
-    List<SmartEarTagRecordModel> records,
-  ) {
+  List<SmartEarTagRecordModel> _buildDailyStepRecords(List<SmartEarTagRecordModel> records) {
     final sorted = _sortedRecords(records);
     final Map<String, SmartEarTagRecordModel> dailyRecords = {};
     for (final record in sorted) {
@@ -687,10 +597,7 @@ class _ItemView extends StatelessWidget {
     return dailyRecords.values.toList();
   }
 
-  String _stepDisplayDate(
-    SmartEarTagModel model,
-    SmartEarTagRecordModel latestStep,
-  ) {
+  String _stepDisplayDate(SmartEarTagModel model, SmartEarTagRecordModel latestStep) {
     final siteDay = model.siteDay;
     if (siteDay != null) {
       return latestStep.displayDateFrom(siteDay, showTime: false);
@@ -698,10 +605,7 @@ class _ItemView extends StatelessWidget {
     return latestStep.displayDate(showTime: false);
   }
 
-  DateTime _stepRecordDate(
-    SmartEarTagModel model,
-    SmartEarTagRecordModel record,
-  ) {
+  DateTime _stepRecordDate(SmartEarTagModel model, SmartEarTagRecordModel record) {
     return _normalizeStepDate(record.resolvedDate) ??
         _normalizeStepDate(model.siteDay) ??
         DateTime.now();

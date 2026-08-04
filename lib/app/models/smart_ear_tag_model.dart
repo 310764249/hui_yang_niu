@@ -5,9 +5,9 @@ class SmartEarTagModel {
   final String? cId;
   final String? code;
   final String? eleCode;
-  final int? site;
+  final num? site;
   final double? temp;
-  final int? batt;
+  final num? batt;
   final String? high;
   final String? lose;
   final String? low;
@@ -16,7 +16,7 @@ class SmartEarTagModel {
   final String? envGps;
   final DateTime? updateTime;
 
-  final int? tempRecordNum;
+  final num? tempRecordNum;
   final List<SmartEarTagRecordModel>? tempRecordList;
 
   final int? siteRecordNum;
@@ -129,13 +129,7 @@ class SmartEarTagRecordModel {
   final String? monthStr;
   final String? day;
 
-  SmartEarTagRecordModel({
-    this.value,
-    this.date,
-    this.dateStr,
-    this.monthStr,
-    this.day,
-  });
+  SmartEarTagRecordModel({this.value, this.date, this.dateStr, this.monthStr, this.day});
 
   factory SmartEarTagRecordModel.fromJson(Map<String, dynamic> json) {
     return SmartEarTagRecordModel(
@@ -149,8 +143,7 @@ class SmartEarTagRecordModel {
   //23.00kg(23日05时05分)
   String dateString(String unit) {
     final resolved = resolvedDate;
-    final label =
-        resolved == null ? '--' : _formatDate(resolved, showTime: true);
+    final label = resolved == null ? '--' : _formatDate(resolved, showTime: true);
     return '${value?.toStringAsFixed(2)}$unit($label)';
   }
 
@@ -247,9 +240,7 @@ DateTime? _parseFlexibleDate(dynamic value) {
     return direct;
   }
 
-  final monthDayMatch = RegExp(
-    r'^(\d{1,2})[-月](\d{1,2})',
-  ).firstMatch(normalized);
+  final monthDayMatch = RegExp(r'^(\d{1,2})[-月](\d{1,2})').firstMatch(normalized);
   if (monthDayMatch != null) {
     final month = int.tryParse(monthDayMatch.group(1)!);
     final day = int.tryParse(monthDayMatch.group(2)!);

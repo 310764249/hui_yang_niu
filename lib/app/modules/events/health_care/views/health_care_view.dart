@@ -106,8 +106,8 @@ class HealthCareView extends GetView<HealthCareController> {
             ),
           CellButton(
             isRequired: false,
-            title: '用药物资',
-            hint: '请选择',
+            title: '用药',
+            hint: '营收管理需要',
             content: controller.materialVaccine.value,
             onPressed: () {
               SelectMaterialView.push(context, vaccineOnly: true).then((item) {

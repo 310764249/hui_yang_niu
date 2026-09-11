@@ -217,8 +217,8 @@ class TreatmentView extends GetView<TreatmentController> {
             ),
           CellButton(
             isRequired: false,
-            title: '用药物资',
-            hint: '请选择',
+            title: '用药',
+            hint: '营收管理需要',
             content: controller.materialVaccine.value,
             onPressed: () {
               SelectMaterialView.push(context, vaccineOnly: true).then((item) {
@@ -253,6 +253,7 @@ class TreatmentView extends GetView<TreatmentController> {
             },
             onChanged: (value) {
               controller.dosage.value = double.tryParse(value) ?? 0;
+              controller.dosageController.text = value;
             },
           ),
           CellTextField(

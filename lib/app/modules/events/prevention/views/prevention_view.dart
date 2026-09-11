@@ -164,31 +164,33 @@ class PreventionView extends GetView<PreventionController> {
               );
             },
           ),
+          // 旧字典疫苗字段保留兼容，界面改为选择已采购的疫苗物资。
+          if (false)
+            CellButton(
+              isRequired: false,
+              title: '疫苗',
+              hint: '请选择',
+              content: controller.vaccine.value,
+              onPressed: () {
+                Picker.showSinglePicker(
+                  context,
+                  controller.vaccineNameList,
+                  selectData: controller.vaccine.value,
+                  title: '请选择疫苗',
+                  onConfirm: (value, position) {
+                    controller.vaccineId = int.parse(
+                      controller.vaccineList[position]['value'],
+                    );
+                    controller.vaccine.value =
+                        controller.vaccineNameList[position];
+                  },
+                );
+              },
+            ),
           CellButton(
             isRequired: false,
             title: '疫苗',
-            hint: '请选择',
-            content: controller.vaccine.value,
-            onPressed: () {
-              Picker.showSinglePicker(
-                context,
-                controller.vaccineNameList,
-                selectData: controller.vaccine.value,
-                title: '请选择疫苗',
-                onConfirm: (value, position) {
-                  controller.vaccineId = int.parse(
-                    controller.vaccineList[position]['value'],
-                  );
-                  controller.vaccine.value =
-                      controller.vaccineNameList[position];
-                },
-              );
-            },
-          ),
-          CellButton(
-            isRequired: false,
-            title: '疫苗物资',
-            hint: '请选择',
+            hint: '营收管理需要',
             content: controller.materialVaccine.value,
             onPressed: () {
               SelectMaterialView.push(context, vaccineOnly: true).then((item) {

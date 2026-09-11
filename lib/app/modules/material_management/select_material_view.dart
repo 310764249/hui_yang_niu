@@ -10,17 +10,24 @@ import 'package:shimmer/shimmer.dart';
 import 'material_item.dart';
 
 class SelectMaterialView extends StatefulWidget {
-  const SelectMaterialView({super.key});
+  const SelectMaterialView({super.key, this.vaccineOnly = false});
 
-  static Future<MaterialItemModel?> push(BuildContext context) async {
+  final bool vaccineOnly;
+
+  static Future<MaterialItemModel?> push(
+    BuildContext context, {
+    bool vaccineOnly = false,
+  }) async {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
-      constraints: BoxConstraints.loose(Size.fromHeight(MediaQuery.of(context).size.height * 0.8)),
-      builder: (context) => const SelectMaterialView(),
+      constraints: BoxConstraints.loose(
+        Size.fromHeight(MediaQuery.of(context).size.height * 0.8),
+      ),
+      builder: (context) => SelectMaterialView(vaccineOnly: vaccineOnly),
     );
   }
 
@@ -36,6 +43,8 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
 
   Map<String, dynamic> materialListMap = {};
 
+  bool get vaccineOnly => widget.vaccineOnly;
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +57,7 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
       borderRadius: BorderRadius.circular(30),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('选择物料'),
+          title: Text(vaccineOnly ? '选择疫苗物资' : '选择物料'),
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
@@ -59,7 +68,9 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
         ),
         body: Row(
           children: [
-            if (wzflList == null)
+            if (vaccineOnly)
+              const SizedBox.shrink()
+            else if (wzflList == null)
               const SizedBox(width: 70)
             else
               SizedBox(
@@ -72,32 +83,38 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
                         getMaterialList();
                       },
                       style: TextButton.styleFrom(
-                          backgroundColor: selectType == null ? SaienteColors.gray0D : Colors.white,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.zero),
-                          )),
+                        backgroundColor:
+                            selectType == null
+                                ? SaienteColors.gray0D
+                                : Colors.white,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.zero),
+                        ),
+                      ),
                       child: const Text('全部'),
                     ),
                     ...wzflList!
-                        .map(
-                          (e) {
-                            bool isSelected = e['key'] == selectType?['key'];
-                            return TextButton(
-                              onPressed: () {
-                                setState(() => selectType = e);
-                                getMaterialList();
-                              },
-                              style: TextButton.styleFrom(
-                                  backgroundColor: isSelected ? SaienteColors.gray0D : Colors.white,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.zero),
-                                  )),
-                              child: Text(e['key']),
-                            );
-                          },
-                        )
+                        .map((e) {
+                          bool isSelected = e['key'] == selectType?['key'];
+                          return TextButton(
+                            onPressed: () {
+                              setState(() => selectType = e);
+                              getMaterialList();
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor:
+                                  isSelected
+                                      ? SaienteColors.gray0D
+                                      : Colors.white,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.zero),
+                              ),
+                            ),
+                            child: Text(e['key']),
+                          );
+                        })
                         .toList()
                         .reversed,
                   ],
@@ -106,38 +123,44 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0).copyWith(top: 20),
-                child: Builder(builder: (context) {
-                  if (materialList == null) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: _loadingView(),
-                    );
-                  }
-                  if (materialList!.isEmpty) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: const EmptyView(),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: materialList!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final item = materialList![index];
-                      // 更加不同的分类显示不同的item样式
-                      return MaterialItem(
-                        showButton: false,
-                        showTitle: false,
-                        title: '',
-                        content1: item.name ?? '',
-                        content2: (item.created?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
-                        content3: item.checker ?? '',
-                        onTap: () {
-                          Navigator.pop(context, item);
-                        },
+                child: Builder(
+                  builder: (context) {
+                    if (materialList == null) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: _loadingView(),
                       );
-                    },
-                  );
-                }),
+                    }
+                    if (materialList!.isEmpty) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: const EmptyView(),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: materialList!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = materialList![index];
+                        // 更加不同的分类显示不同的item样式
+                        return MaterialItem(
+                          showButton: false,
+                          showTitle: false,
+                          title: '',
+                          content1: item.name ?? '',
+                          content2:
+                              (item.created
+                                  ?.replaceFirst('T', ' ')
+                                  .substring(0, 10)) ??
+                              '',
+                          content3: item.checker ?? '',
+                          onTap: () {
+                            Navigator.pop(context, item);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -157,17 +180,24 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
           // 禁止列表滑动
           physics: const NeverScrollableScrollPhysics(),
           // 数量为: 屏幕高度 / item高度 取整数
-          itemCount: ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(126),
+          itemCount:
+              ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(126),
           itemBuilder: (context, index) {
             return Container(
               height: ScreenAdapter.height(126),
               margin: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(10),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(0),
+              ),
               decoration: BoxDecoration(
                 //背景
                 color: const Color(0xFFE0E0E0),
                 //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(ScreenAdapter.height(10.0)),
+                ),
               ),
             );
           },
@@ -177,6 +207,15 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
   }
 
   Future getMaterialList() async {
+    if (vaccineOnly) {
+      if (materialList != null) return;
+      final value = await MaterialService.getMaterialListWithChoiceCategories(
+        '5,1',
+        errorCallback: (msg) => Toast.show(msg),
+      );
+      if (mounted) setState(() => materialList = value);
+      return;
+    }
     if (selectType == null) {
       if (materialListMap['全部'] != null) {
         setState(() {
@@ -206,14 +245,16 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
   }
 
   void init() async {
+    if (vaccineOnly) {
+      await getMaterialList();
+      return;
+    }
     ////[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-    await MaterialService.getDic('wzfl').then(
-      (value) {
-        setState(() {
-          wzflList = value;
-        });
-      },
-    );
+    await MaterialService.getDic('wzfl').then((value) {
+      setState(() {
+        wzflList = value;
+      });
+    });
     await getMaterialList();
   }
 }

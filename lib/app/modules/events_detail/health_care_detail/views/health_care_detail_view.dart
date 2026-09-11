@@ -22,19 +22,27 @@ class HealthCareDetailView extends GetView<HealthCareDetailController> {
 
   //
   Widget _keyValueView(String title, String value) {
-    return Text.rich(TextSpan(children: [
+    return Text.rich(
       TextSpan(
-          text: title,
-          style: TextStyle(
+        children: [
+          TextSpan(
+            text: title,
+            style: TextStyle(
               fontSize: ScreenAdapter.fontSize(13),
-              color: SaienteColors.black80)),
-      TextSpan(
-          text: value,
-          style: TextStyle(
+              color: SaienteColors.black80,
+            ),
+          ),
+          TextSpan(
+            text: value,
+            style: TextStyle(
               fontSize: ScreenAdapter.fontSize(13),
               fontWeight: FontWeight.w500,
-              color: SaienteColors.blackE5))
-    ]));
+              color: SaienteColors.blackE5,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // 标签view: "公牛"/"栋舍"
@@ -45,9 +53,10 @@ class HealthCareDetailView extends GetView<HealthCareDetailController> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: controller.cattle!.gender == 2
-              ? [SaienteColors.redFF3D3D, SaienteColors.redFF7F7F]
-              : [SaienteColors.blue2559F3, SaienteColors.blue4D91F5],
+          colors:
+              controller.cattle!.gender == 2
+                  ? [SaienteColors.redFF3D3D, SaienteColors.redFF7F7F]
+                  : [SaienteColors.blue2559F3, SaienteColors.blue4D91F5],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -55,14 +64,19 @@ class HealthCareDetailView extends GetView<HealthCareDetailController> {
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-            ScreenAdapter.width(8), 0, ScreenAdapter.width(8), 0),
+          ScreenAdapter.width(8),
+          0,
+          ScreenAdapter.width(8),
+          0,
+        ),
         child: Text(
           labelText,
           style: TextStyle(
-              overflow: TextOverflow.ellipsis,
-              fontSize: ScreenAdapter.fontSize(14),
-              fontWeight: FontWeight.w400,
-              color: Colors.white),
+            overflow: TextOverflow.ellipsis,
+            fontSize: ScreenAdapter.fontSize(14),
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -72,185 +86,230 @@ class HealthCareDetailView extends GetView<HealthCareDetailController> {
   Widget _cattleHeaderCard() {
     return Container(
       margin: EdgeInsets.fromLTRB(
-          ScreenAdapter.width(10),
-          ScreenAdapter.height(10),
-          ScreenAdapter.width(10),
-          ScreenAdapter.height(0)),
+        ScreenAdapter.width(10),
+        ScreenAdapter.height(10),
+        ScreenAdapter.width(10),
+        ScreenAdapter.height(0),
+      ),
       decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          gradient: LinearGradient(
-            colors: controller.cattle!.gender == 2
-                ? [const Color(0xFFFFDDDD), const Color(0xFFFFFFFF)]
-                : [const Color(0xFFD5E3FF), const Color(0xFFFFFFFF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          )),
-      child: Column(children: [
-        // 牛只图片和编号
-        Row(mainAxisSize: MainAxisSize.max, children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-                ScreenAdapter.width(20),
-                ScreenAdapter.height(6),
-                ScreenAdapter.width(20),
-                ScreenAdapter.height(5)),
-            child: LoadAssetImage(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        gradient: LinearGradient(
+          colors:
               controller.cattle!.gender == 2
-                  ? AssetsImages.cow
-                  : AssetsImages.bull,
-            ),
-          ),
-          Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(controller.cattle!.code.orEmpty(),
-                  style: TextStyle(
-                      color: controller.cattle!.gender == 2
-                          ? SaienteColors.redFF3D3D
-                          : SaienteColors.blue275CF3,
-                      overflow: TextOverflow.ellipsis,
-                      fontSize: ScreenAdapter.fontSize(20),
-                      fontWeight: FontWeight.w800)),
-              SizedBox(height: ScreenAdapter.height(5)),
-              SizedBox(
-                height: ScreenAdapter.height(20),
-                child: ListView(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
+                  ? [const Color(0xFFFFDDDD), const Color(0xFFFFFFFF)]
+                  : [const Color(0xFFD5E3FF), const Color(0xFFFFFFFF)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Column(
+        children: [
+          // 牛只图片和编号
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ScreenAdapter.width(20),
+                  ScreenAdapter.height(6),
+                  ScreenAdapter.width(20),
+                  ScreenAdapter.height(5),
+                ),
+                child: LoadAssetImage(
+                  controller.cattle!.gender == 2
+                      ? AssetsImages.cow
+                      : AssetsImages.bull,
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _labelView(AppDictList.findLabelByCode(controller.gmList,
-                        controller.cattle!.gender.toString())),
-                    SizedBox(width: ScreenAdapter.width(2)),
-                    _labelView('${controller.cattle!.cowHouseName}'),
+                    Text(
+                      controller.cattle!.code.orEmpty(),
+                      style: TextStyle(
+                        color:
+                            controller.cattle!.gender == 2
+                                ? SaienteColors.redFF3D3D
+                                : SaienteColors.blue275CF3,
+                        overflow: TextOverflow.ellipsis,
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: ScreenAdapter.height(5)),
+                    SizedBox(
+                      height: ScreenAdapter.height(20),
+                      child: ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          _labelView(
+                            AppDictList.findLabelByCode(
+                              controller.gmList,
+                              controller.cattle!.gender.toString(),
+                            ),
+                          ),
+                          SizedBox(width: ScreenAdapter.width(2)),
+                          _labelView('${controller.cattle!.cowHouseName}'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              )
-            ]),
+              ),
+            ],
           ),
-        ]),
-        DividerLine(
+          DividerLine(
             color: const Color(0xFFCCCCCC),
             indent: ScreenAdapter.width(11),
-            endIndent: ScreenAdapter.width(11)),
-        Padding(
-          padding: EdgeInsets.fromLTRB(
+            endIndent: ScreenAdapter.width(11),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
               ScreenAdapter.width(22),
               ScreenAdapter.height(14),
               ScreenAdapter.width(22),
-              ScreenAdapter.height(14)),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
+              ScreenAdapter.height(14),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _keyValueView(
                         '状   态: ',
-                        AppDictList.findLabelByCode(controller.szjdList,
-                            controller.cattle!.gender.toString()),
+                        AppDictList.findLabelByCode(
+                          controller.szjdList,
+                          controller.cattle!.gender.toString(),
+                        ),
                       ),
                       SizedBox(height: ScreenAdapter.height(6)),
-                      _keyValueView('日   龄: ',
-                          '${controller.cattle!.ageOfDay.toString()}天'),
-                    ]),
-              ),
-              Expanded(
-                child: Column(
+                      _keyValueView(
+                        '日   龄: ',
+                        '${controller.cattle!.ageOfDay.toString()}天',
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _keyValueView(
                         '品   种: ',
-                        AppDictList.findLabelByCode(controller.pzList,
-                            controller.cattle!.kind.toString()),
+                        AppDictList.findLabelByCode(
+                          controller.pzList,
+                          controller.cattle!.kind.toString(),
+                        ),
                       ),
                       SizedBox(height: ScreenAdapter.height(6)),
                       _keyValueView(
-                          '电子耳号: ',
-                          controller.cattle!.eleCode.orEmpty().trim().isEmpty
-                              ? Constant.placeholder
-                              : controller.cattle!.eleCode.orEmpty().trim()),
-                    ]),
-              )
-            ],
+                        '电子耳号: ',
+                        controller.cattle!.eleCode.orEmpty().trim().isEmpty
+                            ? Constant.placeholder
+                            : controller.cattle!.eleCode.orEmpty().trim(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
   //操作信息
   Widget _operationInfo(context) {
-    return MyCard(children: [
-      const CardTitle(title: "事件信息"),
-      CellButtonDetail(
-        isRequired: true,
-        title: '栋舍',
-        hint: controller.event!.cowHouseName,
-      ),
-      CellButtonDetail(
-        isRequired: true,
-        title: '保健时间',
-        hint: controller.event!.date,
-      ),
-      CellButtonDetail(
-        isRequired: true,
-        title: '保健类型',
-        hint: AppDictList.findLabelByCode(
-            controller.healthTypeList, controller.event!.type.toString()),
-      ),
-      CellButtonDetail(
-        isRequired: false,
-        title: '用药',
-        hint: controller.event!.pharmacy ?? Constant.placeholder,
-      ),
-      CellButtonDetail(
-        isRequired: false,
-        title: '单头剂量',
-        hint: controller.event!.dosage.toString(),
-      ),
-      CellButtonDetail(
-        isRequired: false,
-        title: '头数',
-        hint: controller.event!.count.toString(),
-      ),
-      CellButtonDetail(
-        isRequired: false,
-        title: '总剂量',
-        hint: controller.event!.total.toString(),
-      ),
-      CellButtonDetail(
-        isRequired: false,
-        title: '操作人',
-        hint: controller.event!.executor,
-      ),
-      CellTextAreaDetail(
-        isRequired: false,
-        title: '备注',
-        content: controller.event!.remark ?? Constant.placeholder,
-      ),
-    ]);
+    return MyCard(
+      children: [
+        const CardTitle(title: "事件信息"),
+        CellButtonDetail(
+          isRequired: true,
+          title: '栋舍',
+          hint: controller.event!.cowHouseName,
+        ),
+        CellButtonDetail(
+          isRequired: true,
+          title: '保健时间',
+          hint: controller.event!.date,
+        ),
+        CellButtonDetail(
+          isRequired: true,
+          title: '保健类型',
+          hint: AppDictList.findLabelByCode(
+            controller.healthTypeList,
+            controller.event!.type.toString(),
+          ),
+        ),
+        CellButtonDetail(
+          isRequired: false,
+          title: '用药物资',
+          hint:
+              controller.materialVaccineName.isEmpty
+                  ? Constant.placeholder
+                  : controller.materialVaccineName,
+        ),
+        // pharmacy 保留在模型中兼容旧数据，详情按接口的新物资字段展示。
+        CellButtonDetail(
+          isRequired: false,
+          title: '单头剂量',
+          hint:
+              '${controller.event!.dosage ?? 0} ${AppDictList.findLabelByCode(controller.unitList, controller.event!.unit?.toString() ?? '')}',
+        ),
+        CellButtonDetail(
+          isRequired: false,
+          title: '头数',
+          hint: controller.event!.count.toString(),
+        ),
+        CellButtonDetail(
+          isRequired: false,
+          title: '总剂量',
+          hint: controller.event!.total.toString(),
+        ),
+        CellButtonDetail(
+          isRequired: false,
+          title: '操作人',
+          hint: controller.event!.executor,
+        ),
+        CellTextAreaDetail(
+          isRequired: false,
+          title: '备注',
+          content: controller.event!.remark ?? Constant.placeholder,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('保健事件详情'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
-        body: Obx(() => PageWrapper(
-              child: controller.isLoading.value
+      appBar: AppBar(
+        title: const Text('保健事件详情'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Obx(
+        () => PageWrapper(
+          child:
+              controller.isLoading.value
                   ? const EmptyView()
-                  : ListView(children: [
+                  : ListView(
+                    children: [
                       //是否显示牛只信息
                       controller.cattle != null
                           ? _cattleHeaderCard()
                           : const SizedBox(),
                       //操作信息
                       _operationInfo(context),
-                    ]),
-            )));
+                    ],
+                  ),
+        ),
+      ),
+    );
   }
 }

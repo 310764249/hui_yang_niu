@@ -23,6 +23,8 @@ class MaterialItemModel {
     required this.id,
     required this.category,
     required this.name,
+    required this.totalPrice,
+    this.isAutomatic = false,
   });
 
   String? date;
@@ -48,8 +50,11 @@ class MaterialItemModel {
   String? id;
   String? name;
   num? category;
+  num? totalPrice;
+  bool? isAutomatic;
 
-  factory MaterialItemModel.fromJson(Map<dynamic, dynamic> json) => MaterialItemModel(
+  factory MaterialItemModel.fromJson(Map<dynamic, dynamic> json) =>
+      MaterialItemModel(
         date: json["date"],
         no: json["no"],
         reason: json["reason"],
@@ -73,31 +78,35 @@ class MaterialItemModel {
         id: json["id"],
         category: json["category"],
         name: json["name"],
+        totalPrice: json["totalPrice"],
+        isAutomatic: json["isAutomatic"] == true,
       );
 
   Map<dynamic, dynamic> toJson() => {
-        "date": date,
-        "no": no,
-        "reason": reason,
-        "checker": checker,
-        "rowVersion": rowVersion,
-        "created": created,
-        "count": count,
-        "remark": remark,
-        "preCount": preCount,
-        "materialId": materialId,
-        "type": type,
-        "confirm": confirm,
-        "materialName": materialName,
-        "createdBy": createdBy,
-        "unit": unit,
-        "executor": executor,
-        "currentCount": currentCount,
-        "tenantId": tenantId,
-        "modified": modified,
-        "modifiedBy": modifiedBy,
-        "id": id,
-        "category": category,
-        "name": name,
-      };
+    "date": date,
+    "no": no,
+    "reason": reason,
+    "checker": checker,
+    "rowVersion": rowVersion,
+    "created": created,
+    "count": count,
+    "remark": remark,
+    "preCount": preCount,
+    "materialId": materialId,
+    "type": type,
+    "confirm": confirm,
+    "materialName": materialName,
+    "createdBy": createdBy,
+    "unit": unit,
+    "executor": executor,
+    "currentCount": currentCount,
+    "tenantId": tenantId,
+    "modified": modified,
+    "modifiedBy": modifiedBy,
+    "id": id,
+    "category": category,
+    "name": name,
+    "totalPrice": totalPrice,
+    "isAutomatic": isAutomatic,
+  };
 }

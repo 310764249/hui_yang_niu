@@ -7,6 +7,7 @@ import '../../../../models/cattle.dart';
 import '../../../../models/cow_batch.dart';
 import '../../../../models/cow_house.dart';
 import '../../../../models/event_argument.dart';
+import '../../../../models/material_item_model.dart';
 import '../../../../models/simple_event.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
@@ -16,6 +17,7 @@ import '../../../../services/ex_string.dart';
 import '../../../../services/keyboard_actions_helper.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
+import '../../../material_management/material_service.dart';
 
 class PreventionController extends GetxController {
   //传入的参数
@@ -96,8 +98,12 @@ class PreventionController extends GetxController {
   // 疫苗
   List vaccineList = [];
   List<String> vaccineNameList = [];
-  int vaccineId = -1;
+  int vaccineId = 0;
   RxString vaccine = ''.obs;
+
+  // 疫苗物资
+  String? materialVaccineId;
+  RxString materialVaccine = ''.obs;
 
   // 单头剂量
   RxDouble dosage = 0.0.obs;
@@ -201,8 +207,11 @@ class PreventionController extends GetxController {
   void onInit() async {
     super.onInit();
     Toast.showLoading();
-    unitList = AppDictList.searchItems('jldw') ?? [];
-    unitNameList = List<String>.from(unitList.map((item) => item['label']).toList());
+    // 防疫剂量单位使用物资单位字典，接口 unit 保存字典 value。
+    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitNameList = List<String>.from(
+      unitList.map((item) => item['label']).toList(),
+    );
 
     // 栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -210,10 +219,14 @@ class PreventionController extends GetxController {
     houseNameList.addAll(houseList.map((item) => item.name).toList());
 
     loimiaList = AppDictList.searchItems('yb') ?? [];
-    loimiaNameList = List<String>.from(loimiaList.map((item) => item['label']).toList());
+    loimiaNameList = List<String>.from(
+      loimiaList.map((item) => item['label']).toList(),
+    );
 
     vaccineList = AppDictList.searchItems('ym') ?? [];
-    vaccineNameList = List<String>.from(vaccineList.map((item) => item['label']).toList());
+    vaccineNameList = List<String>.from(
+      vaccineList.map((item) => item['label']).toList(),
+    );
 
     // 设置输入框焦点监听
     dosageNode.addListener(() async {
@@ -246,7 +259,7 @@ class PreventionController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() {
+  Future<void> handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -289,22 +302,28 @@ class PreventionController extends GetxController {
       // 疫病
       loimiaId = event?.loimia ?? -1;
       loimia.value =
-          loimiaList.firstWhere((item) => int.parse(item['value']) == event?.loimia)['label'];
+          loimiaList.firstWhere(
+            (item) => int.parse(item['value']) == event?.loimia,
+          )['label'];
 
       // 疫苗
-      vaccineId = event?.vaccine ?? -1;
+      vaccineId = event?.vaccine ?? 0;
       Log.i('************************');
       vaccine.value =
           vaccineList.firstWhereOrNull(
             (item) => int.parse(item['value']) == event?.vaccine,
           )?['label'] ??
           '';
+      materialVaccineId = event?.materialVaccine;
+      await _loadMaterialVaccineName();
       // 剂量
       dosage.value = event?.dosage ?? 0;
       // 单头剂量单位
       unitId = event?.unit ?? -1;
       unit.value =
-          unitList.firstWhereOrNull((item) => int.parse(item['value']) == event?.unit)?['label'] ??
+          unitList.firstWhereOrNull(
+            (item) => int.parse(item['value']) == event?.unit,
+          )?['label'] ??
           '';
       // 总剂量
       totalDosage.value = event?.total ?? 0;
@@ -314,6 +333,19 @@ class PreventionController extends GetxController {
       //更新
       update();
     }
+  }
+
+  Future<void> _loadMaterialVaccineName() async {
+    final id = materialVaccineId;
+    if (id == null || id.isEmpty) return;
+    final item = await MaterialService.getMaterialById(id);
+    materialVaccine.value = item?.name ?? item?.materialName ?? id;
+  }
+
+  Future<void> selectMaterialVaccine(MaterialItemModel item) async {
+    materialVaccineId = item.materialId ?? item.id;
+    materialVaccine.value = item.name ?? item.materialName ?? '';
+    update();
   }
 
   /// 提交表单数据
@@ -388,7 +420,8 @@ class PreventionController extends GetxController {
         mapParam = {
           "date": preventionTime.value,
           "loimia": loimiaId,
-          "vaccine": vaccineId == -1 ? null : vaccineId,
+          "vaccine": vaccineId,
+          "materialVaccine": materialVaccineId,
           "cowHouseId":
               typeIndex.value == 0
                   ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id
@@ -408,7 +441,8 @@ class PreventionController extends GetxController {
         mapParam = {
           "date": preventionTime.value,
           "loimia": loimiaId,
-          "vaccine": vaccineId == -1 ? null : vaccineId,
+          "vaccine": vaccineId,
+          "materialVaccine": materialVaccineId,
           "cowHouseId":
               typeIndex.value == 0
                   ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id

@@ -4,6 +4,7 @@ import '../../../../models/cattle.dart';
 import '../../../../models/cattle_event.dart';
 import '../../../../models/event_argument.dart';
 import '../../../../models/simple_event.dart';
+import '../../../material_management/material_service.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
 import '../../../../services/Log.dart';
@@ -31,12 +32,18 @@ class HealthCareDetailController extends GetxController {
 
   //保健类型
   late List healthTypeList;
+  //剂量单位
+  late List unitList;
+
+  //用药物资名称
+  String materialVaccineName = '';
 
   @override
   void onInit() {
     super.onInit();
     // 保健类型列表
     healthTypeList = AppDictList.searchItems('bjlx') ?? [];
+    unitList = AppDictList.searchItems('wzdw') ?? [];
     //处理传入参数
     handleArgument();
   }
@@ -62,9 +69,17 @@ class HealthCareDetailController extends GetxController {
       await getCattleMoreData(cattleEvent.cowId!);
       await getCattleEvent(cattleEvent.busiId);
     }
+    await loadMaterialVaccineName();
     update();
     Toast.dismiss();
     isLoading.value = false;
+  }
+
+  Future<void> loadMaterialVaccineName() async {
+    final id = event?.materialVaccine;
+    if (id == null || id.isEmpty) return;
+    final item = await MaterialService.getMaterialById(id);
+    materialVaccineName = item?.name ?? item?.materialName ?? id;
   }
 
   @override
@@ -80,9 +95,7 @@ class HealthCareDetailController extends GetxController {
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       cattle = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();
@@ -100,9 +113,7 @@ class HealthCareDetailController extends GetxController {
   //获取事件详情
   Future<void> getCattleEvent(String businessId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/ban/$businessId",
-      );
+      var response = await httpsClient.get("/api/ban/$businessId");
       event = HealthCareEvent.fromJson(response);
     } catch (error) {
       Toast.dismiss();

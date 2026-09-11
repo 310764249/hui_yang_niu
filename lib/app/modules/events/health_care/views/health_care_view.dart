@@ -12,6 +12,7 @@ import '../../../../widgets/my_card.dart';
 import '../../../../widgets/page_wrapper.dart';
 import '../../../../widgets/picker.dart';
 import '../../../../widgets/toast.dart';
+import '../../../material_management/select_material_view.dart';
 import '../controllers/health_care_controller.dart';
 
 ///
@@ -22,7 +23,9 @@ class HealthCareView extends GetView<HealthCareController> {
 
   //操作信息
   Widget _operationInfo(context) {
-    return Obx(() => MyCard(children: [
+    return Obx(
+      () => MyCard(
+        children: [
           const CardTitle(title: "操作信息"),
           CellButton(
             isRequired: true,
@@ -31,33 +34,43 @@ class HealthCareView extends GetView<HealthCareController> {
             showArrow: controller.isEdit.value ? false : true,
             onPressed: () {
               if (controller.houseNameList.isNotEmpty) {
-                Picker.showSinglePicker(context, controller.houseNameList,
-                    selectData: controller.cowHouse?.value,
-                    title: '请选择栋舍', onConfirm: (value, position) {
-                  controller.cowHouseId = controller.houseList[position].id;
-                  controller.cowHouse?.value = value;
-                  controller.cattleCount.value =
-                      controller.houseList[position].occupied; // occupied: 入驻数
-                  controller.calculateTotalDosage();
-                });
+                Picker.showSinglePicker(
+                  context,
+                  controller.houseNameList,
+                  selectData: controller.cowHouse?.value,
+                  title: '请选择栋舍',
+                  onConfirm: (value, position) {
+                    controller.cowHouseId = controller.houseList[position].id;
+                    controller.cowHouse?.value = value;
+                    controller.cattleCount.value =
+                        controller
+                            .houseList[position]
+                            .occupied; // occupied: 入驻数
+                    controller.calculateTotalDosage();
+                  },
+                );
               } else {
                 Toast.show('暂无栋舍数据');
               }
             },
           ),
           CellButton(
-              isRequired: true,
-              title: '保健时间',
-              hint: '请选择',
-              content: controller.healthTime.value,
-              onPressed: () {
-                Picker.showDatePicker(context,
-                    title: '请选择时间',
-                    selectDate: controller.healthTime.value, onConfirm: (date) {
+            isRequired: true,
+            title: '保健时间',
+            hint: '请选择',
+            content: controller.healthTime.value,
+            onPressed: () {
+              Picker.showDatePicker(
+                context,
+                title: '请选择时间',
+                selectDate: controller.healthTime.value,
+                onConfirm: (date) {
                   controller.healthTime.value =
                       "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}";
-                });
-              }),
+                },
+              );
+            },
+          ),
           CellButton(
             isRequired: true,
             title: "保健类型",
@@ -65,24 +78,41 @@ class HealthCareView extends GetView<HealthCareController> {
             showBottomLine: true,
             content: controller.healthType.value,
             onPressed: () {
-              Picker.showSinglePicker(context, controller.healthTypeNameList,
-                  title: '请选择保健类型', onConfirm: (value, position) {
-                controller.healthTypeId =
-                    controller.healthTypeList[position]['value'];
-                controller.healthType.value =
-                    controller.healthTypeNameList[position];
-              });
+              Picker.showSinglePicker(
+                context,
+                controller.healthTypeNameList,
+                title: '请选择保健类型',
+                onConfirm: (value, position) {
+                  controller.healthTypeId =
+                      controller.healthTypeList[position]['value'];
+                  controller.healthType.value =
+                      controller.healthTypeNameList[position];
+                },
+              );
             },
           ),
-          CellTextField(
+          // 旧 pharmacy 字段保留在模型和提交兼容逻辑中，界面改用 materialVaccine。
+          if (false)
+            CellTextField(
+              isRequired: false,
+              title: '用药',
+              hint: '请输入',
+              content: controller.pharmacy.value,
+              controller: controller.pharmacyController,
+              focusNode: controller.pharmacyNode,
+              onChanged: (value) {
+                controller.pharmacy.value = value;
+              },
+            ),
+          CellButton(
             isRequired: false,
-            title: '用药',
-            hint: '请输入',
-            content: controller.pharmacy.value,
-            controller: controller.pharmacyController,
-            focusNode: controller.pharmacyNode,
-            onChanged: (value) {
-              controller.pharmacy.value = value;
+            title: '用药物资',
+            hint: '请选择',
+            content: controller.materialVaccine.value,
+            onPressed: () {
+              SelectMaterialView.push(context, vaccineOnly: true).then((item) {
+                if (item != null) controller.selectMaterialVaccine(item);
+              });
             },
           ),
           CellTextField(
@@ -91,7 +121,8 @@ class HealthCareView extends GetView<HealthCareController> {
             hint: '请输入',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             controller: TextEditingController(
-                text: controller.dosage.value.toString().trim()),
+              text: controller.dosage.value.toString().trim(),
+            ),
             focusNode: controller.dosageNode,
             showTitleOption: true,
             titleOptionHint: '请选择剂量单位',
@@ -118,7 +149,8 @@ class HealthCareView extends GetView<HealthCareController> {
             keyboardType: TextInputType.number,
             //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
             controller: TextEditingController(
-                text: controller.cattleCount.value.toString().trim()),
+              text: controller.cattleCount.value.toString().trim(),
+            ),
             focusNode: controller.cattleCountNode,
             onChanged: (value) {
               controller.cattleCountController.text = value;
@@ -131,7 +163,8 @@ class HealthCareView extends GetView<HealthCareController> {
             titleOptionContent: controller.unit.value,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             controller: TextEditingController(
-                text: controller.totalDosage.value.toString().trim()),
+              text: controller.totalDosage.value.toString().trim(),
+            ),
             focusNode: controller.totalDosageNode,
             onChanged: (value) {
               controller.totalDosageController.text = value;
@@ -145,7 +178,9 @@ class HealthCareView extends GetView<HealthCareController> {
             controller: controller.remarkController,
             focusNode: controller.remarkNode,
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   //提交按钮
@@ -153,30 +188,34 @@ class HealthCareView extends GetView<HealthCareController> {
     return Padding(
       padding: EdgeInsets.all(ScreenAdapter.width(20)),
       child: MainButton(
-          text: "提交",
-          onPressed: () {
-            controller.requestCommit();
-          }),
+        text: "提交",
+        onPressed: () {
+          controller.requestCommit();
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('保健'),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
-        body: PageWrapper(
-          config: controller.buildConfig(context),
-          child: ListView(children: [
+      appBar: AppBar(
+        title: const Text('保健'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: PageWrapper(
+        config: controller.buildConfig(context),
+        child: ListView(
+          children: [
             //操作信息
             _operationInfo(context),
             //提交按钮
-            _commitButton()
-          ]),
-        ));
+            _commitButton(),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -4,6 +4,7 @@ import '../../../../models/cattle.dart';
 import '../../../../models/cattle_event.dart';
 import '../../../../models/event_argument.dart';
 import '../../../../models/simple_event.dart';
+import '../../../material_management/material_service.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
 import '../../../../services/Log.dart';
@@ -33,6 +34,10 @@ class PreventionDetailController extends GetxController {
   late List loimiaList;
   //疫苗
   late List vaccineList;
+  //剂量单位
+  late List unitList;
+  //疫苗物资名称
+  String materialVaccineName = '';
 
   @override
   void onInit() {
@@ -43,6 +48,7 @@ class PreventionDetailController extends GetxController {
 
     loimiaList = AppDictList.searchItems('yb') ?? [];
     vaccineList = AppDictList.searchItems('ym') ?? [];
+    unitList = AppDictList.searchItems('wzdw') ?? [];
     //处理传入参数
     handleArgument();
   }
@@ -50,7 +56,7 @@ class PreventionDetailController extends GetxController {
   //处理传入参数
   //一类是事件列表时传入件对应的传入模型 SimpleEvent
   //二类是 牛只档案生产记录传入的
-  void handleArgument() async {
+  Future<void> handleArgument() async {
     Toast.showLoading(msg: '加载中');
     if (ObjectUtil.isEmpty(argument)) {
       Toast.dismiss();
@@ -74,17 +80,23 @@ class PreventionDetailController extends GetxController {
       await getCattleMoreData(cattleEvent.cowId!);
       await getCattleEvent(cattleEvent.busiId);
     }
+    await loadMaterialVaccineName();
     update();
     Toast.dismiss();
     isLoading.value = false;
   }
 
+  Future<void> loadMaterialVaccineName() async {
+    final id = event?.materialVaccine;
+    if (id == null || id.isEmpty) return;
+    final item = await MaterialService.getMaterialById(id);
+    materialVaccineName = item?.name ?? item?.materialName ?? id;
+  }
+
   //获取牛只详情
   Future<void> getCattleMoreData(String cowId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/cow/$cowId",
-      );
+      var response = await httpsClient.get("/api/cow/$cowId");
       cattle = Cattle.fromJson(response);
     } catch (error) {
       Toast.dismiss();
@@ -102,9 +114,7 @@ class PreventionDetailController extends GetxController {
   //获取事件详情
   Future<void> getCattleEvent(String businessId) async {
     try {
-      var response = await httpsClient.get(
-        "/api/antidemic/$businessId",
-      );
+      var response = await httpsClient.get("/api/antidemic/$businessId");
       event = PreventionEvent.fromJson(response);
     } catch (error) {
       Toast.dismiss();

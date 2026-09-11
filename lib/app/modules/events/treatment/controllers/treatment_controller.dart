@@ -8,6 +8,7 @@ import '../../../../models/cattle.dart';
 import '../../../../models/cow_batch.dart';
 import '../../../../models/cow_house.dart';
 import '../../../../models/event_argument.dart';
+import '../../../../models/material_item_model.dart';
 import '../../../../models/simple_event.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
@@ -16,6 +17,7 @@ import '../../../../services/common_service.dart';
 import '../../../../services/keyboard_actions_helper.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
+import '../../../material_management/material_service.dart';
 
 class TreatmentController extends GetxController {
   var argument = Get.arguments;
@@ -96,9 +98,24 @@ class TreatmentController extends GetxController {
 
   // 用药
   RxString pharmacy = ''.obs;
+  // 用药物资
+  String? materialVaccineId;
+  RxString materialVaccine = ''.obs;
 
   // 单头剂量
   RxDouble dosage = 0.0.obs;
+
+  // 剂量单位
+  late List unitList;
+  late List unitNameList;
+  int unitId = -1;
+  RxString unit = ''.obs;
+
+  void updateUnit(String newUnit, int position) {
+    unitId = int.parse(unitList[position]['value']);
+    unit.value = newUnit;
+    update();
+  }
 
   // 头数
   RxInt cattleCount = 0.obs;
@@ -128,6 +145,11 @@ class TreatmentController extends GetxController {
   void onInit() async {
     super.onInit();
     Toast.showLoading();
+    // 诊疗剂量单位使用物资单位字典，接口 unit 保存字典 value。
+    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitNameList = List<String>.from(
+      unitList.map((item) => item['label']).toList(),
+    );
     cattleCountNode.addListener(() async {
       if (!cattleCountNode.hasFocus) {
         // 当焦点失去时执行的逻辑
@@ -142,7 +164,9 @@ class TreatmentController extends GetxController {
     houseNameList.addAll(houseList.map((item) => item.name).toList());
 
     illnessList = AppDictList.searchItems('jb') ?? [];
-    illnessNameList = List<String>.from(illnessList.map((item) => item['label']).toList());
+    illnessNameList = List<String>.from(
+      illnessList.map((item) => item['label']).toList(),
+    );
     treatmentPersonController.text = Get.find<MineController>().nickName.value;
     //首先处理传入参数
     handleArgument();
@@ -152,7 +176,7 @@ class TreatmentController extends GetxController {
   //处理传入参数
   //一类是只传入 Cattle 模型取耳号就好 任务统计-列表-事件
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async {
+  Future<void> handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -191,20 +215,42 @@ class TreatmentController extends GetxController {
       // 疾病名称
       illnessId = event?.illness ?? -1;
       illness.value =
-          illnessList.firstWhere((item) => int.parse(item['value']) == event?.illness)['label'];
+          illnessList.firstWhere(
+            (item) => int.parse(item['value']) == event?.illness,
+          )['label'];
       // 诊疗人
       treatmentPersonController.text = event?.treatmentPerson ?? '';
       // 症状
       symptom.value = event?.symptom ?? '';
       // 用药
-      pharmacy.value = event?.pharmacy ?? '';
+      // 旧 pharmacy 字段只保留模型兼容，新的接口字段使用 materialVaccine。
+      pharmacy.value = '';
+      pharmacyController.clear();
+      materialVaccineId = event?.materialVaccine;
+      await _loadMaterialVaccineName();
       // 剂量
       dosage.value = event?.dosage ?? 0;
+      // 剂量单位
+      unitId = event?.unit ?? -1;
+      unit.value = AppDictList.findLabelByCode(unitList, unitId.toString());
       //填充备注
       remarkController.text = event?.remark ?? '';
       //更新
       update();
     }
+  }
+
+  Future<void> _loadMaterialVaccineName() async {
+    final id = materialVaccineId;
+    if (id == null || id.isEmpty) return;
+    final item = await MaterialService.getMaterialById(id);
+    materialVaccine.value = item?.name ?? item?.materialName ?? id;
+  }
+
+  Future<void> selectMaterialVaccine(MaterialItemModel item) async {
+    materialVaccineId = item.materialId ?? item.id;
+    materialVaccine.value = item.name ?? item.materialName ?? '';
+    update();
   }
 
   @override
@@ -264,7 +310,8 @@ class TreatmentController extends GetxController {
         return;
       }
       //不能超过批次带的数量
-      int initCount = isEdit.value ? event!.count! : selectedLittleCowBatch.count;
+      int initCount =
+          isEdit.value ? event!.count! : selectedLittleCowBatch.count;
 
       if (cattleCount.value > initCount) {
         Toast.show('头数不能超过批次带的数量');
@@ -292,6 +339,11 @@ class TreatmentController extends GetxController {
     //   return;
     // }
 
+    if ((dosage.value > 0) && (unitId == -1 || unitId == 0)) {
+      Toast.show('请选择剂量单位');
+      return;
+    }
+
     //诊疗人员不能为空
     if (ObjectUtil.isEmpty(treatmentPersonController.text.trim())) {
       Toast.show('请输入诊疗人员');
@@ -307,14 +359,23 @@ class TreatmentController extends GetxController {
         //* 新增
         para = {
           "date": treatmentTime.value,
-          "cowHouseId": typeIndex.value == 0 ? oldCowHouseId : littleCowHouseId, // 栋舍参数可有可无
-          "cowIds": typeIndex.value == 0 ? selectedOldCow.map((e) => e.id).toList() : null,
+          "cowHouseId":
+              typeIndex.value == 0
+                  ? oldCowHouseId
+                  : littleCowHouseId, // 栋舍参数可有可无
+          "cowIds":
+              typeIndex.value == 0
+                  ? selectedOldCow.map((e) => e.id).toList()
+                  : null,
           "batchNo": typeIndex.value == 1 ? batchNumber.value : null,
           "illness": illnessId,
-          "count": typeIndex.value == 0 ? selectedOldCow.length : cattleCount.value,
+          "count":
+              typeIndex.value == 0 ? selectedOldCow.length : cattleCount.value,
           "symptom": symptom.value,
           "pharmacy": pharmacy.value,
+          "materialVaccine": materialVaccineId,
           "dosage": dosage.value,
+          "unit": unitId != -1 && unitId != 0 ? unitId : null,
           "treatmentPerson": treatmentPersonController.text.trim(), // 诊疗人
           "remark": remarkController.text.trim(), // 备注
         };
@@ -329,7 +390,9 @@ class TreatmentController extends GetxController {
           "count": typeIndex.value == 0 ? 1 : cattleCount.value,
           "symptom": symptom.value,
           "pharmacy": pharmacy.value,
+          "materialVaccine": materialVaccineId,
           "dosage": dosage.value,
+          "unit": unitId != -1 && unitId != 0 ? unitId : null,
           "treatmentPerson": treatmentPersonController.text.trim(), // 诊疗人
           "remark": remarkController.text.trim(), // 备注
           //* 编辑用的参数

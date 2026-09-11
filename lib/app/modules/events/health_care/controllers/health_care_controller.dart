@@ -6,6 +6,7 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 
 import '../../../../models/cow_house.dart';
 import '../../../../models/event_argument.dart';
+import '../../../../models/material_item_model.dart';
 import '../../../../models/simple_event.dart';
 import '../../../../network/apiException.dart';
 import '../../../../network/httpsClient.dart';
@@ -14,6 +15,7 @@ import '../../../../services/common_service.dart';
 import '../../../../services/keyboard_actions_helper.dart';
 import '../../../../widgets/dict_list.dart';
 import '../../../../widgets/toast.dart';
+import '../../../material_management/material_service.dart';
 
 class HealthCareController extends GetxController {
   //传入的参数
@@ -73,6 +75,9 @@ class HealthCareController extends GetxController {
 
   // 用药
   RxString pharmacy = ''.obs;
+  // 用药物资
+  String? materialVaccineId;
+  RxString materialVaccine = ''.obs;
   // 单头剂量
   RxDouble dosage = 0.0.obs;
   // 头数
@@ -97,9 +102,11 @@ class HealthCareController extends GetxController {
   void onInit() async {
     super.onInit();
     Toast.showLoading();
-    unitList = AppDictList.searchItems('jldw') ?? [];
-    unitNameList =
-        List<String>.from(unitList.map((item) => item['label']).toList());
+    // 保健剂量单位使用物资单位字典，接口 unit 保存字典 value。
+    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitNameList = List<String>.from(
+      unitList.map((item) => item['label']).toList(),
+    );
 
     // 栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -108,8 +115,9 @@ class HealthCareController extends GetxController {
 
     // 保健类型列表
     healthTypeList = AppDictList.searchItems('bjlx') ?? [];
-    healthTypeNameList =
-        List<String>.from(healthTypeList.map((item) => item['label']).toList());
+    healthTypeNameList = List<String>.from(
+      healthTypeList.map((item) => item['label']).toList(),
+    );
 
     // 设置输入框焦点监听
     dosageNode.addListener(() async {
@@ -141,7 +149,7 @@ class HealthCareController extends GetxController {
 
   //处理传入参数
   //二类是事件编辑时传入件对应的传入模型
-  void handleArgument() async {
+  Future<void> handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
       return;
@@ -160,14 +168,20 @@ class HealthCareController extends GetxController {
       //品种
       healthTypeId = event!.type.toString(); //提交数据
       healthType.value = AppDictList.findLabelByCode(
-          healthTypeList, event!.type.toString()); //显示选中项
+        healthTypeList,
+        event!.type.toString(),
+      ); //显示选中项
 
       //用药
-      pharmacyController.text = event!.pharmacy ?? '';
+      // 旧 pharmacy 字段只保留模型兼容，新的接口字段使用 materialVaccine。
+      pharmacyController.clear();
+      pharmacy.value = '';
+      materialVaccineId = event!.materialVaccine;
+      await _loadMaterialVaccineName();
       //单头剂量
       dosage.value = event!.dosage ?? 0.0;
       //剂量单位
-      unitId = event!.unit;
+      unitId = event!.unit ?? -1;
       unit.value = AppDictList.findLabelByCode(unitList, unitId.toString());
       //头数
       cattleCount.value = event!.count;
@@ -181,17 +195,32 @@ class HealthCareController extends GetxController {
     Toast.dismiss();
   }
 
+  Future<void> _loadMaterialVaccineName() async {
+    final id = materialVaccineId;
+    if (id == null || id.isEmpty) return;
+    final item = await MaterialService.getMaterialById(id);
+    materialVaccine.value = item?.name ?? item?.materialName ?? id;
+  }
+
+  Future<void> selectMaterialVaccine(MaterialItemModel item) async {
+    materialVaccineId = item.materialId ?? item.id;
+    materialVaccine.value = item.name ?? item.materialName ?? '';
+    update();
+  }
+
   // 计算总剂量
   void calculateTotalDosage() {
     totalDosage.value = double.parse(
-        (dosage.value * cattleCount.value).toStringAsFixed(2)); // 保留了两位小数
+      (dosage.value * cattleCount.value).toStringAsFixed(2),
+    ); // 保留了两位小数
     totalDosageController.text = totalDosage.value.toString();
   }
 
   // 计算单头剂量
   void calculateSingleDosage() {
     dosage.value = double.parse(
-        (totalDosage.value / cattleCount.value).toStringAsFixed(2)); // 保留了两位小数
+      (totalDosage.value / cattleCount.value).toStringAsFixed(2),
+    ); // 保留了两位小数
     dosageController.text = dosage.value.toString();
   }
 
@@ -240,6 +269,7 @@ class HealthCareController extends GetxController {
         "type": int.parse(healthTypeId),
         "count": cattleCount.value,
         "pharmacy": pharmacy.value,
+        "materialVaccine": materialVaccineId,
         "dosage": dosage.value,
         "unit": (unitId != -1 && unitId != 0) ? unitId : null,
         "total": totalDosage.value,
@@ -276,6 +306,7 @@ class HealthCareController extends GetxController {
         "type": int.parse(healthTypeId),
         "count": cattleCount.value,
         "pharmacy": pharmacy.value,
+        "materialVaccine": materialVaccineId,
         "dosage": dosage.value,
         "unit": (unitId != -1 && unitId != 0) ? unitId : null,
         "total": totalDosage.value,

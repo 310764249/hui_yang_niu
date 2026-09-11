@@ -83,6 +83,7 @@ class AddInventoryView extends StatefulWidget {
     String? unitName,
     String? countText,
     String? makeCount,
+    String? totalPrice,
     String? reason,
     String? remark,
   }) async {
@@ -96,6 +97,7 @@ class AddInventoryView extends StatefulWidget {
         'unitName': unitName,
         'countText': countText,
         'makeCount': makeCount,
+        'totalPrice': totalPrice,
         'reason': reason,
         'rowVersion': rowVersion,
         'remark': remark,
@@ -117,6 +119,10 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //数量
   final TextEditingController counterController = TextEditingController();
   final FocusNode counterNameFocus = FocusNode();
+
+  //入库总价
+  final TextEditingController totalPriceController = TextEditingController();
+  final FocusNode totalPriceFocus = FocusNode();
 
   //备注
   final TextEditingController remakeController = TextEditingController();
@@ -180,6 +186,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     materialNameController.dispose();
     counterNameFocus.dispose();
     counterController.dispose();
+    totalPriceFocus.dispose();
+    totalPriceController.dispose();
     wzflSelectNotif.dispose();
     wzdwSelectNotif.dispose();
     remakeController.dispose();
@@ -224,10 +232,14 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                       if (value != null) {
                         materialId = value.id;
                         wzflSelectNotif.value = wzflList?.firstWhereOrNull(
-                          (e) => num.parse(e['value']).toString() == value.category.toString(),
+                          (e) =>
+                              num.parse(e['value']).toString() ==
+                              value.category.toString(),
                         );
                         wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
-                          (e) => num.parse(e['value']).toString() == value.unit.toString(),
+                          (e) =>
+                              num.parse(e['value']).toString() ==
+                              value.unit.toString(),
                         );
                         materialNameController.text = value.name ?? '';
                         canUseCount.value = value.count.toString() ?? '';
@@ -251,14 +263,20 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                               int? selectIndex;
                               if (wzflList != null) {
                                 selectIndex = await showSelectDialog(
-                                  wzflList!.map((e) => e['key'].toString()).toList(),
+                                  wzflList!
+                                      .map((e) => e['key'].toString())
+                                      .toList(),
                                 );
                               } else {
-                                MaterialService.getDic('wzfl').then((value) async {
+                                MaterialService.getDic('wzfl').then((
+                                  value,
+                                ) async {
                                   //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
                                   wzflList = value;
                                   selectIndex = await showSelectDialog(
-                                    wzflList!.map((e) => e['key'].toString()).toList(),
+                                    wzflList!
+                                        .map((e) => e['key'].toString())
+                                        .toList(),
                                   );
                                 });
                               }
@@ -276,7 +294,10 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                       isRequired: true,
                       showDivider: false,
                       title: '物资名称',
-                      hint: addInventoryEnum == AddInventoryEnum.add ? '请输入' : "请选择",
+                      hint:
+                          addInventoryEnum == AddInventoryEnum.add
+                              ? '请输入'
+                              : "请选择",
                       //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                       controller: materialNameController,
                       focusNode: materialNameFocus,
@@ -304,10 +325,14 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                                   ).then((_value) {
                                     Toast.dismiss();
                                     List<String> list =
-                                        _value?.map((e) => e.name ?? '').toList() ?? [];
+                                        _value
+                                            ?.map((e) => e.name ?? '')
+                                            .toList() ??
+                                        [];
                                     if (list.isNotEmpty) {
                                       showSelectDialog(list).then((value) {
-                                        materialNameController.text = list[value!];
+                                        materialNameController.text =
+                                            list[value!];
                                         id = _value?[value].id;
                                         materialId = _value?[value].materialId;
                                       });
@@ -357,14 +382,20 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                               int? selectIndex;
                               if (wzdwList != null) {
                                 selectIndex = await showSelectDialog(
-                                  wzdwList!.map((e) => e['key'].toString()).toList(),
+                                  wzdwList!
+                                      .map((e) => e['key'].toString())
+                                      .toList(),
                                 );
                               } else {
-                                MaterialService.getDic('wzdw').then((value) async {
+                                MaterialService.getDic('wzdw').then((
+                                  value,
+                                ) async {
                                   //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
                                   wzdwList = value;
                                   selectIndex = await showSelectDialog(
-                                    wzdwList!.map((e) => e['key'].toString()).toList(),
+                                    wzdwList!
+                                        .map((e) => e['key'].toString())
+                                        .toList(),
                                   );
                                 });
                               }
@@ -382,13 +413,29 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     isRequired: true,
                     title: '数量${value == null ? '' : ' （剩余$value）'}',
                     hint: '请输入',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                     controller: counterController,
                     focusNode: counterNameFocus,
                   );
                 },
               ),
+              if (addInventoryEnum == AddInventoryEnum.add ||
+                  addInventoryEnum == AddInventoryEnum.addEdit ||
+                  addInventoryEnum == AddInventoryEnum.viewer)
+                CellTextField(
+                  isRequired: false,
+                  title: '总价',
+                  hint: '请输入',
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  controller: totalPriceController,
+                  focusNode: totalPriceFocus,
+                  editable: addInventoryEnum != AddInventoryEnum.viewer,
+                ),
               //新增报废和修改报废显示报废原因
               if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
                   addInventoryEnum == AddInventoryEnum.scrap)
@@ -410,7 +457,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                             //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
                             bfyyList = value;
                             selectIndex = await showSelectDialog(
-                              bfyyList!.map((e) => e['key'].toString()).toList(),
+                              bfyyList!
+                                  .map((e) => e['key'].toString())
+                                  .toList(),
                             );
                           });
                         }
@@ -429,7 +478,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     isRequired: true,
                     title: '入库时间',
                     hint: '请选择',
-                    content: "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
+                    content:
+                        "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
                     onPressed: () {
                       Picker.showDatePicker(
                         context,
@@ -596,9 +646,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     countText = argument['countText'];
     addInventoryEnum = argument['addInventoryEnum'];
     makeCount = argument['makeCount'];
+    final totalPrice = argument['totalPrice'];
     reasonId = argument['reason'];
     rowVersion = argument['rowVersion'];
     remark = argument['remark'];
+    if (totalPrice != null) {
+      totalPriceController.text = totalPrice.toString();
+    }
     // if (addInventoryEnum == AddInventoryEnum.add || addInventoryEnum == AddInventoryEnum.use) {
     //   Storage.getData(Constant.userResData).then((res) {
     //     if (res != null) {
@@ -662,11 +716,15 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           materialItemModel?.materialName ??
           materialNameController.text;
       wzflSelectNotif.value = wzflList?.firstWhereOrNull(
-        (e) => num.parse(e['value']).toString() == materialItemModel?.category.toString(),
+        (e) =>
+            num.parse(e['value']).toString() ==
+            materialItemModel?.category.toString(),
       );
       wzdwSelectNotif.value =
           wzdwList?.firstWhereOrNull(
-            (e) => num.parse(e['value']).toString() == materialItemModel?.unit.toString(),
+            (e) =>
+                num.parse(e['value']).toString() ==
+                materialItemModel?.unit.toString(),
           ) ??
           wzdwSelectNotif.value;
       if (addInventoryEnum != AddInventoryEnum.use &&
@@ -679,7 +737,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
             counterController.text;
       } else {
         canUseCount.value =
-            materialItemModel?.count?.toString() ?? materialItemModel?.currentCount?.toString() ?? '';
+            materialItemModel?.count?.toString() ??
+            materialItemModel?.currentCount?.toString() ??
+            '';
       }
 
       if (addInventoryEnum == AddInventoryEnum.addEdit ||
@@ -688,9 +748,16 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           addInventoryEnum == AddInventoryEnum.scrapEdit) {
         remakeController.text = remark ?? '';
       }
+      if (materialItemModel?.totalPrice != null &&
+          (addInventoryEnum == AddInventoryEnum.addEdit ||
+              addInventoryEnum == AddInventoryEnum.viewer)) {
+        totalPriceController.text = materialItemModel!.totalPrice.toString();
+      }
 
       if (materialItemModel?.modified != null) {
-        selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
+        selectDateTime.value = PDuration.parse(
+          DateTime.parse(materialItemModel?.modified ?? ''),
+        );
       }
 
       if (addInventoryEnum == AddInventoryEnum.scrapEdit) {
@@ -743,7 +810,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "category": wzflSelectNotif.value!['value'],
           "unit": wzdwSelectNotif.value!['value'],
           "count": counterController.text,
-          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "totalPrice": totalPriceController.text,
+          "date":
+              "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
         };
         Log.d('data: $data');
@@ -754,7 +823,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
           "id": id,
           "materialId": materialId,
           "count": counterController.text,
-          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "totalPrice": totalPriceController.text,
+          "date":
+              "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
           "rowVersion": rowVersion,
         };
@@ -795,7 +866,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         data: {
           "materialId": materialItemModel?.materialId ?? materialId ?? '',
           "count": counterController.text,
-          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "date":
+              "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
         },
       );
@@ -834,7 +906,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         data: {
           "materialId": materialItemModel?.materialId ?? materialId ?? '',
           "count": counterController.text,
-          "date": "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
+          "date":
+              "${date.year}-${date.month?.addZero()}-${date.day?.addZero()}",
           "remark": remakeController.text,
           "reason": bfyySelectNotif.value!['value'],
         },

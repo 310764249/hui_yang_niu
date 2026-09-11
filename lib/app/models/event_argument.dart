@@ -1286,15 +1286,18 @@ class CalvEvent {
 class PreventionEvent {
   late final String id; //ID
   late final String date; //防疫时间
-  late final int loimia; //疫病 1：口蹄疫、2：牛布氏杆菌病、3：牛病毒性腹泻、4：牛副伤寒、5：牛巴氏杆菌病、6：牛传染性胸膜肺炎、7：魏氏梭菌病、8：牛传染性鼻气管炎
+  late final int
+  loimia; //疫病 1：口蹄疫、2：牛布氏杆菌病、3：牛病毒性腹泻、4：牛副伤寒、5：牛巴氏杆菌病、6：牛传染性胸膜肺炎、7：魏氏梭菌病、8：牛传染性鼻气管炎
   late final int
   vaccine; //疫苗 1：口蹄疫疫苗、2：牛布氏杆菌病疫苗、3：牛病毒性腹泻疫苗、4：牛副伤寒灭活菌苗、5：牛巴氏杆菌病灭活菌苗、6：牛传染性胸膜肺炎疫苗、7：魏氏梭菌病疫苗、8：牛传染性鼻气管炎
+  late final String? materialVaccine; //疫苗物资ID
   late final String? cowId; //牛只编码
   late final String? cowCode; //耳号
   late final String? batchNo; //批次号
   late final String? cowHouseId; //栋舍
   late final String? cowHouseName; //栋舍名称
-  late final int status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int
+  status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final int count; //头数
   late final double dosage; //单头剂量
   late final int? unit; //剂量单位
@@ -1313,6 +1316,7 @@ class PreventionEvent {
     required this.date,
     required this.loimia,
     required this.vaccine,
+    this.materialVaccine,
     this.cowId,
     this.cowCode,
     this.batchNo,
@@ -1337,6 +1341,7 @@ class PreventionEvent {
     date = json['date'];
     loimia = json['loimia'] ?? 0;
     vaccine = json['vaccine'] ?? 0;
+    materialVaccine = json['materialVaccine']?.toString();
     cowId = json['cowId'];
     cowCode = json['cowCode'];
     batchNo = json['batchNo'];
@@ -1349,7 +1354,7 @@ class PreventionEvent {
     }
     count = json['count'] ?? 0;
     dosage = double.parse((json['dosage'] ?? 0).toString());
-    unit = json['unit'];
+    unit = json['unit'] == null ? null : int.tryParse(json['unit'].toString());
     total = double.parse((json['total'] ?? 0).toString());
     executor = json['executor'];
     remark = json['remark'];
@@ -1367,6 +1372,7 @@ class PreventionEvent {
     data['date'] = date;
     data['loimia'] = loimia;
     data['vaccine'] = vaccine;
+    data['materialVaccine'] = materialVaccine;
     data['cowId'] = cowId;
     data['cowCode'] = cowCode;
     data['batchNo'] = batchNo;
@@ -1397,13 +1403,15 @@ class HealthCareEvent {
   late final String cowId; //牛只编码
   late final String? batchNo; //批次号
   late final String date; //保健时间
-  late final int status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
+  late final int
+  status; //当前状态 1：犊牛；2：育肥牛；3：后备牛；4：种牛；5：妊娠母牛；6：哺乳母牛；7：空怀母牛；8：已淘汰；9：已销售；10：已死亡；
   late final int type; //保健类型 1：驱虫；2：消毒；
   late final int count; //头数
   late final String? pharmacy; //用药
+  late final String? materialVaccine; //用药物资ID
   late final double? dosage; //单头剂量
   late final double? total; //总剂量
-  late final int unit; //剂量单位
+  late final int? unit; //剂量单位
   late final String? executor; //技术员
   late final String? remark; //备注
   late final String tenantId; //租户
@@ -1424,9 +1432,10 @@ class HealthCareEvent {
     required this.type,
     required this.count,
     this.pharmacy,
+    this.materialVaccine,
     required this.dosage,
     required this.total,
-    required this.unit,
+    this.unit,
     this.executor,
     this.remark,
     required this.tenantId,
@@ -1447,9 +1456,10 @@ class HealthCareEvent {
     type = json['type'];
     count = json['count'];
     pharmacy = json['pharmacy'];
+    materialVaccine = json['materialVaccine']?.toString();
     dosage = double.parse((json['dosage'] ?? 0).toString());
     total = double.parse((json['total'] ?? 0).toString());
-    unit = json['unit'];
+    unit = json['unit'] == null ? null : int.tryParse(json['unit'].toString());
     executor = json['executor'];
     remark = json['remark'];
     tenantId = json['tenantId'];
@@ -1472,6 +1482,7 @@ class HealthCareEvent {
     data['type'] = type;
     data['count'] = count;
     data['pharmacy'] = pharmacy;
+    data['materialVaccine'] = materialVaccine;
     data['dosage'] = dosage;
     data['total'] = total;
     data['unit'] = unit;
@@ -1756,7 +1767,9 @@ class TreatmentEvent {
   late final String? symptom; //症状
   late final String? treatmentPerson; //诊疗人
   late final String? pharmacy; //用药
+  late final String? materialVaccine; //用药物资ID
   late final double dosage; //剂量
+  late final int? unit; //剂量单位
   late final String? executor; //技术员
   late final String? remark; //备注
   late final String tenantId; //租户
@@ -1777,7 +1790,9 @@ class TreatmentEvent {
     this.symptom,
     this.treatmentPerson,
     this.pharmacy,
+    this.materialVaccine,
     required this.dosage,
+    this.unit,
     this.executor,
     this.remark,
     required this.tenantId,
@@ -1798,7 +1813,9 @@ class TreatmentEvent {
     symptom = json['symptom'];
     treatmentPerson = json['treatmentPerson'];
     pharmacy = json['pharmacy'];
+    materialVaccine = json['materialVaccine']?.toString();
     dosage = double.parse((json['dosage'] ?? 0).toString());
+    unit = json['unit'] == null ? null : int.tryParse(json['unit'].toString());
     executor = json['executor'];
     remark = json['remark'];
     tenantId = json['tenantId'];
@@ -1821,7 +1838,9 @@ class TreatmentEvent {
     data['symptom'] = symptom;
     data['treatmentPerson'] = treatmentPerson;
     data['pharmacy'] = pharmacy;
+    data['materialVaccine'] = materialVaccine;
     data['dosage'] = dosage;
+    data['unit'] = unit;
     data['executor'] = executor;
     data['remark'] = remark;
     data['tenantId'] = tenantId;
@@ -2236,7 +2255,9 @@ class CharactersArgument {
     weanWeight = double.parse((json['weanWeight'] ?? 0).toString());
     weanDailyGain = double.parse((json['weanDailyGain'] ?? 0).toString());
     adultWeight = double.parse((json['adultWeight'] ?? 0).toString());
-    pregnancyRateOfBulls = double.parse((json['pregnancyRateOfBulls'] ?? 0).toString());
+    pregnancyRateOfBulls = double.parse(
+      (json['pregnancyRateOfBulls'] ?? 0).toString(),
+    );
     calvRate = double.parse((json['calvRate'] ?? 0).toString());
     rateOfWean = double.parse((json['rateOfWean'] ?? 0).toString());
     deadWeight = double.parse((json['deadWeight'] ?? 0).toString());

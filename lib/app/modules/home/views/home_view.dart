@@ -8,7 +8,6 @@ import 'package:intellectual_breed/app/models/article.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/deviceserial/device_serial_page.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
-import 'package:intellectual_breed/app/modules/tabs/controllers/tabs_controller.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/widgets/information_item.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
@@ -179,7 +178,12 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(ScreenAdapter.width(14), ScreenAdapter.height(10), 0, 0),
+          padding: EdgeInsets.fromLTRB(
+            ScreenAdapter.width(14),
+            ScreenAdapter.height(10),
+            0,
+            0,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -210,7 +214,10 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ),
               ),
-              IconButton(onPressed: () {}, icon: const LoadImage(AssetsImages.msgClosePng)),
+              IconButton(
+                onPressed: () {},
+                icon: const LoadImage(AssetsImages.msgClosePng),
+              ),
             ],
           ),
         ),
@@ -236,31 +243,27 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 1});
+                      Get.toNamed(
+                        Routes.INFORMATION_LIST,
+                        arguments: {'category': 0, 'type': 1},
+                      );
                     },
-                    child: Image.asset(Assets.imagesIcTechnicalClassroom, fit: BoxFit.fill),
+                    child: Image.asset(
+                      Assets.imagesIcTechnicalClassroom,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () async {
-                      Get.toNamed(Routes.INTELLIGENT);
-                      // Toast.showLoading();
-                      // if (await ChatUIKit.instance.isLoginBefore()) {
-                      //   Toast.dismiss();
-                      //   Get.toNamed(Routes.CHATROOM);
-                      // } else {
-                      //   await ChatRoomUtils.login();
-                      //   if (!await ChatUIKit.instance.isLoginBefore()) {
-                      //     Toast.dismiss();
-                      //     return;
-                      //   }
-                      //   Toast.dismiss();
-                      //   Get.toNamed(Routes.CHATROOM);
-                      // }
+                    onTap: () {
+                      Get.toNamed(Routes.RECIPE);
                     },
-                    child: Image.asset(Assets.imagesIcQuestionAnswer, fit: BoxFit.fill),
+                    child: Image.asset(
+                      Assets.imagesIcFormulaDesign,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
               ],
@@ -270,10 +273,11 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      Get.toNamed(Routes.RECIPE);
-                    },
-                    child: Image.asset(Assets.imagesIcFormulaDesign, fit: BoxFit.fill),
+                    onTap: () => Get.toNamed(Routes.APPLICATION),
+                    child: Image.asset(
+                      Assets.imagesIcProductionManagement,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -299,7 +303,9 @@ class HomeView extends GetView<HomeController> {
                               label: Text("${controller.messageUnReadCount}"),
                               //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
                               isLabelVisible:
-                                  (controller.messageUnReadCount.value != 0) ? true : false,
+                                  (controller.messageUnReadCount.value != 0)
+                                      ? true
+                                      : false,
                               backgroundColor: Colors.red[500],
                             ),
                           ),
@@ -315,24 +321,38 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      Get.to(() => const DeviceSerialPage());
+                    onTap: () async {
+                      Get.toNamed(Routes.INTELLIGENT);
+                      // Toast.showLoading();
+                      // if (await ChatUIKit.instance.isLoginBefore()) {
+                      //   Toast.dismiss();
+                      //   Get.toNamed(Routes.CHATROOM);
+                      // } else {
+                      //   await ChatRoomUtils.login();
+                      //   if (!await ChatUIKit.instance.isLoginBefore()) {
+                      //     Toast.dismiss();
+                      //     return;
+                      //   }
+                      //   Toast.dismiss();
+                      //   Get.toNamed(Routes.CHATROOM);
+                      // }
                     },
-                    child: Image.asset(Assets.imagesIcIntelligentMonitoring, fit: BoxFit.fill),
+                    child: Image.asset(
+                      Assets.imagesIcQuestionAnswer,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: GetBuilder<TabsController>(
-                    builder: (TabsController controller) {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.currentIndex.value = 1;
-                          controller.pageController.jumpToPage(1);
-                        },
-                        child: Image.asset(Assets.imagesIcProductionManagement, fit: BoxFit.fill),
-                      );
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.to(() => const DeviceSerialPage());
                     },
+                    child: Image.asset(
+                      Assets.imagesIcIntelligentMonitoring,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
               ],
@@ -457,7 +477,10 @@ class HomeView extends GetView<HomeController> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Positioned(
+                  bottom: -2,
+                  child: SvgPicture.asset(Assets.imagesIcHomeLabel),
+                ),
                 Text(
                   '热门推荐',
                   style: TextStyle(
@@ -470,7 +493,10 @@ class HomeView extends GetView<HomeController> {
             ),
             TextButton(
               onPressed: () {
-                Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 1, 'type': 0});
+                Get.toNamed(
+                  Routes.INFORMATION_LIST,
+                  arguments: {'category': 1, 'type': 0},
+                );
               },
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
@@ -506,7 +532,8 @@ class HomeView extends GetView<HomeController> {
               itemBuilder: (BuildContext context, int index) {
                 Article model = controller.videoItems[index];
                 return InformationItem(
-                  image: '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
+                  image:
+                      '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
                   title: model.title ?? '',
                   userIcon: AssetsImages.avatar,
                   userName: model.publisher ?? '',
@@ -535,7 +562,10 @@ class HomeView extends GetView<HomeController> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Positioned(
+                  bottom: -2,
+                  child: SvgPicture.asset(Assets.imagesIcHomeLabel),
+                ),
                 Text(
                   '最新文章',
                   style: TextStyle(
@@ -548,7 +578,10 @@ class HomeView extends GetView<HomeController> {
             ),
             TextButton(
               onPressed: () {
-                Get.toNamed(Routes.INFORMATION_LIST, arguments: {'category': 0, 'type': 0});
+                Get.toNamed(
+                  Routes.INFORMATION_LIST,
+                  arguments: {'category': 0, 'type': 0},
+                );
               },
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
@@ -585,7 +618,8 @@ class HomeView extends GetView<HomeController> {
                 Article model = controller.wordItems[index];
                 // Article model = controller.videoItems[index];
                 return InformationItem(
-                  image: '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
+                  image:
+                      '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
                   title: model.title ?? '',
                   userIcon: AssetsImages.avatar,
                   userName: model.publisher ?? '',
@@ -607,7 +641,9 @@ class HomeView extends GetView<HomeController> {
   Widget _homePage() {
     return Obx(
       () => Positioned(
-        top: ScreenAdapter.getStatusBarHeight() + ScreenAdapter.getNavBarHeight(),
+        top:
+            ScreenAdapter.getStatusBarHeight() +
+            ScreenAdapter.getNavBarHeight(),
         // top: 0,
         left: 0,
         right: 0,
@@ -644,12 +680,12 @@ class HomeView extends GetView<HomeController> {
               //分类
               _mainType(),
               SizedBox(height: ScreenAdapter.height(10)),
-              //资讯
+              // 行业资讯内容保留；按图片要求隐藏的是底部导航中的“服务”入口。
               _information(),
-              //视频类目
-              _videoType(),
               //文章类目
               _articleType(),
+              //视频类目
+              _videoType(),
             ],
           ),
         ),
@@ -685,7 +721,10 @@ class HomeView extends GetView<HomeController> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Positioned(bottom: -2, child: SvgPicture.asset(Assets.imagesIcHomeLabel)),
+                Positioned(
+                  bottom: -2,
+                  child: SvgPicture.asset(Assets.imagesIcHomeLabel),
+                ),
                 Text(
                   '行业资讯',
                   style: TextStyle(
@@ -709,11 +748,15 @@ class HomeView extends GetView<HomeController> {
                   BusinessLogger.instance.logEnter(tag);
                   await Get.toNamed(
                     Routes.INFORMATION_DETAIL,
-                    arguments: 'https://www.feedtrade.com.cn/livestock/niujiage/index.html',
+                    arguments:
+                        'https://www.feedtrade.com.cn/livestock/niujiage/index.html',
                   );
                   BusinessLogger.instance.logExit(tag);
                 },
-                child: Image.asset(Assets.imagesIcPriceLiveCattle, fit: BoxFit.fill),
+                child: Image.asset(
+                  Assets.imagesIcPriceLiveCattle,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -728,7 +771,10 @@ class HomeView extends GetView<HomeController> {
                   );
                   BusinessLogger.instance.logExit(tag);
                 },
-                child: Image.asset(Assets.imagesIcFeedIngredient, fit: BoxFit.fill),
+                child: Image.asset(
+                  Assets.imagesIcFeedIngredient,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -743,7 +789,10 @@ class HomeView extends GetView<HomeController> {
                   );
                   BusinessLogger.instance.logExit(tag);
                 },
-                child: Image.asset(Assets.imagesIcAgriculturalNews, fit: BoxFit.fill),
+                child: Image.asset(
+                  Assets.imagesIcAgriculturalNews,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
           ],

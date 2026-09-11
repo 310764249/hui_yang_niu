@@ -5,7 +5,6 @@ import 'package:common_utils/common_utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intellectual_breed/app/modules/application/views/application_view.dart';
 import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/home/views/home_view.dart';
 import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
@@ -35,13 +34,12 @@ class TabsController extends GetxController with WidgetsBindingObserver {
           ? PageController(initialPage: 0)
           : PageController(initialPage: Get.arguments["initialPage"]);
 
-  final List names = ["首页", "服务", "我的"];
+  // 服务页仍保留为独立路由入口（首页“生产管理”会打开），但按首页调整要求不在底部导航展示。
+  final List names = ["首页", "我的"];
 
   final List<Widget> pages = [
     const HomeView(),
-    // RecipeView(),
-    ApplicationView(),
-    // MessageView(),
+    // ApplicationView(), // 服务页保留代码，通过 Routes.APPLICATION 独立打开，不作为底部页签。
     MineView(),
   ];
 
@@ -67,18 +65,14 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   // tab line icons
   final List<Image> tabLineIcons = [
     Image.asset(AssetsImages.homeLine),
-    // Image.asset(AssetsImages.recipeLine),
-    Image.asset(AssetsImages.applicationLine),
-    // Image.asset(AssetsImages.messageLine),
+    // Image.asset(AssetsImages.applicationLine), // 服务页签已隐藏。
     Image.asset(AssetsImages.mineLine),
   ];
 
   // tab fill icons
   final List<Image> tabFillIcons = [
     Image.asset(AssetsImages.homeFill),
-    // Image.asset(AssetsImages.recipeFill),
-    Image.asset(AssetsImages.applicationFill),
-    // Image.asset(AssetsImages.messageFill),
+    // Image.asset(AssetsImages.applicationFill), // 服务页签已隐藏。
     Image.asset(AssetsImages.mineFill),
   ];
 
@@ -102,7 +96,9 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     //实时监听网络状态
-    subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    subscription = Connectivity().onConnectivityChanged.listen((
+      ConnectivityResult result,
+    ) {
       // Got a new connectivity status!
       if (result == ConnectivityResult.mobile) {
         debugPrint('成功连接移动网络');
@@ -140,7 +136,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
 
     pageController.addListener(() {
       int index = pageController.page!.round();
-      if (index == 2) {
+      if (index == 1) {
         BusinessLogger.instance.logEnter('我的');
       } else {
         BusinessLogger.instance.logExit('我的');
@@ -181,7 +177,8 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   /// 处理返回键事件: 返回 true 表示允许退出应用，返回 false 表示阻止退出应用
   Future<bool> onBackPressed(BuildContext context) {
     if (ObjectUtil.isEmpty(currentBackPressTime) ||
-        DateTime.now().difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+        DateTime.now().difference(currentBackPressTime!) >
+            const Duration(seconds: 2)) {
       currentBackPressTime = DateTime.now();
       Toast.show('再次点击返回键退出应用');
       return Future.value(false);

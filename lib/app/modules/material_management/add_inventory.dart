@@ -51,7 +51,7 @@ extension AddInventoryEnumX on AddInventoryEnum {
   getName() {
     switch (this) {
       case AddInventoryEnum.add:
-        return '入库';
+        return '采购';
       case AddInventoryEnum.addEdit:
         return '编辑';
       case AddInventoryEnum.viewer:
@@ -120,7 +120,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   final TextEditingController counterController = TextEditingController();
   final FocusNode counterNameFocus = FocusNode();
 
-  //入库总价
+  //采购总价
   final TextEditingController totalPriceController = TextEditingController();
   final FocusNode totalPriceFocus = FocusNode();
 
@@ -427,7 +427,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   addInventoryEnum == AddInventoryEnum.viewer)
                 CellTextField(
                   isRequired: false,
-                  title: '总价',
+                  title: '总价（元）',
                   hint: '请输入',
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -476,7 +476,12 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 builder: (context, PDuration value, Widget? child) {
                   return CellButton(
                     isRequired: true,
-                    title: '入库时间',
+                    title:
+                        addInventoryEnum == AddInventoryEnum.add ||
+                                addInventoryEnum == AddInventoryEnum.addEdit ||
+                                addInventoryEnum == AddInventoryEnum.viewer
+                            ? '采购时间'
+                            : '操作时间',
                     hint: '请选择',
                     content:
                         "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",

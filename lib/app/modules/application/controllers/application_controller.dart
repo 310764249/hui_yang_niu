@@ -126,6 +126,10 @@ class ApplicationController extends GetxController {
   /// 7.效益评估
   RxList<CommonData> benefitAssessmentList = <CommonData>[].obs;
 
+  /// 营收管理：物资管理与收支管理合并后的展示列表。
+  /// 旧列表保留用于兼容旧页面和旧路由。
+  RxList<CommonData> revenueManagementList = <CommonData>[].obs;
+
   void updateUIByPermission() async {
     var res = await Storage.getData(Constant.userResData);
     if (res != null) {
@@ -144,6 +148,7 @@ class ApplicationController extends GetxController {
           materialManagementList.value = [];
           breedingAssessmentList.value = [];
           benefitAssessmentList.value = [];
+          revenueManagementList.value = [];
 
         case 3: //  3 是[农户]角色
           productionManagementList.value = productionManagementList4FarmerType3;
@@ -153,6 +158,7 @@ class ApplicationController extends GetxController {
           materialManagementList.value = [];
           breedingAssessmentList.value = [];
           benefitAssessmentList.value = [];
+          revenueManagementList.value = [];
           break;
       }
 
@@ -258,6 +264,20 @@ class ApplicationController extends GetxController {
 
         // CommonData(id: 3, name: "效益分析", image: AssetsImages.icon39),
         // CommonData(id: 4, name: "收支设置", image: AssetsImages.icon40),
+      ];
+
+      // 营收管理合并物资管理和收支管理，顺序按产品要求固定。
+      // 原列表仍保留，避免其他旧页面或外部调用受到影响。
+      revenueManagementList.value = [
+        CommonData(id: 0, name: "采购", image: AssetsImages.icon37),
+        CommonData(id: 1, name: "人工", image: AssetsImages.icon38),
+        CommonData(id: 2, name: "销售", image: AssetsImages.icon7),
+        if (!isRetailer) ...[
+          CommonData(id: 3, name: "领用", image: AssetsImages.icon28),
+          CommonData(id: 4, name: "报废", image: AssetsImages.icon29),
+          CommonData(id: 5, name: "物资统计", image: Assets.imagesIcMaterialStatistics),
+        ],
+        CommonData(id: 6, name: "收支统计", image: Assets.imagesIcIncome),
       ];
       update();
     } else {

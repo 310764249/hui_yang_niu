@@ -109,6 +109,9 @@ class WeanController extends GetxController {
   void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
+      //截图要求：新增断奶事件默认头数为 1。
+      count = '1';
+      countController.text = '1';
       return;
     }
     if (argument is Cattle) {
@@ -116,6 +119,9 @@ class WeanController extends GetxController {
 
       updateCodeString(selectedCow.code ?? '');
       updateBatchNumber(selectedCow.batchNo ?? '');
+      //截图要求：选择牛只后仍保留断奶头数默认值 1。
+      count = '1';
+      countController.text = '1';
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑

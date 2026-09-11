@@ -19,7 +19,7 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('入库'),
+        title: const Text('采购'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

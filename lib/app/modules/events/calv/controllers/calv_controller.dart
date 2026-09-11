@@ -118,6 +118,9 @@ class CalvController extends GetxController {
   void handleArgument() async {
     if (ObjectUtil.isEmpty(argument)) {
       //不传值是新增
+      //截图要求：新增产犊事件默认头数为 1。
+      count = '1';
+      countController.text = '1';
       //自动生成批次号
       //请求生成批次号 1 犊牛 2 育肥牛 3 引种牛
       requestBatchNumber(1);
@@ -126,6 +129,9 @@ class CalvController extends GetxController {
     if (argument is Cattle) {
       selectedCow = argument;
       updateCodeString(selectedCow.code ?? '');
+      //截图要求：选择牛只后仍保留产犊头数默认值 1。
+      count = '1';
+      countController.text = '1';
     } else if (argument is SimpleEvent) {
       isEdit.value = true;
       //编辑

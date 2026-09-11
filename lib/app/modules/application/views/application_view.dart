@@ -883,6 +883,14 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '采购':
+            // 合并后的“采购”使用原入库功能，采购信息同步进入库存。
+            String tag = '营收管理/采购';
+            BusinessLogger.instance.logEnter(tag);
+            await Get.toNamed(Routes.Warehouse_Entry);
+            BusinessLogger.instance.logExit(tag);
+            break;
+          case '采购事件(旧)':
+            // 保留旧采购事件入口代码，兼容历史路由数据；新界面不再展示此名称。
             String tag = '收支管理/采购';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(
@@ -943,7 +951,8 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '收支管理':
-            String tag = '物资管理/收支统计';
+          case '收支统计':
+            String tag = '营收管理/收支统计';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(Routes.INCOME_MANAGEMENT, arguments: {'type': 'income'});
             BusinessLogger.instance.logExit(tag);
@@ -1069,16 +1078,17 @@ class ApplicationView extends GetView<ApplicationController> {
                   ? _managementView("健康管理", controller.healthManagementList)
                   : const SizedBox(),
               // 物资管理
-              controller.materialManagementList.isNotEmpty
+              // 旧的物资管理模块保留但不再单独展示，入口已并入营收管理。
+              /*controller.materialManagementList.isNotEmpty
                   ? _managementView("物资管理", controller.materialManagementList)
-                  : const SizedBox(),
+                  : const SizedBox(),*/
               // 养殖评估
               controller.breedingAssessmentList.isNotEmpty
                   ? _managementView("养殖评估", controller.breedingAssessmentList)
                   : const SizedBox(),
               // 效益评估
-              controller.benefitAssessmentList.isNotEmpty
-                  ? _managementView("收支管理", controller.benefitAssessmentList)
+              controller.revenueManagementList.isNotEmpty
+                  ? _managementView("营收管理", controller.revenueManagementList)
                   : const SizedBox(),
             ],
           ),

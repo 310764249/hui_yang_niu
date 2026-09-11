@@ -86,6 +86,7 @@ class AddInventoryView extends StatefulWidget {
     String? totalPrice,
     String? reason,
     String? remark,
+    String? date,
   }) async {
     return await Get.toNamed(
       Routes.AddInventory,
@@ -101,6 +102,7 @@ class AddInventoryView extends StatefulWidget {
         'reason': reason,
         'rowVersion': rowVersion,
         'remark': remark,
+        'date': date,
       },
     );
   }
@@ -164,6 +166,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
 
   //备注
   String? remark;
+
+  //编辑时回显的业务时间
+  String? operationDate;
 
   //是否编辑
   late AddInventoryEnum addInventoryEnum;
@@ -230,7 +235,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   onPressed: () {
                     SelectMaterialView.push(context).then((value) {
                       if (value != null) {
-                        materialId = value.id;
+                        materialId = value.materialId ?? value.id;
                         wzflSelectNotif.value = wzflList?.firstWhereOrNull(
                           (e) =>
                               num.parse(e['value']).toString() ==
@@ -241,7 +246,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                               num.parse(e['value']).toString() ==
                               value.unit.toString(),
                         );
-                        materialNameController.text = value.name ?? '';
+                        materialNameController.text =
+                            value.name ?? value.materialName ?? '';
                         canUseCount.value = value.count.toString() ?? '';
                         // selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
                       }
@@ -481,7 +487,10 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                                 addInventoryEnum == AddInventoryEnum.addEdit ||
                                 addInventoryEnum == AddInventoryEnum.viewer
                             ? '采购时间'
-                            : '操作时间',
+                            : addInventoryEnum == AddInventoryEnum.use ||
+                                    addInventoryEnum == AddInventoryEnum.useEdit
+                                ? '领用时间'
+                                : '报废时间',
                     hint: '请选择',
                     content:
                         "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
@@ -655,6 +664,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     reasonId = argument['reason'];
     rowVersion = argument['rowVersion'];
     remark = argument['remark'];
+    operationDate = argument['date'];
     if (totalPrice != null) {
       totalPriceController.text = totalPrice.toString();
     }
@@ -689,6 +699,13 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         addInventoryEnum != AddInventoryEnum.useEdit &&
         addInventoryEnum != AddInventoryEnum.scrapEdit) {
       counterController.text = countText!;
+    }
+
+    if ((operationDate ?? '').isNotEmpty) {
+      final parsedDate = DateTime.tryParse(operationDate!);
+      if (parsedDate != null) {
+        selectDateTime.value = PDuration.parse(parsedDate);
+      }
     }
 
     if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
@@ -759,7 +776,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         totalPriceController.text = materialItemModel!.totalPrice.toString();
       }
 
-      if (materialItemModel?.modified != null) {
+      if ((operationDate ?? '').isEmpty && materialItemModel?.modified != null) {
         selectDateTime.value = PDuration.parse(
           DateTime.parse(materialItemModel?.modified ?? ''),
         );

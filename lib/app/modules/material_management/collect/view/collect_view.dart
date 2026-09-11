@@ -100,7 +100,8 @@ class CollectView extends GetView<CollectController> {
                                   final item = controller.items[index];
                                   // 更加不同的分类显示不同的item样式
                                   return MaterialItem(
-                                    // showButton: false,
+                                    // 自动生成的记录保留按钮但置灰，禁止编辑和删除。
+                                    buttonEnabled: !(item.isAutomatic ?? false),
                                     title: '单号：${item.no ?? ''}',
                                     content1: item.materialName ?? '',
                                     content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
@@ -112,6 +113,7 @@ class CollectView extends GetView<CollectController> {
                                         materialId: item.materialId,
                                         addInventoryEnum: AddInventoryEnum.viewer,
                                         remark: item.remark,
+                                        date: item.date,
                                       );
                                     },
                                     deleteOnTap: () async {
@@ -139,6 +141,7 @@ class CollectView extends GetView<CollectController> {
                                         addInventoryEnum: AddInventoryEnum.useEdit,
                                         makeCount: item.count.toString(),
                                         remark: item.remark,
+                                        date: item.date,
                                       ).then((value) {
                                         if (value == true) {
                                           controller.refreshController.callRefresh();

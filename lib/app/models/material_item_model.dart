@@ -79,7 +79,9 @@ class MaterialItemModel {
         category: json["category"],
         name: json["name"],
         totalPrice: json["totalPrice"],
-        isAutomatic: json["isAutomatic"] == true,
+        isAutomatic:
+            json["isAutomatic"] == true ||
+            json["isAutomatic"]?.toString().toLowerCase() == 'true',
       );
 
   Map<dynamic, dynamic> toJson() => {

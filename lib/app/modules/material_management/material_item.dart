@@ -12,6 +12,7 @@ class MaterialItem extends StatelessWidget {
     required this.content2,
     required this.content3,
     this.showButton = true,
+    this.buttonEnabled = true,
     this.showTitle = true,
     this.deleteOnTap,
     this.editOnTap,
@@ -26,6 +27,9 @@ class MaterialItem extends StatelessWidget {
 
   //是否显示按钮
   final bool showButton;
+
+  //按钮是否可用，自动生成的记录保留按钮但不可编辑或删除
+  final bool buttonEnabled;
 
   final VoidCallback? onTap;
   final VoidCallback? editOnTap;
@@ -140,14 +144,16 @@ class MaterialItem extends StatelessWidget {
                             style: ButtonStyle(
                                 // 阴影颜色
                                 shadowColor: MaterialStateProperty.all(Colors.transparent),
-                                backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                                foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
+                                backgroundColor: MaterialStateProperty.all(
+                                    buttonEnabled ? SaienteColors.blueE5EEFF : Colors.grey.shade200),
+                                foregroundColor: MaterialStateProperty.all(
+                                    buttonEnabled ? SaienteColors.blue275CF3 : SaienteColors.black4D),
                                 shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
-                            onPressed: () {
+                            onPressed: buttonEnabled ? () {
                               debugPrint('编辑');
                               editOnTap?.call();
-                            },
+                            } : null,
                             child: Text(
                               '编辑',
                               style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),
@@ -162,11 +168,13 @@ class MaterialItem extends StatelessWidget {
                             style: ButtonStyle(
                                 // 阴影颜色
                                 shadowColor: MaterialStateProperty.all(Colors.transparent),
-                                backgroundColor: MaterialStateProperty.all(SaienteColors.blueE5EEFF),
-                                foregroundColor: MaterialStateProperty.all(SaienteColors.blue275CF3),
+                                backgroundColor: MaterialStateProperty.all(
+                                    buttonEnabled ? SaienteColors.blueE5EEFF : Colors.grey.shade200),
+                                foregroundColor: MaterialStateProperty.all(
+                                    buttonEnabled ? SaienteColors.blue275CF3 : SaienteColors.black4D),
                                 shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenAdapter.width(2.5))))),
-                            onPressed: () {
+                            onPressed: buttonEnabled ? () {
                               Alert.showConfirm(
                                 '确定删除该事件?',
                                 onConfirm: () {
@@ -174,7 +182,7 @@ class MaterialItem extends StatelessWidget {
                                   deleteOnTap?.call();
                                 },
                               );
-                            },
+                            } : null,
                             child: Text(
                               '删除',
                               style: TextStyle(fontSize: ScreenAdapter.fontSize(14), fontWeight: FontWeight.w400),

@@ -64,7 +64,29 @@ class NewCattleController extends GetxController {
   // 临时记录品种和胎次的position
   // RxInt tempGenderPosition = 0.obs;
   RxInt tempBreedPosition = 0.obs;
-  RxInt tempPregnancyNumPosition = 0.obs;
+  RxInt tempPregnancyNumPosition = 1.obs;
+
+  String _formatDate(DateTime date) {
+    return DateUtil.formatDate(date, format: DateFormats.y_mo_d);
+  }
+
+  String _defaultInDate() {
+    final now = DateTime.now();
+    return _formatDate(DateTime(now.year - 1, now.month, now.day));
+  }
+
+  String _defaultBirthDate() {
+    final now = DateTime.now();
+    return _formatDate(DateTime(now.year, now.month - 18, now.day));
+  }
+
+  void _selectDefaultBreed() {
+    if (breedList.isEmpty) return;
+    final index = breedList.indexWhere(
+      (item) => item['value'].toString() == '2',
+    );
+    tempBreedPosition.value = index >= 0 ? index : 0;
+  }
 
   // 初始化请求参数
   void initRequestParams(int position) {
@@ -82,12 +104,25 @@ class NewCattleController extends GetxController {
     // 3.更新当前状态数据
     cattleInfo.currentStage = Constant.currentStageList[position].id;
 
+    // 档案新增各状态都默认带出入场时间和出生年月。
+    cattleInfo.inDate?.value = _defaultInDate();
+    cattleInfo.birthDate?.value = _defaultBirthDate();
+
     // 设置[品种]和[胎次]为默认值
     // cattleInfo.gender?.value =
     // Constant.genderNameList[tempGenderPosition.value] == '公牛' ? 1 : 2;
-    cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+    if (breedList.isNotEmpty) {
+      cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+    }
 
-    cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+    cattleInfo.pregnancyNum?.value =
+        Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+
+    // 哺乳母牛默认上一次产犊数量为 1。
+    if (cattleInfo.currentStage == 6) {
+      cattleInfo.calvingNum = '1';
+      calvingNumController.text = '1';
+    }
 
     // 防止前面犊牛api没请求到数据的话这里再去请求一次
     if (cattleInfo.currentStage == 1 && tempBatchNumAuto1.value.isBlankEx()) {
@@ -118,13 +153,20 @@ class NewCattleController extends GetxController {
 
     // 初始化请求参数
     cattleInfo = CattleInfo.init();
-    cattleInfo.currentStage = Constant.currentStageList.first.id;
+    final defaultStageIndex = Constant.currentStageList.indexWhere(
+      (item) => item.name == '空怀母牛',
+    );
+    selStage.value = defaultStageIndex >= 0 ? defaultStageIndex : 0;
+    cattleInfo.currentStage = Constant.currentStageList[selStage.value].id;
     // 初始化请求生成犊牛的批次号
     requestBatchNumber(1);
 
     // 品种列表
     breedList = AppDictList.searchItems('pz') ?? [];
-    breedNameList = List<String>.from(breedList.map((item) => item['label']).toList());
+    breedNameList = List<String>.from(
+      breedList.map((item) => item['label']).toList(),
+    );
+    _selectDefaultBreed();
 
     // 栋舍列表
     houseList = await CommonService().requestCowHouse();
@@ -133,9 +175,12 @@ class NewCattleController extends GetxController {
 
     // 初始化赋值一些变量
     cattleInfo.gender = 1.obs;
-    cattleInfo.currentStage = Constant.currentStageList[0].id;
-    cattleInfo.breed?.value = breedList[0]['value'];
-    cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[0];
+    cattleInfo.currentStage = Constant.currentStageList[selStage.value].id;
+    if (breedList.isNotEmpty) {
+      cattleInfo.breed?.value = breedList[tempBreedPosition.value]['value'];
+    }
+    cattleInfo.pregnancyNum?.value =
+        Constant.pregnancyNumList[tempPregnancyNumPosition.value];
 
     // 监听各个选择值的变化
     ever(cattleInfo.inDate.orEmpty(), (newValue) {});
@@ -170,10 +215,10 @@ class NewCattleController extends GetxController {
     });
     Future.delayed(const Duration(milliseconds: 300), () {
       // 1.更新当前状态显示
-      updateCurrentStage(0);
+      updateCurrentStage(selStage.value);
 
       // 2.每次切换都需要把提交的数据初始化一遍, 防止数据字段相互串用
-      initRequestParams(0);
+      initRequestParams(selStage.value);
 
       // 3.更新[胎次]
       updatePregnancyNum();
@@ -185,7 +230,8 @@ class NewCattleController extends GetxController {
       actions: ['拍摄', '相册'],
       onTap: (index) {
         final ImagePicker _picker = ImagePicker();
-        ImageSource source = index == 0 ? ImageSource.camera : ImageSource.gallery;
+        ImageSource source =
+            index == 0 ? ImageSource.camera : ImageSource.gallery;
         _picker.pickImage(source: source).then((value) {
           if (value != null) {
             cowImg = File(value.path);
@@ -233,7 +279,8 @@ class NewCattleController extends GetxController {
       case 8:
       case 9:
         //后背公牛|种公牛 公牛胎次设置为空
-        cattleInfo.pregnancyNum?.value = Constant.pregnancyNumList[tempPregnancyNumPosition.value];
+        cattleInfo.pregnancyNum?.value =
+            Constant.pregnancyNumList[tempPregnancyNumPosition.value];
         cattleInfo.gender?.value = 1;
         break;
       case 10:
@@ -275,7 +322,7 @@ class NewCattleController extends GetxController {
     update();
   }
 
-  // "当前状态"选中项: 默认第一项
+  // "当前状态"选中项: 默认空怀母牛
   final selStage = 0.obs;
 
   // 更新"当前状态"选中项
@@ -476,7 +523,9 @@ class NewCattleController extends GetxController {
           "kind": int.parse(cattleInfo.breed?.trim() ?? '0'), // 品种
           "calvNum": getPregnancyNum(), // 胎次
           "batchCount":
-              cattleInfo.currentStage == 6 ? int.parse(cattleInfo.calvingNum!) : null, // 上一次产犊数量
+              cattleInfo.currentStage == 6
+                  ? int.parse(cattleInfo.calvingNum!)
+                  : null, // 上一次产犊数量
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注

@@ -32,7 +32,8 @@ dependencies:
   #推送
   jpush_flutter: ^3.3.2 # https://github.com/jpush/jpush-flutter-plugin/tree/dev-2.x
   #百度地图 https://lbsyun.baidu.com/faq/api?title=flutter/loc/create-project/
-  flutter_baidu_mapapi_map: ^3.9.9+1
+  flutter_baidu_mapapi_map:
+    path: third_party/flutter_baidu_mapapi_map
   flutter_bmflocation: 3.8.0
   flutter_baidu_mapapi_search: ^3.9.5
   #树形图
@@ -69,6 +70,8 @@ dependencies:
 #      ref: 2.3.0
 
 dependency_overrides:
+  # flutter_html 3.0.0 still uses html's matches API, removed in 0.15.7.
+  html: 0.15.6
   web: any
   record: ^6.0.0
   shared_preferences: any

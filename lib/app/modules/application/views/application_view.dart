@@ -468,7 +468,7 @@ class ApplicationView extends GetView<ApplicationController> {
             break;
           case '销售':
             //效益评估出栏
-            String tag = '收支管理/销售事件';
+            String tag = '营收管理/销售事件';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(
               Routes.EVENT_LIST,
@@ -907,7 +907,7 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '人工':
-            String tag = '收支管理/人工';
+            String tag = '营收管理/人工';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(
               Routes.EVENT_LIST,
@@ -923,21 +923,22 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '入库':
-            String tag = '物资管理/入库';
+            // 兼容旧权限或缓存数据中的“入库”名称。
+            String tag = '营收管理/采购';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(Routes.Warehouse_Entry);
 
             BusinessLogger.instance.logExit(tag);
             break;
           case '领用':
-            String tag = '物资管理/领用';
+            String tag = '营收管理/领用';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(Routes.Collect);
 
             BusinessLogger.instance.logExit(tag);
             break;
           case '报废':
-            String tag = '物资管理/报废';
+            String tag = '营收管理/报废';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(Routes.MaterialScrap);
 
@@ -958,7 +959,7 @@ class ApplicationView extends GetView<ApplicationController> {
             BusinessLogger.instance.logExit(tag);
             break;
           case '物资统计':
-            String tag = '物资管理/物资统计';
+            String tag = '营收管理/物资统计';
             BusinessLogger.instance.logEnter(tag);
             await Get.toNamed(Routes.INCOME_MANAGEMENT, arguments: {'type': 'expense'});
             BusinessLogger.instance.logExit(tag);
@@ -1103,7 +1104,7 @@ class ApplicationView extends GetView<ApplicationController> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text(
-          '服务',
+          '生产管理',
           style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

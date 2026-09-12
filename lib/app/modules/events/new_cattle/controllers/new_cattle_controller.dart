@@ -70,14 +70,30 @@ class NewCattleController extends GetxController {
     return DateUtil.formatDate(date, format: DateFormats.y_mo_d);
   }
 
+  DateTime _dateInMonth(DateTime date, int year, int month) {
+    // DateTime normalizes an invalid day into the following month. Clamp it
+    // instead so month subtraction keeps the date in the requested month.
+    final lastDay = DateTime(year, month + 1, 0).day;
+    final day = date.day > lastDay ? lastDay : date.day;
+    return DateTime(year, month, day);
+  }
+
   String _defaultInDate() {
     final now = DateTime.now();
-    return _formatDate(DateTime(now.year - 1, now.month, now.day));
+    return _formatDate(_dateInMonth(now, now.year - 1, now.month));
   }
 
   String _defaultBirthDate() {
     final now = DateTime.now();
-    return _formatDate(DateTime(now.year, now.month - 18, now.day));
+    final totalMonths = now.year * 12 + now.month - 1 - 18;
+    final year = totalMonths ~/ 12;
+    final month = totalMonths % 12 + 1;
+    return _formatDate(_dateInMonth(now, year, month));
+  }
+
+  void _setDefaultDates() {
+    cattleInfo.inDate?.value = _defaultInDate();
+    cattleInfo.birthDate?.value = _defaultBirthDate();
   }
 
   void _selectDefaultBreed() {
@@ -105,8 +121,7 @@ class NewCattleController extends GetxController {
     cattleInfo.currentStage = Constant.currentStageList[position].id;
 
     // 档案新增各状态都默认带出入场时间和出生年月。
-    cattleInfo.inDate?.value = _defaultInDate();
-    cattleInfo.birthDate?.value = _defaultBirthDate();
+    _setDefaultDates();
 
     // 设置[品种]和[胎次]为默认值
     // cattleInfo.gender?.value =
@@ -153,6 +168,7 @@ class NewCattleController extends GetxController {
 
     // 初始化请求参数
     cattleInfo = CattleInfo.init();
+    _setDefaultDates();
     final defaultStageIndex = Constant.currentStageList.indexWhere(
       (item) => item.name == '空怀母牛',
     );

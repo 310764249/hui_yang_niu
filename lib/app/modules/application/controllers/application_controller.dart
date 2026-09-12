@@ -237,7 +237,7 @@ class ApplicationController extends GetxController {
           isRetailer
               ? []
               : [
-                CommonData(id: 0, name: "入库", image: AssetsImages.icon27),
+                CommonData(id: 0, name: "采购", image: AssetsImages.icon27),
                 CommonData(id: 1, name: "领用", image: AssetsImages.icon28),
                 CommonData(id: 2, name: "报废", image: AssetsImages.icon29),
                 // CommonData(id: 3, name: "盘存", image: AssetsImages.icon30),
@@ -260,7 +260,7 @@ class ApplicationController extends GetxController {
         CommonData(id: 0, name: "采购", image: AssetsImages.icon37),
         CommonData(id: 1, name: "人工", image: AssetsImages.icon38),
         CommonData(id: 2, name: "销售", image: AssetsImages.icon7),
-        CommonData(id: 3, name: "收支管理", image: Assets.imagesIcIncome),
+        CommonData(id: 3, name: "收支统计", image: Assets.imagesIcIncome),
 
         // CommonData(id: 3, name: "效益分析", image: AssetsImages.icon39),
         // CommonData(id: 4, name: "收支设置", image: AssetsImages.icon40),

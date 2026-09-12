@@ -21,7 +21,7 @@ class _IncomeManagementPageState extends State<IncomeManagementPage> {
   // 库存按月统计
   // /api/stockrecord/monthstatistics?PageIndex=1&PageSize=10
 
-  // 0物资统计 1资金统计
+  // 0收支统计 1物资统计
   ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   @override

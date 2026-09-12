@@ -1,18 +1,17 @@
+import 'dart:async';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
-import 'package:intellectual_breed/app/models/authModel.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/AssetsImages.dart';
 import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
-import 'package:intellectual_breed/app/services/storage.dart';
 
 import '../../../models/page_info.dart';
 import '../../../network/apiException.dart';
-import '../../../services/common_service.dart';
 import '../../../services/constant.dart';
 import '../../../services/message_count_service.dart';
 import '../../../services/user_info_tool.dart';
@@ -23,8 +22,13 @@ class HomeController extends GetxController {
   late EasyRefreshController refreshController;
   //头像
   RxString headerImg = AssetsImages.avatar.obs;
-  //轮播图数据
-  RxList<String> swipList = <String>[].obs;
+  //轮播图数据。目前首页使用本地兜底图，数据不会随着文章接口刷新变化。
+  //保持为普通 List，避免文章数据更新时重建轮播 PageView。
+  final List<String> swipList = <String>[
+    AssetsImages.bannerTestPng,
+    AssetsImages.bannerTestPng,
+    AssetsImages.bannerTestPng,
+  ];
   //当前视频列表
   RxList<Article> videoItems = <Article>[].obs;
   //当前文章列表
@@ -32,29 +36,27 @@ class HomeController extends GetxController {
 
   RxInt messageUnReadCount = 0.obs;
 
+  Timer? _initialRequestTimer;
+  bool _isRefreshing = false;
+  bool _isDisposed = false;
+
   @override
   void onInit() {
     super.onInit();
     //
-    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
+    refreshController = EasyRefreshController(
+        controlFinishRefresh: true, controlFinishLoad: true);
 
-    swipList.value = [
-      AssetsImages.bannerTestPng,
-      AssetsImages.bannerTestPng,
-      AssetsImages.bannerTestPng,
-    ];
-
-    Future.delayed(Duration(milliseconds: 500), () {
-      //请求视频和文章数据
-      requestArticle();
-      getMessageCount();
+    _initialRequestTimer = Timer(const Duration(milliseconds: 500), () {
+      //请求视频、文章和未读消息数据。避免首次构建期间触发刷新控件。
+      refreshData();
     });
 
     //监听app 进入前台的状态变化
     EventBusUtil.addListener<AppStateEvent>((event) {
       debugPrint("event.state: ${event.state}");
       //回到前台
-      if (event.state == AppLifecycleState.resumed) {
+      if (!_isDisposed && event.state == AppLifecycleState.resumed) {
         //请求视频和文章数据
         // requestArticle();
         refreshController.callRefresh();
@@ -84,6 +86,9 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
+    _isDisposed = true;
+    _initialRequestTimer?.cancel();
+    refreshController.dispose();
     super.onClose();
     //取消监听
     EventBusUtil.removeListener();
@@ -101,8 +106,26 @@ class HomeController extends GetxController {
   }
 
   Future getMessageCount() async {
-    messageUnReadCount.value = await MessageCountService.getUnReadMessageCount();
+    messageUnReadCount.value =
+        await MessageCountService.getUnReadMessageCount();
     update();
+  }
+
+  /// 刷新首页数据。
+  ///
+  /// 首次进入首页、下拉刷新以及回到前台都可能触发刷新。统一从这里进入并
+  /// 串行化请求，避免多个刷新同时更新响应式列表，进而反复重建首页页面。
+  Future<void> refreshData() async {
+    if (_isDisposed || _isRefreshing) {
+      return;
+    }
+    _isRefreshing = true;
+    try {
+      await requestArticle();
+      await getMessageCount();
+    } finally {
+      _isRefreshing = false;
+    }
   }
 
   //请求视频和文章数据
@@ -115,7 +138,8 @@ class HomeController extends GetxController {
       'PageSize': 10,
     };
     try {
-      var response = await httpsClient.get("/api/article", queryParameters: para1);
+      var response =
+          await httpsClient.get("/api/article", queryParameters: para1);
       //缓存登录信息
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -146,7 +170,8 @@ class HomeController extends GetxController {
       'PageSize': 10,
     };
     try {
-      var response = await httpsClient.get("/api/article", queryParameters: para2);
+      var response =
+          await httpsClient.get("/api/article", queryParameters: para2);
       //缓存登录信息
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);

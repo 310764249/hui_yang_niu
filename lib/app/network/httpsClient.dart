@@ -41,8 +41,10 @@ class HttpsClient {
   //     darkTheme: Platform.isIOS ? true : false,
   //     navigatorKey: Constant.navigatorKey ?? GlobalKey<NavigatorState>());
 
-  final List<Map> _failedRequests = [];
-  bool isRefreshing = false; // 刷新 Token 是否正在进行中
+  // Token 刷新采用 single-flight：同一时间只允许一个刷新请求，其余请求
+  // 等待同一个 Future，避免 401 请求互相重放形成递归/死循环。
+  Future<void>? _refreshTokenFuture;
+  bool isRefreshing = false; // 刷新 Token 是否正在进行中（保留供调试使用）
 
   // 构造函数私有化，防止外部直接实例化
   HttpsClient._internal() {
@@ -51,9 +53,15 @@ class HttpsClient {
     dio.options.connectTimeout = const Duration(seconds: 60); //10s
     //接收数据的最长时间
     dio.options.receiveTimeout = const Duration(seconds: 60);
-    dio.interceptors.add(DioLogger());
-    //非生产环境，开启日志以及抓包
+    //仅在非生产环境保留请求摘要。完整响应体（尤其是用户资源和字典）
+    //非常大，会刷屏并拖慢 Flutter 主线程，但不会代表接口被重复调用。
     if (!Constant.inProduction) {
+      dio.interceptors.add(
+        DioLogger(
+          requestBody: false,
+          responseBody: false,
+        ),
+      );
       //pretty_dio_logger
       // dio.interceptors.add(PrettyDioLogger());
       // dio.interceptors.add(alice.getDioInterceptor());
@@ -97,7 +105,8 @@ class HttpsClient {
   /// @param data 请求参数
   Future post(String apiUrl, {Map? data}) async {
     try {
-      var response = await _sendAuthenticatedRequest(RequestMethod.POST, apiUrl, data: data);
+      var response = await _sendAuthenticatedRequest(RequestMethod.POST, apiUrl,
+          data: data);
       return response;
     } catch (e) {
       rethrow;
@@ -107,7 +116,8 @@ class HttpsClient {
   /// delete 请求
   /// @param apiUrl 接口地址
   /// @param queryParameters 请求参数
-  Future delete(String apiUrl, {Map<String, dynamic>? queryParameters, Map? data}) async {
+  Future delete(String apiUrl,
+      {Map<String, dynamic>? queryParameters, Map? data}) async {
     try {
       var response = await _sendAuthenticatedRequest(
         RequestMethod.DELETE,
@@ -124,7 +134,8 @@ class HttpsClient {
   /// put 请求
   /// @param apiUrl 接口地址
   /// @param queryParameters 请求参数
-  Future put(String apiUrl, {Map<String, dynamic>? queryParameters, Map? data}) async {
+  Future put(String apiUrl,
+      {Map<String, dynamic>? queryParameters, Map? data}) async {
     try {
       var response = await _sendAuthenticatedRequest(
         RequestMethod.PUT,
@@ -144,6 +155,7 @@ class HttpsClient {
     String url, {
     Map? data,
     Map<String, dynamic>? queryParameters,
+    bool retryOnUnauthorized = true,
   }) async {
     try {
       Options options = Options();
@@ -155,23 +167,29 @@ class HttpsClient {
         String accessToken = authModel.accessToken;
         // 添加 Token 到请求头中
         options = Options(
-          headers: {'Authorization': 'Bearer $accessToken', 'deviceType': 'Android'},
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'deviceType': 'Android'
+          },
         );
       }
 
       // 过滤 Map 中值为空字符或者为 null 的项
       queryParameters?.removeWhere(
-        (key, value) => (value == null || value.toString().isEmpty) && key != 'attach',
+        (key, value) =>
+            (value == null || value.toString().isEmpty) && key != 'attach',
       );
       data?.removeWhere(
-        (key, value) => (value == null || value.toString().isEmpty) && key != 'attach',
+        (key, value) =>
+            (value == null || value.toString().isEmpty) && key != 'attach',
       );
 
       // 根据请求方法，选择相应的方法发送请求
       Response response;
       switch (method) {
         case RequestMethod.GET:
-          response = await dio.get(url, queryParameters: queryParameters, options: options);
+          response = await dio.get(url,
+              queryParameters: queryParameters, options: options);
           break;
         case RequestMethod.POST:
           response = await dio.post(url, data: data, options: options);
@@ -207,21 +225,20 @@ class HttpsClient {
     } catch (error) {
       debugPrint('请求异常: $error');
       if (error is DioException && error.response?.statusCode == 401) {
-        //缓存业务请求异常的接口
-        _failedRequests.add({
-          'method': method,
-          'url': url,
-          'data': data,
-          'queryParameters': queryParameters,
-        });
-
-        // 如果请求返回 401 Unauthorized，说明 Token 失效
-        // 判断是否正在刷新 Token，如果没有在刷新，则触发刷新
-        if (!isRefreshing) {
-          isRefreshing = true;
-          await refreshToken(); // 刷新 Token
-          isRefreshing = false;
+        // 没有 Token、已经重试过一次，或刷新接口本身失败时都直接结束。
+        // 不能再次进入刷新逻辑，否则失效 Token 会导致无限重试。
+        if (!retryOnUnauthorized || UserInfoTool.auth == null) {
+          rethrow;
         }
+
+        await _refreshTokenOnce();
+        return _sendAuthenticatedRequest(
+          method,
+          url,
+          data: data,
+          queryParameters: queryParameters,
+          retryOnUnauthorized: false,
+        );
       } else {
         // 处理其他错误情况
         rethrow;
@@ -229,62 +246,68 @@ class HttpsClient {
     }
   }
 
-  Future<void> refreshToken() async {
-    // 发送请求前，获取当前有效的 Token
-    var auth = await Storage.getData(Constant.authData);
-    if (auth == null) {
-      isRefreshing = false;
-      throw ApiException("请重新登录");
+  /// 只执行一次 Token 刷新，其他并发请求等待该 Future 完成。
+  Future<void> _refreshTokenOnce() async {
+    final running = _refreshTokenFuture;
+    if (running != null) {
+      return running;
     }
-    AuthModel authModel = AuthModel.fromJson(auth);
-    String refreshToken = authModel.refreshToken;
+
+    final future = _performTokenRefresh();
+    _refreshTokenFuture = future;
+    isRefreshing = true;
     try {
-      // 实现刷新 Token 的逻辑，例如使用 /api/refresh 接口
-      Response response = await dio.post(
+      await future;
+    } finally {
+      if (identical(_refreshTokenFuture, future)) {
+        _refreshTokenFuture = null;
+        isRefreshing = false;
+      }
+    }
+  }
+
+  /// 执行实际的 Token 刷新。失败时清理会话并把错误交给原请求，
+  /// 不再吞掉异常或重放失败请求。
+  Future<void> _performTokenRefresh() async {
+    try {
+      final auth = await Storage.getData(Constant.authData);
+      if (auth == null) {
+        throw ApiException('请重新登录');
+      }
+
+      final authModel = AuthModel.fromJson(auth);
+      if (authModel.refreshToken.isEmpty) {
+        throw ApiException('请重新登录');
+      }
+
+      final response = await dio.post(
         '/api/auth/refresh',
         data: {
           "client_id": Constant.clientId,
           "client_secret": Constant.clientSecret,
           "grant_type": Constant.grantType,
-          "refresh_token": refreshToken,
+          "refresh_token": authModel.refreshToken,
         },
       );
 
-      //首先 Map 转为 Model
-      var baseModel = BaseModel.fromJson(response.data);
-      // 在这里判断数据是否异常，例如判断返回的状态码或特定字段
-      if (baseModel.code == 0) {
-        //缓存登录信息
-        AuthModel newAuthModel = AuthModel.fromJson(baseModel.data);
-        //更新内存记录
-        UserInfoTool.auth = newAuthModel;
-        await Storage.setData(Constant.authData, newAuthModel);
-        //重新请求异常的业务接口
-        for (var item in _failedRequests) {
-          await _sendAuthenticatedRequest(
-            item['method'],
-            item['url'],
-            data: item['data'],
-            queryParameters: item['queryParameters'],
-          );
-        }
-        //请求完成后删除异常的请求
-        _failedRequests.clear();
-      } else {
-        //删除异常的请求
-        _failedRequests.clear();
-        // 处理 API 请求异常情况 code不为 0 的场景
-        Log.d('API Exception: ${baseModel.message!}');
-        Toast.failure(msg: baseModel.message!);
-        throw ApiException(baseModel.message!);
+      final baseModel = BaseModel.fromJson(response.data);
+      if (baseModel.code != 0) {
+        final message = baseModel.message ?? '登录状态已失效，请重新登录';
+        Log.d('API Exception: $message');
+        Toast.failure(msg: message);
+        throw ApiException(message);
       }
-    } catch (e) {
-      //
-      Log.w("触发登录页面");
-      //删除异常的请求
-      _failedRequests.clear();
-      //清除登录信息
-      CommonService().clearUserData();
+
+      final newAuthModel = AuthModel.fromJson(baseModel.data);
+      UserInfoTool.auth = newAuthModel;
+      await Storage.setData(Constant.authData, newAuthModel);
+    } catch (error) {
+      Log.w('触发登录页面');
+      await CommonService().clearUserData(unbindPush: false);
+      if (error is ApiException) {
+        rethrow;
+      }
+      throw ApiException('登录状态已失效，请重新登录');
     }
   }
 

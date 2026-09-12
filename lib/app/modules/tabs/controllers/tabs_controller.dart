@@ -11,7 +11,6 @@ import 'package:intellectual_breed/app/modules/mine/views/mine_view.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/check_app_update.dart';
 import 'package:intellectual_breed/app/services/event_bus_util.dart';
-import 'package:intellectual_breed/app/services/message_count_service.dart';
 import 'package:intellectual_breed/app/widgets/alert.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/route_utils/business_logger.dart';
@@ -29,10 +28,9 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   RxInt currentIndex = 0.obs;
 
   //页面控制,默认首页，如果有传值就使用传值
-  PageController pageController =
-      Get.arguments == null
-          ? PageController(initialPage: 0)
-          : PageController(initialPage: Get.arguments["initialPage"]);
+  PageController pageController = Get.arguments == null
+      ? PageController(initialPage: 0)
+      : PageController(initialPage: Get.arguments["initialPage"]);
 
   // 服务页仍保留为独立路由入口（首页“生产管理”会打开），但按首页调整要求不在底部导航展示。
   final List names = ["首页", "我的"];
@@ -81,6 +79,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
 
   // 消息订阅
   late StreamSubscription<ConnectivityResult> subscription;
+  bool _loginPageOpening = false;
 
   //
   void setCurrentIndex(index) {
@@ -129,7 +128,7 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     //监听用户登录状态
     EventBusUtil.addListener<UserLogInEvent>((event) {
       if (event.state == UserState.Logout) {
-        Get.toNamed(Routes.LOGIN);
+        _openLoginPage();
       }
     });
     checkUpdate();
@@ -164,11 +163,23 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     //每次启动需要请求字典项
     var auth = await Storage.getData(Constant.authData);
     if (auth == null) {
-      Get.toNamed(Routes.LOGIN);
+      _openLoginPage();
     } else {
       //请求用户资源+字典项
       await CommonService().requestAllUserInfo();
     }
+  }
+
+  /// 认证失败可能同时由多个接口上报。只保留一个登录页，避免重复 push
+  /// 登录路由，进而让首页反复创建和销毁。
+  void _openLoginPage() {
+    if (_loginPageOpening || Get.currentRoute == Routes.LOGIN) {
+      return;
+    }
+    _loginPageOpening = true;
+    Get.toNamed(Routes.LOGIN)?.whenComplete(() {
+      _loginPageOpening = false;
+    });
   }
 
   // 当前时间, 用于返回键判断对比

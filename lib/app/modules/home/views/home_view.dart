@@ -1,16 +1,14 @@
+import 'dart:async';
+
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:em_chat_uikit/chat_uikit/src/chat_uikit_service/chat_uikit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/models/article.dart';
-import 'package:intellectual_breed/app/modules/chat_room/chat_room_utils.dart';
 import 'package:intellectual_breed/app/modules/deviceserial/device_serial_page.dart';
 import 'package:intellectual_breed/app/modules/message/views/message_view.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/widgets/information_item.dart';
-import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:intellectual_breed/generated/assets.dart';
 import 'package:intellectual_breed/route_utils/business_logger.dart';
 
@@ -19,12 +17,231 @@ import '../../../services/AssetsImages.dart';
 import '../../../services/constant.dart';
 import '../../../services/keepAliveWrapper.dart';
 import '../../../services/load_image.dart';
-import '../../../services/message_count_service.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../widgets/back_image_button.dart';
 import '../../../widgets/refresh_header_footer.dart';
 import '../../mine/controllers/mine_controller.dart';
 import '../controllers/home_controller.dart';
+
+/// A finite PageView with infinite-loop behaviour.
+///
+/// `flutter_swiper_view` implements `loop: true` by exposing roughly two
+/// billion pages to Flutter's sliver. That makes the scroll extent overflow
+/// and can cause the banner subtree to be laid out repeatedly. This widget
+/// keeps a small virtual range and recenters the controller at either edge,
+/// so the user still gets seamless looping without an unbounded PageView.
+class _LoopingBanner extends StatefulWidget {
+  const _LoopingBanner({
+    required this.images,
+    this.loop = true,
+    this.autoplayDelay = const Duration(seconds: 3),
+    this.duration = const Duration(milliseconds: 300),
+    this.onTap,
+  });
+
+  final List<String> images;
+  final bool loop;
+  final Duration autoplayDelay;
+  final Duration duration;
+  final ValueChanged<int>? onTap;
+
+  @override
+  State<_LoopingBanner> createState() => _LoopingBannerState();
+}
+
+class _LoopingBannerState extends State<_LoopingBanner> {
+  // Keep the virtual range deliberately small. A large finite count can still
+  // trip Flutter's fractional itemExtent precision assertion (for example,
+  // 3000 pages x 363.52 logical pixels). The controller is recentered before
+  // reaching either edge, so users still get an effectively infinite loop.
+  static const int _virtualCycles = 20;
+
+  late PageController _pageController;
+  Timer? _autoplayTimer;
+  int _virtualItemCount = 0;
+  int _anchorPage = 0;
+  int _currentIndex = 0;
+  bool _isAnimating = false;
+  bool _isUserDragging = false;
+
+  int get _imageCount => widget.images.length;
+
+  @override
+  void initState() {
+    super.initState();
+    _createPageController();
+    _startAutoplay();
+  }
+
+  void _createPageController() {
+    final count = _imageCount;
+    final isLooping = widget.loop && count > 1;
+    _virtualItemCount = isLooping ? count * _virtualCycles : count;
+    _anchorPage = isLooping ? count * (_virtualCycles ~/ 2) : 0;
+    _pageController = PageController(initialPage: _anchorPage);
+  }
+
+  void _startAutoplay() {
+    _autoplayTimer?.cancel();
+    if (!widget.loop || _imageCount < 2) {
+      return;
+    }
+    _autoplayTimer = Timer.periodic(widget.autoplayDelay, (_) {
+      _advance();
+    });
+  }
+
+  void _advance() {
+    if (!mounted ||
+        !_pageController.hasClients ||
+        _isAnimating ||
+        _isUserDragging) {
+      return;
+    }
+
+    final currentPage = _pageController.page?.round() ?? _anchorPage;
+    var nextPage = currentPage + 1;
+
+    // Recenter before the finite virtual range is exhausted. The page index
+    // remains equivalent modulo the real image count, so this is seamless.
+    if (nextPage >= _virtualItemCount - _imageCount) {
+      final realIndex = currentPage % _imageCount;
+      _pageController.jumpToPage(_anchorPage + realIndex);
+      nextPage = _anchorPage + realIndex + 1;
+    }
+
+    _isAnimating = true;
+    _pageController
+        .animateToPage(nextPage, duration: widget.duration, curve: Curves.ease)
+        .whenComplete(() {
+      _isAnimating = false;
+    });
+  }
+
+  void _onPageChanged(int page) {
+    if (_imageCount == 0) {
+      return;
+    }
+
+    final realIndex = page % _imageCount;
+    if (mounted && _currentIndex != realIndex) {
+      setState(() {
+        _currentIndex = realIndex;
+      });
+    }
+
+    // Also handle a user swipe reaching either edge of the virtual range.
+    if (widget.loop &&
+        (page < _imageCount || page >= _virtualItemCount - _imageCount)) {
+      final targetPage = _anchorPage + realIndex;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pageController.hasClients) {
+          _pageController.jumpToPage(targetPage);
+        }
+      });
+    }
+  }
+
+  bool _imagesChanged(_LoopingBanner oldWidget) {
+    if (oldWidget.images.length != widget.images.length) {
+      return true;
+    }
+    for (var i = 0; i < widget.images.length; i++) {
+      if (oldWidget.images[i] != widget.images[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  void didUpdateWidget(covariant _LoopingBanner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_imagesChanged(oldWidget) || oldWidget.loop != widget.loop) {
+      _autoplayTimer?.cancel();
+      _pageController.dispose();
+      _currentIndex = 0;
+      _createPageController();
+      _startAutoplay();
+    } else if (oldWidget.autoplayDelay != widget.autoplayDelay) {
+      _startAutoplay();
+    }
+  }
+
+  @override
+  void dispose() {
+    _autoplayTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildPage(int page) {
+    final imageIndex = page % _imageCount;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: widget.onTap == null ? null : () => widget.onTap!(imageIndex),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
+        child: LoadImage(widget.images[imageIndex], fit: BoxFit.fill),
+      ),
+    );
+  }
+
+  Widget _buildPagination() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(_imageCount, (index) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: ScreenAdapter.width(18),
+          height: ScreenAdapter.height(3),
+          margin: EdgeInsets.symmetric(horizontal: ScreenAdapter.width(2)),
+          decoration: BoxDecoration(
+            color: index == _currentIndex ? Colors.white : Colors.white54,
+            borderRadius: BorderRadius.circular(ScreenAdapter.width(2)),
+          ),
+        );
+      }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_imageCount == 0) {
+      return const SizedBox.shrink();
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollStartNotification &&
+                notification.dragDetails != null) {
+              _isUserDragging = true;
+            } else if (notification is ScrollEndNotification) {
+              _isUserDragging = false;
+            }
+            return false;
+          },
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _virtualItemCount,
+            itemBuilder: (context, page) => _buildPage(page),
+            onPageChanged: _onPageChanged,
+          ),
+        ),
+        if (_imageCount > 1)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: ScreenAdapter.height(8),
+            child: Center(child: _buildPagination()),
+          ),
+      ],
+    );
+  }
+}
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -129,29 +346,14 @@ class HomeView extends GetView<HomeController> {
     return SizedBox(
       width: ScreenAdapter.getScreenWidth(),
       height: ScreenAdapter.height(150),
-      child: Obx(
-        () => EasyRefresh(
-          //这里Swiper上面的EasyRefresh只是用来包裹，没有实际作用，如果不包一下，上层的EasyRefresh会作用到下层的Swiper上
-          child: Swiper(
-            itemBuilder: (context, index) {
-              return ClipRRect(
-                //圆角
-                borderRadius: BorderRadius.circular(ScreenAdapter.width(10)),
-                child: LoadImage(controller.swipList[index], fit: BoxFit.fill),
-              );
-            },
-            itemCount: controller.swipList.length,
-            autoplay: true,
-            duration: 300,
-            pagination: const SwiperPagination(
-              builder: SwiperPagination.rect,
-              alignment: Alignment.bottomCenter,
-            ),
-            onTap: (index) {
-              print(index);
-            },
-          ),
-        ),
+      child: _LoopingBanner(
+        images: controller.swipList,
+        loop: true,
+        autoplayDelay: const Duration(seconds: 3),
+        duration: const Duration(milliseconds: 300),
+        onTap: (index) {
+          debugPrint('banner index: $index');
+        },
       ),
     );
   }
@@ -299,14 +501,15 @@ class HomeView extends GetView<HomeController> {
                           alignment: Alignment.topLeft,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 0),
-                            child: Badge(
-                              label: Text("${controller.messageUnReadCount}"),
-                              //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
-                              isLabelVisible:
-                                  (controller.messageUnReadCount.value != 0)
-                                      ? true
-                                      : false,
-                              backgroundColor: Colors.red[500],
+                            child: Obx(
+                              () => Badge(
+                                label: Text(
+                                    "${controller.messageUnReadCount.value}"),
+                                //显示到第四个消息 tab 上，同时未读消息为 0 时不显示
+                                isLabelVisible:
+                                    controller.messageUnReadCount.value != 0,
+                                backgroundColor: Colors.red[500],
+                              ),
                             ),
                           ),
                         ),
@@ -523,27 +726,30 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
-        SizedBox(
-          height: ScreenAdapter.height(208),
-          child: EasyRefresh(
-            child: ListView.builder(
-              itemCount: controller.videoItems.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int index) {
-                Article model = controller.videoItems[index];
-                return InformationItem(
-                  image:
-                      '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
-                  title: model.title ?? '',
-                  userIcon: AssetsImages.avatar,
-                  userName: model.publisher ?? '',
-                  isVideo: true,
-                  onPressed: () {
-                    String openURL = Constant.getCMS(model.type, model.id);
-                    Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-                  },
-                );
-              },
+        Obx(
+          () => SizedBox(
+            height: ScreenAdapter.height(208),
+            child: EasyRefresh(
+              child: ListView.builder(
+                itemCount: controller.videoItems.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  Article model = controller.videoItems[index];
+                  return InformationItem(
+                    image:
+                        '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
+                    title: model.title ?? '',
+                    userIcon: AssetsImages.avatar,
+                    userName: model.publisher ?? '',
+                    isVideo: true,
+                    onPressed: () {
+                      String openURL = Constant.getCMS(model.type, model.id);
+                      Get.toNamed(Routes.INFORMATION_DETAIL,
+                          arguments: openURL);
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -608,28 +814,30 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
-        SizedBox(
-          height: ScreenAdapter.height(208),
-          child: EasyRefresh(
-            child: ListView.builder(
-              itemCount: controller.wordItems.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int index) {
-                Article model = controller.wordItems[index];
-                // Article model = controller.videoItems[index];
-                return InformationItem(
-                  image:
-                      '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
-                  title: model.title ?? '',
-                  userIcon: AssetsImages.avatar,
-                  userName: model.publisher ?? '',
-                  isVideo: model.type == 4,
-                  onPressed: () {
-                    String openURL = Constant.getCMS(model.type, model.id);
-                    Get.toNamed(Routes.INFORMATION_DETAIL, arguments: openURL);
-                  },
-                );
-              },
+        Obx(
+          () => SizedBox(
+            height: ScreenAdapter.height(208),
+            child: EasyRefresh(
+              child: ListView.builder(
+                itemCount: controller.wordItems.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  Article model = controller.wordItems[index];
+                  return InformationItem(
+                    image:
+                        '${Constant.uploadFileUrl}${model.coverImg}&poster=true',
+                    title: model.title ?? '',
+                    userIcon: AssetsImages.avatar,
+                    userName: model.publisher ?? '',
+                    isVideo: model.type == 4,
+                    onPressed: () {
+                      String openURL = Constant.getCMS(model.type, model.id);
+                      Get.toNamed(Routes.INFORMATION_DETAIL,
+                          arguments: openURL);
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -639,55 +847,52 @@ class HomeView extends GetView<HomeController> {
 
   //页面主体
   Widget _homePage() {
-    return Obx(
-      () => Positioned(
-        top:
-            ScreenAdapter.getStatusBarHeight() +
-            ScreenAdapter.getNavBarHeight(),
-        // top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        child: EasyRefresh(
-          controller: controller.refreshController,
-          // 指定刷新时的头部组件
-          header: CustomRefresh.refreshHeader(),
-          onRefresh: () async {
-            //
-            await controller.requestArticle();
-            await controller.getMessageCount();
-            //先结束刷新状态
+    return Positioned(
+      top: ScreenAdapter.getStatusBarHeight() + ScreenAdapter.getNavBarHeight(),
+      // top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: EasyRefresh(
+        controller: controller.refreshController,
+        // 指定刷新时的头部组件
+        header: CustomRefresh.refreshHeader(),
+        onRefresh: () async {
+          try {
+            await controller.refreshData();
+          } finally {
+            // 即使接口异常，也必须结束刷新状态，避免刷新控件一直处于 processing。
             controller.refreshController.finishRefresh();
-          },
-          child: ListView(
-            padding: EdgeInsets.all(ScreenAdapter.width(10)),
-            children: [
-              ConstrainedBox(
-                //这里限制固定大小，保证 Stack 的大小固定
-                constraints: BoxConstraints(
-                  minHeight: ScreenAdapter.height(150), //185
-                  maxHeight: ScreenAdapter.height(150), //185
-                ),
-                child: Stack(
-                  children: [
-                    //消息通知
-                    //_announce(),
-                    //轮播图
-                    _focus(),
-                  ],
-                ),
+          }
+        },
+        child: ListView(
+          padding: EdgeInsets.all(ScreenAdapter.width(10)),
+          children: [
+            ConstrainedBox(
+              //这里限制固定大小，保证 Stack 的大小固定
+              constraints: BoxConstraints(
+                minHeight: ScreenAdapter.height(150), //185
+                maxHeight: ScreenAdapter.height(150), //185
               ),
-              //分类
-              _mainType(),
-              SizedBox(height: ScreenAdapter.height(10)),
-              // 行业资讯内容保留；按图片要求隐藏的是底部导航中的“服务”入口。
-              _information(),
-              //文章类目
-              _articleType(),
-              //视频类目
-              _videoType(),
-            ],
-          ),
+              child: Stack(
+                children: [
+                  //消息通知
+                  //_announce(),
+                  //轮播图
+                  _focus(),
+                ],
+              ),
+            ),
+            //分类
+            _mainType(),
+            SizedBox(height: ScreenAdapter.height(10)),
+            // 行业资讯内容保留；按图片要求隐藏的是底部导航中的“服务”入口。
+            _information(),
+            //文章类目
+            _articleType(),
+            //视频类目
+            _videoType(),
+          ],
         ),
       ),
     );

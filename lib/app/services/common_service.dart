@@ -57,10 +57,16 @@ class CommonService {
     return Future.value();
   }
 
-  /// 用户退出登录时需要清除用户相关数据
-  Future<void> clearUserData() async {
-    //解绑推送 ID
-    unbindPushID();
+  /// 用户退出登录时需要清除用户相关数据。
+  ///
+  /// Token 失效时不能再调用解绑接口：解绑请求本身也需要有效 Token，
+  /// 否则会在认证失败处理过程中再次触发 401。此时只清理本地会话并通知
+  /// 页面跳转登录即可。
+  Future<void> clearUserData({bool unbindPush = true}) async {
+    //解绑推送 ID。显式退出时保留该行为，Token 失效时由调用方关闭。
+    if (unbindPush) {
+      unbindPushID();
+    }
     // 登录后的回话信息
     await Storage.removeData(Constant.authData);
     // 用户信息
@@ -145,7 +151,8 @@ class CommonService {
     Map<String, dynamic> para = {
       'farmId': farmId,
     };
-    List response = await httpsClient.get("/api/cowhouse/getall", queryParameters: para);
+    List response =
+        await httpsClient.get("/api/cowhouse/getall", queryParameters: para);
     for (var dict in response) {
       CowHouse model = CowHouse.fromJson(dict);
       houseList.add(model);
@@ -187,7 +194,8 @@ class CommonService {
       Map<String, dynamic> para = {
         'farmerId': farmerId,
       };
-      List response = await httpsClient.get("/api/farm/getall", queryParameters: para);
+      List response =
+          await httpsClient.get("/api/farm/getall", queryParameters: para);
       for (var dict in response) {
         Farm model = Farm.fromJson(dict);
         farmList.add(model);
@@ -237,7 +245,8 @@ class CommonService {
     try {
       //饲料列表
       List<Stock> stockList = <Stock>[];
-      var response = await httpsClient.get("/api/stock/getall", queryParameters: {'category': type});
+      var response = await httpsClient
+          .get("/api/stock/getall", queryParameters: {'category': type});
       for (var dict in response) {
         Stock model = Stock.fromJson(dict);
         stockList.add(model);

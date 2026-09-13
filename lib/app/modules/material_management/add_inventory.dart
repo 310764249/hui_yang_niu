@@ -179,6 +179,47 @@ class _AddInventoryViewState extends State<AddInventoryView> {
   //物资信息
   MaterialItemModel? materialItemModel;
 
+  List _withoutTon(List value) {
+    return value
+        .where(
+          (item) =>
+              item['key']?.toString().trim() != '吨' &&
+              item['label']?.toString().trim() != '吨',
+        )
+        .toList();
+  }
+
+  bool _isFeedCategory(Map? category) {
+    return [category?['key'], category?['label']].any(
+      (value) => value?.toString().trim() == '饲料',
+    );
+  }
+
+  /// 将采购时保存的单位（字典值或单位名称）带到领用表单。
+  void _setUnitFromMaterial(MaterialItemModel material) {
+    final unitValue = material.unit;
+    final unitName = material.unitName;
+    Map? selected;
+    if (unitValue != null) {
+      selected = wzdwList?.firstWhereOrNull(
+        (item) => item['value']?.toString() == unitValue.toString(),
+      );
+    }
+    if (selected == null && unitName != null && unitName.trim().isNotEmpty) {
+      selected = wzdwList?.firstWhereOrNull(
+        (item) =>
+            item['key']?.toString() == unitName ||
+            item['label']?.toString() == unitName,
+      );
+    }
+    // Keep the persisted value even when the dictionary no longer contains
+    // it (for example, an old record whose unit was "吨").
+    wzdwSelectNotif.value = selected ??
+        (unitValue != null || (unitName?.trim().isNotEmpty ?? false)
+            ? {'value': unitValue, 'key': unitName ?? unitValue.toString()}
+            : null);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -233,22 +274,41 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   hint: "请选择",
                   showArrow: true,
                   onPressed: () {
-                    SelectMaterialView.push(context).then((value) {
+                    SelectMaterialView.push(context).then((value) async {
                       if (value != null) {
+                        materialItemModel = value;
                         materialId = value.materialId ?? value.id;
                         wzflSelectNotif.value = wzflList?.firstWhereOrNull(
                           (e) =>
                               num.parse(e['value']).toString() ==
                               value.category.toString(),
                         );
-                        wzdwSelectNotif.value = wzdwList?.firstWhereOrNull(
-                          (e) =>
-                              num.parse(e['value']).toString() ==
-                              value.unit.toString(),
-                        );
+                        _setUnitFromMaterial(value);
                         materialNameController.text =
                             value.name ?? value.materialName ?? '';
-                        canUseCount.value = value.count.toString() ?? '';
+                        final availableCount =
+                            value.count ?? value.currentCount;
+                        canUseCount.value = availableCount?.toString();
+                        if (addInventoryEnum == AddInventoryEnum.use &&
+                            availableCount != null) {
+                          counterController.text = availableCount.toString();
+                        }
+                        // Older list responses may omit the unit. Resolve it
+                        // once from the material detail in that case.
+                        if (value.unit == null &&
+                            (value.unitName == null ||
+                                value.unitName!.trim().isEmpty) &&
+                            materialId != null) {
+                          final selectedMaterialId = materialId!;
+                          final details = await MaterialService.getMaterialById(
+                            selectedMaterialId,
+                          );
+                          if (details != null &&
+                              materialId == selectedMaterialId) {
+                            materialItemModel = details;
+                            _setUnitFromMaterial(details);
+                          }
+                        }
                         // selectDateTime.value = PDuration.parse(DateTime.parse(materialItemModel?.modified ?? ''));
                       }
                     });
@@ -262,34 +322,33 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     title: '物资分类',
                     hint: value?['key'] ?? "请选择",
                     showArrow: true,
-                    onPressed:
-                        addInventoryEnum != AddInventoryEnum.add
-                            ? null
-                            : () async {
-                              int? selectIndex;
-                              if (wzflList != null) {
+                    onPressed: addInventoryEnum != AddInventoryEnum.add
+                        ? null
+                        : () async {
+                            int? selectIndex;
+                            if (wzflList != null) {
+                              selectIndex = await showSelectDialog(
+                                wzflList!
+                                    .map((e) => e['key'].toString())
+                                    .toList(),
+                              );
+                            } else {
+                              MaterialService.getDic('wzfl').then((
+                                value,
+                              ) async {
+                                //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                                wzflList = value;
                                 selectIndex = await showSelectDialog(
                                   wzflList!
                                       .map((e) => e['key'].toString())
                                       .toList(),
                                 );
-                              } else {
-                                MaterialService.getDic('wzfl').then((
-                                  value,
-                                ) async {
-                                  //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-                                  wzflList = value;
-                                  selectIndex = await showSelectDialog(
-                                    wzflList!
-                                        .map((e) => e['key'].toString())
-                                        .toList(),
-                                  );
-                                });
-                              }
-                              if (selectIndex != null) {
-                                wzflSelectNotif.value = wzflList?[selectIndex!];
-                              }
-                            },
+                              });
+                            }
+                            if (selectIndex != null) {
+                              wzflSelectNotif.value = wzflList?[selectIndex!];
+                            }
+                          },
                   );
                 },
               ),
@@ -300,10 +359,9 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                       isRequired: true,
                       showDivider: false,
                       title: '物资名称',
-                      hint:
-                          addInventoryEnum == AddInventoryEnum.add
-                              ? '请输入'
-                              : "请选择",
+                      hint: addInventoryEnum == AddInventoryEnum.add
+                          ? '请输入'
+                          : "请选择",
                       //! 输入框中的需要动态变化时不用设置content, 而直接设置controller来做内容变化的控制
                       controller: materialNameController,
                       focusNode: materialNameFocus,
@@ -313,63 +371,96 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   addInventoryEnum != AddInventoryEnum.add
                       ? const SizedBox.shrink()
                       : TextButton(
-                        onPressed:
-                            addInventoryEnum != AddInventoryEnum.add
-                                ? null
-                                : () {
+                          onPressed: addInventoryEnum != AddInventoryEnum.add
+                              ? null
+                              : () async {
                                   if (wzflSelectNotif.value == null) {
                                     Toast.show('请选择物资分类');
                                     return;
                                   }
                                   Toast.showLoading();
-                                  MaterialService.getMaterialListWithType(
-                                    wzflSelectNotif.value!['value'].toString(),
-                                    errorCallback: (error) {
-                                      Toast.dismiss();
-                                      Toast.failure(msg: error);
-                                    },
-                                  ).then((_value) {
-                                    Toast.dismiss();
-                                    List<String> list =
-                                        _value
-                                            ?.map((e) => e.name ?? '')
-                                            .toList() ??
-                                        [];
-                                    if (list.isNotEmpty) {
-                                      showSelectDialog(list).then((value) {
-                                        materialNameController.text =
-                                            list[value!];
-                                        id = _value?[value].id;
-                                        materialId = _value?[value].materialId;
-                                      });
+                                  final category = wzflSelectNotif.value!;
+                                  final rawMaterials = _isFeedCategory(category)
+                                      ? await MaterialService
+                                          .getRawMaterialList(
+                                          errorCallback: (error) {
+                                            Toast.dismiss();
+                                            Toast.failure(msg: error);
+                                          },
+                                        )
+                                      : null;
+                                  final materials = rawMaterials == null
+                                      ? await MaterialService
+                                          .getMaterialListWithType(
+                                          category['value'].toString(),
+                                          errorCallback: (error) {
+                                            Toast.dismiss();
+                                            Toast.failure(msg: error);
+                                          },
+                                        )
+                                      : null;
+                                  Toast.dismiss();
+                                  if (rawMaterials != null) {
+                                    const order = {1: 0, 2: 1, 3: 2, 5: 3};
+                                    rawMaterials.removeWhere(
+                                      (item) => !order.containsKey(item.type),
+                                    );
+                                    rawMaterials.sort(
+                                      (a, b) => (order[a.type] ?? 99).compareTo(
+                                        order[b.type] ?? 99,
+                                      ),
+                                    );
+                                  }
+                                  final list = rawMaterials != null
+                                      ? rawMaterials
+                                          .map((item) => item.name ?? '')
+                                          .toList()
+                                      : (materials ?? [])
+                                          .map((item) => item.name ?? '')
+                                          .toList();
+                                  if (list.isNotEmpty) {
+                                    final selectedIndex =
+                                        await showSelectDialog(list);
+                                    if (selectedIndex != null) {
+                                      materialNameController.text =
+                                          list[selectedIndex];
+                                      if (rawMaterials != null) {
+                                        id = rawMaterials[selectedIndex].id;
+                                        materialId =
+                                            rawMaterials[selectedIndex].id;
+                                      } else {
+                                        id = materials?[selectedIndex].id;
+                                        materialId = materials?[selectedIndex]
+                                            .materialId;
+                                      }
                                     }
-                                  });
+                                  }
                                 },
-                        child: Row(
-                          children: [
-                            Text(
-                              '请选择',
-                              style: TextStyle(
-                                color: SaienteColors.black4D,
-                                fontSize: ScreenAdapter.fontSize(13),
-                                fontWeight: FontWeight.w400,
+                          child: Row(
+                            children: [
+                              Text(
+                                '请选择',
+                                style: TextStyle(
+                                  color: SaienteColors.black4D,
+                                  fontSize: ScreenAdapter.fontSize(13),
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: ScreenAdapter.width(12),
-                              height: ScreenAdapter.height(12),
-                              margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(4),
-                                right: ScreenAdapter.width(3),
+                              Container(
+                                width: ScreenAdapter.width(12),
+                                height: ScreenAdapter.height(12),
+                                margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(4),
+                                  right: ScreenAdapter.width(3),
+                                ),
+                                child: const LoadAssetImage(
+                                  AssetsImages.rightArrow,
+                                  fit: BoxFit.fitHeight,
+                                ),
                               ),
-                              child: const LoadAssetImage(
-                                AssetsImages.rightArrow,
-                                fit: BoxFit.fitHeight,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
                 ],
               ),
               const DividerLine(),
@@ -381,34 +472,33 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                     title: '物资单位',
                     hint: value?['key'] ?? "请选择",
                     showArrow: true,
-                    onPressed:
-                        addInventoryEnum != AddInventoryEnum.add
-                            ? null
-                            : () async {
-                              int? selectIndex;
-                              if (wzdwList != null) {
+                    onPressed: addInventoryEnum != AddInventoryEnum.add
+                        ? null
+                        : () async {
+                            int? selectIndex;
+                            if (wzdwList != null) {
+                              selectIndex = await showSelectDialog(
+                                wzdwList!
+                                    .map((e) => e['key'].toString())
+                                    .toList(),
+                              );
+                            } else {
+                              MaterialService.getDic('wzdw').then((
+                                value,
+                              ) async {
+                                //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
+                                wzdwList = _withoutTon(value);
                                 selectIndex = await showSelectDialog(
                                   wzdwList!
                                       .map((e) => e['key'].toString())
                                       .toList(),
                                 );
-                              } else {
-                                MaterialService.getDic('wzdw').then((
-                                  value,
-                                ) async {
-                                  //[key: 其他, value: 6, sort: 6, isDeleted: false, dataType: null]
-                                  wzdwList = value;
-                                  selectIndex = await showSelectDialog(
-                                    wzdwList!
-                                        .map((e) => e['key'].toString())
-                                        .toList(),
-                                  );
-                                });
-                              }
-                              if (selectIndex != null) {
-                                wzdwSelectNotif.value = wzdwList?[selectIndex!];
-                              }
-                            },
+                              });
+                            }
+                            if (selectIndex != null) {
+                              wzdwSelectNotif.value = wzdwList?[selectIndex!];
+                            }
+                          },
                   );
                 },
               ),
@@ -440,7 +530,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                   ),
                   controller: totalPriceController,
                   focusNode: totalPriceFocus,
-                  editable: addInventoryEnum != AddInventoryEnum.viewer,
+                  editable: addInventoryEnum == AddInventoryEnum.viewer,
                 ),
               //新增报废和修改报废显示报废原因
               if (addInventoryEnum == AddInventoryEnum.scrapEdit ||
@@ -482,15 +572,14 @@ class _AddInventoryViewState extends State<AddInventoryView> {
                 builder: (context, PDuration value, Widget? child) {
                   return CellButton(
                     isRequired: true,
-                    title:
-                        addInventoryEnum == AddInventoryEnum.add ||
-                                addInventoryEnum == AddInventoryEnum.addEdit ||
-                                addInventoryEnum == AddInventoryEnum.viewer
-                            ? '采购时间'
-                            : addInventoryEnum == AddInventoryEnum.use ||
-                                    addInventoryEnum == AddInventoryEnum.useEdit
-                                ? '领用时间'
-                                : '报废时间',
+                    title: addInventoryEnum == AddInventoryEnum.add ||
+                            addInventoryEnum == AddInventoryEnum.addEdit ||
+                            addInventoryEnum == AddInventoryEnum.viewer
+                        ? '采购时间'
+                        : addInventoryEnum == AddInventoryEnum.use ||
+                                addInventoryEnum == AddInventoryEnum.useEdit
+                            ? '领用时间'
+                            : '报废时间',
                     hint: '请选择',
                     content:
                         "${value.year}-${value.month?.addZero()}-${value.day?.addZero()}",
@@ -684,7 +773,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     });
     await MaterialService.getDic('wzdw').then((value) {
       //{key: 其他, value: 8, sort: 8, isDeleted: false, dataType: null}
-      wzdwList = value;
+      wzdwList = _withoutTon(value);
     });
 
     if ((materialName ?? '').isNotEmpty) {
@@ -693,11 +782,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
     if ((unitName ?? '').isNotEmpty) {
       wzdwSelectNotif.value = {'key': unitName};
     }
-    if ((countText ?? '').isNotEmpty &&
-        addInventoryEnum != AddInventoryEnum.use &&
-        addInventoryEnum != AddInventoryEnum.scrap &&
-        addInventoryEnum != AddInventoryEnum.useEdit &&
-        addInventoryEnum != AddInventoryEnum.scrapEdit) {
+    if ((countText ?? '').isNotEmpty) {
       counterController.text = countText!;
     }
 
@@ -733,8 +818,7 @@ class _AddInventoryViewState extends State<AddInventoryView> {
       Log.d('resp: $resp');
       Toast.dismiss();
       materialItemModel = MaterialItemModel.fromJson(resp);
-      materialNameController.text =
-          materialItemModel?.name ??
+      materialNameController.text = materialItemModel?.name ??
           materialItemModel?.materialName ??
           materialNameController.text;
       wzflSelectNotif.value = wzflList?.firstWhereOrNull(
@@ -742,24 +826,18 @@ class _AddInventoryViewState extends State<AddInventoryView> {
             num.parse(e['value']).toString() ==
             materialItemModel?.category.toString(),
       );
-      wzdwSelectNotif.value =
-          wzdwList?.firstWhereOrNull(
-            (e) =>
-                num.parse(e['value']).toString() ==
-                materialItemModel?.unit.toString(),
-          ) ??
-          wzdwSelectNotif.value;
+      _setUnitFromMaterial(materialItemModel!);
       if (addInventoryEnum != AddInventoryEnum.use &&
           addInventoryEnum != AddInventoryEnum.scrap &&
           addInventoryEnum != AddInventoryEnum.useEdit &&
-          addInventoryEnum != AddInventoryEnum.scrapEdit) {
-        counterController.text =
-            materialItemModel?.count?.toString() ??
+          addInventoryEnum != AddInventoryEnum.scrapEdit &&
+          !(addInventoryEnum == AddInventoryEnum.viewer &&
+              (countText ?? '').isNotEmpty)) {
+        counterController.text = materialItemModel?.count?.toString() ??
             materialItemModel?.currentCount?.toString() ??
             counterController.text;
       } else {
-        canUseCount.value =
-            materialItemModel?.count?.toString() ??
+        canUseCount.value = materialItemModel?.count?.toString() ??
             materialItemModel?.currentCount?.toString() ??
             '';
       }
@@ -776,7 +854,8 @@ class _AddInventoryViewState extends State<AddInventoryView> {
         totalPriceController.text = materialItemModel!.totalPrice.toString();
       }
 
-      if ((operationDate ?? '').isEmpty && materialItemModel?.modified != null) {
+      if ((operationDate ?? '').isEmpty &&
+          materialItemModel?.modified != null) {
         selectDateTime.value = PDuration.parse(
           DateTime.parse(materialItemModel?.modified ?? ''),
         );

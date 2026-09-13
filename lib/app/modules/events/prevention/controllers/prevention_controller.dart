@@ -208,7 +208,13 @@ class PreventionController extends GetxController {
     super.onInit();
     Toast.showLoading();
     // 防疫剂量单位使用物资单位字典，接口 unit 保存字典 value。
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     unitNameList = List<String>.from(
       unitList.map((item) => item['label']).toList(),
     );
@@ -301,16 +307,14 @@ class PreventionController extends GetxController {
       preventionTime.value = event?.date ?? '';
       // 疫病
       loimiaId = event?.loimia ?? -1;
-      loimia.value =
-          loimiaList.firstWhere(
-            (item) => int.parse(item['value']) == event?.loimia,
-          )['label'];
+      loimia.value = loimiaList.firstWhere(
+        (item) => int.parse(item['value']) == event?.loimia,
+      )['label'];
 
       // 疫苗
       vaccineId = event?.vaccine ?? 0;
       Log.i('************************');
-      vaccine.value =
-          vaccineList.firstWhereOrNull(
+      vaccine.value = vaccineList.firstWhereOrNull(
             (item) => int.parse(item['value']) == event?.vaccine,
           )?['label'] ??
           '';
@@ -320,8 +324,7 @@ class PreventionController extends GetxController {
       dosage.value = event?.dosage ?? 0;
       // 单头剂量单位
       unitId = event?.unit ?? -1;
-      unit.value =
-          unitList.firstWhereOrNull(
+      unit.value = unitList.firstWhereOrNull(
             (item) => int.parse(item['value']) == event?.unit,
           )?['label'] ??
           '';
@@ -422,10 +425,9 @@ class PreventionController extends GetxController {
           "loimia": loimiaId,
           "vaccine": vaccineId,
           "materialVaccine": materialVaccineId,
-          "cowHouseId":
-              typeIndex.value == 0
-                  ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id
-                  : cowHouseId, // 注意个体防疫选择的是个体的栋舍id
+          "cowHouseId": typeIndex.value == 0
+              ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id
+              : cowHouseId, // 注意个体防疫选择的是个体的栋舍id
           "status": typeIndex.value == 1 ? stageId : null,
           "count": typeIndex.value == 0 ? cattleCount.value : 1,
           "cowIds": typeIndex.value == 1 ? [selectedCow.id] : null, // 个体
@@ -443,10 +445,9 @@ class PreventionController extends GetxController {
           "loimia": loimiaId,
           "vaccine": vaccineId,
           "materialVaccine": materialVaccineId,
-          "cowHouseId":
-              typeIndex.value == 0
-                  ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id
-                  : cowHouseId, // 注意个体防疫选择的是个体的栋舍id
+          "cowHouseId": typeIndex.value == 0
+              ? batchCowHouseId // 注意批量防疫选择的是批量的栋舍id
+              : cowHouseId, // 注意个体防疫选择的是个体的栋舍id
           "status": typeIndex.value == 1 ? stageId : null,
           "count": typeIndex.value == 0 ? cattleCount.value : 1,
           "cowIds": typeIndex.value == 1 ? [event?.cowId ?? ''] : null, // 个体

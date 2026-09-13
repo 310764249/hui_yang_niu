@@ -67,7 +67,13 @@ class TreatmentDetailController extends GetxController {
     gmList = AppDictList.searchItems('gm') ?? [];
     //疾病
     reasonList = AppDictList.searchItems('jb') ?? [];
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     //处理传入参数
     handleArgument();
   }

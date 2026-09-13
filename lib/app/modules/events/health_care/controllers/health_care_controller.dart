@@ -103,7 +103,13 @@ class HealthCareController extends GetxController {
     super.onInit();
     Toast.showLoading();
     // 保健剂量单位使用物资单位字典，接口 unit 保存字典 value。
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     unitNameList = List<String>.from(
       unitList.map((item) => item['label']).toList(),
     );

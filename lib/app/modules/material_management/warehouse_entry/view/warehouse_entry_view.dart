@@ -107,73 +107,73 @@ class WarehouseEntryView extends GetView<WarehouseEntryController> {
                               : IndicatorResult.noMore,
                         );
                       },
-                      child:
-                          controller.items.isEmpty
-                              ? const EmptyView()
-                              : ListView.builder(
-                                itemCount: controller.items.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final item = controller.items[index];
-                                  // 更加不同的分类显示不同的item样式
-                                  return MaterialItem(
-                                    // 自动同步的库存来自饲喂、防疫、诊疗、保健，不能手工编辑或删除。
-                                    showButton: !(item.isAutomatic ?? false),
-                                    title: '单号：${item.no ?? ''}',
-                                    content1: item.materialName ?? '',
-                                    content2:
-                                        (item.date
-                                            ?.replaceFirst('T', ' ')
-                                            .substring(0, 10)) ??
-                                        '',
-                                    content3: item.executor ?? '',
-                                    onTap: () {
-                                      AddInventoryView.push(
-                                        context,
-                                        id: item.id,
-                                        materialId: item.materialId,
-                                        addInventoryEnum:
-                                            AddInventoryEnum.viewer,
-                                        totalPrice: item.totalPrice?.toString(),
-                                        remark: item.remark,
-                                      );
-                                    },
-                                    deleteOnTap: () async {
-                                      // return;
-                                      Toast.showLoading();
-                                      await MaterialService.deleteMaterial(
-                                        id: item.id ?? '',
-                                        rowVersion: item.rowVersion ?? '',
-                                        successCallback: () {
-                                          Toast.dismiss();
-                                          controller.refreshController
-                                              .callRefresh();
-                                        },
-                                        errorCallback: (msg) {
-                                          Toast.dismiss();
-                                          Toast.failure(msg: msg);
-                                        },
-                                      );
-                                    },
-                                    editOnTap: () {
-                                      AddInventoryView.push(
-                                        context,
-                                        id: item.id,
-                                        rowVersion: item.rowVersion,
-                                        materialId: item.materialId,
-                                        addInventoryEnum:
-                                            AddInventoryEnum.addEdit,
-                                        totalPrice: item.totalPrice?.toString(),
-                                        remark: item.remark,
-                                      ).then((value) {
-                                        if (value ?? false) {
-                                          controller.refreshController
-                                              .callRefresh();
-                                        }
-                                      });
-                                    },
-                                  );
-                                },
-                              ),
+                      child: controller.items.isEmpty
+                          ? const EmptyView()
+                          : ListView.builder(
+                              itemCount: controller.items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final item = controller.items[index];
+                                // 更加不同的分类显示不同的item样式
+                                return MaterialItem(
+                                  // 自动同步的库存来自饲喂、防疫、诊疗、保健，不能手工编辑或删除。
+                                  showButton: !(item.isAutomatic ?? false),
+                                  title: '单号：${item.no ?? ''}',
+                                  content1: item.materialName ?? '',
+                                  content2: (item.date
+                                          ?.replaceFirst('T', ' ')
+                                          .substring(0, 10)) ??
+                                      '',
+                                  content3: item.executor ?? '',
+                                  onTap: () {
+                                    AddInventoryView.push(
+                                      context,
+                                      id: item.id,
+                                      materialId: item.materialId,
+                                      addInventoryEnum: AddInventoryEnum.viewer,
+                                      materialName:
+                                          item.materialName ?? item.name,
+                                      countText: item.count?.toString(),
+                                      totalPrice: item.totalPrice?.toString(),
+                                      remark: item.remark,
+                                    );
+                                  },
+                                  deleteOnTap: () async {
+                                    // return;
+                                    Toast.showLoading();
+                                    await MaterialService.deleteMaterial(
+                                      id: item.id ?? '',
+                                      rowVersion: item.rowVersion ?? '',
+                                      successCallback: () {
+                                        Toast.dismiss();
+                                        controller.refreshController
+                                            .callRefresh();
+                                      },
+                                      errorCallback: (msg) {
+                                        Toast.dismiss();
+                                        Toast.failure(msg: msg);
+                                      },
+                                    );
+                                  },
+                                  editOnTap: () {
+                                    AddInventoryView.push(
+                                      context,
+                                      id: item.id,
+                                      rowVersion: item.rowVersion,
+                                      materialId: item.materialId,
+                                      addInventoryEnum:
+                                          AddInventoryEnum.addEdit,
+                                      totalPrice: item.totalPrice?.toString(),
+                                      remark: item.remark,
+                                    ).then((value) {
+                                      if (value ?? false) {
+                                        controller.refreshController
+                                            .callRefresh();
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                     ),
                   ),
                 ),

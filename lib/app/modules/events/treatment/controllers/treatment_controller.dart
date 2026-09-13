@@ -146,7 +146,13 @@ class TreatmentController extends GetxController {
     super.onInit();
     Toast.showLoading();
     // 诊疗剂量单位使用物资单位字典，接口 unit 保存字典 value。
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     unitNameList = List<String>.from(
       unitList.map((item) => item['label']).toList(),
     );
@@ -214,10 +220,9 @@ class TreatmentController extends GetxController {
       treatmentTime.value = event?.date ?? '';
       // 疾病名称
       illnessId = event?.illness ?? -1;
-      illness.value =
-          illnessList.firstWhere(
-            (item) => int.parse(item['value']) == event?.illness,
-          )['label'];
+      illness.value = illnessList.firstWhere(
+        (item) => int.parse(item['value']) == event?.illness,
+      )['label'];
       // 诊疗人
       treatmentPersonController.text = event?.treatmentPerson ?? '';
       // 症状
@@ -359,14 +364,12 @@ class TreatmentController extends GetxController {
         //* 新增
         para = {
           "date": treatmentTime.value,
-          "cowHouseId":
-              typeIndex.value == 0
-                  ? oldCowHouseId
-                  : littleCowHouseId, // 栋舍参数可有可无
-          "cowIds":
-              typeIndex.value == 0
-                  ? selectedOldCow.map((e) => e.id).toList()
-                  : null,
+          "cowHouseId": typeIndex.value == 0
+              ? oldCowHouseId
+              : littleCowHouseId, // 栋舍参数可有可无
+          "cowIds": typeIndex.value == 0
+              ? selectedOldCow.map((e) => e.id).toList()
+              : null,
           "batchNo": typeIndex.value == 1 ? batchNumber.value : null,
           "illness": illnessId,
           "count":

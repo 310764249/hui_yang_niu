@@ -43,7 +43,13 @@ class HealthCareDetailController extends GetxController {
     super.onInit();
     // 保健类型列表
     healthTypeList = AppDictList.searchItems('bjlx') ?? [];
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     //处理传入参数
     handleArgument();
   }

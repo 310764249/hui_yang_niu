@@ -16,6 +16,7 @@ class MaterialItemModel {
     required this.createdBy,
     required this.executor,
     required this.unit,
+    this.unitName,
     required this.currentCount,
     required this.tenantId,
     required this.modified,
@@ -47,6 +48,11 @@ class MaterialItemModel {
   String? modified;
   String? modifiedBy;
   num? unit;
+
+  /// Unit label returned by some material APIs (for example, "千克").
+  /// Most stock APIs only return [unit] (the dictionary value), so this is
+  /// optional and used as a fallback when resolving the display value.
+  String? unitName;
   String? id;
   String? name;
   num? category;
@@ -69,7 +75,17 @@ class MaterialItemModel {
         confirm: json["confirm"],
         materialName: json["materialName"],
         createdBy: json["createdBy"],
-        unit: json["unit"],
+        unit: json["unit"] is num
+            ? json["unit"]
+            : num.tryParse(json["unit"]?.toString() ?? ''),
+        unitName: (json["unitName"] ??
+                json["unitText"] ??
+                json["unitNameStr"] ??
+                (json["unit"] != null &&
+                        num.tryParse(json["unit"].toString()) == null
+                    ? json["unit"]
+                    : null))
+            ?.toString(),
         executor: json["executor"],
         currentCount: json["currentCount"],
         tenantId: json["tenantId"],
@@ -79,36 +95,36 @@ class MaterialItemModel {
         category: json["category"],
         name: json["name"],
         totalPrice: json["totalPrice"],
-        isAutomatic:
-            json["isAutomatic"] == true ||
+        isAutomatic: json["isAutomatic"] == true ||
             json["isAutomatic"]?.toString().toLowerCase() == 'true',
       );
 
   Map<dynamic, dynamic> toJson() => {
-    "date": date,
-    "no": no,
-    "reason": reason,
-    "checker": checker,
-    "rowVersion": rowVersion,
-    "created": created,
-    "count": count,
-    "remark": remark,
-    "preCount": preCount,
-    "materialId": materialId,
-    "type": type,
-    "confirm": confirm,
-    "materialName": materialName,
-    "createdBy": createdBy,
-    "unit": unit,
-    "executor": executor,
-    "currentCount": currentCount,
-    "tenantId": tenantId,
-    "modified": modified,
-    "modifiedBy": modifiedBy,
-    "id": id,
-    "category": category,
-    "name": name,
-    "totalPrice": totalPrice,
-    "isAutomatic": isAutomatic,
-  };
+        "date": date,
+        "no": no,
+        "reason": reason,
+        "checker": checker,
+        "rowVersion": rowVersion,
+        "created": created,
+        "count": count,
+        "remark": remark,
+        "preCount": preCount,
+        "materialId": materialId,
+        "type": type,
+        "confirm": confirm,
+        "materialName": materialName,
+        "createdBy": createdBy,
+        "unit": unit,
+        "unitName": unitName,
+        "executor": executor,
+        "currentCount": currentCount,
+        "tenantId": tenantId,
+        "modified": modified,
+        "modifiedBy": modifiedBy,
+        "id": id,
+        "category": category,
+        "name": name,
+        "totalPrice": totalPrice,
+        "isAutomatic": isAutomatic,
+      };
 }

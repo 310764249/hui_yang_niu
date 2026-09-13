@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intellectual_breed/app/models/material_item_model.dart';
+import 'package:intellectual_breed/app/models/raw_material.dart';
 import 'package:intellectual_breed/app/network/apiException.dart';
 import 'package:intellectual_breed/app/network/httpsClient.dart';
 import 'package:intellectual_breed/app/services/Log.dart';
@@ -81,6 +82,29 @@ class MaterialService {
     return null;
   }
 
+  /// 获取配方生成中维护的全部原料。
+  static Future<List<RawMaterial>?> getRawMaterialList({
+    Function(String msg)? errorCallback,
+  }) async {
+    try {
+      final response = await HttpsClient().get('/api/rawmaterial/getall');
+      return (response as List)
+          .map(
+            (item) => RawMaterial.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
+          .toList();
+    } catch (error) {
+      if (error is ApiException) {
+        errorCallback?.call(error.toString());
+      } else {
+        errorCallback?.call('网络异常');
+      }
+      return null;
+    }
+  }
+
   /// 根据多个物资分类获取可用物资。疫苗选择使用 categories=5,1，且只展示库存大于 0 的物资。
   static Future<List<MaterialItemModel>?> getMaterialListWithChoiceCategories(
     String categories, {
@@ -91,13 +115,12 @@ class MaterialService {
         '/api/material/getbychoicecategory',
         queryParameters: {'categories': categories},
       );
-      final list =
-          (response as List)
-              .map((item) => MaterialItemModel.fromJson(item as Map))
-              .where(
-                (item) => (item.count ?? 0) > 0 || (item.currentCount ?? 0) > 0,
-              )
-              .toList();
+      final list = (response as List)
+          .map((item) => MaterialItemModel.fromJson(item as Map))
+          .where(
+            (item) => (item.count ?? 0) > 0 || (item.currentCount ?? 0) > 0,
+          )
+          .toList();
       return list;
     } catch (error) {
       if (error is ApiException) {

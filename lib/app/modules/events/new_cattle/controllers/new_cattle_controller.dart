@@ -83,9 +83,10 @@ class NewCattleController extends GetxController {
     return _formatDate(_dateInMonth(now, now.year - 1, now.month));
   }
 
-  String _defaultBirthDate() {
+  String _defaultBirthDate({int? currentStage}) {
     final now = DateTime.now();
-    final totalMonths = now.year * 12 + now.month - 1 - 18;
+    final months = currentStage == 2 || currentStage == 3 ? 10 : 18;
+    final totalMonths = now.year * 12 + now.month - 1 - months;
     final year = totalMonths ~/ 12;
     final month = totalMonths % 12 + 1;
     return _formatDate(_dateInMonth(now, year, month));
@@ -93,7 +94,8 @@ class NewCattleController extends GetxController {
 
   void _setDefaultDates() {
     cattleInfo.inDate?.value = _defaultInDate();
-    cattleInfo.birthDate?.value = _defaultBirthDate();
+    cattleInfo.birthDate?.value =
+        _defaultBirthDate(currentStage: cattleInfo.currentStage);
   }
 
   void _selectDefaultBreed() {
@@ -168,12 +170,12 @@ class NewCattleController extends GetxController {
 
     // 初始化请求参数
     cattleInfo = CattleInfo.init();
-    _setDefaultDates();
     final defaultStageIndex = Constant.currentStageList.indexWhere(
       (item) => item.name == '空怀母牛',
     );
     selStage.value = defaultStageIndex >= 0 ? defaultStageIndex : 0;
     cattleInfo.currentStage = Constant.currentStageList[selStage.value].id;
+    _setDefaultDates();
     // 初始化请求生成犊牛的批次号
     requestBatchNumber(1);
 
@@ -510,10 +512,9 @@ class NewCattleController extends GetxController {
           "sourceFarm": cattleInfo.sourceFarm?.value.trim(), // 来源场
           "type": cattleInfo.currentStage, // 生长阶段
           "gender": cattleInfo.gender?.value, // 性别
-          "batchNo":
-              cattleInfo.currentStage == 1
-                  ? tempBatchNumAuto1.value.trim()
-                  : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
+          "batchNo": cattleInfo.currentStage == 1
+              ? tempBatchNumAuto1.value.trim()
+              : tempBatchNumAuto2.value.trim(), // 自动批次号, 区分犊牛和育肥牛
           "birth": cattleInfo.birthDate?.value.trim(), // 出生日期
           "kind": int.parse(cattleInfo.breed?.trim() ?? '1'), // 品种
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
@@ -538,10 +539,9 @@ class NewCattleController extends GetxController {
           "growthStage": cattleInfo.currentStage, // 生长阶段
           "kind": int.parse(cattleInfo.breed?.trim() ?? '0'), // 品种
           "calvNum": getPregnancyNum(), // 胎次
-          "batchCount":
-              cattleInfo.currentStage == 6
-                  ? int.parse(cattleInfo.calvingNum!)
-                  : null, // 上一次产犊数量
+          "batchCount": cattleInfo.currentStage == 6
+              ? int.parse(cattleInfo.calvingNum!)
+              : null, // 上一次产犊数量
           "inArea": cattleInfo.inDate?.value.trim(), // 入场时间
           "operationDate": cattleInfo.operationDate?.value.trim(),
           "remark": cattleInfo.remark?.trim(), // 备注

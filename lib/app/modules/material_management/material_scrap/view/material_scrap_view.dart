@@ -27,7 +27,9 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
         actions: [
           TextButton(
               onPressed: () {
-                AddInventoryView.push(context, addInventoryEnum: AddInventoryEnum.scrap).then(
+                AddInventoryView.push(context,
+                        addInventoryEnum: AddInventoryEnum.scrap)
+                    .then(
                   (value) {
                     if (value == true) {
                       controller.refreshController.callRefresh();
@@ -37,7 +39,9 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
               },
               child: Text(
                 "新增",
-                style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(16)),
+                style: TextStyle(
+                    color: SaienteColors.blue275CF3,
+                    fontSize: ScreenAdapter.fontSize(16)),
               )),
         ],
       ),
@@ -58,7 +62,10 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
           }
           return Padding(
             padding: EdgeInsets.fromLTRB(
-                ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(10),
+                ScreenAdapter.width(10),
+                ScreenAdapter.height(0)),
             child: Column(
                 // physics: const AlwaysScrollableScrollPhysics(
                 //     parent: BouncingScrollPhysics()),
@@ -66,7 +73,9 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                   SizedBox(height: ScreenAdapter.height(6)),
                   Expanded(
                     child: Container(
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
                       child: EasyRefresh(
                         controller: controller.refreshController,
                         // 指定刷新时的头部组件
@@ -82,14 +91,17 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                         onLoad: () async {
                           // 如果没有更多直接返回
                           if (!controller.hasMore) {
-                            controller.refreshController.finishLoad(IndicatorResult.noMore);
+                            controller.refreshController
+                                .finishLoad(IndicatorResult.noMore);
                             return;
                           }
                           // 上拉加载更多数据请求
                           await controller.getMessageList(isRefresh: false);
                           // 设置状态
-                          controller.refreshController
-                              .finishLoad(controller.hasMore ? IndicatorResult.success : IndicatorResult.noMore);
+                          controller.refreshController.finishLoad(
+                              controller.hasMore
+                                  ? IndicatorResult.success
+                                  : IndicatorResult.noMore);
                         },
                         child: controller.items.isEmpty
                             ? const EmptyView()
@@ -101,14 +113,21 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                   return MaterialItem(
                                     title: '单号：${item.no ?? ''}',
                                     content1: item.materialName ?? '',
-                                    content2: (item.date?.replaceFirst('T', ' ').substring(0, 10)) ?? '',
+                                    content2: (item.date
+                                            ?.replaceFirst('T', ' ')
+                                            .substring(0, 10)) ??
+                                        '',
                                     content3: item.executor ?? '',
                                     onTap: () {
                                       AddInventoryView.push(
                                         context,
                                         id: item.id,
                                         materialId: item.materialId,
-                                        addInventoryEnum: AddInventoryEnum.viewer,
+                                        addInventoryEnum:
+                                            AddInventoryEnum.viewer,
+                                        materialName:
+                                            item.materialName ?? item.name,
+                                        countText: item.count?.toString(),
                                         remark: item.remark,
                                       );
                                     },
@@ -119,7 +138,8 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                         rowVersion: item.rowVersion ?? '',
                                         successCallback: () {
                                           Toast.dismiss();
-                                          controller.refreshController.callRefresh();
+                                          controller.refreshController
+                                              .callRefresh();
                                         },
                                         errorCallback: (msg) {
                                           Toast.dismiss();
@@ -134,12 +154,14 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
                                         rowVersion: item.rowVersion,
                                         materialId: item.materialId,
                                         makeCount: item.count.toString(),
-                                        addInventoryEnum: AddInventoryEnum.scrapEdit,
+                                        addInventoryEnum:
+                                            AddInventoryEnum.scrapEdit,
                                         reason: item.reason,
                                         remark: item.remark,
                                       ).then((value) {
                                         if (value == true) {
-                                          controller.refreshController.callRefresh();
+                                          controller.refreshController
+                                              .callRefresh();
                                         }
                                       });
                                     },
@@ -167,17 +189,22 @@ class MaterialScrapView extends GetView<MaterialScrapController> {
           // 禁止列表滑动
           physics: const NeverScrollableScrollPhysics(),
           // 数量为: 屏幕高度 / item高度 取整数
-          itemCount: ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(126),
+          itemCount:
+              ScreenAdapter.getScreenHeight() ~/ ScreenAdapter.height(126),
           itemBuilder: (context, index) {
             return Container(
               height: ScreenAdapter.height(126),
               margin: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10), ScreenAdapter.height(10), ScreenAdapter.width(10), ScreenAdapter.height(0)),
+                  ScreenAdapter.width(10),
+                  ScreenAdapter.height(10),
+                  ScreenAdapter.width(10),
+                  ScreenAdapter.height(0)),
               decoration: BoxDecoration(
                 //背景
                 color: const Color(0xFFE0E0E0),
                 //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(10.0))),
+                borderRadius: BorderRadius.all(
+                    Radius.circular(ScreenAdapter.height(10.0))),
               ),
             );
           },

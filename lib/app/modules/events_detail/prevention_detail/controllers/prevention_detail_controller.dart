@@ -48,7 +48,13 @@ class PreventionDetailController extends GetxController {
 
     loimiaList = AppDictList.searchItems('yb') ?? [];
     vaccineList = AppDictList.searchItems('ym') ?? [];
-    unitList = AppDictList.searchItems('wzdw') ?? [];
+    unitList = (AppDictList.searchItems('wzdw') ?? [])
+        .where(
+          (item) =>
+              item['label']?.toString().trim() != '吨' &&
+              item['key']?.toString().trim() != '吨',
+        )
+        .toList();
     //处理传入参数
     handleArgument();
   }

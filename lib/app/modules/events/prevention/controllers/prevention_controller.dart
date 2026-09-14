@@ -190,35 +190,58 @@ class PreventionController extends GetxController {
   List<CowHouse> houseList = <CowHouse>[];
   List houseNameList = [];
 
-  // 可选单位列表
+  // 单位字典
   late List unitList;
-  late List unitNameList;
   // 单位字典项相关
   int unitId = -1;
   RxString unit = ''.obs;
 
-  void updateUnit(String newUnit, int position) {
-    unitId = int.parse(unitList[position]['value']);
-    unit.value = newUnit;
-    update();
+  /// 将采购物料上保存的单位带到防疫剂量单位。
+  ///
+  /// 物料接口通常返回单位字典值，历史接口也可能直接返回单位名称，
+  /// 因此这里优先按字典值匹配，再按名称匹配，最后保留接口原值显示。
+  void _setUnitFromMaterial(MaterialItemModel material) {
+    final unitValue = material.unit;
+    final materialUnitName = material.unitName?.trim();
+    Map? selected;
+
+    if (unitValue != null) {
+      final value = unitValue.toInt().toString();
+      selected = unitList.firstWhereOrNull(
+        (item) => item['value']?.toString() == value,
+      );
+    }
+    if (selected == null &&
+        materialUnitName != null &&
+        materialUnitName.isNotEmpty) {
+      selected = unitList.firstWhereOrNull(
+        (item) =>
+            item['key']?.toString() == materialUnitName ||
+            item['label']?.toString() == materialUnitName,
+      );
+    }
+
+    if (selected != null) {
+      unitId = int.tryParse(selected['value']?.toString() ?? '') ?? -1;
+      unit.value =
+          (selected['key'] ?? selected['label'] ?? materialUnitName ?? '')
+              .toString();
+    } else if (unitValue != null ||
+        (materialUnitName != null && materialUnitName.isNotEmpty)) {
+      unitId = unitValue?.toInt() ?? -1;
+      unit.value = materialUnitName ?? unitValue.toString();
+    } else {
+      unitId = -1;
+      unit.value = '';
+    }
   }
 
   @override
   void onInit() async {
     super.onInit();
     Toast.showLoading();
-    // 防疫剂量单位使用物资单位字典，接口 unit 保存字典 value。
-    unitList = (AppDictList.searchItems('wzdw') ?? [])
-        .where(
-          (item) =>
-              item['label']?.toString().trim() != '吨' &&
-              item['key']?.toString().trim() != '吨',
-        )
-        .toList();
-    unitNameList = List<String>.from(
-      unitList.map((item) => item['label']).toList(),
-    );
-
+    // 防疫剂量单位使用完整物资单位字典，以匹配采购时保存的单位。
+    unitList = AppDictList.searchItems('wzdw') ?? [];
     // 栋舍列表
     houseList = await CommonService().requestCowHouse();
     // 获取栋舍列表名称用于 Picker 显示
@@ -319,15 +342,15 @@ class PreventionController extends GetxController {
           )?['label'] ??
           '';
       materialVaccineId = event?.materialVaccine;
-      await _loadMaterialVaccineName();
-      // 剂量
-      dosage.value = event?.dosage ?? 0;
-      // 单头剂量单位
+      // 事件已有单位时保留历史值；没有单位时由采购物料补齐。
       unitId = event?.unit ?? -1;
       unit.value = unitList.firstWhereOrNull(
             (item) => int.parse(item['value']) == event?.unit,
           )?['label'] ??
           '';
+      await _loadMaterialVaccineName();
+      // 剂量
+      dosage.value = event?.dosage ?? 0;
       // 总剂量
       totalDosage.value = event?.total ?? 0;
 
@@ -343,11 +366,27 @@ class PreventionController extends GetxController {
     if (id == null || id.isEmpty) return;
     final item = await MaterialService.getMaterialById(id);
     materialVaccine.value = item?.name ?? item?.materialName ?? id;
+    if (item != null && unitId == -1) {
+      _setUnitFromMaterial(item);
+    }
   }
 
   Future<void> selectMaterialVaccine(MaterialItemModel item) async {
-    materialVaccineId = item.materialId ?? item.id;
+    final selectedMaterialId = item.materialId ?? item.id;
+    materialVaccineId = selectedMaterialId;
     materialVaccine.value = item.name ?? item.materialName ?? '';
+    _setUnitFromMaterial(item);
+
+    // 物料列表的精简响应可能没有单位，补查详情后仍以当前选中的物料为准。
+    if (item.unit == null &&
+        (item.unitName == null || item.unitName!.trim().isEmpty) &&
+        selectedMaterialId != null &&
+        selectedMaterialId.isNotEmpty) {
+      final details = await MaterialService.getMaterialById(selectedMaterialId);
+      if (details != null && materialVaccineId == selectedMaterialId) {
+        _setUnitFromMaterial(details);
+      }
+    }
     update();
   }
 

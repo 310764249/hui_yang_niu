@@ -237,20 +237,10 @@ class TreatmentView extends GetView<TreatmentController> {
                     : controller.dosage.value.toString().trim(),
             controller: controller.dosageController,
             focusNode: controller.dosageNode,
-            showTitleOption: true,
-            titleOptionHint: '请选择剂量单位',
+            // 单位随所选采购物料自动带出，不再让用户重复选择。
+            showTitleOption: false,
+            titleOptionHint: '选择物料后自动带出单位',
             titleOptionContent: controller.unit.value,
-            onOptionPressed: () {
-              Picker.showSinglePicker(
-                context,
-                controller.unitNameList,
-                title: '选择剂量单位',
-                selectData: controller.unit.value,
-                onConfirm: (data, position) {
-                  controller.updateUnit(data, position);
-                },
-              );
-            },
             onChanged: (value) {
               controller.dosage.value = double.tryParse(value) ?? 0;
               controller.dosageController.text = value;

@@ -80,11 +80,7 @@ class MaterialItemModel {
             : num.tryParse(json["unit"]?.toString() ?? ''),
         unitName: (json["unitName"] ??
                 json["unitText"] ??
-                json["unitNameStr"] ??
-                (json["unit"] != null &&
-                        num.tryParse(json["unit"].toString()) == null
-                    ? json["unit"]
-                    : null))
+                json["unitNameStr"])
             ?.toString(),
         executor: json["executor"],
         currentCount: json["currentCount"],

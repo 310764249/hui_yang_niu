@@ -8,6 +8,7 @@ import 'package:intellectual_breed/app/widgets/toast.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'material_item.dart';
+import 'material_category_helper.dart';
 
 class SelectMaterialView extends StatefulWidget {
   const SelectMaterialView({super.key, this.vaccineOnly = false});
@@ -42,6 +43,7 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
   var selectType;
 
   Map<String, dynamic> materialListMap = {};
+  Set<String> medicalCategoryValues = {};
 
   bool get vaccineOnly => widget.vaccineOnly;
 
@@ -57,7 +59,7 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
       borderRadius: BorderRadius.circular(30),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(vaccineOnly ? '选择疫苗物资' : '选择物料'),
+          title: Text(vaccineOnly ? '选择兽药疫苗物资' : '选择物料'),
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
@@ -209,11 +211,23 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
   Future getMaterialList() async {
     if (vaccineOnly) {
       if (materialList != null) return;
+      if (medicalCategoryValues.isEmpty) {
+        if (mounted) setState(() => materialList = []);
+        return;
+      }
       final value = await MaterialService.getMaterialListWithChoiceCategories(
-        '5,1',
+        medicalCategoryValues.join(','),
         errorCallback: (msg) => Toast.show(msg),
       );
-      if (mounted) setState(() => materialList = value);
+      final filtered =
+          value
+              ?.where(
+                (item) => medicalCategoryValues.contains(
+                  normalizedMaterialCategoryValue(item.category),
+                ),
+              )
+              .toList();
+      if (mounted) setState(() => materialList = filtered);
       return;
     }
     if (selectType == null) {
@@ -246,6 +260,11 @@ class _SelectMaterialViewState extends State<SelectMaterialView> {
 
   void init() async {
     if (vaccineOnly) {
+      final categories = await MaterialService.getDic('wzfl') as List;
+      medicalCategoryValues = medicalMaterialCategoryValues(categories);
+      if (medicalCategoryValues.isEmpty) {
+        Toast.show('未找到兽药疫苗物资分类');
+      }
       await getMaterialList();
       return;
     }

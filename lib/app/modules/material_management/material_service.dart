@@ -105,7 +105,7 @@ class MaterialService {
     }
   }
 
-  /// 根据多个物资分类获取可用物资。疫苗选择使用 categories=5,1，且只展示库存大于 0 的物资。
+  /// 根据多个物资分类获取有库存的可用物资。
   static Future<List<MaterialItemModel>?> getMaterialListWithChoiceCategories(
     String categories, {
     Function(String msg)? errorCallback,

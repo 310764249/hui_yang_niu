@@ -91,41 +91,11 @@ class HealthCareController extends GetxController {
   int unitId = -1;
   RxString unit = ''.obs;
 
-  /// 将采购物料上保存的单位带到保健剂量单位。
   void _setUnitFromMaterial(MaterialItemModel material) {
-    final unitValue = material.unit;
-    final materialUnitName = material.unitName?.trim();
-    Map? selected;
-
-    if (unitValue != null) {
-      final value = unitValue.toInt().toString();
-      selected = unitList.firstWhereOrNull(
-        (item) => item['value']?.toString() == value,
-      );
-    }
-    if (selected == null &&
-        materialUnitName != null &&
-        materialUnitName.isNotEmpty) {
-      selected = unitList.firstWhereOrNull(
-        (item) =>
-            item['key']?.toString() == materialUnitName ||
-            item['label']?.toString() == materialUnitName,
-      );
-    }
-
-    if (selected != null) {
-      unitId = int.tryParse(selected['value']?.toString() ?? '') ?? -1;
-      unit.value =
-          (selected['key'] ?? selected['label'] ?? materialUnitName ?? '')
-              .toString();
-    } else if (unitValue != null ||
-        (materialUnitName != null && materialUnitName.isNotEmpty)) {
-      unitId = unitValue?.toInt() ?? -1;
-      unit.value = materialUnitName ?? unitValue.toString();
-    } else {
-      unitId = -1;
-      unit.value = '';
-    }
+    unitId = material.unit?.toInt() ?? -1;
+    unit.value = unitId == -1
+        ? ''
+        : AppDictList.findLabelByCode(unitList, unitId.toString());
   }
 
   @override
@@ -235,17 +205,16 @@ class HealthCareController extends GetxController {
     final selectedMaterialId = item.materialId ?? item.id;
     materialVaccineId = selectedMaterialId;
     materialVaccine.value = item.name ?? item.materialName ?? '';
-    _setUnitFromMaterial(item);
-
-    // 物料列表的精简响应可能没有单位，补查详情后仍以当前选中的物料为准。
-    if (item.unit == null &&
-        (item.unitName == null || item.unitName!.trim().isEmpty) &&
-        selectedMaterialId != null &&
-        selectedMaterialId.isNotEmpty) {
+    unitId = -1;
+    unit.value = '';
+    // 选择列表中的 unit 不是采购单位字典值，统一以物料详情为准。
+    if (selectedMaterialId != null && selectedMaterialId.isNotEmpty) {
       final details = await MaterialService.getMaterialById(selectedMaterialId);
-      if (details != null && materialVaccineId == selectedMaterialId) {
-        _setUnitFromMaterial(details);
+      if (materialVaccineId == selectedMaterialId) {
+        _setUnitFromMaterial(details ?? item);
       }
+    } else {
+      _setUnitFromMaterial(item);
     }
     update();
   }

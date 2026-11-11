@@ -1,4 +1,30 @@
 ///
+class FormulaGapModel {
+  final String name;
+  final double baseValue;
+  final double value;
+  final double gapPercent;
+  final String rawMaterialName;
+  final int alertLevel;
+  final String remark;
+
+  const FormulaGapModel({required this.name, required this.baseValue, required this.value,
+    required this.gapPercent, required this.rawMaterialName, required this.alertLevel, required this.remark});
+
+  factory FormulaGapModel.fromJson(Map<String, dynamic> json) => FormulaGapModel(
+    name: json['name']?.toString() ?? '',
+    baseValue: double.tryParse('${json['baseValue'] ?? 0}') ?? 0,
+    value: double.tryParse('${json['value'] ?? 0}') ?? 0,
+    gapPercent: double.tryParse('${json['gapPercent'] ?? 0}') ?? 0,
+    rawMaterialName: json['rawMaterialName']?.toString() ?? '',
+    alertLevel: int.tryParse('${json['alertLevel'] ?? 0}') ?? 0,
+    remark: json['remark']?.toString() ?? '',
+  );
+
+  Map<String, dynamic> toJson() => {'name': name, 'baseValue': baseValue, 'value': value,
+    'gapPercent': gapPercent, 'rawMaterialName': rawMaterialName, 'alertLevel': alertLevel, 'remark': remark};
+}
+
 class FormulaModel {
   int? formulaType;
   late final String? id; //ID
@@ -78,6 +104,7 @@ class FormulaModel {
   List<FormulaItemModel>? proteinFeed; //蛋白饲料集
   List<FormulaItemModel>? additives; //添加剂集
   List<FormulaItemModel>? premix; //预混料集
+  List<FormulaGapModel>? gaps;
 
   FormulaModel({
     required this.id,
@@ -265,12 +292,19 @@ class FormulaModel {
         premix!.add(FormulaItemModel.fromJson(v));
       });
     }
+    if (json['gaps'] is List) {
+      gaps = (json['gaps'] as List)
+          .whereType<Map>()
+          .map((v) => FormulaGapModel.fromJson(Map<String, dynamic>.from(v)))
+          .toList();
+    }
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['id'] = id;
     data['nutritionId'] = nutritionId;
+    if (gaps != null) data['gaps'] = gaps!.map((v) => v.toJson()).toList();
     data['name'] = name;
     data['cowCount'] = cowCount;
     data['individualCate'] = individualCate;

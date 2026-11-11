@@ -186,6 +186,15 @@ class RecipeView extends GetView<RecipeController> {
                     color: Colors.black,
                   ),
                 ),
+                const Spacer(),
+                if (model.gaps?.isNotEmpty == true)
+                  Icon(
+                    Icons.error,
+                    size: ScreenAdapter.width(17),
+                    color: model.gaps!.any((gap) => gap.alertLevel >= 2)
+                        ? Colors.deepOrange
+                        : Colors.amber,
+                  ),
               ],
             ),
             SizedBox(height: ScreenAdapter.height(14)),

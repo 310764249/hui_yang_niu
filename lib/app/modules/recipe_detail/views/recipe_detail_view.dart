@@ -239,8 +239,23 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   //配方基本物质对比
   Widget _compareInfo() {
+    final gaps = controller.argument?.gaps ?? const <FormulaGapModel>[];
     return Column(
       children: [
+        if (gaps.isNotEmpty)
+          ...gaps.map((gap) => Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: gap.alertLevel >= 2 ? const Color(0xFFFFE5E5) : const Color(0xFFFFF1E0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '${gap.name}缺失 ${((gap.gapPercent * 100).toStringAsFixed(0))}%，建议增加${gap.rawMaterialName.isEmpty ? '相关原料' : gap.rawMaterialName}${gap.remark.isEmpty ? '' : '，${gap.remark}'}',
+              style: TextStyle(color: gap.alertLevel >= 2 ? Colors.red : Colors.deepOrange, fontSize: 14),
+            ),
+          )),
         GestureDetector(
           onTap: () {
             controller.onTapCompare();
@@ -929,6 +944,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   // 保存配方弹窗
   void _showSaveDialog() async {
+    final gaps = controller.argument?.gaps ?? const <FormulaGapModel>[];
     SmartDialog.show(
       backDismiss: true,
       clickMaskDismiss: true,
@@ -948,6 +964,18 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 children: [
                   const SizedBox(height: 10),
                   const Text('保存配方', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  if (gaps.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: const Color(0xFFFFF1E0), borderRadius: BorderRadius.circular(8)),
+                      child: Text(
+                        '共 ${gaps.length} 项营养成分缺失，仍要保存吗？\n${gaps.map((gap) => '${gap.name}缺失${(gap.gapPercent * 100).toStringAsFixed(0)}%，建议增加${gap.rawMaterialName.isEmpty ? '相关原料' : gap.rawMaterialName}').join('\n')}',
+                        style: const TextStyle(color: Colors.deepOrange, fontSize: 13),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: ScreenAdapter.height(10)),
                   CellTextField(
                     isRequired: true,

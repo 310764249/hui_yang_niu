@@ -36,14 +36,8 @@ class FormulaGapWarningCard extends StatelessWidget {
     final isRed = warningGaps.any((gap) => gap.hasRedWarning);
     final color = isRed ? SaienteColors.redFF3D3D : Colors.orange;
 
-    return Container(
-      width: double.infinity,
-      margin: margin,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isRed ? const Color(0xFFFFE5E5) : const Color(0xFFFFF3E0),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -55,12 +49,32 @@ class FormulaGapWarningCard extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 6),
-          for (final gap in warningGaps)
-            Text(
-              gap.warningMessage,
-              style: TextStyle(color: color, fontSize: 14, height: 1.35),
+          const SizedBox(height: 8),
+          for (final gap in warningGaps) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+              decoration: BoxDecoration(
+                color:
+                    gap.hasRedWarning
+                        ? const Color(0xFFFFE5E5)
+                        : const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                gap.warningMessage,
+                style: TextStyle(
+                  color:
+                      gap.hasRedWarning
+                          ? SaienteColors.redFF3D3D
+                          : Colors.orange,
+                  fontSize: 14,
+                  height: 1.35,
+                ),
+              ),
             ),
+            const SizedBox(height: 6),
+          ],
         ],
       ),
     );

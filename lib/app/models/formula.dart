@@ -22,16 +22,21 @@ class FormulaGapModel {
     final rawGapValue = '${json['gapPercent'] ?? 0}'.trim();
     final hasPercentSuffix = rawGapValue.endsWith('%');
     final rawGap = double.tryParse(rawGapValue.replaceAll('%', '')) ?? 0;
+    final baseValue = double.tryParse('${json['baseValue'] ?? 0}') ?? 0;
+    final value = double.tryParse('${json['value'] ?? 0}') ?? 0;
     // The contract uses a 0..1 ratio, but older environments returned 25.6
     // for 25.6%. Normalize that legacy response at the boundary.
-    final gapPercent =
+    var gapPercent =
         hasPercentSuffix || (rawGap > 1 && rawGap <= 100)
             ? rawGap / 100
             : rawGap;
+    if (gapPercent <= 0 && baseValue > 0 && value < baseValue) {
+      gapPercent = ((baseValue - value) / baseValue).clamp(0.0, 1.0);
+    }
     return FormulaGapModel(
       name: json['name']?.toString() ?? '',
-      baseValue: double.tryParse('${json['baseValue'] ?? 0}') ?? 0,
-      value: double.tryParse('${json['value'] ?? 0}') ?? 0,
+      baseValue: baseValue,
+      value: value,
       gapPercent: gapPercent,
       rawMaterialName: json['rawMaterialName']?.toString() ?? '',
       alertLevel: int.tryParse('${json['alertLevel'] ?? 0}') ?? 0,
@@ -53,6 +58,9 @@ class FormulaGapModel {
   int get warningLevel {
     if (gapPercent > 0.2) return 2;
     if (gapPercent > 0.1) return 1;
+    if (gapPercent <= 0 && alertLevel >= 1 && alertLevel <= 2) {
+      return alertLevel;
+    }
     return 0;
   }
 
@@ -356,6 +364,45 @@ class FormulaModel {
               )
               .toList();
     }
+    if (gaps == null || gaps!.isEmpty) {
+      gaps = _deriveNutritionGaps();
+    }
+  }
+
+  List<FormulaGapModel> _deriveNutritionGaps() {
+    final nutrients = <(String, double?, double?, String)>[
+      ('干物质', baseDM, dm, ''),
+      ('粗料比', baseRoughagesPercent, roughagesPercent, ''),
+      ('粗蛋白', baseCP, cp, '豆粕'),
+      ('瘤胃降解蛋白', baseRDP, rdp, '豆粕'),
+      ('瘤胃非降解蛋白', baseRUP, rup, '豆粕'),
+      ('代谢蛋白', baseMP, mp, '豆粕'),
+      ('代谢赖氨酸', baseMLys, mLys, '赖氨酸'),
+      ('代谢蛋氨酸', baseMMet, mMet, '蛋氨酸'),
+      ('代谢能', baseME, me, '玉米'),
+      ('维持净能', baseNEm, nEm, '玉米'),
+      ('增重净能', baseNEg, nEg, '玉米'),
+      ('钙', baseCa, ca, '石粉'),
+      ('磷', baseP, p, '磷酸氢钙'),
+    ];
+    return nutrients
+        .where((item) => (item.$2 ?? 0) > 0 && (item.$3 ?? 0) < (item.$2 ?? 0))
+        .map((item) {
+          final base = item.$2!;
+          final actual = item.$3!;
+          final ratio = ((base - actual) / base).clamp(0.0, 1.0);
+          return FormulaGapModel(
+            name: item.$1,
+            baseValue: base,
+            value: actual,
+            gapPercent: ratio,
+            rawMaterialName: item.$4,
+            alertLevel: ratio > 0.2 ? 2 : (ratio > 0.1 ? 1 : 0),
+            remark: '',
+          );
+        })
+        .where((gap) => gap.hasWarning)
+        .toList();
   }
 
   FormulaGapModel? gapFor(String nutritionName) {
@@ -407,6 +454,7 @@ class FormulaModel {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['id'] = id;
+    data['formulaType'] = formulaType;
     data['nutritionId'] = nutritionId;
     if (gaps != null) data['gaps'] = gaps!.map((v) => v.toJson()).toList();
     data['name'] = name;
@@ -435,6 +483,16 @@ class FormulaModel {
     data['adf'] = adf;
     data['baseCP'] = baseCP;
     data['cp'] = cp;
+    data['baseRDP'] = baseRDP;
+    data['rdp'] = rdp;
+    data['baseRUP'] = baseRUP;
+    data['rup'] = rup;
+    data['baseME'] = baseME;
+    data['me'] = me;
+    data['baseMLys'] = baseMLys;
+    data['mLys'] = mLys;
+    data['baseMMet'] = baseMMet;
+    data['mMet'] = mMet;
     data['baseDE'] = baseDE;
     data['de'] = de;
     data['baseMJ'] = baseMJ;
@@ -451,6 +509,8 @@ class FormulaModel {
     data['nEg'] = nEg;
     data['baseMP'] = baseMP;
     data['mp'] = mp;
+    data['baseRoughagesPercent'] = baseRoughagesPercent;
+    data['roughagesPercent'] = roughagesPercent;
     data['weight'] = weight;
     data['price'] = price;
     data['enable'] = enable;

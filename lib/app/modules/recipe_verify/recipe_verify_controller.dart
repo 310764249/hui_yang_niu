@@ -23,7 +23,8 @@ class RecipeVerifyController extends GetxController {
   // {key: 0b5bcfaa-1c7e-41c7-a8c0-1b858e6df59f, label: 哺乳母牛, value: 3, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 4, disabled: false, dataType: null, isDeleted: false, children: null},
   // {key: f0b7a670-2d63-42e0-8f19-627edaac7859, label: 后备母牛, value: 5, parent: Toink.Data.Entities.Dic, isLeaf: false, sort: 5, disabled: false, dataType: null, isDeleted: false, children: null}]
 
-  List<String> get labels => gtlxList.map((item) => item['label'].toString()).toList();
+  List<String> get labels =>
+      gtlxList.map((item) => item['label'].toString()).toList();
 
   String get currentLabel => currentItem['label'].toString();
 
@@ -31,13 +32,17 @@ class RecipeVerifyController extends GetxController {
 
   //显示牛只重量的牛只类型 育肥牛 青年妊娠母牛 后备母牛
   bool get showNuWeight =>
-      currentItem['value'] == '4' || currentItem['value'] == '2' || currentItem['value'] == '5';
+      currentItem['value'] == '4' ||
+      currentItem['value'] == '2' ||
+      currentItem['value'] == '5';
 
   //显示日增重的牛只类型 育肥牛 后备母牛
-  bool get showNuDailyWeight => currentItem['value'] == '4' || currentItem['value'] == '5';
+  bool get showNuDailyWeight =>
+      currentItem['value'] == '4' || currentItem['value'] == '5';
 
   //显示妊娠月份的牛只类型 青年妊娠母牛 妊娠母牛
-  bool get showNuPregnancyMonth => currentItem['value'] == '2' || currentItem['value'] == '1';
+  bool get showNuPregnancyMonth =>
+      currentItem['value'] == '2' || currentItem['value'] == '1';
 
   //显示哺乳月份的牛只类型 哺乳母牛
   bool get showNuBreastMonth => currentItem['value'] == '3';
@@ -63,7 +68,8 @@ class RecipeVerifyController extends GetxController {
 
   Map<String, dynamic>? currentNuWeight;
 
-  List<String> get nuWeightLabels => nuWeight.map((item) => item['label'].toString()).toList();
+  List<String> get nuWeightLabels =>
+      nuWeight.map((item) => item['label'].toString()).toList();
 
   String get nuWeightLabel => currentNuWeight?['label'] ?? '';
 
@@ -74,7 +80,8 @@ class RecipeVerifyController extends GetxController {
   String nuDailyWeight = '';
 
   //妊娠月份labels
-  List<String> get rsyfLabels => rsyfList.map((item) => item['label'].toString()).toList();
+  List<String> get rsyfLabels =>
+      rsyfList.map((item) => item['label'].toString()).toList();
 
   //选择的妊娠月份
   Map<String, dynamic>? currentRsyf;
@@ -117,14 +124,31 @@ class RecipeVerifyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    gtlxList = AppDictList.searchItems('pfmb')?.where((item) => !item['isDeleted']).toList() ?? [];
+    gtlxList =
+        AppDictList.searchItems(
+          'pfmb',
+        )?.where((item) => !item['isDeleted']).toList() ??
+        [];
     gtzlListHB =
-        AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
+        AppDictList.searchItems(
+          'gtzl-hb',
+        )?.where((item) => !item['isDeleted']).toList() ??
+        [];
     gtzlListRS =
-        AppDictList.searchItems('gtzl-qnrs')?.where((item) => !item['isDeleted']).toList() ?? [];
+        AppDictList.searchItems(
+          'gtzl-qnrs',
+        )?.where((item) => !item['isDeleted']).toList() ??
+        [];
     gtzlListYF =
-        AppDictList.searchItems('gtzl-yf')?.where((item) => !item['isDeleted']).toList() ?? [];
-    rsyfList = AppDictList.searchItems('rsyf')?.where((item) => !item['isDeleted']).toList() ?? [];
+        AppDictList.searchItems(
+          'gtzl-yf',
+        )?.where((item) => !item['isDeleted']).toList() ??
+        [];
+    rsyfList =
+        AppDictList.searchItems(
+          'rsyf',
+        )?.where((item) => !item['isDeleted']).toList() ??
+        [];
     debugPrint('gtlxList: $gtlxList');
     currentItem = gtlxList.first;
     getRawMaterialList();
@@ -169,7 +193,10 @@ class RecipeVerifyController extends GetxController {
       return;
     }
     try {
-      List<RawMaterial> all = [...addRawMaterialList, ...addFeedRawMaterialList];
+      List<RawMaterial> all = [
+        ...addRawMaterialList,
+        ...addFeedRawMaterialList,
+      ];
       String? valueKG;
       try {
         int indexKG = nuDailyWeight.indexOf('kg');
@@ -202,9 +229,12 @@ class RecipeVerifyController extends GetxController {
               }).toList(),
           //element.category == 2 && (element.type == 4 || element.type == 6
           "additives":
-              all.where((e) => e.category == 2 && (e.type == 4 || e.type == 6)).map((e) {
-                return {"id": e.id, "weight": e.verifyWeight};
-              }).toList(),
+              all
+                  .where((e) => e.category == 2 && (e.type == 4 || e.type == 6))
+                  .map((e) {
+                    return {"id": e.id, "weight": e.verifyWeight};
+                  })
+                  .toList(),
           //element.category == 2 && element.type == 5
           "premix":
               all.where((e) => e.category == 2 && e.type == 5).map((e) {
@@ -214,6 +244,9 @@ class RecipeVerifyController extends GetxController {
       );
 
       formulaModel = FormulaModel.fromJson(response);
+      debugPrint(
+        '[formula-verify] gaps=${formulaModel?.gaps?.map((gap) => gap.toJson()).toList()}',
+      );
       formulaModel?.cowCount = int.parse(countController.text);
       formulaModel?.formulaType = 1;
       update();
@@ -278,21 +311,26 @@ class RecipeVerifyController extends GetxController {
   }
 
   void addFeedRawMaterialAll(List<RawMaterial> showRawMaterialLabel) {
-    addFeedRawMaterialList = [...addFeedRawMaterialList, ...showRawMaterialLabel];
+    addFeedRawMaterialList = [
+      ...addFeedRawMaterialList,
+      ...showRawMaterialLabel,
+    ];
     checkJLWeight();
     update();
   }
 
   //检查粗料总重量，如果重量小于当前输入的重量，则用总重量，反之不动
   checkCLWeight() {
-    if (getTotalWeight(addRawMaterialList) > (num.tryParse(czlzlController.text) ?? 0.0)) {
+    if (getTotalWeight(addRawMaterialList) >
+        (num.tryParse(czlzlController.text) ?? 0.0)) {
       czlzlController.text = getTotalWeight(addRawMaterialList).toString();
     }
   }
 
   //检查精料总重量，如果重量小于当前输入的重量，则用总重量，反之不动
   checkJLWeight() {
-    if (getTotalWeight(addFeedRawMaterialList) > (num.tryParse(jzlzlController.text) ?? 0.0)) {
+    if (getTotalWeight(addFeedRawMaterialList) >
+        (num.tryParse(jzlzlController.text) ?? 0.0)) {
       jzlzlController.text = getTotalWeight(addFeedRawMaterialList).toString();
     }
   }
@@ -321,12 +359,19 @@ class RecipeVerifyController extends GetxController {
     debugPrint('currentFormula: ${result.roughages?[0].toJson()}');
     formulaModelExist = result;
     //更新携带的信息
-    currentItem = gtlxList.firstWhereOrNull((e) => e['value'] == '${result.individualType}');
-    currentNuWeight = nuWeight.firstWhereOrNull((e) => e['value'] == '${result.weightType}');
-    currentRsyf = rsyfList.firstWhereOrNull((e) => e['value'] == '${result.gestationMonths}');
+    currentItem = gtlxList.firstWhereOrNull(
+      (e) => e['value'] == '${result.individualType}',
+    );
+    currentNuWeight = nuWeight.firstWhereOrNull(
+      (e) => e['value'] == '${result.weightType}',
+    );
+    currentRsyf = rsyfList.firstWhereOrNull(
+      (e) => e['value'] == '${result.gestationMonths}',
+    );
     nuDailyWeight = '${result.dailyGainWeight}kg';
     addRawMaterialList = [
-      for (var element in result.roughages ?? []) RawMaterial.fromJson(element.toJson()),
+      for (var element in result.roughages ?? [])
+        RawMaterial.fromJson(element.toJson()),
     ];
     getFormulaItems(result.id ?? '');
     update();

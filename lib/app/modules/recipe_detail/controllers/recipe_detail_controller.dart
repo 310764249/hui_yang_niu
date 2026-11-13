@@ -255,11 +255,16 @@ class RecipeDetailController extends GetxController {
         data: _verificationPayload(),
       );
       final responseMap = Map<String, dynamic>.from(response);
-      final merged = <String, dynamic>{...?argument?.toJson(), ...responseMap};
+      final previous = <String, dynamic>{...?argument?.toJson()}
+        ..remove('gaps');
+      final merged = <String, dynamic>{...previous, ...responseMap};
       final refreshed = FormulaModel.fromJson(merged);
       refreshed.cowCount = argument?.cowCount ?? refreshed.cowCount;
       refreshed.formulaType = argument?.formulaType ?? refreshed.formulaType;
       argument = refreshed;
+      debugPrint(
+        '[formula-save-check] verifyformula gaps=${refreshed.gaps?.map((gap) => gap.toJson()).toList()}',
+      );
       update();
       Toast.dismiss();
       return true;
@@ -298,6 +303,7 @@ class RecipeDetailController extends GetxController {
         "individualCate": argument?.individualCate,
         "individualType": argument?.individualType,
         "weightType": argument?.weightType,
+        "dailyGainWeight": argument?.dailyGainWeight,
         "calvingMonths": argument?.calvingMonths,
         "milkProduction": argument?.milkProduction,
         "milkGrade": argument?.milkGrade,
@@ -310,6 +316,11 @@ class RecipeDetailController extends GetxController {
         "ndf": argument?.ndf,
         "adf": argument?.adf,
         "cp": argument?.cp,
+        "rdp": argument?.rdp,
+        "rup": argument?.rup,
+        "me": argument?.me,
+        "mLys": argument?.mLys,
+        "mMet": argument?.mMet,
         "de": argument?.de,
         "mj": argument?.mj,
         "rnd": argument?.rnd,
@@ -325,6 +336,11 @@ class RecipeDetailController extends GetxController {
         "baseNDF": argument?.baseNDF,
         "baseADF": argument?.baseADF,
         "baseCP": argument?.baseCP,
+        "baseRDP": argument?.baseRDP,
+        "baseRUP": argument?.baseRUP,
+        "baseME": argument?.baseME,
+        "baseMLys": argument?.baseMLys,
+        "baseMMet": argument?.baseMMet,
         "baseDE": argument?.baseDE,
         "baseNEm": argument?.baseNEm,
         "nEm": argument?.nEm,
@@ -335,6 +351,8 @@ class RecipeDetailController extends GetxController {
         "mp": argument?.mp,
         "baseCa": argument?.baseCa,
         "baseP": argument?.baseP,
+        "baseRoughagesPercent": argument?.baseRoughagesPercent,
+        "roughagesPercent": argument?.roughagesPercent,
         "weight": argument?.weight,
         "price": argument?.price,
 
@@ -350,7 +368,7 @@ class RecipeDetailController extends GetxController {
         "additives": getRawMaterialListByType("additives"),
         "premix": getRawMaterialListByType("premix"),
       };
-      // print('配方参数:$mapParam');
+      debugPrint('[formula-save] gaps=${mapParam['gaps']}');
       await httpsClient.post("/api/formula", data: mapParam);
       Toast.dismiss();
       Toast.success(msg: '配方保存成功');

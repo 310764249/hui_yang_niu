@@ -36,7 +36,10 @@ class RecipeController extends GetxController {
   void onInit() {
     super.onInit();
     //初始化
-    refreshController = EasyRefreshController(controlFinishRefresh: true, controlFinishLoad: true);
+    refreshController = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
   }
 
   // 刷新配方列表数据
@@ -75,8 +78,14 @@ class RecipeController extends GetxController {
       }
 
       //接口参数
-      Map<String, dynamic> para = {'PageIndex': tempPageIndex, 'PageSize': pageSize};
-      var response = await httpsClient.get("/api/formula", queryParameters: para);
+      Map<String, dynamic> para = {
+        'PageIndex': tempPageIndex,
+        'PageSize': pageSize,
+      };
+      var response = await httpsClient.get(
+        "/api/formula",
+        queryParameters: para,
+      );
       // debugPrint('searchFormula: $response');
       PageInfo model = PageInfo.fromJson(response);
       //print(model.itemsCount);
@@ -86,6 +95,9 @@ class RecipeController extends GetxController {
         FormulaModel model = FormulaModel.fromJson(item);
         modelList.add(model);
       }
+      debugPrint(
+        '[formula-list] warnings=${modelList.where((model) => model.hasNutritionWarning).map((model) => '${model.id}:${model.warningGaps.map((gap) => '${gap.name}-${gap.displayGapPercent}').join(',')}').toList()}',
+      );
       //更新页面数据
       if (isRefresh) {
         items.value = modelList; //下拉刷新
@@ -95,7 +107,10 @@ class RecipeController extends GetxController {
       }
       //按时间倒排序
       items.sort(
-        (a, b) => DateTime.parse(a.created!).isBefore(DateTime.parse(b.created!)) ? 1 : -1,
+        (a, b) =>
+            DateTime.parse(a.created!).isBefore(DateTime.parse(b.created!))
+                ? 1
+                : -1,
       );
       //是否可以加载更多
       hasMore = items.length < model.itemsCount;

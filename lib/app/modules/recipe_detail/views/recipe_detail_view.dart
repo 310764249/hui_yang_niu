@@ -288,14 +288,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   //配方基本物质对比
   Widget _compareInfo() {
-    final gaps = controller.argument?.warningGaps ?? const <FormulaGapModel>[];
     return Column(
       children: [
-        if (gaps.isNotEmpty)
-          FormulaGapWarningCard(
-            gaps: gaps,
-            margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-          ),
         GestureDetector(
           onTap: () {
             controller.onTapCompare();
@@ -1019,12 +1013,14 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
     SmartDialog.show(
       backDismiss: true,
       clickMaskDismiss: true,
-      builder: (_) {
+      builder: (context) {
         return Center(
           child: SingleChildScrollView(
             child: Container(
+              width: MediaQuery.sizeOf(context).width * 0.9,
+              constraints: const BoxConstraints(maxWidth: 380),
               margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
@@ -1066,19 +1062,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                       controller.dialogRecipeInstructionController.text = value;
                     },
                   ),
-                  CellTextField(
-                    isRequired: false,
-                    title: '禁忌事项',
-                    hint: '请输入',
-                    controller: TextEditingController(
-                      text: controller.dialogTabooItem.value.trim(),
-                    ),
-                    focusNode: controller.dialogTabooItemNode,
-                    onChanged: (value) {
-                      controller.dialogTabooItemController.text = value;
-                    },
-                  ),
-                  SizedBox(height: ScreenAdapter.height(20)),
+                  SizedBox(height: ScreenAdapter.height(12)),
                   _dialogButtons(),
                 ],
               ),

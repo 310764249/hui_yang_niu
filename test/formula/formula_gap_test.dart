@@ -32,6 +32,28 @@ void main() {
       '25.6%',
     );
     expect(FormulaGapModel.fromJson({'gapPercent': '25.6%'}).warningLevel, 2);
+    expect(
+      FormulaGapModel.fromJson({
+        'baseValue': 0.0464,
+        'value': 0.0355,
+        'alertLevel': 2,
+      }).displayGapPercent,
+      '23.5%',
+    );
+  });
+
+  test('formula derives missing list gaps from nutrition values', () {
+    final model = FormulaModel.fromJson({
+      'baseCa': 0.0464,
+      'ca': 0.0355,
+      'baseP': 0.0258,
+      'p': 0.0311,
+    });
+
+    expect(model.warningGaps, hasLength(1));
+    expect(model.gapFor('钙(kg/d)')?.hasRedWarning, isTrue);
+    expect(model.gapFor('钙(kg/d)')?.displayGapPercent, '23.5%');
+    expect(model.gapFor('钙(kg/d)')?.rawMaterialName, '石粉');
   });
 
   test('formula finds a warning gap by nutrition row title', () {
@@ -88,7 +110,7 @@ void main() {
     },
   );
 
-  testWidgets('warning card lists all gaps with the highest severity color', (
+  testWidgets('warning card lists all gaps with individual severity colors', (
     tester,
   ) async {
     final gaps = [
@@ -110,9 +132,16 @@ void main() {
 
     expect(find.text('粗蛋白营养成分缺失，缺口为12.5%，建议增加豆粕原料'), findsOneWidget);
     expect(find.text('钙营养成分缺失，缺口为25.6%，建议增加石粉原料'), findsOneWidget);
+    expect(find.text('共2项营养成分缺失，建议补充后再保存'), findsOneWidget);
 
-    final container = tester.widget<Container>(find.byType(Container).first);
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, const Color(0xFFFFE5E5));
+    final colors =
+        tester
+            .widgetList<Container>(find.byType(Container))
+            .map((container) => container.decoration)
+            .whereType<BoxDecoration>()
+            .map((decoration) => decoration.color)
+            .toList();
+    expect(colors, contains(const Color(0xFFFFF3E0)));
+    expect(colors, contains(const Color(0xFFFFE5E5)));
   });
 }

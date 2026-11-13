@@ -8,21 +8,71 @@ class FormulaGapModel {
   final int alertLevel;
   final String remark;
 
-  const FormulaGapModel({required this.name, required this.baseValue, required this.value,
-    required this.gapPercent, required this.rawMaterialName, required this.alertLevel, required this.remark});
+  const FormulaGapModel({
+    required this.name,
+    required this.baseValue,
+    required this.value,
+    required this.gapPercent,
+    required this.rawMaterialName,
+    required this.alertLevel,
+    required this.remark,
+  });
 
-  factory FormulaGapModel.fromJson(Map<String, dynamic> json) => FormulaGapModel(
-    name: json['name']?.toString() ?? '',
-    baseValue: double.tryParse('${json['baseValue'] ?? 0}') ?? 0,
-    value: double.tryParse('${json['value'] ?? 0}') ?? 0,
-    gapPercent: double.tryParse('${json['gapPercent'] ?? 0}') ?? 0,
-    rawMaterialName: json['rawMaterialName']?.toString() ?? '',
-    alertLevel: int.tryParse('${json['alertLevel'] ?? 0}') ?? 0,
-    remark: json['remark']?.toString() ?? '',
-  );
+  factory FormulaGapModel.fromJson(Map<String, dynamic> json) {
+    final rawGapValue = '${json['gapPercent'] ?? 0}'.trim();
+    final hasPercentSuffix = rawGapValue.endsWith('%');
+    final rawGap = double.tryParse(rawGapValue.replaceAll('%', '')) ?? 0;
+    // The contract uses a 0..1 ratio, but older environments returned 25.6
+    // for 25.6%. Normalize that legacy response at the boundary.
+    final gapPercent =
+        hasPercentSuffix || (rawGap > 1 && rawGap <= 100)
+            ? rawGap / 100
+            : rawGap;
+    return FormulaGapModel(
+      name: json['name']?.toString() ?? '',
+      baseValue: double.tryParse('${json['baseValue'] ?? 0}') ?? 0,
+      value: double.tryParse('${json['value'] ?? 0}') ?? 0,
+      gapPercent: gapPercent,
+      rawMaterialName: json['rawMaterialName']?.toString() ?? '',
+      alertLevel: int.tryParse('${json['alertLevel'] ?? 0}') ?? 0,
+      remark: json['remark']?.toString() ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => {'name': name, 'baseValue': baseValue, 'value': value,
-    'gapPercent': gapPercent, 'rawMaterialName': rawMaterialName, 'alertLevel': alertLevel, 'remark': remark};
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'baseValue': baseValue,
+    'value': value,
+    'gapPercent': gapPercent,
+    'rawMaterialName': rawMaterialName,
+    'alertLevel': alertLevel,
+    'remark': remark,
+  };
+
+  /// The ratio is the source of truth. Exactly 20% is still an orange warning.
+  int get warningLevel {
+    if (gapPercent > 0.2) return 2;
+    if (gapPercent > 0.1) return 1;
+    return 0;
+  }
+
+  bool get hasWarning => warningLevel > 0;
+  bool get hasRedWarning => warningLevel >= 2;
+  String get displayGapPercent {
+    final percent = gapPercent * 100;
+    final rounded = percent.toStringAsFixed(1);
+    return '${rounded.endsWith('.0') ? rounded.substring(0, rounded.length - 2) : rounded}%';
+  }
+
+  String get _rawMaterialName {
+    if (rawMaterialName.isEmpty) return '对应原料';
+    return rawMaterialName.endsWith('原料')
+        ? rawMaterialName
+        : '$rawMaterialName原料';
+  }
+
+  String get warningMessage =>
+      '$name营养成分缺失，缺口为$displayGapPercent，建议增加$_rawMaterialName';
 }
 
 class FormulaModel {
@@ -31,7 +81,8 @@ class FormulaModel {
   late final String? nutritionId; //营养标准ID
   late final String? name; //名称
   late final int? individualCate; //品种 西门塔尔、秦川牛
-  late final int? individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
+  late final int?
+  individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
   late final int? weightType; //个体重量
   late final int? calvingMonths; //产犊后月数
   late final int? gestationMonths; //妊娠月数
@@ -88,7 +139,8 @@ class FormulaModel {
   late final String? description; //描述
   late final String? taboo; //禁忌事项
   late final String? executor; //制作人
-  late final int? status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
+  late final int?
+  status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
   late final String? remark; //备注
   late final String? tenantId; //租户
   late final String? created; //创建时间
@@ -184,6 +236,7 @@ class FormulaModel {
     this.additives,
     this.premix,
     this.formulaType,
+    this.gaps,
   });
 
   // 是否验证配方
@@ -201,7 +254,9 @@ class FormulaModel {
     calvingMonths = json['calvingMonths'];
     gestationMonths = json['gestationMonths'];
     roughagesPercent = double.parse((json['roughagesPercent'] ?? 0).toString());
-    baseRoughagesPercent = double.parse((json['baseRoughagesPercent'] ?? 0).toString());
+    baseRoughagesPercent = double.parse(
+      (json['baseRoughagesPercent'] ?? 0).toString(),
+    );
     dailyGainWeight = double.parse((json['dailyGainWeight'] ?? 0).toString());
     milkProduction = double.parse((json['milkProduction'] ?? 0).toString());
     milkGrade = json['milkGrade'];
@@ -293,12 +348,61 @@ class FormulaModel {
       });
     }
     if (json['gaps'] is List) {
-      gaps = (json['gaps'] as List)
-          .whereType<Map>()
-          .map((v) => FormulaGapModel.fromJson(Map<String, dynamic>.from(v)))
-          .toList();
+      gaps =
+          (json['gaps'] as List)
+              .whereType<Map>()
+              .map(
+                (v) => FormulaGapModel.fromJson(Map<String, dynamic>.from(v)),
+              )
+              .toList();
     }
   }
+
+  FormulaGapModel? gapFor(String nutritionName) {
+    String normalize(String value) =>
+        value
+            .replaceAll(RegExp(r'[(（][^)）]*[)）]'), '')
+            .replaceAll(RegExp(r'\s+'), '')
+            .toLowerCase();
+
+    const aliases = <String, List<String>>{
+      '干物质采食量': ['干物质', 'dmi'],
+      '粗料比': ['粗料比'],
+      '粗蛋白需要量': ['粗蛋白', 'cp'],
+      '瘤胃降解蛋白': ['rdp'],
+      '瘤胃非降解蛋白': ['rup'],
+      '代谢蛋白': ['mp'],
+      '代谢赖氨酸': ['lys'],
+      '代谢蛋氨酸': ['met'],
+      '代谢能': ['me'],
+      '维持净能': ['nem'],
+      '增重净能': ['生长净能', 'neg'],
+      '钙': ['ca'],
+      '磷': ['p'],
+    };
+
+    final name = normalize(nutritionName);
+    final names = <String>[name, ...?aliases[name]];
+    for (final gap in gaps ?? const <FormulaGapModel>[]) {
+      if (!gap.hasWarning) continue;
+      final gapName = normalize(gap.name);
+      final matched = names.any(
+        (item) => item.contains(gapName) || gapName.contains(item),
+      );
+      if (matched) return gap;
+    }
+    return null;
+  }
+
+  List<FormulaGapModel> get warningGaps =>
+      (gaps ?? const <FormulaGapModel>[])
+          .where((gap) => gap.hasWarning)
+          .toList();
+
+  bool get hasNutritionWarning => warningGaps.isNotEmpty;
+
+  bool get hasRedNutritionWarning =>
+      warningGaps.any((gap) => gap.hasRedWarning);
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

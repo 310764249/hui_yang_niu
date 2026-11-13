@@ -12,6 +12,7 @@ import '../../../services/colors.dart';
 import '../../../services/load_image.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../widgets/empty_view.dart';
+import '../../../widgets/formula_gap_warning.dart';
 import '../../../widgets/refresh_header_footer.dart';
 import '../controllers/recipe_controller.dart';
 
@@ -143,6 +144,12 @@ class RecipeView extends GetView<RecipeController> {
 
   // 配方列表item
   Widget _recipeListItem(FormulaModel model) {
+    final warningGaps = model.warningGaps;
+    final highestWarningGap = warningGaps.any((gap) => gap.hasRedWarning)
+        ? warningGaps.firstWhere((gap) => gap.hasRedWarning)
+        : warningGaps.isNotEmpty
+        ? warningGaps.first
+        : null;
     return InkWell(
       onTap: () {
         if (isPick) {
@@ -178,23 +185,25 @@ class RecipeView extends GetView<RecipeController> {
                   ),
                 ),
                 SizedBox(width: ScreenAdapter.width(5)),
-                Text(
-                  model.name ?? Constant.placeholder,
-                  style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(14),
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                Expanded(
+                  child: Text(
+                    model.name ?? Constant.placeholder,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(14),
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-                const Spacer(),
-                if (model.gaps?.isNotEmpty == true)
-                  Icon(
-                    Icons.error,
+                if (highestWarningGap != null) ...[
+                  SizedBox(width: ScreenAdapter.width(5)),
+                  FormulaGapWarningIcon(
+                    gap: highestWarningGap,
                     size: ScreenAdapter.width(17),
-                    color: model.gaps!.any((gap) => gap.alertLevel >= 2)
-                        ? Colors.deepOrange
-                        : Colors.amber,
                   ),
+                ],
               ],
             ),
             SizedBox(height: ScreenAdapter.height(14)),

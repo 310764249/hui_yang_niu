@@ -14,6 +14,7 @@ import '../../../services/constant.dart';
 import '../../../services/screenAdapter.dart';
 import '../../../widgets/alert.dart';
 import '../../../widgets/cell_text_field.dart';
+import '../../../widgets/formula_gap_warning.dart';
 import '../../../widgets/my_card.dart';
 import '../../../widgets/page_wrapper.dart';
 import '../controllers/recipe_detail_controller.dart';
@@ -46,7 +47,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           children: [
             TextSpan(
               text: title,
-              style: TextStyle(fontSize: ScreenAdapter.fontSize(14), color: SaienteColors.black80),
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(14),
+                color: SaienteColors.black80,
+              ),
             ),
             TextSpan(
               text: value,
@@ -67,7 +71,9 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
   Widget _operationInfo(context) {
     return MyCard(
       children: [
-        CardTitle(title: "配方名称:${controller.argument!.name ?? Constant.placeholder}"),
+        CardTitle(
+          title: "配方名称:${controller.argument!.name ?? Constant.placeholder}",
+        ),
         //基本信息
         Container(
           padding: EdgeInsets.fromLTRB(
@@ -94,7 +100,12 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                       controller.argument!.gestationMonths.toString(),
                     ),
                     SizedBox(height: ScreenAdapter.height(10)),
-                    _basicRow('存栏：', controller.argument!.cowCount.toString(), '', ''),
+                    _basicRow(
+                      '存栏：',
+                      controller.argument!.cowCount.toString(),
+                      '',
+                      '',
+                    ),
                   ];
                 }
                 if (controller.argument!.individualType == 3) {
@@ -109,7 +120,12 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                       controller.argument!.calvingMonths.toString(),
                     ),
                     SizedBox(height: ScreenAdapter.height(10)),
-                    _basicRow('存栏：', controller.argument!.cowCount.toString(), '', ''),
+                    _basicRow(
+                      '存栏：',
+                      controller.argument!.cowCount.toString(),
+                      '',
+                      '',
+                    ),
                   ];
                 }
                 if (controller.argument!.individualType == 2) {
@@ -148,7 +164,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                   _basicRow(
                     '日增重(kg/d)：',
                     () {
-                      String weight = controller.argument!.dailyGainWeight.toString();
+                      String weight =
+                          controller.argument!.dailyGainWeight.toString();
                       String? label = Constant.gtKHMap['${weight}kg'];
                       return label == null ? weight : '${weight}kg$label ';
                     }(),
@@ -183,12 +200,20 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
         //背景
         color: isLeft ? SaienteColors.blueE5EEFF : SaienteColors.redFFE9E9,
         //设置四周圆角 角度
-        borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.height(5.0))),
+        borderRadius: BorderRadius.all(
+          Radius.circular(ScreenAdapter.height(5.0)),
+        ),
         //设置四周边框
         border:
             isLeft
-                ? Border.all(width: ScreenAdapter.width(0.5), color: SaienteColors.blue275CF3)
-                : Border.all(width: ScreenAdapter.width(0.5), color: SaienteColors.redFF3D3D),
+                ? Border.all(
+                  width: ScreenAdapter.width(0.5),
+                  color: SaienteColors.blue275CF3,
+                )
+                : Border.all(
+                  width: ScreenAdapter.width(0.5),
+                  color: SaienteColors.redFF3D3D,
+                ),
       ),
       child: Text(
         text,
@@ -203,9 +228,33 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   //物质对比
   Widget _compareCell(String title, String left, String right) {
+    final gap = controller.argument?.gapFor(title);
     return MyCard(
       children: [
-        CardTitle(title: title),
+        Container(
+          height: ScreenAdapter.height(52),
+          margin: EdgeInsets.only(left: ScreenAdapter.width(12)),
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: SaienteColors.blackE5,
+                    fontSize: ScreenAdapter.fontSize(16),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (gap != null) ...[
+                SizedBox(width: ScreenAdapter.width(6)),
+                FormulaGapWarningIcon(gap: gap, size: ScreenAdapter.width(18)),
+              ],
+              SizedBox(width: ScreenAdapter.width(12)),
+            ],
+          ),
+        ),
         Row(
           children: [
             SizedBox(width: ScreenAdapter.width(10)),
@@ -239,23 +288,14 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   //配方基本物质对比
   Widget _compareInfo() {
-    final gaps = controller.argument?.gaps ?? const <FormulaGapModel>[];
+    final gaps = controller.argument?.warningGaps ?? const <FormulaGapModel>[];
     return Column(
       children: [
         if (gaps.isNotEmpty)
-          ...gaps.map((gap) => Container(
-            width: double.infinity,
+          FormulaGapWarningCard(
+            gaps: gaps,
             margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: gap.alertLevel >= 2 ? const Color(0xFFFFE5E5) : const Color(0xFFFFF1E0),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              '${gap.name}缺失 ${((gap.gapPercent * 100).toStringAsFixed(0))}%，建议增加${gap.rawMaterialName.isEmpty ? '相关原料' : gap.rawMaterialName}${gap.remark.isEmpty ? '' : '，${gap.remark}'}',
-              style: TextStyle(color: gap.alertLevel >= 2 ? Colors.red : Colors.deepOrange, fontSize: 14),
-            ),
-          )),
+          ),
         GestureDetector(
           onTap: () {
             controller.onTapCompare();
@@ -266,7 +306,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             decoration: BoxDecoration(
               color: SaienteColors.blue2559F3.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(width: ScreenAdapter.height(1), color: SaienteColors.blue2559F3),
+              border: Border.all(
+                width: ScreenAdapter.height(1),
+                color: SaienteColors.blue2559F3,
+              ),
             ),
             alignment: Alignment.center,
             child: Row(
@@ -274,14 +317,19 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
               children: [
                 const Text(
                   '营养成分详情',
-                  style: TextStyle(color: SaienteColors.blue2559F3, fontSize: 16),
+                  style: TextStyle(
+                    color: SaienteColors.blue2559F3,
+                    fontSize: 16,
+                  ),
                 ),
                 ValueListenableBuilder(
                   valueListenable: controller.compareExpanded,
                   builder: (context, value, child) {
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 400),
-                      transform: Matrix4.rotationZ(controller.compareExpanded.value ? -pi : 0),
+                      transform: Matrix4.rotationZ(
+                        controller.compareExpanded.value ? -pi : 0,
+                      ),
                       transformAlignment: Alignment.center,
                       child: const Icon(
                         Icons.keyboard_double_arrow_down,
@@ -585,7 +633,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
       height: ScreenAdapter.height(50),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(width: ScreenAdapter.height(1), color: SaienteColors.separateLine),
+          bottom: BorderSide(
+            width: ScreenAdapter.height(1),
+            color: SaienteColors.separateLine,
+          ),
         ),
       ),
       child: Row(
@@ -607,7 +658,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           ),
           Expanded(
             child: Text(
-              AppDictList.findLabelByCode(controller.ylflList, model.type.toString()),
+              AppDictList.findLabelByCode(
+                controller.ylflList,
+                model.type.toString(),
+              ),
               maxLines: 3,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -719,7 +773,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
     List<TableRow> list = [];
     list.add(TableRow(children: header));
 
-    final cowCount = controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1;
+    final cowCount =
+        controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1;
 
     // ✅ 先算总重量、总成本
     double totalWeight = 0;
@@ -808,7 +863,8 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
     List<TableRow> list = [];
     list.add(TableRow(children: header));
 
-    final cowCount = controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1;
+    final cowCount =
+        controller.isFromCreate ? (controller.argument?.cowCount ?? 1) : 1;
 
     double totalWeight = 0;
     double totalCost = 0;
@@ -865,13 +921,19 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 Table(
                   defaultColumnWidth: FixedColumnWidth(ScreenAdapter.width(90)),
                   defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  border: TableBorder.all(color: SaienteColors.separateLine, width: 0.5),
+                  border: TableBorder.all(
+                    color: SaienteColors.separateLine,
+                    width: 0.5,
+                  ),
                   children: _renderList(),
                 ),
                 Table(
                   defaultColumnWidth: FixedColumnWidth(ScreenAdapter.width(90)),
                   defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  border: TableBorder.all(color: SaienteColors.separateLine, width: 0.5),
+                  border: TableBorder.all(
+                    color: SaienteColors.separateLine,
+                    width: 0.5,
+                  ),
                   children: _concentratedFeedList(),
                 ),
               ],
@@ -895,7 +957,9 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                     decoration: BoxDecoration(
                       //设置四周圆角 角度
                       color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(ScreenAdapter.width(10.0))),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(ScreenAdapter.width(10.0)),
+                      ),
                     ),
                     child: ListView.builder(
                       itemCount: controller.items.length + 1,
@@ -917,6 +981,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
   }
 
   Widget _dialogButtons() {
+    final hasWarning = controller.argument?.hasNutritionWarning ?? false;
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -926,7 +991,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
           },
           child: Text(
             '取消',
-            style: TextStyle(color: SaienteColors.blackE5, fontSize: ScreenAdapter.fontSize(17)),
+            style: TextStyle(
+              color: SaienteColors.blackE5,
+              fontSize: ScreenAdapter.fontSize(17),
+            ),
           ),
         ),
         TextButton(
@@ -934,8 +1002,11 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
             controller.saveFormula();
           },
           child: Text(
-            '保存',
-            style: TextStyle(color: SaienteColors.blue275CF3, fontSize: ScreenAdapter.fontSize(17)),
+            hasWarning ? '仍要保存' : '保存',
+            style: TextStyle(
+              color: SaienteColors.blue275CF3,
+              fontSize: ScreenAdapter.fontSize(17),
+            ),
           ),
         ),
       ],
@@ -944,15 +1015,14 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
 
   // 保存配方弹窗
   void _showSaveDialog() async {
-    final gaps = controller.argument?.gaps ?? const <FormulaGapModel>[];
+    final gaps = controller.argument?.warningGaps ?? const <FormulaGapModel>[];
     SmartDialog.show(
       backDismiss: true,
       clickMaskDismiss: true,
       builder: (_) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
+        return Center(
+          child: SingleChildScrollView(
+            child: Container(
               margin: const EdgeInsets.all(10),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -963,18 +1033,13 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 10),
-                  const Text('保存配方', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  const Text(
+                    '保存配方',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
                   if (gaps.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: const Color(0xFFFFF1E0), borderRadius: BorderRadius.circular(8)),
-                      child: Text(
-                        '共 ${gaps.length} 项营养成分缺失，仍要保存吗？\n${gaps.map((gap) => '${gap.name}缺失${(gap.gapPercent * 100).toStringAsFixed(0)}%，建议增加${gap.rawMaterialName.isEmpty ? '相关原料' : gap.rawMaterialName}').join('\n')}',
-                        style: const TextStyle(color: Colors.deepOrange, fontSize: 13),
-                      ),
-                    ),
+                    FormulaGapWarningCard(gaps: gaps),
                   ],
                   SizedBox(height: ScreenAdapter.height(10)),
                   CellTextField(
@@ -1018,7 +1083,7 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                 ],
               ),
             ),
-          ],
+          ),
         );
       },
     );
@@ -1043,8 +1108,10 @@ class RecipeDetailView extends GetView<RecipeDetailController> {
                     fontSize: ScreenAdapter.fontSize(16),
                   ),
                 ),
-                onPressed: () {
-                  _showSaveDialog();
+                onPressed: () async {
+                  if (await controller.refreshVerificationForSave()) {
+                    _showSaveDialog();
+                  }
                 },
               )
               : TextButton(

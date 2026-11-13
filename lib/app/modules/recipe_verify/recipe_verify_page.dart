@@ -20,6 +20,7 @@ import '../../models/formula.dart';
 import '../../network/httpsClient.dart';
 import '../../services/constant.dart';
 import '../../services/screenAdapter.dart';
+import '../../widgets/formula_gap_warning.dart';
 import '../../widgets/my_card.dart';
 import '../../widgets/picker.dart';
 import 'feed_details_info_view.dart';
@@ -627,9 +628,33 @@ class RecipeVerifyPage extends GetView<RecipeVerifyController> {
 
   //物质对比
   Widget _compareCell(String title, String left, String right) {
+    final gap = controller.formulaModel?.gapFor(title);
     return MyCard(
       children: [
-        CardTitle(title: title),
+        Container(
+          height: ScreenAdapter.height(52),
+          margin: EdgeInsets.only(left: ScreenAdapter.width(12)),
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: SaienteColors.blackE5,
+                    fontSize: ScreenAdapter.fontSize(16),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (gap != null) ...[
+                SizedBox(width: ScreenAdapter.width(6)),
+                FormulaGapWarningIcon(gap: gap, size: ScreenAdapter.width(18)),
+              ],
+              SizedBox(width: ScreenAdapter.width(12)),
+            ],
+          ),
+        ),
         Row(
           children: [
             SizedBox(width: ScreenAdapter.width(10)),

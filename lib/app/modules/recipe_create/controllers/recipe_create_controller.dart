@@ -70,6 +70,7 @@ class RecipeCreateController extends GetxController {
   /// !定义一个个体类型的 value 变量, 根据这个变量去显示不同的Widget, 默认999
   /// !value含义: 1-生长母牛, 2-妊娠母牛, 3-哺乳母牛, 4-育肥牛, 999:默认无含义
   RxInt gtlxValue = 999.obs;
+  bool get hasSelectedCowType => gtlxValue.value != 999;
 
   // 个体重量
   RxList gtzlNameList = [].obs;
@@ -103,6 +104,50 @@ class RecipeCreateController extends GetxController {
     // 过滤添加剂和预混料的数据, 因为有的数据是针对不同性别的牛
     updateYhlList();
     update();
+  }
+
+  double? get selectedWeightValue {
+    if (gtzlSelIndex == -1 || gtzlSelIndex >= gtzlList.length) return null;
+    final item = gtzlList[gtzlSelIndex];
+    final dictValue = num.tryParse('${item['value']}');
+    if (dictValue != null) return dictValue.toDouble();
+
+    final labelMatch = RegExp(r'(\d+(?:\.\d+)?)').firstMatch('${item['label']}');
+    return double.tryParse(labelMatch?.group(1) ?? '');
+  }
+
+  /// 字典 value 是标准化数值，避免依赖显示文案中的单位格式。
+  int? get selectedWeightType => selectedWeightValue?.round();
+
+  List<double> dailyGainOptionsForSelectedWeight() {
+    const weightRangeMap = <int, List<double>>{
+      240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+      280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+      320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+      360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+      520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+      560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+      600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
+      640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
+      760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+      800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+      840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
+    };
+
+    final weight = selectedWeightType;
+    if (weight == null || weight <= 0) return const [];
+    if (weightRangeMap.containsKey(weight)) return weightRangeMap[weight]!;
+
+    // 兼容 200/250/300 等历史体重档位：取距离最近的区间。
+    final nearestWeight = weightRangeMap.keys.reduce(
+      (a, b) => (weight - a).abs() < (weight - b).abs() ? a : b,
+    );
+    return weightRangeMap[nearestWeight]!;
   }
 
   /// 切换个体类型时触发[个体体重]类型的数据变化
@@ -438,7 +483,13 @@ class RecipeCreateController extends GetxController {
     gtzlListHB =
         AppDictList.searchItems('gtzl-hb')?.where((item) => !item['isDeleted']).toList() ?? [];
     gtzlListRS =
-        AppDictList.searchItems('gtzl-qnrs')?.where((item) => !item['isDeleted']).toList() ?? [];
+        AppDictList.searchItems('gtzl-qnrs')?.where((item) => !item['isDeleted']).toList() ??
+        [];
+    if (gtzlListRS.isEmpty) {
+      // 兼容历史字典编码，测试与生产环境曾分别返回 qnrs/rs。
+      gtzlListRS =
+          AppDictList.searchItems('gtzl-rs')?.where((item) => !item['isDeleted']).toList() ?? [];
+    }
     gtzlListBR =
         AppDictList.searchItems('gtzl-br')?.where((item) => !item['isDeleted']).toList() ?? [];
     gtzlListYF =

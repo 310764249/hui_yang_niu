@@ -134,67 +134,47 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           content: controller.rzzSelName.value,
           onPressed: () {
             //0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
-            final Map<int, List<double>> weightRangeMap = {
-              240: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-              280: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-              320: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-              360: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              400: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              440: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              480: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-              520: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-              560: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-              600: [0.0, 1.0, 1.2, 1.4, 1.6, 1.8],
-              640: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              680: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              720: [0.0, 0.8, 1.0, 1.2, 1.4, 1.6],
-              760: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-              800: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-              840: [0.0, 0.6, 0.8, 1.0, 1.2, 1.4],
-            };
-
-            final weightStr = controller.gtzlSelName.value.replaceAll('kg', '');
-            final weight = int.tryParse(weightStr);
-            debugPrint('controller.gtzlSelName.value = ${controller.gtzlSelName.value}');
-            debugPrint('weight = $weight');
-
-            if (weight != null && weightRangeMap.containsKey(weight)) {
-              final range = weightRangeMap[weight]!;
-
-              // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
-              final filteredList =
-                  range.map((e) {
-                    ////0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
-                    //拼接对应的数值 如 e == 0.6，显示"0.6kg（0.70）"
-                    String value = '${e}kg';
-                    value += Constant.gtKHMap[value] == null ? '' : '${Constant.gtKHMap[value]}';
-                    return value;
-                  }).toList();
-
-              if (filteredList.isEmpty) {
-                debugPrint('当前体重无可选日增重区间');
-                return;
-              }
-
-              // 弹出选择器
-              Picker.showSinglePicker(
-                context,
-                filteredList,
-                selectData: controller.rzzSelName.value,
-                title: '请选择日增重',
-                onConfirm: (value, position) {
-                  debugPrint('value: $value, position: $position');
-                  // 在原始列表里找对应位置（如果需要的话）
-                  int index = filteredList.indexOf(value);
-                  //去掉kg以及后面的字符串
-                  // int indexKG = value.indexOf('kg');
-                  // String valueKG = value.substring(0, indexKG + 2);
-                  controller.updateRzzSelectedItems(value, index);
-                },
-              );
-            } else {
-              debugPrint('未找到对应体重的区间范围');
+            final range = controller.dailyGainOptionsForSelectedWeight();
+            if (controller.selectedWeightType == null) {
+              Toast.show('请先选择牛只重量');
+              return;
             }
+            if (range.isEmpty) {
+              Toast.show('当前牛只重量暂无可选日增重');
+              return;
+            }
+
+            // 统一格式：整数显示 "1kg"，小数显示 "1.2kg"
+            final filteredList =
+                range.map((e) {
+                  ////0.6kg(0.70)0.8kg(0.94)1.0kg(1.17)1.2kg(1.41)1.4kg(1.65)1.6kg(1.88)1.8kg(2.11)
+                  //拼接对应的数值 如 e == 0.6，显示"0.6kg（0.70）"
+                  String value = '${e}kg';
+                  value += Constant.gtKHMap[value] == null ? '' : '${Constant.gtKHMap[value]}';
+                  return value;
+                }).toList();
+
+            if (filteredList.isEmpty) {
+              debugPrint('当前体重无可选日增重区间');
+              return;
+            }
+
+            // 弹出选择器
+            Picker.showSinglePicker(
+              context,
+              filteredList,
+              selectData: controller.rzzSelName.value,
+              title: '请选择日增重',
+              onConfirm: (value, position) {
+                debugPrint('value: $value, position: $position');
+                // 在原始列表里找对应位置（如果需要的话）
+                int index = filteredList.indexOf(value);
+                //去掉kg以及后面的字符串
+                // int indexKG = value.indexOf('kg');
+                // String valueKG = value.substring(0, indexKG + 2);
+                controller.updateRzzSelectedItems(value, index);
+              },
+            );
           },
         );
       default:
@@ -234,13 +214,13 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
         ),
         //3.妊娠母牛
         // 姬去掉牛只重量和日增重，gtlxValue.value ==1和3不显示牛只重量
-        if (controller.gtlxValue != 1 && controller.gtlxValue != 3)
+        if (controller.gtlxValue.value != 1 && controller.gtlxValue.value != 3)
           CellButton(
             isRequired: true,
             title: '牛只重量',
             content: controller.gtzlSelName.value,
             onPressed: () {
-              if (controller.gtzlList.isEmpty) {
+              if (!controller.hasSelectedCowType) {
                 Toast.show('请先选择个体类型');
                 return;
               }
@@ -392,7 +372,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           content: controller.tjjSelectedDisplayNames.value,
           onPressed: () {
             //! 添加剂中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
-            if (controller.gtzlList.isEmpty) {
+            if (!controller.hasSelectedCowType) {
               Toast.show('请先选择个体类型');
               return;
             }
@@ -419,7 +399,7 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           content: controller.yhlSelName.value,
           onPressed: () {
             //! 预混料中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
-            if (controller.gtzlList.isEmpty) {
+            if (!controller.hasSelectedCowType) {
               Toast.show('请先选择个体类型');
               return;
             }

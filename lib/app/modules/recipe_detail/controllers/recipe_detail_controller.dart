@@ -21,7 +21,8 @@ class RecipeDetailController extends GetxController {
 
   // 弹窗输入框
   TextEditingController dialogFormulaNameController = TextEditingController();
-  TextEditingController dialogRecipeInstructionController = TextEditingController();
+  TextEditingController dialogRecipeInstructionController =
+      TextEditingController();
   TextEditingController dialogTabooItemController = TextEditingController();
 
   final FocusNode dialogFormulaNameNode = FocusNode();
@@ -48,10 +49,12 @@ class RecipeDetailController extends GetxController {
   RxList<FormulaItemModel> items = <FormulaItemModel>[].obs;
 
   //粗饲料
-  List<FormulaItemModel> get roughages => items.where((e) => e.type == 1).toList();
+  List<FormulaItemModel> get roughages =>
+      items.where((e) => e.type == 1).toList();
 
   //精饲料e.type不等于0和不等于1的.其他都是精饲料
-  List<FormulaItemModel> get energyFeed => items.where((e) => e.type != 0 && e.type != 1).toList();
+  List<FormulaItemModel> get energyFeed =>
+      items.where((e) => e.type != 0 && e.type != 1).toList();
 
   //配方目标
   List pfmbList = [];
@@ -87,7 +90,8 @@ class RecipeDetailController extends GetxController {
       });
       dialogRecipeInstructionNode.addListener(() async {
         if (!dialogRecipeInstructionNode.hasFocus) {
-          dialogRecipeInstruction.value = dialogRecipeInstructionController.text;
+          dialogRecipeInstruction.value =
+              dialogRecipeInstructionController.text;
           update();
         }
       });
@@ -161,123 +165,109 @@ class RecipeDetailController extends GetxController {
     }
   }
 
-  List getRawMaterialListByType(String type) {
-    List targetList = [];
-    switch (type) {
-      case 'roughages':
-        if (argument?.roughages?.isNotEmpty ?? false) {
-          for (var element in argument!.roughages!) {
-            targetList.add({
-              "id": element.id,
-              "demand": element.demand,
-              "weight": element.weight,
-              "de": element.de,
-              "nEm": element.nEm,
-              "nEg": element.nEg,
-              "mj": element.mj,
-              "mp": element.mp,
-              "price": element.price,
-              "variable": element.variable,
-              "correlation": element.correlation,
-              "referenceValues": element.referenceValues,
-              // "ruleCode": element.ruleCode,
-              // "ruleRemark": element.ruleRemark,
-            });
-          }
-        }
-        break;
-      case 'energyFeed':
-        if (argument?.energyFeed?.isNotEmpty ?? false) {
-          for (var element in argument!.energyFeed!) {
-            targetList.add({
-              "id": element.id,
-              "demand": element.demand,
-              "weight": element.weight,
-              "de": element.de,
-              "nEm": element.nEm,
-              "nEg": element.nEg,
-              "mj": element.mj,
-              "mp": element.mp,
-              "price": element.price,
-              "variable": element.variable,
-              "correlation": element.correlation,
-              "referenceValues": element.referenceValues,
-              // "ruleCode": element.ruleCode,
-              // "ruleRemark": element.ruleRemark,
-            });
-          }
-        }
-        break;
-      case 'proteinFeed':
-        if (argument?.proteinFeed?.isNotEmpty ?? false) {
-          for (var element in argument!.proteinFeed!) {
-            targetList.add({
-              "id": element.id,
-              "demand": element.demand,
-              "weight": element.weight,
-              "de": element.de,
-              "nEm": element.nEm,
-              "nEg": element.nEg,
-              "mj": element.mj,
-              "mp": element.mp,
-              "price": element.price,
-              "variable": element.variable,
-              "correlation": element.correlation,
-              "referenceValues": element.referenceValues,
-              // "ruleCode": element.ruleCode,
-              // "ruleRemark": element.ruleRemark,
-            });
-          }
-        }
-        break;
-      case 'additives':
-        if (argument?.additives?.isNotEmpty ?? false) {
-          for (var element in argument!.additives!) {
-            targetList.add({
-              "id": element.id,
-              "demand": element.demand,
-              "weight": element.weight,
-              "de": element.de,
-              "nEm": element.nEm,
-              "nEg": element.nEg,
-              "mj": element.mj,
-              "mp": element.mp,
-              "price": element.price,
-              "variable": element.variable,
-              "correlation": element.correlation,
-              "referenceValues": element.referenceValues,
-              // "ruleCode": element.ruleCode,
-              // "ruleRemark": element.ruleRemark,
-            });
-          }
-        }
-        break;
-      case 'premix':
-        if (argument?.premix?.isNotEmpty ?? false) {
-          for (var element in argument!.premix!) {
-            targetList.add({
-              "id": element.id,
-              "demand": element.demand,
-              "weight": element.weight,
-              "de": element.de,
-              "nEm": element.nEm,
-              "nEg": element.nEg,
-              "mj": element.mj,
-              "mp": element.mp,
-              "price": element.price,
-              "variable": element.variable,
-              "correlation": element.correlation,
-              "referenceValues": element.referenceValues,
-              // "ruleCode": element.ruleCode,
-              // "ruleRemark": element.ruleRemark,
-            });
-          }
-        }
-        break;
-      default:
-        break;
+  List<FormulaItemModel> get _currentItems {
+    if (items.isNotEmpty) return items.toList();
+    return [
+      ...?argument?.roughages,
+      ...?argument?.energyFeed,
+      ...?argument?.proteinFeed,
+      ...?argument?.additives,
+      ...?argument?.premix,
+    ];
+  }
+
+  Map<String, dynamic> _itemPayload(
+    FormulaItemModel item, {
+    bool save = false,
+  }) {
+    final payload = <String, dynamic>{'id': item.id, 'weight': item.weight};
+    if (save) {
+      payload.addAll({
+        'demand': item.demand,
+        'de': item.de,
+        'nEm': item.nEm,
+        'nEg': item.nEg,
+        'mj': item.mj,
+        'mp': item.mp,
+        'price': item.price,
+        'variable': item.variable,
+        'correlation': item.correlation,
+        'referenceValues': item.referenceValues,
+      });
     }
-    return targetList;
+    return payload;
+  }
+
+  List<Map<String, dynamic>> getRawMaterialListByType(String type) {
+    final matches = switch (type) {
+      'roughages' => (FormulaItemModel item) => item.type == 1,
+      'energyFeed' => (FormulaItemModel item) => item.type == 2,
+      'proteinFeed' => (FormulaItemModel item) => item.type == 3,
+      'additives' =>
+        (FormulaItemModel item) => item.type == 4 || item.type == 6,
+      'premix' => (FormulaItemModel item) => item.type == 5,
+      _ => (FormulaItemModel item) => false,
+    };
+    return _currentItems
+        .where(matches)
+        .map((item) => _itemPayload(item, save: true))
+        .toList();
+  }
+
+  Map<String, dynamic> _verificationPayload() {
+    final current = _currentItems;
+    return {
+      // verifyformula expects the verification mode; keep the current
+      // formulaType only for the local detail state after the response.
+      'formulaType': 1,
+      'cowCount': argument?.cowCount ?? 1,
+      'individualCate': argument?.individualCate ?? 0,
+      'individualType': argument?.individualType,
+      'weightType': argument?.weightType,
+      'dailyGainWeight': argument?.dailyGainWeight,
+      'calvingMonths': argument?.calvingMonths,
+      'milkProduction': argument?.milkProduction,
+      'milkGrade': argument?.milkGrade ?? 0,
+      'gestationMonths': argument?.gestationMonths,
+      'roughages':
+          current.where((item) => item.type == 1).map(_itemPayload).toList(),
+      'energyFeed':
+          current.where((item) => item.type == 2).map(_itemPayload).toList(),
+      'proteinFeed':
+          current.where((item) => item.type == 3).map(_itemPayload).toList(),
+      'additives':
+          current
+              .where((item) => item.type == 4 || item.type == 6)
+              .map(_itemPayload)
+              .toList(),
+      'premix':
+          current.where((item) => item.type == 5).map(_itemPayload).toList(),
+    };
+  }
+
+  /// Recalculate nutrition gaps immediately before opening the save dialog.
+  Future<bool> refreshVerificationForSave() async {
+    if (argument == null || argument?.id != null) return true;
+    try {
+      Toast.showLoading(msg: '营养成分检测中...');
+      final response = await httpsClient.post(
+        '/api/formula/verifyformula',
+        data: _verificationPayload(),
+      );
+      final responseMap = Map<String, dynamic>.from(response);
+      final merged = <String, dynamic>{...?argument?.toJson(), ...responseMap};
+      final refreshed = FormulaModel.fromJson(merged);
+      refreshed.cowCount = argument?.cowCount ?? refreshed.cowCount;
+      refreshed.formulaType = argument?.formulaType ?? refreshed.formulaType;
+      argument = refreshed;
+      update();
+      Toast.dismiss();
+      return true;
+    } catch (error) {
+      Toast.dismiss();
+      Toast.show(error is ApiException ? error.message : '营养成分检测失败，请稍后重试');
+      return false;
+    }
   }
 
   /// 保存配方
@@ -353,6 +343,7 @@ class RecipeDetailController extends GetxController {
         "taboo": dialogTabooItem.value.trim(),
         "executor": UserInfoTool.nickName(),
         "remark": argument?.remark,
+        "gaps": argument?.gaps?.map((gap) => gap.toJson()).toList() ?? [],
         "roughages": getRawMaterialListByType("roughages"),
         "energyFeed": getRawMaterialListByType("energyFeed"),
         "proteinFeed": getRawMaterialListByType("proteinFeed"),
@@ -391,7 +382,10 @@ class RecipeDetailController extends GetxController {
     try {
       Toast.showLoading(msg: "配方删除中...");
       //接口参数
-      Map<String, dynamic> mapParam = {"id": argument?.id, "rowVersion": argument?.rowVersion};
+      Map<String, dynamic> mapParam = {
+        "id": argument?.id,
+        "rowVersion": argument?.rowVersion,
+      };
       await httpsClient.delete("/api/formula", data: mapParam);
       Toast.dismiss();
       Toast.success(msg: '配方删除成功');

@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intellectual_breed/app/modules/recipe_create/views/select_recipe.dart';
+import 'package:intellectual_breed/app/services/Log.dart';
 import 'package:intellectual_breed/app/services/colors.dart';
 import 'package:intellectual_breed/app/services/constant.dart';
 import 'package:intellectual_breed/app/widgets/cell_text_field.dart';
@@ -370,14 +371,36 @@ class RecipeCreateView extends GetView<RecipeCreateController> {
           title: '添加剂',
           showBottomLine: true,
           content: controller.tjjSelectedDisplayNames.value,
-          onPressed: () {
+          onPressed: () async {
             //! 添加剂中的数据有的是需要根据[个体类型]来调整选项显示的, 所以必须先得判断[个体类型]是否已选
             if (!controller.hasSelectedCowType) {
               Toast.show('请先选择个体类型');
               return;
             }
+
+            Log.i(
+              'Additive selector pressed '
+              '(raw materials loaded: ${controller.hasLoadedRawMaterials})',
+            );
+            if (!controller.hasLoadedRawMaterials) {
+              final loaded = await controller.getRawMaterialList();
+              if (!loaded) {
+                Log.w(
+                  'Additive selector cannot open because raw material loading '
+                  'failed: ${controller.rawMaterialLoadError}',
+                );
+                return;
+              }
+            }
+            if (!context.mounted) return;
+
+            // 列表可能在用户选择个体类型前才加载完成，此处再次过滤以保证类型正确。
+            controller.updateYhlList();
             if (controller.tjjNameList.isEmpty) {
-              Toast.show('添加剂列表获取失败');
+              Log.w(
+                'No additive is available for cow type ${controller.gtlxValue.value}',
+              );
+              Toast.show('当前个体类型暂无可用添加剂');
               return;
             }
             // 多选弹窗

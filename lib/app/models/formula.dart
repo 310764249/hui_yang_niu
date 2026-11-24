@@ -5,6 +5,7 @@ class FormulaGapModel {
   final double value;
   final double gapPercent;
   final String rawMaterialName;
+  final double? suggestAddWeight;
   final int alertLevel;
   final String remark;
 
@@ -14,6 +15,7 @@ class FormulaGapModel {
     required this.value,
     required this.gapPercent,
     required this.rawMaterialName,
+    this.suggestAddWeight,
     required this.alertLevel,
     required this.remark,
   });
@@ -26,10 +28,9 @@ class FormulaGapModel {
     final value = double.tryParse('${json['value'] ?? 0}') ?? 0;
     // The contract uses a 0..1 ratio, but older environments returned 25.6
     // for 25.6%. Normalize that legacy response at the boundary.
-    var gapPercent =
-        hasPercentSuffix || (rawGap > 1 && rawGap <= 100)
-            ? rawGap / 100
-            : rawGap;
+    var gapPercent = hasPercentSuffix || (rawGap > 1 && rawGap <= 100)
+        ? rawGap / 100
+        : rawGap;
     if (gapPercent <= 0 && baseValue > 0 && value < baseValue) {
       gapPercent = ((baseValue - value) / baseValue).clamp(0.0, 1.0);
     }
@@ -38,21 +39,51 @@ class FormulaGapModel {
       baseValue: baseValue,
       value: value,
       gapPercent: gapPercent,
-      rawMaterialName: json['rawMaterialName']?.toString() ?? '',
+      // Recommendations are calculated by the server from the selected
+      // ingredients and their prices. Do not infer one locally: it could
+      // recommend an ingredient that is already selected.
+      rawMaterialName: _recommendationName(json),
+      suggestAddWeight: _nullableDouble(json['suggestAddWeight']),
       alertLevel: int.tryParse('${json['alertLevel'] ?? 0}') ?? 0,
       remark: json['remark']?.toString() ?? '',
     );
   }
 
+  static double? _nullableDouble(dynamic value) {
+    if (value == null || value.toString().trim().isEmpty) return null;
+    return double.tryParse(value.toString());
+  }
+
+  static String _recommendationName(Map<String, dynamic> json) {
+    const keys = [
+      'rawMaterialName',
+      'recommendedRawMaterialName',
+      'recommendedMaterialName',
+      'suggestedRawMaterialName',
+    ];
+    for (final key in keys) {
+      final value = json[key];
+      if (value is Map) {
+        final name = value['name']?.toString().trim() ?? '';
+        if (name.isNotEmpty) return name;
+      } else {
+        final name = value?.toString().trim() ?? '';
+        if (name.isNotEmpty) return name;
+      }
+    }
+    return '';
+  }
+
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'baseValue': baseValue,
-    'value': value,
-    'gapPercent': gapPercent,
-    'rawMaterialName': rawMaterialName,
-    'alertLevel': alertLevel,
-    'remark': remark,
-  };
+        'name': name,
+        'baseValue': baseValue,
+        'value': value,
+        'gapPercent': gapPercent,
+        'rawMaterialName': rawMaterialName,
+        if (suggestAddWeight != null) 'suggestAddWeight': suggestAddWeight,
+        'alertLevel': alertLevel,
+        'remark': remark,
+      };
 
   /// The ratio is the source of truth. Exactly 20% is still an orange warning.
   int get warningLevel {
@@ -72,15 +103,21 @@ class FormulaGapModel {
     return '${rounded.endsWith('.0') ? rounded.substring(0, rounded.length - 2) : rounded}%';
   }
 
-  String get _rawMaterialName {
-    if (rawMaterialName.isEmpty) return '对应原料';
+  String get _recommendedRawMaterialName {
     return rawMaterialName.endsWith('原料')
         ? rawMaterialName
         : '$rawMaterialName原料';
   }
 
-  String get warningMessage =>
-      '$name营养成分缺失，缺口为$displayGapPercent，建议增加$_rawMaterialName';
+  String get warningMessage {
+    final warning = '$name营养成分缺失，缺口为$displayGapPercent';
+    if (rawMaterialName.isEmpty) return warning;
+    final suggestedWeight = suggestAddWeight;
+    final weightMessage = suggestedWeight == null || suggestedWeight <= 0
+        ? ''
+        : ' ${suggestedWeight.toStringAsFixed(2).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '')}kg/d';
+    return '$warning，建议增加$_recommendedRawMaterialName$weightMessage';
+  }
 }
 
 class FormulaModel {
@@ -90,7 +127,7 @@ class FormulaModel {
   late final String? name; //名称
   late final int? individualCate; //品种 西门塔尔、秦川牛
   late final int?
-  individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
+      individualType; //配方目标 1：妊娠母牛配方；2：哺乳母牛配方；3：犊牛配方；4：育肥牛配方；5：公牛配方；
   late final int? weightType; //个体重量
   late final int? calvingMonths; //产犊后月数
   late final int? gestationMonths; //妊娠月数
@@ -148,7 +185,7 @@ class FormulaModel {
   late final String? taboo; //禁忌事项
   late final String? executor; //制作人
   late final int?
-  status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
+      status; //状态 1：有效；2-营养标准更新；3-原料营养成分更新；3-营养标准删除；4-原料删除；5-配方更新；6-配方删除
   late final String? remark; //备注
   late final String? tenantId; //租户
   late final String? created; //创建时间
@@ -356,13 +393,12 @@ class FormulaModel {
       });
     }
     if (json['gaps'] is List) {
-      gaps =
-          (json['gaps'] as List)
-              .whereType<Map>()
-              .map(
-                (v) => FormulaGapModel.fromJson(Map<String, dynamic>.from(v)),
-              )
-              .toList();
+      gaps = (json['gaps'] as List)
+          .whereType<Map>()
+          .map(
+            (v) => FormulaGapModel.fromJson(Map<String, dynamic>.from(v)),
+          )
+          .toList();
     }
     if (gaps == null || gaps!.isEmpty) {
       gaps = _deriveNutritionGaps();
@@ -370,20 +406,20 @@ class FormulaModel {
   }
 
   List<FormulaGapModel> _deriveNutritionGaps() {
-    final nutrients = <(String, double?, double?, String)>[
-      ('干物质', baseDM, dm, ''),
-      ('粗料比', baseRoughagesPercent, roughagesPercent, ''),
-      ('粗蛋白', baseCP, cp, '豆粕'),
-      ('瘤胃降解蛋白', baseRDP, rdp, '豆粕'),
-      ('瘤胃非降解蛋白', baseRUP, rup, '豆粕'),
-      ('代谢蛋白', baseMP, mp, '豆粕'),
-      ('代谢赖氨酸', baseMLys, mLys, '赖氨酸'),
-      ('代谢蛋氨酸', baseMMet, mMet, '蛋氨酸'),
-      ('代谢能', baseME, me, '玉米'),
-      ('维持净能', baseNEm, nEm, '玉米'),
-      ('增重净能', baseNEg, nEg, '玉米'),
-      ('钙', baseCa, ca, '石粉'),
-      ('磷', baseP, p, '磷酸氢钙'),
+    final nutrients = <(String, double?, double?)>[
+      ('干物质', baseDM, dm),
+      ('粗料比', baseRoughagesPercent, roughagesPercent),
+      ('粗蛋白', baseCP, cp),
+      ('瘤胃降解蛋白', baseRDP, rdp),
+      ('瘤胃非降解蛋白', baseRUP, rup),
+      ('代谢蛋白', baseMP, mp),
+      ('代谢赖氨酸', baseMLys, mLys),
+      ('代谢蛋氨酸', baseMMet, mMet),
+      ('代谢能', baseME, me),
+      ('维持净能', baseNEm, nEm),
+      ('增重净能', baseNEg, nEg),
+      ('钙', baseCa, ca),
+      ('磷', baseP, p),
     ];
     return nutrients
         .where((item) => (item.$2 ?? 0) > 0 && (item.$3 ?? 0) < (item.$2 ?? 0))
@@ -396,7 +432,7 @@ class FormulaModel {
             baseValue: base,
             value: actual,
             gapPercent: ratio,
-            rawMaterialName: item.$4,
+            rawMaterialName: '',
             alertLevel: ratio > 0.2 ? 2 : (ratio > 0.1 ? 1 : 0),
             remark: '',
           );
@@ -406,11 +442,10 @@ class FormulaModel {
   }
 
   FormulaGapModel? gapFor(String nutritionName) {
-    String normalize(String value) =>
-        value
-            .replaceAll(RegExp(r'[(（][^)）]*[)）]'), '')
-            .replaceAll(RegExp(r'\s+'), '')
-            .toLowerCase();
+    String normalize(String value) => value
+        .replaceAll(RegExp(r'[(（][^)）]*[)）]'), '')
+        .replaceAll(RegExp(r'\s+'), '')
+        .toLowerCase();
 
     const aliases = <String, List<String>>{
       '干物质采食量': ['干物质', 'dmi'],
@@ -441,10 +476,9 @@ class FormulaModel {
     return null;
   }
 
-  List<FormulaGapModel> get warningGaps =>
-      (gaps ?? const <FormulaGapModel>[])
-          .where((gap) => gap.hasWarning)
-          .toList();
+  List<FormulaGapModel> get warningGaps => (gaps ?? const <FormulaGapModel>[])
+      .where((gap) => gap.hasWarning)
+      .toList();
 
   bool get hasNutritionWarning => warningGaps.isNotEmpty;
 

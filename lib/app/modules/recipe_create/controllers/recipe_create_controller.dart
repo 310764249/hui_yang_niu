@@ -43,24 +43,31 @@ class RecipeCreateController extends GetxController {
   late List yxdjList;
 
   // 粗饲料
-  late List<RawMaterial> cslList;
+  List<RawMaterial> cslList = [];
 
   // 精饲料
-  late List<RawMaterial> jslList;
+  List<RawMaterial> jslList = [];
 
   // 能量饲料
-  late List<RawMaterial> nlslList;
+  List<RawMaterial> nlslList = [];
 
   // 蛋白饲料
-  late List<RawMaterial> dbslList;
+  List<RawMaterial> dbslList = [];
 
   // 添加剂
-  late List<RawMaterial> tjjListTotal; // 存储所有的添加剂数据
-  late List<RawMaterial> tjjList;
+  List<RawMaterial> tjjListTotal = []; // 存储所有的添加剂数据
+  List<RawMaterial> tjjList = [];
 
   // 预混料
-  late List<RawMaterial> yhlListTotal; // 存储所有的预混料数据
-  late List<RawMaterial> yhlList; // 根据条件过滤后的结果
+  List<RawMaterial> yhlListTotal = []; // 存储所有的预混料数据
+  List<RawMaterial> yhlList = []; // 根据条件过滤后的结果
+
+  Future<bool>? _rawMaterialLoadingTask;
+  bool _hasLoadedRawMaterials = false;
+  String? _rawMaterialLoadError;
+
+  bool get hasLoadedRawMaterials => _hasLoadedRawMaterials;
+  String? get rawMaterialLoadError => _rawMaterialLoadError;
 
   // 个体类型
   List gtlxNameList = [];
@@ -196,30 +203,40 @@ class RecipeCreateController extends GetxController {
 
   /// 切换个体类型时更新预混料
   void updateYhlList() {
+    final usesTargetTypeCodes = _usesTargetTypeCodes;
+    final targetTypes = _targetMaterialTypes;
     switch (gtlxValue.value) {
       case 1 || 2 || 3:
         Log.d("- 切换类型123 -gtlxValue.value: ${gtlxValue.value}");
         // 母牛: 生长/后备母牛, 妊娠母牛, 哺乳母牛
         // 预混料 列表更新
         yhlNameList.clear();
-        yhlList =
-            yhlListTotal
-                .where((element) => element.individualType == 2)
-                .toList();
+        yhlList = yhlListTotal
+            .where(
+              (element) => _matchesMaterialType(
+                element.individualType,
+                targetTypes,
+                usesTargetTypeCodes,
+                female: true,
+              ),
+            )
+            .toList();
         if (yhlList.isNotEmpty) {
           yhlNameList.addAll(yhlList.map((item) => item.name).toList());
         }
 
         // 添加剂 列表更新
         tjjNameList.clear();
-        tjjList =
-            tjjListTotal
-                .where(
-                  (element) =>
-                      element.individualType == 2 ||
-                      element.individualType == 0,
-                )
-                .toList();
+        tjjList = tjjListTotal
+            .where(
+              (element) => _matchesMaterialType(
+                element.individualType,
+                targetTypes,
+                usesTargetTypeCodes,
+                female: true,
+              ),
+            )
+            .toList();
         if (tjjList.isNotEmpty) {
           tjjNameList.addAll(tjjList.map((item) => item.name).toList());
         }
@@ -229,32 +246,90 @@ class RecipeCreateController extends GetxController {
         // 公牛
         // 预混料 列表更新
         yhlNameList.clear();
-        yhlList =
-            yhlListTotal
-                .where((element) => element.individualType == 1)
-                .toList();
+        yhlList = yhlListTotal
+            .where(
+              (element) => _matchesMaterialType(
+                element.individualType,
+                targetTypes,
+                usesTargetTypeCodes,
+                female: false,
+              ),
+            )
+            .toList();
         if (yhlList.isNotEmpty) {
           yhlNameList.addAll(yhlList.map((item) => item.name).toList());
         }
 
         // 添加剂 列表更新
         tjjNameList.clear();
-        tjjList =
-            tjjListTotal
-                .where(
-                  (element) =>
-                      element.individualType == 1 ||
-                      element.individualType == 0,
-                )
-                .toList();
+        tjjList = tjjListTotal
+            .where(
+              (element) => _matchesMaterialType(
+                element.individualType,
+                targetTypes,
+                usesTargetTypeCodes,
+                female: false,
+              ),
+            )
+            .toList();
         if (tjjList.isNotEmpty) {
           tjjNameList.addAll(tjjList.map((item) => item.name).toList());
         }
         break;
     }
+    _retainAllowedAdditives();
     // 切换了类型, 重置index
     yhlSelIndex = -1;
     yhlSelName.value = '';
+  }
+
+  // New API data uses the same target codes as the formula request. Older
+  // material records only used 0/1/2 for common/female/male applicability.
+  bool get _usesTargetTypeCodes => tjjListTotal.any(
+        (item) => (item.individualType ?? 0) >= 3,
+      );
+
+  Set<int> get _targetMaterialTypes => {gtlxValue.value};
+
+  bool _matchesMaterialType(
+    int? materialType,
+    Set<int> targetTypes,
+    bool usesTargetTypeCodes, {
+    required bool female,
+  }) {
+    if (materialType == null || materialType == 0) return true;
+    if (usesTargetTypeCodes) return targetTypes.contains(materialType);
+    return female ? materialType == 2 : materialType == 1;
+  }
+
+  /// Keep only additives that are valid for the newly selected cow type.
+  /// The picker stores indexes, which change after [tjjList] is filtered, so
+  /// restore the selection by material ID instead of retaining stale indexes.
+  void _retainAllowedAdditives() {
+    final selectedIds = tjjSelectedObjList
+        .whereType<Map>()
+        .map((item) => item['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final selected = tjjList
+        .where((material) => selectedIds.contains(material.id?.toString()))
+        .toList();
+
+    tjjSelectedIndexList = selected.map(tjjList.indexOf).toList();
+    tjjSelectedNameList
+      ..clear()
+      ..addAll(selected.map((material) => material.name));
+    tjjSelectedObjList = selected
+        .map(
+          (material) => {
+            'id': material.id,
+            'variable': material.category,
+            'correlation': 0,
+            'referenceValues': 0,
+          },
+        )
+        .toList();
+    tjjSelectedDisplayNames.value = tjjSelectedNameList.join(',');
   }
 
   // 更新个体重量
@@ -495,69 +570,57 @@ class RecipeCreateController extends GetxController {
     // 请求饲料列表
     getRawMaterialList();
 
-    gtlxList =
-        AppDictList.searchItems(
+    gtlxList = AppDictList.searchItems(
           'pfmb',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
     // gtzlList = AppDictList.searchItems('gtzl') ?? [];
-    gtzlListHB =
-        AppDictList.searchItems(
+    gtzlListHB = AppDictList.searchItems(
           'gtzl-hb',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    gtzlListRS =
-        AppDictList.searchItems(
+    gtzlListRS = AppDictList.searchItems(
           'gtzl-qnrs',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
     if (gtzlListRS.isEmpty) {
       // 兼容历史字典编码，测试与生产环境曾分别返回 qnrs/rs。
-      gtzlListRS =
-          AppDictList.searchItems(
+      gtzlListRS = AppDictList.searchItems(
             'gtzl-rs',
           )?.where((item) => !item['isDeleted']).toList() ??
           [];
     }
-    gtzlListBR =
-        AppDictList.searchItems(
+    gtzlListBR = AppDictList.searchItems(
           'gtzl-br',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    gtzlListYF =
-        AppDictList.searchItems(
+    gtzlListYF = AppDictList.searchItems(
           'gtzl-yf',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
 
-    rzzList =
-        AppDictList.searchItems(
+    rzzList = AppDictList.searchItems(
           'rzz',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    rzzListHB =
-        AppDictList.searchItems(
+    rzzListHB = AppDictList.searchItems(
           'rzz-hb',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    rzzListYF =
-        AppDictList.searchItems(
+    rzzListYF = AppDictList.searchItems(
           'rzz-yf',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    rsyfList =
-        AppDictList.searchItems(
+    rsyfList = AppDictList.searchItems(
           'rsyf',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
-    mryfList =
-        AppDictList.searchItems(
+    mryfList = AppDictList.searchItems(
           'mryf',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
     // mrlList = AppDictList.searchItems('mrl') ?? [];
-    yxdjList =
-        AppDictList.searchItems(
+    yxdjList = AppDictList.searchItems(
           'yxdj',
         )?.where((item) => !item['isDeleted']).toList() ??
         [];
@@ -609,69 +672,102 @@ class RecipeCreateController extends GetxController {
     update();
   }
 
-  // 获取饲料列表
-  Future<void> getRawMaterialList() async {
+  // 获取饲料列表。初始化和用户点击重试共用同一个请求，避免并发请求覆盖列表。
+  Future<bool> getRawMaterialList({bool forceReload = false}) async {
+    if (_hasLoadedRawMaterials && !forceReload) return true;
+
+    final loadingTask = _rawMaterialLoadingTask;
+    if (loadingTask != null) return loadingTask;
+
+    final task = _loadRawMaterialList();
+    _rawMaterialLoadingTask = task;
+    try {
+      return await task;
+    } finally {
+      if (identical(_rawMaterialLoadingTask, task)) {
+        _rawMaterialLoadingTask = null;
+      }
+    }
+  }
+
+  Future<bool> _loadRawMaterialList() async {
+    Log.i('Loading recipe raw materials from /api/rawmaterial/getall');
     Toast.showLoading();
     try {
       var response = await httpsClient.get("/api/rawmaterial/getall");
 
       List<RawMaterial> modelList = [];
-      for (var item in response) {
-        RawMaterial model = RawMaterial.fromJson(item);
+      for (final item in response as List) {
+        final model = RawMaterial.fromJson(
+          Map<String, dynamic>.from(item as Map),
+        );
         modelList.add(model);
       }
-      // print(modelList);
+
       cslList = modelList.where((element) => element.category == 1).toList();
-      nlslList =
-          modelList
-              .where((element) => element.category == 2 && element.type == 2)
-              .toList();
-      dbslList =
-          modelList
-              .where((element) => element.category == 2 && element.type == 3)
-              .toList();
-      tjjListTotal =
-          modelList
-              .where(
-                (element) =>
-                    element.category == 2 &&
-                    (element.type == 4 || element.type == 6),
-              )
-              .toList();
-      yhlListTotal =
-          modelList
-              .where((element) => element.category == 2 && element.type == 5)
-              .toList();
+      nlslList = modelList
+          .where((element) => element.category == 2 && element.type == 2)
+          .toList();
+      dbslList = modelList
+          .where((element) => element.category == 2 && element.type == 3)
+          .toList();
+      tjjListTotal = modelList
+          .where(
+            (element) =>
+                element.category == 2 &&
+                (element.type == 4 || element.type == 6),
+          )
+          .toList();
+      yhlListTotal = modelList
+          .where((element) => element.category == 2 && element.type == 5)
+          .toList();
 
-      if (cslList.isNotEmpty) {
-        cslNameList.addAll(cslList.map((item) => item.name).toList());
-      }
-      if (nlslList.isNotEmpty) {
-        nlslNameList.addAll(nlslList.map((item) => item.name).toList());
-      }
-      if (dbslList.isNotEmpty) {
-        dbslNameList.addAll(dbslList.map((item) => item.name).toList());
-      }
-      if (tjjListTotal.isNotEmpty) {
-        tjjNameList.addAll(tjjListTotal.map((item) => item.name).toList());
-      }
-      if (yhlListTotal.isNotEmpty) {
-        yhlNameList.addAll(yhlListTotal.map((item) => item.name).toList());
+      cslNameList
+        ..clear()
+        ..addAll(cslList.map((item) => item.name));
+      nlslNameList
+        ..clear()
+        ..addAll(nlslList.map((item) => item.name));
+      dbslNameList
+        ..clear()
+        ..addAll(dbslList.map((item) => item.name));
+
+      if (hasSelectedCowType) {
+        updateYhlList();
+      } else {
+        tjjList = List.of(tjjListTotal);
+        tjjNameList
+          ..clear()
+          ..addAll(tjjList.map((item) => item.name));
+        yhlList = List.of(yhlListTotal);
+        yhlNameList
+          ..clear()
+          ..addAll(yhlList.map((item) => item.name));
       }
 
+      _hasLoadedRawMaterials = true;
+      _rawMaterialLoadError = null;
+      Log.i(
+        'Loaded ${modelList.length} recipe raw materials '
+        '(additives: ${tjjListTotal.length})',
+      );
       Toast.dismiss();
       update();
-    } catch (error) {
+      return true;
+    } catch (error, stackTrace) {
+      _hasLoadedRawMaterials = false;
+      _rawMaterialLoadError = error.toString();
       Toast.dismiss();
-      Toast.show(error.toString());
+      Log.e(
+        'Failed to load recipe raw materials from '
+        '/api/rawmaterial/getall: $error\n$stackTrace',
+      );
       if (error is ApiException) {
-        // 处理 API 请求异常情况 code不为 0 的场景
-        Log.d('API Exception: ${error.toString()}');
         Toast.failure(msg: error.toString());
       } else {
-        // HTTP 请求异常情况
-        Log.d('Other Exception: $error');
+        Toast.failure(msg: '原料列表加载失败，请检查网络后重试');
       }
+      return false;
     }
   }
 
@@ -809,14 +905,12 @@ class RecipeCreateController extends GetxController {
         //             ? double.parse(rzzListYF[rzzSelIndex]['value'])
         //             : 0)
         //         : 0),
-        "gestationMonths":
-            gtlxValue.value == 1 || gtlxValue.value == 2
-                ? int.parse(rsyfList[rsyfSelIndex]['value'])
-                : 0, // 妊娠月份
-        "calvingMonths":
-            gtlxValue.value == 3
-                ? int.parse(mryfList[mryfSelIndex]['value'])
-                : 0, // 泌乳月份
+        "gestationMonths": gtlxValue.value == 1 || gtlxValue.value == 2
+            ? int.parse(rsyfList[rsyfSelIndex]['value'])
+            : 0, // 妊娠月份
+        "calvingMonths": gtlxValue.value == 3
+            ? int.parse(mryfList[mryfSelIndex]['value'])
+            : 0, // 泌乳月份
         // "milkProduction": gtlxValue.value == 3
         //     ? double.parse(mrlList[mrlSelIndex]['value'])
         //     : 0, // 泌乳量
@@ -832,17 +926,16 @@ class RecipeCreateController extends GetxController {
             dbslSelectedObjList.isNotEmpty ? dbslSelectedObjList : [], // 蛋白饲料
         "additives":
             tjjSelectedObjList.isNotEmpty ? tjjSelectedObjList : [], // 添加剂
-        "premix":
-            yhlSelIndex != -1
-                ? [
-                  {
-                    "id": yhlList[yhlSelIndex].id,
-                    "variable": yhlList[yhlSelIndex].category,
-                    "correlation": 0,
-                    "referenceValues": 0,
-                  },
-                ]
-                : [], // 预混料
+        "premix": yhlSelIndex != -1
+            ? [
+                {
+                  "id": yhlList[yhlSelIndex].id,
+                  "variable": yhlList[yhlSelIndex].category,
+                  "correlation": 0,
+                  "referenceValues": 0,
+                },
+              ]
+            : [], // 预混料
       };
       // print('配方参数:$mapParam');
       var response = await httpsClient.post(

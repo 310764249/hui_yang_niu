@@ -6,14 +6,14 @@ import 'package:intellectual_breed/app/widgets/formula_gap_warning.dart';
 void main() {
   test('formula gap warning level follows actual gap percent boundaries', () {
     FormulaGapModel gap({double percent = 0, int level = 0}) => FormulaGapModel(
-      name: '钙',
-      baseValue: 10,
-      value: 8,
-      gapPercent: percent,
-      rawMaterialName: '石粉',
-      alertLevel: level,
-      remark: '',
-    );
+          name: '钙',
+          baseValue: 10,
+          value: 8,
+          gapPercent: percent,
+          rawMaterialName: '石粉',
+          alertLevel: level,
+          remark: '',
+        );
 
     expect(gap(percent: 0.08).warningLevel, 0);
     expect(gap(percent: 0.1).warningLevel, 0);
@@ -42,7 +42,7 @@ void main() {
     );
   });
 
-  test('formula derives missing list gaps from nutrition values', () {
+  test('formula derives local gaps without a hard-coded recommendation', () {
     final model = FormulaModel.fromJson({
       'baseCa': 0.0464,
       'ca': 0.0355,
@@ -53,7 +53,27 @@ void main() {
     expect(model.warningGaps, hasLength(1));
     expect(model.gapFor('钙(kg/d)')?.hasRedWarning, isTrue);
     expect(model.gapFor('钙(kg/d)')?.displayGapPercent, '23.5%');
-    expect(model.gapFor('钙(kg/d)')?.rawMaterialName, '石粉');
+    expect(model.gapFor('钙(kg/d)')?.rawMaterialName, isEmpty);
+    expect(model.gapFor('钙(kg/d)')?.warningMessage, '钙营养成分缺失，缺口为23.5%');
+  });
+
+  test(
+      'formula uses the server recommendation instead of a selected ingredient',
+      () {
+    final gap = FormulaGapModel.fromJson({
+      'name': '粗蛋白',
+      'baseValue': 10,
+      'value': 7.5,
+      'gapPercent': 0.25,
+      // The server has already excluded the selected 豆粕 from this value.
+      'recommendedRawMaterialName': '菜籽粕',
+      'suggestAddWeight': 1.25,
+    });
+
+    expect(gap.rawMaterialName, '菜籽粕');
+    expect(gap.suggestAddWeight, 1.25);
+    expect(gap.warningMessage, '粗蛋白营养成分缺失，缺口为25%，建议增加菜籽粕原料 1.25kg/d');
+    expect(gap.toJson()['suggestAddWeight'], 1.25);
   });
 
   test('formula finds a warning gap by nutrition row title', () {
@@ -134,13 +154,12 @@ void main() {
     expect(find.text('钙营养成分缺失，缺口为25.6%，建议增加石粉原料'), findsOneWidget);
     expect(find.text('共2项营养成分缺失，建议补充后再保存'), findsOneWidget);
 
-    final colors =
-        tester
-            .widgetList<Container>(find.byType(Container))
-            .map((container) => container.decoration)
-            .whereType<BoxDecoration>()
-            .map((decoration) => decoration.color)
-            .toList();
+    final colors = tester
+        .widgetList<Container>(find.byType(Container))
+        .map((container) => container.decoration)
+        .whereType<BoxDecoration>()
+        .map((decoration) => decoration.color)
+        .toList();
     expect(colors, contains(const Color(0xFFFFF3E0)));
     expect(colors, contains(const Color(0xFFFFE5E5)));
   });

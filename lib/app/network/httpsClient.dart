@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 // import 'package:alice/alice.dart';
 import 'package:dio/dio.dart';
@@ -145,6 +146,69 @@ class HttpsClient {
       );
       return response;
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Opens an authenticated server-sent event response.
+  ///
+  /// Chat 2.0 returns a raw stream instead of the platform's normal
+  /// `BaseModel` envelope, so callers consume decoded text chunks.
+  Stream<String> postEventStream(String apiUrl,
+      {Map<String, dynamic>? data}) async* {
+    final requestData = Map<String, dynamic>.from(data ?? const {});
+    requestData.removeWhere((key, value) => value == null);
+
+    final response = await _openAuthenticatedEventStream(
+      apiUrl,
+      data: requestData,
+    );
+    final body = response.data;
+    if (body == null) {
+      throw ApiException('服务器未返回数据');
+    }
+
+    yield* body.stream.cast<List<int>>().transform(utf8.decoder);
+  }
+
+  Future<Response<ResponseBody>> _openAuthenticatedEventStream(
+    String url, {
+    required Map<String, dynamic> data,
+    bool retryOnUnauthorized = true,
+  }) async {
+    try {
+      final headers = <String, dynamic>{
+        'Accept': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'deviceType': 'Android',
+      };
+      final accessToken = UserInfoTool.auth?.accessToken;
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      return await dio.post<ResponseBody>(
+        url,
+        data: data,
+        options: Options(
+          headers: headers,
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.stream,
+          receiveTimeout: const Duration(minutes: 5),
+        ),
+      );
+    } catch (error) {
+      if (error is DioException &&
+          error.response?.statusCode == 401 &&
+          retryOnUnauthorized &&
+          UserInfoTool.auth != null) {
+        await _refreshTokenOnce();
+        return _openAuthenticatedEventStream(
+          url,
+          data: data,
+          retryOnUnauthorized: false,
+        );
+      }
       rethrow;
     }
   }

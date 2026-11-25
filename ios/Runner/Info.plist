@@ -52,7 +52,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>开启定位权限获取位置信息</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>录制视频、音频记录牛只生产管理</string>
+	<string>用于智能问答语音输入及录制音频记录牛只生产管理</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>访问相册获取用于上传头像、牛只死亡存档</string>
     <key>NSUserTrackingUsageDescription</key>

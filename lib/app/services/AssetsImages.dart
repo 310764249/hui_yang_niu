@@ -15,6 +15,7 @@ class AssetsImages {
   static const recipeFill = 'assets/images/receipt_fill.png';
   static const messageFill = 'assets/images/message_fill.png';
   static const mineFill = 'assets/images/mine_fill.png';
+  static const cowDoctor = 'assets/images/ic_cow_doctor.png';
 
   // Application page icons
   static const icon1 = 'assets/images/icon_1.png';

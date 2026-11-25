@@ -53,10 +53,10 @@ class TabsController extends GetxController with WidgetsBindingObserver {
   void precacheIcons(BuildContext context) {
     Future.delayed(Duration.zero, () {
       precacheImage(const AssetImage(AssetsImages.homeLine), context);
-      precacheImage(const AssetImage(AssetsImages.recipeFill), context);
-      precacheImage(const AssetImage(AssetsImages.applicationFill), context);
-      precacheImage(const AssetImage(AssetsImages.messageFill), context);
+      precacheImage(const AssetImage(AssetsImages.homeFill), context);
       precacheImage(const AssetImage(AssetsImages.mineFill), context);
+      precacheImage(const AssetImage(AssetsImages.mineLine), context);
+      precacheImage(const AssetImage(AssetsImages.cowDoctor), context);
     });
   }
 
@@ -86,6 +86,10 @@ class TabsController extends GetxController with WidgetsBindingObserver {
     //注意切换时要重新赋值
     currentIndex.value = index;
     update();
+  }
+
+  void openCowDoctor() {
+    Get.toNamed(Routes.INTELLIGENT);
   }
 
   @override

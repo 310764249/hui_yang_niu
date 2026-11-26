@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intellectual_breed/app/widgets/toast.dart';
 
 import '../services/tencent_asr_service.dart';
@@ -19,6 +20,8 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   final TextEditingController _controller = TextEditingController();
   final TencentAsrService _asrService = TencentAsrService();
   StreamSubscription<String>? _transcriptSubscription;
+  bool _isVoiceMode = false;
+  bool _isPressingVoice = false;
   bool _isListening = false;
   bool _isStarting = false;
   String _textBeforeSpeech = '';
@@ -31,13 +34,25 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     _controller.clear();
   }
 
-  Future<void> _toggleSpeechRecognition() async {
-    if (!widget.enabled || _isStarting) return;
-    if (_isListening) {
+  void _toggleInputMode() {
+    if (!widget.enabled || _isStarting || _isListening) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _isVoiceMode = !_isVoiceMode);
+  }
+
+  Future<void> _onVoicePressStart() async {
+    if (!widget.enabled || _isStarting || _isListening) return;
+    _isPressingVoice = true;
+    HapticFeedback.mediumImpact();
+    await _startSpeechRecognition();
+    if (!_isPressingVoice && _isListening) {
       await _stopSpeechRecognition();
-    } else {
-      await _startSpeechRecognition();
     }
+  }
+
+  Future<void> _onVoicePressEnd() async {
+    _isPressingVoice = false;
+    if (_isListening) await _stopSpeechRecognition();
   }
 
   Future<void> _startSpeechRecognition() async {
@@ -71,6 +86,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
       if (!mounted) return;
       Toast.show(_errorMessage(error));
       setState(() {
+        _isPressingVoice = false;
         _isListening = false;
         _isStarting = false;
       });
@@ -88,6 +104,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     } finally {
       if (mounted) {
         setState(() {
+          _isVoiceMode = false;
           _isListening = false;
           _isStarting = false;
         });
@@ -127,63 +144,96 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
         top: false,
         child: Row(
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: TextField(
-                    controller: _controller,
-                    enabled: widget.enabled && !_isListening && !_isStarting,
-                    minLines: 1,
-                    maxLines: 4,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _sendText(),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText:
-                          !widget.enabled
-                              ? '正在生成回答...'
-                              : _isListening
-                              ? '正在听...'
-                              : '请输入内容...',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
+            IconButton(
+              tooltip: _isVoiceMode ? '键盘输入' : '语音输入',
+              onPressed: widget.enabled ? _toggleInputMode : null,
+              icon: Icon(
+                _isVoiceMode ? Icons.keyboard_alt_outlined : Icons.mic_none,
               ),
             ),
             const SizedBox(width: 4),
-            IconButton(
-              tooltip: _isListening ? '停止语音识别' : '语音输入',
-              onPressed: widget.enabled ? _toggleSpeechRecognition : null,
-              color: _isListening ? Colors.redAccent : null,
-              icon:
-                  _isStarting
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : Icon(_isListening ? Icons.stop_circle : Icons.mic_none),
+            Expanded(
+              child: _isVoiceMode ? _buildVoiceInput() : _buildTextInput(),
             ),
-            const SizedBox(width: 4),
-            IconButton.filled(
-              tooltip: '发送',
-              onPressed:
-                  widget.enabled && !_isListening && !_isStarting
-                      ? _sendText
-                      : null,
-              icon: const Icon(Icons.send, size: 20),
-            ),
+            if (!_isVoiceMode) ...[
+              const SizedBox(width: 8),
+              IconButton.filled(
+                tooltip: '发送',
+                onPressed:
+                    widget.enabled && !_isListening && !_isStarting
+                        ? _sendText
+                        : null,
+                icon: const Icon(Icons.send, size: 20),
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextInput() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: TextField(
+          controller: _controller,
+          enabled: widget.enabled && !_isListening && !_isStarting,
+          minLines: 1,
+          maxLines: 4,
+          textInputAction: TextInputAction.send,
+          onSubmitted: (_) => _sendText(),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: widget.enabled ? '请输入内容...' : '正在生成回答...',
+            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVoiceInput() {
+    final isBusy = _isStarting && !_isListening;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: widget.enabled ? (_) => _onVoicePressStart() : null,
+      onTapUp: widget.enabled ? (_) => _onVoicePressEnd() : null,
+      onTapCancel: widget.enabled ? _onVoicePressEnd : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
+        height: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color:
+              _isListening ? const Color(0xFFE4EAF3) : const Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color:
+                _isListening
+                    ? const Color(0xFF9DB7DA)
+                    : const Color(0xFFE5E5E5),
+          ),
+        ),
+        child:
+            isBusy
+                ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                : Text(
+                  _isListening ? '松开结束' : '按住说话',
+                  style: const TextStyle(
+                    color: Color(0xFF333333),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
       ),
     );
   }
